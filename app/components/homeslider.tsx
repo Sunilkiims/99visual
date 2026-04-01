@@ -55,7 +55,7 @@ const slides: Slide[] = [
     description:
       "Dynamic Digital Marketing & SEO Strategies beyond competition.",
     cta: "Explore Now",
-    link: "/services/digital-marketing",
+    link: "/services/digital-marketing-seo",
   },
   {
     id: 5,

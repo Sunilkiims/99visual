@@ -7,8 +7,9 @@ export default function BlueScreenBox() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
-  const [mounted, setMounted] = useState<boolean>(false);
+
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -33,20 +34,23 @@ export default function BlueScreenBox() {
     const render = () => {
       if (video.readyState === 4 && !video.paused) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const len = frame.data.length;
 
-        for (let i = 0; i < len; i += 4) {
-          const r = frame.data[i];
-          const g = frame.data[i + 1];
-          const b = frame.data[i + 2];
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = frame.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
 
           const distance = Math.sqrt(
-            (r - targetR) ** 2 + (g - targetG) ** 2 + (b - targetB) ** 2
+            (r - targetR) ** 2 +
+            (g - targetG) ** 2 +
+            (b - targetB) ** 2
           );
 
           if (distance < threshold) {
-            frame.data[i + 3] = 0;
+            data[i + 3] = 0;
           }
         }
 
@@ -61,7 +65,7 @@ export default function BlueScreenBox() {
     });
 
     return () => {
-      if (animationRef.current !== null) {
+      if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
@@ -82,20 +86,21 @@ export default function BlueScreenBox() {
   if (!mounted) return null;
 
   return (
-    <div
-      className="flex flex-col items-center m-0 p-0"
+    <section
+      className="w-full flex justify-center px-4 sm:px-6 lg:px-8"
       onClick={handleUserInteraction}
       onMouseEnter={handleUserInteraction}
     >
-      <div className="flex flex-col md:flex-row items-center justify-center gap-6 m-0 p-0">
-        
-        {/* Video Box */}
-        <div className="relative w-[420px] h-[280px] border border-white rounded-lg overflow-hidden bg-white">
+      <div className="flex flex-col md:flex-row items-center gap-8 max-w-6xl w-full">
+
+        {/* 🎬 Video Box */}
+        <div className="relative w-full max-w-[420px] aspect-video border border-white rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition">
+          
           <canvas
             ref={canvasRef}
             width={420}
             height={280}
-            className="absolute top-0 left-0 z-10"
+            className="absolute top-0 left-0 w-full h-full z-10"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
@@ -107,27 +112,27 @@ export default function BlueScreenBox() {
             loop
             playsInline
             preload="auto"
-            width={0}
-            height={0}
-            style={{ position: 'absolute', left: '-9999px' }}
+            className="hidden"
           />
         </div>
 
-        {/* Text Section */}
-        <div className="text-center md:text-left max-w-md m-0 p-0">
-          <h2 className="text-xl font-semibold mb-1">
+        {/* 📝 Text Section */}
+        <div className="text-center md:text-left max-w-xl">
+          
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold mb-3 leading-snug">
             Captivate, Engage & Convert Like Never Before
           </h2>
 
-          <p className="text-gray-700 m-0">
-            At 99Visual Solutions, we go beyond standard 3D modeling by offering
+          <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+            At 99 Visual Solutions, we go beyond standard 3D modeling by offering
             advanced product visualization with customizable colors, textures,
             and multiple viewing options. Our services help you present products
             in a way that feels real, interactive, and customer-ready.
           </p>
+
         </div>
 
       </div>
-    </div>
+    </section>
   );
 }

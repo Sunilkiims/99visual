@@ -150,7 +150,7 @@ extra: [
 
 {
 id: "flyover",
-title: "3D Flyover & Walkthrough",
+title: "Walkthrough & Flyover",
 intro: [
 "We specialize in creating high-quality 3D flyover and walkthrough visualizations that transform architectural and development concepts into immersive visual experiences. Our visualization services help architects, real estate developers, planners, and marketing teams present projects in a dynamic and engaging way.",
 "Whether it is a residential township, commercial complex, real estate development, infrastructure project, or urban master plan, our 3D flyover and walkthrough animations allow viewers to explore the design long before the project is built."
