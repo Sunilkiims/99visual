@@ -26,10 +26,12 @@ export default function PoweredBySection() {
       </div>
 
       {/* Title */}
-      <h1 className="text-xl md:text-2xl font-semibold text-center text-gray-900 dark:text-white mb-12 max-w-2xl mx-auto leading-relaxed">
-        From Ideas to Impact — One Service. Endless Possibilities. Powered by{' '}
-        <span className="text-orange-500 font-bold">99 Visual</span>.
-      </h1>
+    <h1 className="text-xl md:text-2xl font-semibold text-center text-gray-900 dark:text-white mb-12 max-w-4xl mx-auto px-6 md:px-12 leading-relaxed">
+  From Ideas to Impact — One Service. Endless Possibilities.
+  <span className="block mt-2">
+    Powered by <span className="text-orange-500 font-bold">99 Visual</span>.
+  </span>
+</h1>
 
       {/* Grid */}
       <div className="relative z-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3 px-6 max-w-6xl mx-auto">

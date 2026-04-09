@@ -189,7 +189,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Search Engine Optimization (SEO)
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In a competitive digital landscape, visibility is everything. Our SEO services are designed to position your business at the top of search engine results, driving high-quality organic traffic and long-term growth.
       We combine strategic keyword research, technical optimization, and content excellence to ensure your website not only ranks higher but also delivers real value to your audience. With a data-driven and continuously evolving approach, we help you stay ahead of algorithm changes and outperform your competitors.
       </p>
@@ -227,7 +227,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Meta Ads & Social Media Marketing
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Amplify your brand’s reach and engagement with strategic Meta Ads and social media marketing. We create data-driven campaigns across platforms like Facebook and Instagram that not only capture attention but also convert audiences into loyal customers.
       By combining compelling creatives, precise audience targeting, and continuous optimization, we ensure your brand stands out in crowded digital spaces. Our approach focuses on maximizing ROI, increasing brand awareness, and driving measurable business growth.
       </p>
@@ -249,7 +249,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Pay-Per-Click (PPC) Advertising
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Drive instant visibility and measurable results with strategic Pay-Per-Click (PPC) advertising. We create and manage high-performing ad campaigns that place your business in front of the right audience at the right time.
       By combining smart keyword targeting, compelling ad creatives, and continuous optimization, we ensure maximum return on your ad spend. Our data-driven approach focuses on increasing clicks, improving conversions, and scaling your growth efficiently across search engines and digital platforms.
       </p>
@@ -286,7 +286,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Content & Email Marketing
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Build meaningful connections with your audience through strategic content and personalized email marketing. We create compelling, value-driven content that attracts, engages, and nurtures your audience at every stage of their journey.
       From blog posts and website content to targeted email campaigns, our approach focuses on delivering the right message to the right audience at the right time. By combining creativity with data-driven insights, we help you strengthen brand loyalty, increase engagement, and drive consistent conversions.
       </p>
@@ -307,7 +307,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Local SEO
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Make your business stand out in your local market and attract customers right when they need you. Our Local SEO services are designed to boost your visibility in location-based searches, helping you connect with nearby audiences and drive foot traffic or local inquiries.
       From optimizing your business listings to managing reviews and local keywords, we ensure your brand ranks higher in local search results and maps—building trust and credibility within your community.
       </p>
@@ -344,7 +344,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Technical SEO
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         A strong SEO strategy starts with a solid technical foundation. Our Technical SEO services focus on optimizing your website’s structure, performance, and crawlability to ensure search engines can efficiently access, understand, and rank your content.
       From fixing indexing issues to improving site speed and implementing structured data, we enhance every technical aspect that impacts your visibility. The result is a faster, more accessible, and search-engine-friendly website that performs consistently across all platforms.
       </p>
@@ -365,7 +365,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         On-Page Optimization
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Maximize your website’s visibility and relevance with strategic on-page optimization. We fine-tune every element of your web pages—from content and keywords to meta tags and internal linking—to ensure they align perfectly with search engine algorithms and user intent.
         Our approach enhances both discoverability and user experience, helping your pages rank higher, engage visitors effectively, and drive meaningful conversions.
       </p>
@@ -403,7 +403,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Off-Page SEO & Link Building
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Strengthen your website’s authority and credibility with powerful off-page SEO and strategic link building. We focus on building high-quality, relevant backlinks from trusted sources to improve your search engine rankings and online reputation.
       Through ethical (white-hat) practices and outreach strategies, we enhance your domain authority, increase brand visibility, and drive referral traffic. Our approach ensures sustainable growth while positioning your business as a trusted leader in your industry.
       </p>
@@ -424,7 +424,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Content Marketing
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Turn your brand into a trusted voice with strategic, value-driven content marketing. We create and distribute high-quality content that educates, engages, and inspires your audience across every stage of their journey.
       From blogs and articles to visuals and thought leadership pieces, our approach focuses on building authority, improving search visibility, and nurturing long-term relationships. By aligning content with your business goals and audience intent, we help you drive consistent traffic, engagement, and conversions.
       </p>
@@ -462,7 +462,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Marketing Automation
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Streamline your marketing efforts and deliver personalized experiences at scale with powerful marketing automation solutions. We help you automate repetitive tasks, nurture leads effectively, and engage your audience with the right message at the right time.
       By integrating smart tools and data-driven workflows, we enhance efficiency, improve customer journeys, and maximize conversions—allowing your business to grow faster with less manual effort.
       </p>
@@ -483,7 +483,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Creative Banner & Promotional Video
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Capture attention and make a lasting impression with visually compelling banners and engaging promotional videos. We design high-impact creatives that not only look stunning but also communicate your brand message effectively.
       From eye-catching display ads to dynamic video content, our creative solutions are crafted to boost engagement, enhance brand recall, and drive conversions across digital platforms. By blending creativity with strategy, we ensure every visual tells a powerful story that resonates with your audience.
       </p>
@@ -520,7 +520,7 @@ export default function DigitalMarketing() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         MindTrick.io – Our Dedicated Digital Marketing Hub
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power your digital growth. As our dedicated digital marketing hub, MindTrick.io is focused on delivering result-oriented solutions that help businesses build strong online visibility, generate quality leads, and achieve sustainable success.
       From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make an impact. It’s not just marketing—it’s a smarter, more strategic way to grow your business in the digital world.
       </p>

@@ -202,7 +202,7 @@ export default function ITConsulting() {
         Installation & System Migration Services
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure. From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity and performance.
       
       Our team ensures smooth transitions—whether it’s migrating data, configuring hardware, or integrating new devices—so your business can operate efficiently without downtime or risk. With a focus on reliability, security, and scalability, we help you modernize your IT environment with confidence and ease.
@@ -227,7 +227,7 @@ export default function ITConsulting() {
         IT Infrastructure Planning & Optimization
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
       A strong digital foundation is critical for business growth and operational efficiency. We design and optimize IT infrastructures that are reliable, scalable, and aligned with your business goals.      
       From network architecture to cloud environments, we ensure your systems are built for performance, security, and future expansion. Our strategic approach helps reduce downtime, improve resource utilization, and enhance overall system efficiency—empowering your business to operate seamlessly and scale with confidence.</p>
       <ul className="space-y-3 text-gray-800">
@@ -271,7 +271,7 @@ export default function ITConsulting() {
         Cybersecurity & Risk Management
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems, data, and operations.
         By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets compliance standards and ensures long-term protection against emerging threats.
       </p>
@@ -296,7 +296,7 @@ export default function ITConsulting() {
         Cloud Migration & Digital Transformation
       </h2>
 
-       <p className="text-gray-700 leading-relaxed mb-8">
+       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Transform your business for the future with seamless cloud migration and strategic digital transformation. We help you move from traditional infrastructure to modern, cloud-powered environments that enhance flexibility, scalability, and performance.
         By adopting the latest technologies and optimizing your digital ecosystem, we enable faster innovation, improved collaboration, and cost efficiency. Our end-to-end approach ensures a smooth transition with minimal disruption, empowering your business to stay competitive in a rapidly evolving digital landscape.
       </p>
@@ -343,7 +343,7 @@ export default function ITConsulting() {
         IT Project Management & Support
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Successful digital initiatives require more than just great ideas—they demand structured execution, clear communication, and ongoing support. We provide end-to-end IT project management and support services to ensure your projects are delivered on time, within budget, and aligned with your business goals.
         From planning and resource allocation to deployment and post-launch support, we manage every phase with precision. Our proactive support ensures your systems continue to perform optimally, allowing you to focus on growth while we handle the complexities.
       </p>
@@ -367,7 +367,7 @@ export default function ITConsulting() {
         Software & Application Consulting
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Turn your ideas into powerful, scalable digital solutions with expert software and application consulting. We work closely with you to understand your business objectives, challenges, and opportunities, providing strategic guidance on the right technologies, architectures, and development approaches. 
         Whether you're building from scratch, upgrading existing systems, or optimizing performance, our consulting ensures your applications are efficient, secure, and future-ready—driving innovation and long-term success.
       </p>
@@ -414,7 +414,7 @@ export default function ITConsulting() {
         IoT & Smart Device Integration
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Unlock the power of connected ecosystems with intelligent IoT and smart device integration. We enable seamless communication between devices, applications, and cloud platforms to create efficient, data-driven environments.
         From sensors and automation systems to advanced analytics, our solutions help you monitor, control, and optimize operations in real time. By combining innovation with reliability, we transform everyday processes into smart, connected experiences that drive efficiency, reduce costs, and open new opportunities for growth.
       </p>

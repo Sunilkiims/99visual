@@ -126,7 +126,7 @@ export default function CareersPage() {
 
       {/* 🚀 CAREER AREAS */}
       <section id="careers" className="py-20 px-6 bg-white dark:bg-black">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-gray-900 dark:text-white">
+        <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Career Opportunities
         </h2>
 
@@ -140,7 +140,7 @@ export default function CareersPage() {
 
       {/* 💎 WHY WORK WITH US */}
       <section className="py-20 px-6 bg-gray-50 dark:bg-zinc-950">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-gray-900 dark:text-white">
+        <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Why Work With Us?
         </h2>
 
@@ -158,7 +158,7 @@ export default function CareersPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,115,0,0.2),transparent_60%)]"></div>
 
         <div className="relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+          <h2 className="text-2xl md:text-4xl font-bold mb-6">
             Ready to Shape the Future?
           </h2>
           <p className="text-gray-400 mb-8 max-w-xl mx-auto">

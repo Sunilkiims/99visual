@@ -192,7 +192,7 @@ export default function CADGISPhotogrammetry() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Advanced CAD, GIS & Geospatial Services
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Transform complex spatial data into actionable insights with our advanced CAD, GIS, and geospatial solutions. We help businesses, infrastructure projects, and government organizations visualize, analyze, and manage geographic and engineering data with precision.
       By combining cutting-edge tools, accurate data processing, and domain expertise, we deliver high-quality mapping, modeling, and analysis that support smarter planning and decision-making. Our solutions enhance efficiency, improve accuracy, and enable you to unlock the true potential of your spatial data.
       </p>
@@ -230,7 +230,7 @@ export default function CADGISPhotogrammetry() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         End-to-End CAD, GIS & Mapping Solutions
       </h2>
-      <p className="text-gray-700 leading-normal mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         From data capture to final visualization, we deliver comprehensive CAD, GIS, and mapping solutions tailored to your project needs. Our end-to-end approach ensures seamless integration of geospatial data, engineering design, and advanced mapping technologies to support accurate planning, analysis, and execution.
       Whether it’s infrastructure development, urban planning, or asset management, we provide scalable and precise solutions that streamline workflows, reduce errors, and enhance decision-making across every stage of your project lifecycle.
       </p>
@@ -252,7 +252,7 @@ export default function CADGISPhotogrammetry() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Precision CAD, GIS & LiDAR Services
       </h2>
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Achieve unmatched accuracy and detail with our precision-driven CAD, GIS, and LiDAR services. We specialize in transforming complex spatial and survey data into highly accurate models, maps, and actionable insights.
       By leveraging advanced LiDAR technology alongside expert CAD drafting and GIS analysis, we deliver reliable outputs that support critical decision-making across infrastructure, engineering, and environmental projects. Our solutions are designed to enhance accuracy, reduce risks, and ensure efficiency at every stage.
       </p>
@@ -290,7 +290,7 @@ export default function CADGISPhotogrammetry() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         GIS Data Management & Spatial Analysis
       </h2>
-      <p className="text-gray-700 leading-normal mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Turn complex geographic data into meaningful insights with our advanced GIS data management and spatial analysis services. We help organizations collect, organize, and analyze spatial data to support smarter planning, decision-making, and resource management.
       By leveraging powerful GIS tools and analytical techniques, we uncover patterns, trends, and relationships that drive efficiency and strategic growth. Our solutions ensure your geospatial data is accurate, accessible, and actionable across all your projects.
       </p>
@@ -312,7 +312,7 @@ export default function CADGISPhotogrammetry() {
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Engineering, Mapping & Geospatial Solutions
       </h2>
-      <p className="text-gray-700 leading-normal mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Using advanced imaging and{" "}
         Bridge the gap between engineering precision and geospatial intelligence with our integrated solutions. We deliver comprehensive engineering, mapping, and geospatial services that support accurate planning, design, and execution across infrastructure and development projects.
       By combining advanced technologies with domain expertise, we transform complex data into clear, actionable insights—helping you improve efficiency, reduce risks, and make informed decisions at every stage of your project lifecycle.

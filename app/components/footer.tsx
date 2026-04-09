@@ -4,10 +4,10 @@ import React, { FormEvent, useState } from 'react';
 import Link from "next/link";
 import {
     FaFacebookF,
-    FaTwitter,
+    FaXTwitter,
     FaInstagram,
     FaLinkedinIn,
-} from 'react-icons/fa';
+} from 'react-icons/fa6';
 
 const Footer: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -47,22 +47,22 @@ const Footer: React.FC = () => {
 
                     {/* Logo & Description */}
                     <div>
-                        <h2 className="text-3xl font-bold mb-4 text-white">99 Visual Solution</h2>
+                        <h2 className="text-2xl font-bold mb-4 text-white">99 Visual Solution</h2>
                         <p className="text-gray-400 leading-relaxed">
                             Empowering digital journeys through next-gen technology & creative web experiences.
                         </p>
 
                         <div className="flex space-x-4 mt-6">
-                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 transition-colors" aria-label="Facebook">
+                            <a href="https://www.facebook.com/profile.php?id=100093639888151" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 transition-colors" aria-label="Facebook">
                                 <FaFacebookF />
                             </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors" aria-label="Twitter">
-                                <FaTwitter />
+                            <a href="https://x.com/99VisualSoluti1" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors" aria-label="Twitter">
+                                <FaXTwitter />
                             </a>
-                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-pink-500 transition-colors" aria-label="Instagram">
+                            <a href="https://www.instagram.com/99visualsolutions/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-pink-500 transition-colors" aria-label="Instagram">
                                 <FaInstagram />
                             </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-blue-700 transition-colors" aria-label="LinkedIn">
+                            <a href="https://www.linkedin.com/company/99-visual-solutions/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-700 hover:bg-blue-700 transition-colors" aria-label="LinkedIn">
                                 <FaLinkedinIn />
                             </a>
                         </div>

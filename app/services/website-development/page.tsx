@@ -209,7 +209,7 @@ export default function WebsiteDevelopment() {
         Web Application Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Your business operations demand more than a standard website—they require intelligent, scalable, and purpose-built digital solutions. We design and develop powerful web applications tailored to your unique workflows, enabling seamless automation, enhanced productivity, and data-driven decision-making. From dynamic dashboards to fully customized tools and system integrations, every application is crafted to align with your business processes, ensuring efficiency, flexibility, and long-term growth. 
       </p>
 
@@ -232,7 +232,7 @@ export default function WebsiteDevelopment() {
         User Experience (UX) Design
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Great design is not just about how it looks—it’s about how it works and how it feels. We craft seamless, intuitive user experiences that guide users effortlessly through your digital products.{" "}
         <span className="font-semibold">By deeply understanding user behavior, business goals, and market trends, we create designs that reduce friction, enhance usability, and keep users engaged. </span> 
        Our UX approach blends research, strategy, and creativity to deliver meaningful interactions that drive satisfaction, loyalty, and conversions.
@@ -274,7 +274,7 @@ export default function WebsiteDevelopment() {
         Website Customization
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Your business is unique, and your website should reflect that at every level. We deliver fully customized web solutions—from powerful e-commerce platforms to high-converting landing pages and tailored functionalities—<span className="font-semibold">full website customization, </span> 
        designed to align perfectly with your brand identity, goals, and customer journey. Every detail is built with purpose, ensuring a seamless experience that not only stands out visually but also drives real results.
       </p>
@@ -297,7 +297,7 @@ export default function WebsiteDevelopment() {
         Front-End Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Your website’s first impression is everything—and we make it count. Our front-end development services focus on creating visually stunning, highly interactive, and lightning-fast user interfaces that captivate users from the very first click.{" "}
         <span className="font-semibold">By leveraging modern frameworks and best practices,  </span> 
         we build responsive, accessible, and performance-driven interfaces that deliver a seamless experience across all devices and browsers. The result is a digital presence that not only looks exceptional but also feels intuitive and engaging.
@@ -338,7 +338,7 @@ export default function WebsiteDevelopment() {
         Back-End Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Behind every powerful digital experience lies a robust and intelligent back-end. We specialize in building secure, scalable, and high-performance back-end systems that ensure your website or application runs smoothly, efficiently, and reliably. <span className="font-semibold">No two businesses are alike—and your digital infrastructure should reflect that uniqueness.</span> 
         Our back-end development services are fully customized to meet your specific operational needs, whether you're running an e-commerce platform, managing dynamic landing pages, or building complex web applications.
       </p>
@@ -361,7 +361,7 @@ export default function WebsiteDevelopment() {
         E-Commerce and CMS Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In today’s digital-first world, having a powerful online store and an easy-to-manage content system is essential for business growth. We specialize in developing scalable e-commerce platforms and intuitive Content Management Systems (CMS) that give you complete control over your digital presence. {" "}
         <span className="font-semibold">Our e-commerce solutions are designed to deliver seamless shopping experiences—</span> 
         from product browsing to secure checkout—ensuring higher engagement and conversions. Whether you’re launching a new online store or upgrading an existing one, we build customized platforms tailored to your business model, target audience, and growth strategy.
@@ -402,7 +402,7 @@ export default function WebsiteDevelopment() {
         Web App Modernization
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In today’s fast-evolving digital landscape, outdated applications can slow down performance, limit scalability, and impact user experience. We help businesses transform legacy web applications into modern, high-performing, and future-ready platforms. <span className="font-semibold">By leveraging the latest technologies, cloud capabilities, and responsive frameworks, we ensure your application is faster, more secure, and aligned with current user expectations</span> 
         Our modernization approach not only enhances functionality but also improves efficiency, reduces maintenance costs, and unlocks new growth opportunities.
       </p>
@@ -425,7 +425,7 @@ export default function WebsiteDevelopment() {
         SEO & Performance Optimization
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         A powerful digital presence goes beyond just having a website—it’s about being discoverable, fast, and optimized for both users and search engines. {" "}
         <span className="font-semibold">We combine advanced SEO strategies with performance optimization techniques to ensure your website ranks higher, loads faster, and delivers a seamless experience across all devices. </span> 
         From technical SEO improvements to speed enhancements, we focus on driving organic traffic, reducing bounce rates, and maximizing your online visibility and conversions.
@@ -466,7 +466,7 @@ export default function WebsiteDevelopment() {
         Web Security Services
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In an era where cyber threats are constantly evolving, securing your digital assets is no longer optional—it’s essential. We provide comprehensive web security solutions designed to protect your website, applications, and user data from vulnerabilities and attacks. <span className="font-semibold">By implementing advanced security protocols, continuous monitoring, and proactive threat prevention strategies, we ensure your platform remains safe, reliable, and compliant.</span> 
         Our approach not only safeguards your business reputation but also builds trust and confidence among your users.
       </p>
@@ -489,7 +489,7 @@ export default function WebsiteDevelopment() {
         Website Hosting & Deployment
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         A strong digital presence starts with reliable hosting and seamless deployment. We provide robust, secure, and high-performance hosting solutions tailored to your business needs, ensuring your website is always accessible, fast, and scalable. {" "}
         <span className="font-semibold">From initial setup to continuous deployment, our experts handle everything with precision— </span> 
         so you can focus on growing your business while we manage the infrastructure behind it. With optimized environments and streamlined deployment pipelines, we guarantee minimal downtime and maximum efficiency.
@@ -530,7 +530,7 @@ export default function WebsiteDevelopment() {
         API & Third-Party Integrations
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Modern digital ecosystems thrive on connectivity. We enable your applications to seamlessly communicate with external platforms, services, and tools through secure and efficient API integrations. <span className="font-semibold">Whether it’s payment gateways, CRM systems, analytics tools, or custom services, we ensure smooth data flow and real-time synchronization. </span> 
         Our integration solutions are designed to enhance functionality, automate processes, and create a unified digital experience—helping your business operate smarter, faster, and more efficiently.
       </p>
@@ -553,7 +553,7 @@ export default function WebsiteDevelopment() {
         Landing Page Design & Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Your landing page is more than just a destination—it’s a powerful conversion engine. We design and develop high-impact landing pages that are strategically crafted to capture attention, communicate value instantly, and drive user action. {" "}
         <span className="font-semibold">By combining compelling visuals, persuasive copy, and data-driven design principles, </span> 
         we create pages that guide visitors seamlessly toward your goals—whether it’s lead generation, product sales, or campaign success.
@@ -594,7 +594,7 @@ export default function WebsiteDevelopment() {
         Custom Dashboard & Admin Panel Development
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Empower your business with intelligent control and complete visibility through custom-built dashboards and admin panels. <span className="font-semibold">We design and develop tailored management interfaces that simplify complex operations, streamline workflows, and provide real-time insights— </span> 
         all in one centralized platform. With a focus on usability, scalability, and performance, our solutions help you manage data efficiently, make informed decisions faster, and enhance overall productivity.
       </p>

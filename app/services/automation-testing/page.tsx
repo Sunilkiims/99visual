@@ -189,7 +189,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Human-Centric Manual Testing
       </h2>
-      <p className="text-gray-700 leading-normal mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Deliver flawless user experiences with our human-centric manual testing approach. We go beyond automated checks by simulating real user behavior to identify usability issues, functional gaps, and edge-case scenarios that machines often miss.
       Our testers combine domain expertise with attention to detail to ensure your application performs seamlessly across all user journeys. By focusing on quality, reliability, and user satisfaction, we help you launch products that are truly polished and error-free.
       </p>
@@ -227,7 +227,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Intelligent Automation Engineering
       </h2>
-      <p className="text-gray-700 leading-normal mb-5">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Accelerate efficiency and innovation with intelligent automation engineered for modern businesses. We design and implement smart automation solutions that streamline complex processes, reduce manual effort, and enhance operational accuracy.
       By combining AI-driven technologies, robust frameworks, and scalable architectures, we enable faster workflows, improved productivity, and consistent performance. Our approach empowers your organization to focus on strategic growth while automation handles repetitive and time-consuming tasks with precision.
       </p>
@@ -249,7 +249,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Performance & Load Testing
       </h2>
-      <p className="text-gray-700 leading-normal mb-5">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         We simulate real-world usage to evaluate{" "}
         Ensure your applications perform flawlessly under pressure with comprehensive performance and load testing. We evaluate how your system behaves under varying user loads, identify bottlenecks, and optimize performance to deliver a fast, stable, and reliable user experience.
       By simulating real-world traffic scenarios, we help you prepare for peak demand, minimize downtime, and maintain consistent performance across all environments.
@@ -288,7 +288,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Continuous QA & Support
       </h2>
-      <p className="text-gray-700 leading-normal mb-5">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Maintain consistent quality and reliability with our continuous QA and support services. We integrate testing seamlessly into your development lifecycle, ensuring issues are identified and resolved early and efficiently.
       Through proactive monitoring, regular testing cycles, and ongoing support, we help you deliver stable, high-performing applications that evolve with your business needs. Our approach minimizes risks, reduces downtime, and ensures your product consistently meets user expectations.
       </p>
@@ -310,7 +310,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Performance & Scale Readiness
       </h2>
-      <p className="text-gray-700 leading-normal mb-5">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Prepare your applications to perform flawlessly and scale effortlessly as your business grows. We ensure your systems are optimized to handle increasing user demands, high traffic spikes, and expanding data loads without compromising speed or stability.
       By combining performance engineering with scalable architecture design, we help you build resilient systems that are ready for both current needs and future growth. Our approach minimizes risks, enhances reliability, and ensures your platform is always ready to scale with confidence.
       </p>
@@ -348,7 +348,7 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Security-Aware Testing
       </h2>
-      <p className="text-gray-700 leading-normal mb-5">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Protect your applications from vulnerabilities by embedding security into every stage of testing. Our security-aware testing approach focuses on identifying potential threats, weaknesses, and risks before they can be exploited.
       By combining functional testing with security best practices, we ensure your applications are not only reliable but also resilient against cyber attacks. Our goal is to deliver secure, compliant, and trustworthy digital products that safeguard both your business and your users.
       </p>
