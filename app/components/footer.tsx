@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
                 </div>
 
                 <div className="mt-12 border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
-                    &copy; {new Date().getFullYear()} 99 Visual Solution. All rights reserved.
+                    &copy; {new Date().getFullYear()} - 99 Visual Solution. All rights reserved.
                 </div>
             </div>
         </footer>

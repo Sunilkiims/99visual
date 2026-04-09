@@ -186,7 +186,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/Installation-services.png"
         alt="Installation & System Migration Services"
@@ -222,7 +222,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3 order-2 md:order-2">
+    <div className="md:col-span-3">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         IT Infrastructure Planning & Optimization
       </h2>
@@ -238,7 +238,7 @@ export default function ITConsulting() {
     </div>
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/it-infrastructure.png"
         alt="IT infrastructure illustration"
@@ -255,7 +255,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/cybersecurity.png"
         alt="Cybersecurity illustration"
@@ -291,7 +291,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3 order-2 md:order-2">
+    <div className="md:col-span-3">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Cloud Migration & Digital Transformation
       </h2>
@@ -309,7 +309,7 @@ export default function ITConsulting() {
     </div>
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/cloud-migration.png"
         alt="Cloud migration illustration"
@@ -327,7 +327,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/it-project.png"
         alt="IT project management illustration"
@@ -362,7 +362,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3 order-2 md:order-2">
+    <div className="md:col-span-3">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Software & Application Consulting
       </h2>
@@ -379,8 +379,8 @@ export default function ITConsulting() {
       </ul>
     </div>
 
-     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
+    {/* Image Area (2 parts) */}
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/software-application.png"
         alt="Software Application Consulting"
@@ -398,7 +398,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
+    <div className="md:col-span-2 flex justify-center">
       <Image
         src="/images/iot-smart-devices.png"
         alt="IoT & Smart Device Integration"

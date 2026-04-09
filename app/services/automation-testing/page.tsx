@@ -220,10 +220,10 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       alt="Automated Testing illustration"
       width={500}
       height={400}
-      className="rounded-2xl shadow-md w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Intelligent Automation Engineering
       </h2>
@@ -281,10 +281,10 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       alt="Continuous QA support"
       width={500}
       height={400}
-      className="rounded-2xl shadow-md w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Continuous QA & Support
       </h2>
@@ -341,10 +341,10 @@ We help engineering teams minimize release risk, optimize test coverage, and mai
       alt="Security-Aware Testing"
       width={500}
       height={400}
-      className="rounded-2xl shadow-md w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Security-Aware Testing
       </h2>

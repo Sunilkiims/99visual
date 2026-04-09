@@ -223,10 +223,10 @@ export default function CADGISPhotogrammetry() {
       alt="GIS mapping solutions"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         End-to-End CAD, GIS & Mapping Solutions
       </h2>
@@ -283,10 +283,10 @@ export default function CADGISPhotogrammetry() {
       alt="GIS Data Management & Spatial Analysis"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         GIS Data Management & Spatial Analysis
       </h2>

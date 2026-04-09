@@ -8,10 +8,10 @@ import Footer from "@/app/components/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Digital Marketing & SEO Services | Grow Traffic, Leads & ROI - 99Visual",
+  title: "Digital Marketing & SEO Services | Grow Traffic, Leads & ROI - 99 Visual",
   
   description:
-    "Accelerate your business growth with 99Visual’s digital marketing and SEO services including search engine optimization, PPC advertising, social media marketing, content strategy, and performance-driven campaigns.",
+    "Accelerate your business growth with 99 Visual’s digital marketing and SEO services including search engine optimization, PPC advertising, social media marketing, content strategy, and performance-driven campaigns.",
   
   keywords: [
     "Digital Marketing Services",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   ],
 
   openGraph: {
-    title: "Digital Marketing & SEO Services - 99Visual",
+    title: "Digital Marketing & SEO Services - 99 Visual",
     
     description:
       "Drive traffic, generate leads, and grow your business with expert SEO, PPC, social media, and content marketing strategies.",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
         url: "https://www.99visual.com/images/services/digital-marketing-og.jpg",
         width: 1200,
         height: 630,
-        alt: "Digital Marketing & SEO Services by 99Visual",
+        alt: "Digital Marketing & SEO Services by 99 Visual",
       },
     ],
     
@@ -132,7 +132,7 @@ export default function DigitalMarketing() {
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
       We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99Visual Solutions is the place for you.
+      If you’re passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -211,7 +211,7 @@ export default function DigitalMarketing() {
   </div>
 </div>
 
-      {/* Social Media Marketing Section */}
+      {/*Meta Ads Social Media Marketing Section */}
 <div className="bg-gray-50 py-12 px-6 md:px-20">
   <div className="max-w-6xl mx-auto grid md:grid-cols-[2fr_3fr] gap-12 items-center">
     
@@ -220,10 +220,10 @@ export default function DigitalMarketing() {
       alt="Social media marketing illustration"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Meta Ads & Social Media Marketing
       </h2>
@@ -279,10 +279,10 @@ export default function DigitalMarketing() {
       alt="Email marketing illustration"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Content & Email Marketing
       </h2>
@@ -337,10 +337,10 @@ export default function DigitalMarketing() {
       alt="Technival Seo"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Technical SEO
       </h2>
@@ -396,10 +396,10 @@ export default function DigitalMarketing() {
       alt="Off-Page SEO & Link Building"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Off-Page SEO & Link Building
       </h2>
@@ -455,10 +455,10 @@ export default function DigitalMarketing() {
       alt="Marketing Automatio"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Marketing Automation
       </h2>
@@ -513,10 +513,10 @@ export default function DigitalMarketing() {
       alt="Mindtrick.io - specialist for marketing"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
+      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         MindTrick.io – Our Dedicated Digital Marketing Hub
       </h2>
@@ -539,7 +539,7 @@ export default function DigitalMarketing() {
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-orange-500 font-semibold mb-2">Why Choose Us?</p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Benefits of Partnering with 99Visual Digital Marketing
+            Benefits of Partnering with 99 Visual Digital Marketing
           </h2>
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
             With <span className="font-semibold">99 Visual Solutions</span>, digital marketing is more than just ads—it’s about creating meaningful connections that turn into long-term business growth. Here’s why brands trust us:

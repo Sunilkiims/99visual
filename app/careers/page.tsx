@@ -169,7 +169,7 @@ export default function CareersPage() {
             href="/contact"
             className="bg-white text-black px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-gray-200 transition"
           >
-            Join Our Team →
+            Join Our Team
           </Link>
         </div>
       </section>

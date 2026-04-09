@@ -201,10 +201,10 @@ export default function WebsiteDevelopment() {
       alt="Web Application Development"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Web Application Development
       </h2>
@@ -250,7 +250,7 @@ export default function WebsiteDevelopment() {
       alt="UX design illustration"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
   </div>
@@ -266,10 +266,10 @@ export default function WebsiteDevelopment() {
       alt="Website customization illustration"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Website Customization
       </h2>
@@ -330,10 +330,10 @@ export default function WebsiteDevelopment() {
       alt="Backend Development"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Back-End Development
       </h2>
@@ -394,10 +394,10 @@ export default function WebsiteDevelopment() {
       alt="Web App Modernization"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Web App Modernization
       </h2>
@@ -458,10 +458,10 @@ export default function WebsiteDevelopment() {
       alt="Web Security Services"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Web Security Services
       </h2>
@@ -522,10 +522,10 @@ export default function WebsiteDevelopment() {
       alt="API & Third-Party Integrations"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         API & Third-Party Integrations
       </h2>
@@ -586,10 +586,10 @@ export default function WebsiteDevelopment() {
       alt="Custom Dashboard & Admin Panel Development"
       width={500}
       height={400}
-      className="rounded-xl shadow-lg w-full"
+      className="rounded-xl shadow-lg w-full order-2 md:order-1"
     />
 
-    <div>
+    <div className="order-1 md:order-2"> 
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Custom Dashboard & Admin Panel Development
       </h2>

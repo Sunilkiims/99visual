@@ -168,7 +168,7 @@ export default function PartnersPage() {
             href="/contact"
             className="bg-white text-black px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-gray-200 transition"
           >
-            Partner With Us →
+            Partner With Us
           </Link>
         </div>
       </section>
