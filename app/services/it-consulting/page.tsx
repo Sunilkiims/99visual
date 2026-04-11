@@ -166,21 +166,23 @@ export default function ITConsulting() {
 </section>
 
       {/* Intro Section */}
-      <div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
-            Strategic IT Consulting for Smarter, Secure & Scalable Businesses
-          </h1>
+<div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
+  <div className="max-w-4xl mx-auto">
 
-          <p className="text-gray-700 leading-relaxed mb-2">
-            At <span className="font-semibold">99 Visual Solutions</span>, we don’t just solve IT challenges—we help you harness technology as a growth driver. Our <span className="font-semibold">IT consulting services</span> provide strategic guidance, robust security, and scalable infrastructure that prepares your business for the digital future.
-          </p>
+    <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
+      Strategic IT Consulting for Smarter, Secure & Scalable Businesses
+    </h1>
 
-          <p className="text-gray-700 leading-relaxed mb-2">
-            Whether you’re modernizing legacy systems, migrating to the cloud, or enhancing cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-proof IT solutions</span>.
-          </p>
-        </div>
-      </div>
+    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
+      At <span className="font-semibold">99 Visual Solutions</span>, we don’t just solve IT challenges—we help you harness technology as a powerful growth driver. Our <span className="font-semibold">IT consulting services</span> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future.
+    </p>
+
+    <p className="text-gray-700 leading-8 text-justify text-[17px]">
+      Whether you’re modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-ready IT solutions</span> tailored to your business goals.
+    </p>
+
+  </div>
+</div>
 {/* Installation & System Migration Services */}
 <div className="bg-gray-50 py-12 px-6 md:px-20">
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">

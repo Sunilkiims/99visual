@@ -164,31 +164,33 @@ export default function WebsiteDevelopment() {
 </section>
 
       {/* Intro Section */}
-      <div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
-            Crafting Digital Experiences That Inspire, Connect & Convert
-          </h1>
+<div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
+  <div className="max-w-4xl mx-auto">
+    
+    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
+      Crafting Digital Experiences That Inspire, Connect & Convert
+    </h1>
 
-          <p className="text-gray-700 leading-relaxed mb-6">
-            At <span className="font-semibold">99 Visual Solutions</span>, we go beyond
-            just creating websites—we design digital experiences that connect, engage,
-            and inspire. As a trusted{" "}
-            <span className="font-semibold">web design and development company</span>, we combine
-            creativity, strategy, and cutting-edge technology to deliver designs that
-            not only look stunning but also perform flawlessly across devices.
-          </p>
+    <p className="text-gray-700 leading-relaxed text-justify mb-6">
+      At <span className="font-semibold">99 Visual Solutions</span>, we go beyond
+      just creating websites—we design digital experiences that connect, engage,
+      and inspire. As a trusted{" "}
+      <span className="font-semibold">web design and development company</span>, we combine
+      creativity, strategy, and cutting-edge technology to deliver designs that
+      not only look stunning but also perform flawlessly across devices.
+    </p>
 
-          <p className="text-gray-700 leading-relaxed mb-6">
-            In today’s fast-moving digital world, your website is the first impression
-            customers have of your brand. That’s why we create{" "}
-            <span className="font-semibold">modern, responsive, and SEO-optimized websites</span>
-            tailored to your business goals. Whether you are a startup, an enterprise,
-            or an e-commerce brand, our solutions are built to help you stand out and
-            deliver an exceptional user experience.
-          </p>
-        </div>
-      </div>
+    <p className="text-gray-700 leading-relaxed text-justify mb-6">
+      In today’s fast-moving digital world, your website is the first impression
+      customers have of your brand. That’s why we create{" "}
+      <span className="font-semibold">modern, responsive, and SEO-optimized websites</span>
+      tailored to your business goals. Whether you are a startup, an enterprise,
+      or an e-commerce brand, our solutions are built to help you stand out and
+      deliver an exceptional user experience.
+    </p>
+
+  </div>
+</div>
 
 
 

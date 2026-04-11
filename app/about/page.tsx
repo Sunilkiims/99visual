@@ -89,10 +89,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            We're not just another digital agency—we're the bridge between your wildest
-            creative visions and the digital reality your audience craves. We believe that
-            every pixel, every interaction, and every moment of user experience should tell a
-            story worth remembering.
+           We’re more than a digital agency—we turn your bold ideas into engaging digital experiences. Every pixel and interaction is crafted to create a story your audience will remember.
           </p>
         </div>
 

@@ -164,22 +164,28 @@ export default function TestingDevelopment() {
 
 </section>
 
-      {/* Intro Section */}
-      <div id="services" className="bg-gray-50 py-8 px-2 md:px-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Reliable Automation & Testing for Software That Never Breaks Trust
-          </h1>
-          <p className="text-gray-700 leading-relaxed mb-6">
-            At <span className="font-semibold">99 Visual Solutions</span>, we embed quality into every stage of development. Our automation and testing services integrate seamlessly with modern delivery pipelines, balancing precision-driven manual testing with robust automation to ensure stability, performance, and security at scale.
+     {/* Intro Section */}
+<div id="services" className="bg-gray-50 py-10 px-4 md:px-20">
+  <div className="max-w-4xl mx-auto">
 
-We help engineering teams minimize release risk, optimize test coverage, and maintain confidence even as complexity grows across platforms. <span className="font-semibold">bug-free, scalable, and secure</span>.
-          </p>
-          <p className="text-gray-700 leading-relaxed mb-6">
-            With a mix of cutting-edge tools and proven methodologies, we help businesses achieve <span className="font-semibold">faster release cycles, reduced risks, and consistent user satisfaction</span> across platforms.
-          </p>
-        </div>
-      </div>
+    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
+      Reliable Automation & Testing for Software That Never Breaks Trust
+    </h1>
+
+    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
+      At <span className="font-semibold">99 Visual Solutions</span>, we embed quality into every stage of development. Our automation and testing services integrate seamlessly with modern delivery pipelines, combining precision-driven manual testing with robust automation to ensure stability, performance, and security at scale.
+    </p>
+
+    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
+      We help engineering teams minimize release risks, optimize test coverage, and maintain confidence as system complexity grows across platforms—delivering <span className="font-semibold">bug-free, scalable, and secure software solutions</span>.
+    </p>
+
+    <p className="text-gray-700 leading-8 text-justify text-[17px]">
+      With a blend of cutting-edge tools and proven methodologies, we enable businesses to achieve <span className="font-semibold">faster release cycles, reduced risks, and consistent user satisfaction</span> across all platforms.
+    </p>
+
+  </div>
+</div>
 
      {/* Manual Testing Section */}
 <div className="bg-white py-12 px-6 md:px-20">

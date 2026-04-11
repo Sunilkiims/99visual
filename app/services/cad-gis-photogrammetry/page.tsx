@@ -167,23 +167,24 @@ export default function CADGISPhotogrammetry() {
 
 </section>
 
-      {/* Intro Section */}
-      <div id="services" className="bg-gray-50 py-8 px-2 md:px-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
-            CAD, GIS & Photogrammetry Services for Precision & Innovation
-          </h1>
+     {/* Intro Section */}
+<div id="services" className="bg-gray-50 py-10 px-4 md:px-20">
+  <div className="max-w-4xl mx-auto">
 
-          <p className="text-gray-700 leading-relaxed mb-6">
-            At <span className="font-semibold">99 Visual Solutions</span>, we specialize in <span className="font-semibold">Computer-Aided Design (CAD)</span>, <span className="font-semibold">Geographic Information Systems (GIS)</span>, and <span className="font-semibold">Photogrammetry</span> to deliver data-rich, high-accuracy solutions that empower businesses, governments, and planners.
-          </p>
+    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
+      CAD, GIS & Photogrammetry Services for Precision & Innovation
+    </h1>
 
-          <p className="text-gray-700 leading-relaxed mb-6">
-            Whether it’s <span className="font-semibold">surveying, infrastructure planning, urban development, or environmental analysis</span>, our advanced tools and expertise provide actionable insights that ensure success.
-          </p>
-        </div>
-      </div>
+    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
+      At <span className="font-semibold">99 Visual Solutions</span>, we specialize in <span className="font-semibold">Computer-Aided Design (CAD)</span>, <span className="font-semibold">Geographic Information Systems (GIS)</span>, and <span className="font-semibold">Photogrammetry</span>, delivering data-rich and high-accuracy solutions that empower businesses, government agencies, and planners to make informed decisions.
+    </p>
 
+    <p className="text-gray-700 leading-8 text-justify text-[17px]">
+      Whether it’s <span className="font-semibold">surveying, infrastructure planning, urban development, or environmental analysis</span>, our advanced tools and expertise provide actionable insights that drive efficiency, precision, and project success.
+    </p>
+
+  </div>
+</div>
       {/* Advanced CAD, GIS & Geospatial Services Section */}
 <div className="bg-white py-12 px-6 md:px-20">
   <div className="max-w-6xl mx-auto grid md:grid-cols-[3fr_2fr] gap-12 items-center">

@@ -372,9 +372,14 @@ function ServiceText({ title, intro, openModal }: any) {
 
       <h2 className="text-3xl font-bold">{title}</h2>
 
-      {intro.map((text: string, i: number) => (
-        <p key={i}>{text}</p>
-      ))}
+     {intro.map((text: string, i: number) => (
+  <p
+    key={i}
+    className="text-gray-700 leading-relaxed text-justify"
+  >
+    {text}
+  </p>
+))}
 
       <button
         onClick={openModal}

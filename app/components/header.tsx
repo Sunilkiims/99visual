@@ -148,10 +148,14 @@ const Header = () => {
 
           {/* Mobile menu toggle */}
           <div className="md:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
+  <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+    {mobileMenuOpen ? (
+      <X className="text-orange-500 w-7 h-7" />
+    ) : (
+      <Menu className="text-orange-500 w-7 h-7" />
+    )}
+  </button>
+</div>
         </div>
       </header>
 
