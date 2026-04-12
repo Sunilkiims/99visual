@@ -17,7 +17,7 @@ const tabs = [
         'Progress begins when action takes over – stop talking, let’s start building!',
       shortText:
         'During the unprecedented challenges of the COVID-19 pandemic, our team at 99 Visual demonstrated resilience, dedication, and hands-on leadership while supporting critical IT infrastructure.',
-      fullText: `During the unprecedented challenges of the COVID-19 pandemic, our team at 99Visual demonstrated resilience, dedication, and hands-on leadership while supporting critical IT infrastructure for private and government organizations.
+      fullText: `During the unprecedented challenges of the COVID-19 pandemic, our team at 99 Visual demonstrated resilience, dedication, and hands-on leadership while supporting critical IT infrastructure for private and government organizations.
 
 From managing servers, routers, and security systems to maintaining biometric devices across banks, police stations, and essential institutions, we ensured uninterrupted operations when reliability mattered most.
 

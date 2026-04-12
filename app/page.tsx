@@ -8,6 +8,7 @@ import HowWeWork from './components/howwework';
 import WhyWeAre from './components/whyweare';
 import WeServe from './components/weserve';
 import Footer from './components/footer';
+import ScrollDown from './components/scrolldown';
 import Chatbot from './components/chatbot';
 
 export const metadata = {
@@ -91,6 +92,7 @@ export default function Home() {
       <WhyWeAre />
       <WeServe />
       <Footer />
+      <ScrollDown />
 
       {/* 🤖 Chatbot */}
       <Chatbot />

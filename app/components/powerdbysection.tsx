@@ -75,7 +75,7 @@ export default function PoweredBySection() {
           color="text-orange-500"
           title="Testing & Development"
           desc="Ensure quality and performance across platforms with our QA and Dev services."
-          link="/services/testing-development"
+          link="/services/automation-testing"
         />
       </div>
     </section>
