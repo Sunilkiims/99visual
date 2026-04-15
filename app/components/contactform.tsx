@@ -2,15 +2,15 @@
 
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import {
-    FaPhoneAlt,
+    FaPhoneFlip,
     FaEnvelope,
-    FaMapMarkerAlt,
+    FaLocationDot,
     FaHandshake,
     FaFacebookF,
     FaLinkedinIn,
     FaInstagram,
-    FaTwitter,
-} from 'react-icons/fa';
+    FaXTwitter,
+} from 'react-icons/fa6';
 import { motion } from 'framer-motion';
 
 type FormData = {
@@ -224,7 +224,7 @@ export default function ContactForm() {
                             <p><strong>Trusted by clients</strong> across industries – from startups to enterprise.</p>
                         </div>
                         <div className="flex items-start gap-4">
-                            <FaPhoneAlt className="text-orange-500 mt-1" size={18} />
+                            <FaPhoneFlip className="text-orange-500 mt-1" size={18} />
                             <p><strong>Phone:</strong> +91-9205737431</p>
                         </div>
                         <div className="flex items-start gap-4">
@@ -232,7 +232,7 @@ export default function ContactForm() {
                             <p><strong>Email:</strong> contact@99visual.com</p>
                         </div>
                         <div className="flex items-start gap-4">
-                            <FaMapMarkerAlt className="text-orange-500 mt-1" size={18} />
+                            <FaLocationDot className="text-orange-500 mt-1" size={18} />
                             <p>
                                 <strong>Address:</strong><br />
                                 Site No - 13, Idgah Rd, Varthur,<br />
@@ -251,17 +251,17 @@ export default function ContactForm() {
                     </a>
 
                     <div className="flex gap-4 mt-4">
-                        <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800">
+                        <a href="https://www.facebook.com/profile.php?id=100093639888151" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:text-orange-800">
                             <FaFacebookF size={20} />
                         </a>
-                        <a href="https://linkedin.com/company/yourpage" target="_blank" rel="noopener noreferrer" className="text-orange-700 hover:text-orange-900">
+                        <a href="https://www.linkedin.com/company/99-visual-solutions/" target="_blank" rel="noopener noreferrer" className="text-orange-700 hover:text-orange-900">
                             <FaLinkedinIn size={20} />
                         </a>
-                        <a href="https://instagram.com/yourpage" target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:text-pink-800">
+                        <a href="https://www.linkedin.com/company/99-visual-solutions/" target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:text-pink-800">
                             <FaInstagram size={20} />
                         </a>
-                        <a href="https://twitter.com/yourpage" target="_blank" rel="noopener noreferrer" className="text-sky-500 hover:text-sky-700">
-                            <FaTwitter size={20} />
+                        <a href="https://x.com/99VisualSoluti1" target="_blank" rel="noopener noreferrer" className="text-sky-500 hover:text-sky-700">
+                            <FaXTwitter size={20} />
                         </a>
                     </div>
 
