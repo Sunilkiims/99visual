@@ -12,10 +12,10 @@ import ScrollDown from './components/scrolldown';
 import Chatbot from './components/chatbot';
 
 export const metadata = {
-  title: ' 99 Visual Solutions | 3D Visualization, Web Development & IT Consulting Experts',
+  title: ' 3D Visualization, Web & App Development, CAD, GIS, LiDAR, SEO & IT Consulting | 99 Visual Solutions',
   
   description:
-    'Discover 99 Visual Solutions – a leading digital agency specializing in 3D visualization, web development, SEO, and IT consulting. Learn about our mission, expertise, and innovative solutions.',
+    'Grow faster with 99 Visual Solutions—experts in 3D visualization, web & app development, CAD, GIS, LiDAR, automation, SEO, marketing and IT consulting.',
 
   keywords: [
     '99 Visual Solutions',
@@ -35,9 +35,9 @@ export const metadata = {
   },
 
   openGraph: {
-    title: '99 Visual Solutions | 3D Visualization, Web Development & IT Consulting Experts',
+    title: '3D Visualization, Web & App Development, CAD, GIS, LiDAR, SEO & IT Consulting | 99 Visual Solutions',
     description:
-      'Discover 99 Visual Solutions – a leading digital agency specializing in 3D visualization, web development, SEO, and IT consulting. Learn about our mission, expertise, and innovative solutions.',
+    'Grow faster with 99 Visual Solutions—experts in 3D visualization, web & app development, CAD, GIS, LiDAR, automation, SEO, marketing and IT consulting.',    
     url: 'https://www.99visual.com/',
     siteName: '99Visual Solutions',
     images: [
@@ -54,9 +54,9 @@ export const metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: '99 Visual Solutions | 3D Visualization, Web Development & IT Consulting Experts',
+    title: '3D Visualization, Web & App Development, CAD, GIS, LiDAR, SEO & IT Consulting | 99 Visual Solutions',
     description:
-      'Discover 99 Visual Solutions – a leading digital agency specializing in 3D visualization, web development, SEO, and IT consulting. Learn about our mission, expertise, and innovative solutions.',
+      'Grow faster with 99 Visual Solutions—experts in 3D visualization, web & app development, CAD, GIS, LiDAR, automation, SEO, marketing and IT consulting.',
     site: '@99visual',
     creator: '@99visual',
     images: ['https://www.99visual.com/images/about-og.jpg'],
