@@ -4,48 +4,61 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
 
-export const metadata = {
-  title:
-    "Careers at 99 Visual | Join Our Team in 3D, Web & Digital Innovation",
+export const metadata: Metadata = {
+  title: "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
 
   description:
-    "Explore exciting career opportunities at 99Visual. Join our team of experts in 3D visualization, web development, SEO, and digital marketing. Grow your career with us.",
+    "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers. Build your career with a forward-thinking digital agency.",
 
   keywords: [
+    // Primary
     "99Visual Careers",
-    "Jobs in Web Development India",
-    "3D Visualization Jobs",
-    "Digital Marketing Jobs India",
-    "SEO Jobs India",
-    "IT Company Careers Bangalore",
+    "Jobs at 99Visual",
+    "Work at 99Visual",
+    // Location-Specific
+    "IT Company Jobs Bangalore",
+    "Digital Agency Jobs Bangalore",
+    "Startup Jobs Bangalore",
+    "IT Jobs India",
+    // Development
+    "Web Developer Jobs India",
     "Frontend Developer Jobs India",
     "Backend Developer Jobs India",
-    "Join Digital Agency Team",
-    "Creative Agency Careers",
-    "Hiring Web Developers India",
-    "Startup Jobs India",
-    "Careers in Digital Agency",
+    "Full Stack Developer Jobs Bangalore",
+    "React Developer Jobs India",
+    "Next.js Developer Jobs India",
+    // Design
     "UI UX Designer Jobs India",
-    "Work at 99Visual"
+    "UI UX Designer Jobs Bangalore",
+    "3D Visualization Jobs India",
+    "3D Artist Jobs Bangalore",
+    // Marketing
+    "Digital Marketing Jobs India",
+    "SEO Jobs India",
+    "SEO Specialist Jobs Bangalore",
+    "Content Marketing Jobs India",
+    // General
+    "Creative Agency Careers India",
+    "Hiring Web Developers India",
+    "Careers in Digital Agency India",
+    "Join Digital Agency Team India",
   ],
 
   openGraph: {
-    title:
-      "Careers at 99 Visual | Build Your Future With Us",
+    title: "Careers at 99Visual | Web, Design & Digital Marketing Jobs - Bangalore",
 
     description:
-      "Looking for exciting opportunities in web development, 3D visualization, or digital marketing? Join 99Visual and grow your career with innovation and creativity.",
+      "We're hiring! Join 99Visual in Bangalore — roles in web development, UI/UX design, 3D visualization, SEO, and digital marketing. Shape the future of digital with us.",
 
     url: "https://www.99visual.com/careers",
-
-    siteName: "99 Visual Solutions",
+    siteName: "99Visual Solutions",
 
     images: [
       {
         url: "https://www.99visual.com/images/og/careers-og.jpg",
         width: 1200,
         height: 630,
-        alt: "Careers at 99 Visual",
+        alt: "Careers at 99Visual - Web Developer, Designer & Digital Marketing Jobs Bangalore",
       },
     ],
 
@@ -55,16 +68,11 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-
-    title:
-      "Careers at 99 Visual | Join Our Creative Team",
-
+    title: "Careers at 99Visual | Join Our Creative Team in Bangalore",
     description:
-      "Discover career opportunities at 99 Visual in web development, 3D, and digital marketing. Let’s grow together.",
-
+      "We're hiring web developers, UI/UX designers, 3D artists, and digital marketers in Bangalore. Grow your career at 99Visual.",
     site: "@99visual",
     creator: "@99visual",
-
     images: ["https://www.99visual.com/images/og/careers-og.jpg"],
   },
 
@@ -73,6 +81,22 @@ export const metadata = {
   alternates: {
     canonical: "/careers",
   },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+
+  authors: [{ name: "99Visual Solutions", url: "https://www.99visual.com" }],
+
+  category: "Technology",
 };
 
 export default function CareersPage() {
@@ -80,7 +104,131 @@ export default function CareersPage() {
     <>
       <Header />
 
-      {/* 🔥 HERO */}
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EmployerAggregateRating",
+            "itemReviewed": {
+              "@type": "Organization",
+              "name": "99Visual Solutions",
+              "url": "https://www.99visual.com",
+              "logo": "https://www.99visual.com/images/logo.png",
+              "description":
+                "99Visual Solutions is a digital agency based in Bangalore, India, offering services in web development, 3D visualization, SEO, and digital marketing.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Bangalore",
+                "addressRegion": "Karnataka",
+                "addressCountry": "IN",
+              },
+              "sameAs": [
+                "https://twitter.com/99visual",
+                "https://www.linkedin.com/company/99visual",
+              ],
+              "knowsAbout": [
+                "Web Development",
+                "3D Visualization",
+                "UI/UX Design",
+                "Digital Marketing",
+                "SEO",
+                "GIS",
+                "Automation Testing",
+              ],
+            },
+            "jobPosting": [
+              {
+                "@type": "JobPosting",
+                "title": "Web Developer",
+                "description": "Build scalable web apps and platforms powering global businesses.",
+                "hiringOrganization": {
+                  "@type": "Organization",
+                  "name": "99Visual Solutions",
+                  "sameAs": "https://www.99visual.com",
+                },
+                "jobLocation": {
+                  "@type": "Place",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Bangalore",
+                    "addressRegion": "Karnataka",
+                    "addressCountry": "IN",
+                  },
+                },
+                "employmentType": "FULL_TIME",
+                "url": "https://www.99visual.com/careers",
+              },
+              {
+                "@type": "JobPosting",
+                "title": "UI/UX Designer",
+                "description": "Create intuitive, human-centered designs that elevate user experiences.",
+                "hiringOrganization": {
+                  "@type": "Organization",
+                  "name": "99Visual Solutions",
+                  "sameAs": "https://www.99visual.com",
+                },
+                "jobLocation": {
+                  "@type": "Place",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Bangalore",
+                    "addressRegion": "Karnataka",
+                    "addressCountry": "IN",
+                  },
+                },
+                "employmentType": "FULL_TIME",
+                "url": "https://www.99visual.com/careers",
+              },
+              {
+                "@type": "JobPosting",
+                "title": "Digital Marketing Specialist",
+                "description": "Drive growth with SEO, paid campaigns, and creative strategies.",
+                "hiringOrganization": {
+                  "@type": "Organization",
+                  "name": "99Visual Solutions",
+                  "sameAs": "https://www.99visual.com",
+                },
+                "jobLocation": {
+                  "@type": "Place",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Bangalore",
+                    "addressRegion": "Karnataka",
+                    "addressCountry": "IN",
+                  },
+                },
+                "employmentType": "FULL_TIME",
+                "url": "https://www.99visual.com/careers",
+              },
+              {
+                "@type": "JobPosting",
+                "title": "3D Visualization Artist",
+                "description": "Work on AI, 3D visualization, GIS, and next-gen technologies.",
+                "hiringOrganization": {
+                  "@type": "Organization",
+                  "name": "99Visual Solutions",
+                  "sameAs": "https://www.99visual.com",
+                },
+                "jobLocation": {
+                  "@type": "Place",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Bangalore",
+                    "addressRegion": "Karnataka",
+                    "addressCountry": "IN",
+                  },
+                },
+                "employmentType": "FULL_TIME",
+                "url": "https://www.99visual.com/careers",
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* HERO */}
       <section className="relative py-24 text-center overflow-hidden bg-black text-white">
 
         {/* Glow */}
@@ -92,10 +240,9 @@ export default function CareersPage() {
           </h1>
 
           <p className="text-lg text-gray-300">
-            We’re not just hiring—we’re building a team of innovators, creators, and problem-solvers shaping the future of digital experiences.
+            We're not just hiring—we're building a team of innovators, creators, and problem-solvers shaping the future of digital experiences.
           </p>
 
-          {/* CTA */}
           <Link
             href="#careers"
             className="inline-block mt-8 bg-gradient-to-r from-orange-500 to-orange-400 px-8 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
@@ -104,7 +251,7 @@ export default function CareersPage() {
           </Link>
         </div>
 
-        {/* 🔽 Arrow Swing Scroll Indicator */}
+        {/* Arrow Swing Scroll Indicator */}
         <a
           href="#careers"
           className="absolute bottom-6 left-1/2 arrowSwing"
@@ -124,7 +271,7 @@ export default function CareersPage() {
 
       </section>
 
-      {/* 🚀 CAREER AREAS */}
+      {/* CAREER AREAS */}
       <section id="careers" className="py-20 px-6 bg-white dark:bg-black">
         <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Career Opportunities
@@ -138,7 +285,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* 💎 WHY WORK WITH US */}
+      {/* WHY WORK WITH US */}
       <section className="py-20 px-6 bg-gray-50 dark:bg-zinc-950">
         <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Why Work With Us?
@@ -151,7 +298,7 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* 🔥 CTA */}
+      {/* CTA */}
       <section className="relative py-20 text-center bg-black text-white overflow-hidden">
 
         {/* Glow */}
@@ -180,7 +327,7 @@ export default function CareersPage() {
 }
 
 /* ========================= */
-/* 💎 CARD */
+/* CARD */
 /* ========================= */
 
 function Card({ icon, title, desc, color }: any) {
@@ -189,7 +336,6 @@ function Card({ icon, title, desc, color }: any) {
 
       <div className="bg-white dark:bg-zinc-900 border border-white/20 dark:border-white/10 backdrop-blur-xl p-6 rounded-2xl text-center shadow-lg hover:shadow-2xl transition transform group-hover:-translate-y-2">
 
-        {/* Icon */}
         <div className={`w-14 h-14 flex items-center justify-center mx-auto mb-4 rounded-xl bg-gray-100 dark:bg-zinc-800 ${color} text-xl group-hover:scale-110 transition`}>
           {icon}
         </div>
@@ -207,7 +353,7 @@ function Card({ icon, title, desc, color }: any) {
 }
 
 /* ========================= */
-/* 💎 INFO CARD */
+/* INFO CARD */
 /* ========================= */
 
 function InfoCard({ title, desc }: any) {

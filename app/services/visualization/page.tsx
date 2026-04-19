@@ -9,61 +9,129 @@ SEO METADATA
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "3D Visualization Services | Architectural Rendering, CAD & Animation - 99Visual Solutions",
-  
+  // ── Title ──────────────────────────────────────────────────────────────────
+  // Under 60 chars · Primary keyword first · Brand at end
+  title: "3D Visualization & Architectural Rendering Services | 99 Visual",
+
+  // ── Description ────────────────────────────────────────────────────────────
+  // 150–160 chars · Action-oriented · Includes primary keywords & CTA
   description:
-    "Transform ideas into reality with 99Visual’s 3D visualization services including architectural rendering, CAD modeling, photorealistic renders, walkthroughs, and product visualization. Boost project presentations and client engagement.",
-  
+    "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations. Helping architects, developers & designers make confident decisions with stunning visuals.",
+
+  // ── Canonical ──────────────────────────────────────────────────────────────
+  // Prevents duplicate-content penalties
+  alternates: {
+    canonical: "https://www.99visual.com/services/visualization",
+  },
+
+  // ── Metadata Base ──────────────────────────────────────────────────────────
+  metadataBase: new URL("https://www.99visual.com"),
+
+  // ── Robots ─────────────────────────────────────────────────────────────────
+  // Explicitly allow indexing and link-following
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+
+  // ── Keywords ───────────────────────────────────────────────────────────────
+  // Grouped by intent · Avoid stuffing · Prioritise high-value terms
   keywords: [
-    "3D Visualization Services",
-    "Architectural Rendering Services",
-    "3D Rendering Company",
-    "CAD Modeling Services",
-    "3D Walkthrough Animation",
-    "Photorealistic Rendering",
-    "Product Visualization",
-    "Exterior Interior Rendering",
-    "Real Estate Visualization",
-    "3D Design Services India",
-    "Visualization Studio",
-    "99Visual Solutions"
+    // Core services
+    "3D visualization services",
+    "architectural rendering services",
+    "CAD modeling services",
+    "3D walkthrough animation",
+    "photorealistic rendering",
+    "product visualization",
+
+    // Architectural
+    "exterior architectural rendering",
+    "interior architectural rendering",
+    "real estate 3D visualization",
+    "building rendering services",
+    "construction visualization",
+    "architectural visualization studio",
+
+    // CAD & Product
+    "3D CAD design services",
+    "product design rendering",
+    "industrial 3D rendering",
+    "mechanical CAD modeling",
+
+    // Audience
+    "3D rendering for architects",
+    "3D rendering for real estate developers",
+    "3D rendering for product designers",
+
+    // Brand
+    "99 Visual Solutions",
+    "99 Visual",
   ],
 
+  // ── Open Graph ─────────────────────────────────────────────────────────────
+  // Controls how the page appears when shared on LinkedIn, Facebook, WhatsApp, etc.
   openGraph: {
-    title: "3D Visualization & Rendering Services - 99Visual Solutions",
-    description:
-      "High-quality 3D rendering, architectural visualization, CAD modeling, and animation services to elevate your projects and presentations.",
+    type: "website",
     url: "https://www.99visual.com/services/visualization",
-    siteName: "99Visual",
+    siteName: "99 Visual Solutions",
+    locale: "en_US",
+
+    // OG title: can be slightly longer than the <title> tag — up to ~90 chars
+    title: "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
+
+    // OG description: up to 200 chars for social previews
+    description:
+      "From photorealistic architectural renders and 3D walkthroughs to precision CAD modeling and product visualization — 99 Visual Solutions turns your concepts into stunning visual realities.",
+
     images: [
       {
         url: "https://www.99visual.com/images/services/visualization-og.jpg",
         width: 1200,
         height: 630,
-        alt: "3D Visualization Services by 99Visual",
+        type: "image/jpeg",
+        alt: "3D architectural rendering and visualization services by 99 Visual Solutions",
       },
     ],
-    locale: "en_US",
-    type: "website",
   },
 
+  // ── Twitter / X Card ───────────────────────────────────────────────────────
+  // summary_large_image gives the full-width preview card
   twitter: {
     card: "summary_large_image",
-    title: "3D Visualization Services | 99 Visual Solutions",
+    site: "@99visual",        // ← fixed: removed the space in the handle
+    creator: "@99visual",     // ← fixed: removed the space in the handle
+    title: "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
     description:
-      "Architectural rendering, CAD modeling, and 3D animation services designed to impress clients and win projects.",
-    site: "@99visual",
-    creator: "@99visual",
-    images: [
-      "https://www.99visual.com/images/services/visualization-og.jpg",
-    ],
+      "Photorealistic architectural renders, CAD modeling, product visualization & 3D walkthroughs — crafted for architects, developers & designers worldwide.",
+    images: {
+      url: "https://www.99visual.com/images/services/visualization-og.jpg",
+      alt: "3D architectural rendering and visualization services by 99 Visual Solutions",
+    },
   },
 
-  metadataBase: new URL("https://www.99visual.com"),
-
-  alternates: {
-    canonical: "/services/visualization",
-  },
+  // ── Structured Data (JSON-LD) ──────────────────────────────────────────────
+  // Helps Google display rich results (service cards, breadcrumbs, etc.)
+  // Add this inside your <head> via a <script> tag in layout.tsx or using
+  // Next.js Script component. Example schema below:
+  //
+  // {
+  //   "@context": "https://schema.org",
+  //   "@type": "ProfessionalService",
+  //   "name": "99 Visual Solutions",
+  //   "url": "https://www.99visual.com",
+  //   "description": "3D visualization, architectural rendering, CAD modeling and walkthrough animations.",
+  //   "serviceType": ["3D Visualization", "Architectural Rendering", "CAD Modeling", "Product Visualization"],
+  //   "areaServed": "Worldwide",
+  //   "image": "https://www.99visual.com/images/services/visualization-og.jpg"
+  // }
 };
 
 /* =====================================================

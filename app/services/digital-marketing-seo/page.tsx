@@ -8,61 +8,94 @@ import Footer from "@/app/components/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Digital Marketing & SEO Services | Grow Traffic, Leads & ROI - 99 Visual",
-  
+  title: "Digital Marketing & SEO Services | SEO, PPC, Social Media, Content & More - 99 Visual Solutions",
+
   description:
-    "Accelerate your business growth with 99 Visual’s digital marketing and SEO services including search engine optimization, PPC advertising, social media marketing, content strategy, and performance-driven campaigns.",
-  
+    "99 Visual Solutions delivers full-spectrum digital marketing and SEO services including search engine optimization, PPC advertising, Meta Ads, social media marketing, content marketing, email marketing, local SEO, technical SEO, link building, marketing automation, and promotional video — designed to grow traffic, leads, and ROI for businesses worldwide.",
+
   keywords: [
+    // SEO
     "Digital Marketing Services",
-    "SEO Services Company",
+    "SEO Services",
     "Search Engine Optimization Services",
+    "Technical SEO Services",
+    "On-Page SEO Optimization",
+    "Off-Page SEO Services",
+    "Link Building Services",
+    "Local SEO Services",
+    "Google Business Profile Optimization",
+    "SEO Agency",
+
+    // PPC & Paid Ads
     "PPC Advertising Services",
+    "Pay-Per-Click Management",
     "Google Ads Management",
+    "Meta Ads Services",
+    "Facebook Ads Management",
+    "Instagram Ads Services",
+    "Paid Social Media Advertising",
+
+    // Social Media
     "Social Media Marketing Services",
-    "Content Marketing Strategy",
+    "Social Media Management",
+    "LinkedIn Marketing Services",
+    "Twitter Marketing Services",
+
+    // Content & Email
+    "Content Marketing Services",
+    "Content Strategy Services",
+    "Blog Writing Services",
     "Email Marketing Services",
-    "Online Branding Services",
+    "Email Campaign Automation",
+
+    // Automation & Analytics
+    "Marketing Automation Services",
+    "CRM Integration Services",
+    "Lead Nurturing Services",
     "Lead Generation Services",
-    "Digital Marketing Company India",
-    "SEO Agency India",
-    "99Visual Marketing Solutions"
+    "Performance Marketing Services",
+
+    // Creative
+    "Creative Banner Design Services",
+    "Promotional Video Services",
+    "Brand Storytelling Services",
+    "Motion Graphics Services",
+
+    // Brand & Audience
+    "Online Branding Services",
+    "Digital Marketing for Startups",
+    "Digital Marketing for Enterprises",
+    "Digital Marketing for E-Commerce",
+    "MindTrick.io Digital Marketing",
+    "99 Visual Solutions",
+    "99 Visual Digital Marketing",
   ],
 
   openGraph: {
-    title: "Digital Marketing & SEO Services - 99 Visual",
-    
+    title: "Digital Marketing & SEO Services | SEO, PPC, Social Media, Content & More - 99 Visual Solutions",
     description:
-      "Drive traffic, generate leads, and grow your business with expert SEO, PPC, social media, and content marketing strategies.",
-    
+      "From SEO and PPC to Meta Ads, content marketing, email campaigns, local SEO, link building, marketing automation, and promotional videos — 99Visual Solutions delivers data-driven digital marketing strategies that grow your traffic, leads, and revenue worldwide.",
     url: "https://www.99visual.com/services/digital-marketing-seo",
-    
-    siteName: "99Visual",
-    
+    siteName: "99 Visual Solutions",
     images: [
       {
         url: "https://www.99visual.com/images/services/digital-marketing-og.jpg",
         width: 1200,
         height: 630,
-        alt: "Digital Marketing & SEO Services by 99 Visual",
+        alt: "Digital Marketing & SEO Services by 99 Visual Solutions",
       },
     ],
-    
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    
-    title: "Digital Marketing & SEO Services | 99Visual",
-    
+    title: "Digital Marketing & SEO Services | SEO, PPC, Social Media & More - 99 Visual Solutions",
     description:
-      "Performance-driven digital marketing services including SEO, PPC, social media, and lead generation.",
-    
-    site: "@99visual",
-    creator: "@99visual",
-    
+      "SEO, PPC, Meta Ads, social media, content marketing, email automation & promotional video — performance-driven digital marketing by 99Visual Solutions.",
+    site: "@99 visual",
+    creator: "@99 visual",
     images: [
       "https://www.99visual.com/images/services/digital-marketing-og.jpg",
     ],
@@ -131,8 +164,8 @@ export default function DigitalMarketing() {
     </h1>
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
+      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
+      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -177,7 +210,7 @@ export default function DigitalMarketing() {
     </p>
 
     <p className="text-gray-700 leading-8 text-justify text-[17px]">
-      From <span className="font-semibold">SEO and content marketing</span> to <span className="font-semibold">social media campaigns and paid advertising</span>, our solutions are tailored to your business goals—helping you stay ahead in today’s competitive digital landscape.
+      From <span className="font-semibold">SEO and content marketing</span> to <span className="font-semibold">social media campaigns and paid advertising</span>, our solutions are tailored to your business goals—helping you stay ahead in today's competitive digital landscape.
     </p>
 
   </div>
@@ -230,7 +263,7 @@ export default function DigitalMarketing() {
         Meta Ads & Social Media Marketing
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-       Amplify your brand’s reach and engagement with strategic Meta Ads and social media marketing. We create data-driven campaigns across platforms like Facebook and Instagram that not only capture attention but also convert audiences into loyal customers.
+       Amplify your brand's reach and engagement with strategic Meta Ads and social media marketing. We create data-driven campaigns across platforms like Facebook and Instagram that not only capture attention but also convert audiences into loyal customers.
       By combining compelling creatives, precise audience targeting, and continuous optimization, we ensure your brand stands out in crowded digital spaces. Our approach focuses on maximizing ROI, increasing brand awareness, and driving measurable business growth.
       </p>
       <ul className="space-y-3 text-gray-800">
@@ -347,7 +380,7 @@ export default function DigitalMarketing() {
         Technical SEO
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        A strong SEO strategy starts with a solid technical foundation. Our Technical SEO services focus on optimizing your website’s structure, performance, and crawlability to ensure search engines can efficiently access, understand, and rank your content.
+        A strong SEO strategy starts with a solid technical foundation. Our Technical SEO services focus on optimizing your website's structure, performance, and crawlability to ensure search engines can efficiently access, understand, and rank your content.
       From fixing indexing issues to improving site speed and implementing structured data, we enhance every technical aspect that impacts your visibility. The result is a faster, more accessible, and search-engine-friendly website that performs consistently across all platforms.
       </p>
       <ul className="space-y-3 text-gray-800">
@@ -368,7 +401,7 @@ export default function DigitalMarketing() {
         On-Page Optimization
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Maximize your website’s visibility and relevance with strategic on-page optimization. We fine-tune every element of your web pages—from content and keywords to meta tags and internal linking—to ensure they align perfectly with search engine algorithms and user intent.
+        Maximize your website's visibility and relevance with strategic on-page optimization. We fine-tune every element of your web pages—from content and keywords to meta tags and internal linking—to ensure they align perfectly with search engine algorithms and user intent.
         Our approach enhances both discoverability and user experience, helping your pages rank higher, engage visitors effectively, and drive meaningful conversions.
       </p>
       <ul className="space-y-3 text-gray-800">
@@ -406,7 +439,7 @@ export default function DigitalMarketing() {
         Off-Page SEO & Link Building
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Strengthen your website’s authority and credibility with powerful off-page SEO and strategic link building. We focus on building high-quality, relevant backlinks from trusted sources to improve your search engine rankings and online reputation.
+        Strengthen your website's authority and credibility with powerful off-page SEO and strategic link building. We focus on building high-quality, relevant backlinks from trusted sources to improve your search engine rankings and online reputation.
       Through ethical (white-hat) practices and outreach strategies, we enhance your domain authority, increase brand visibility, and drive referral traffic. Our approach ensures sustainable growth while positioning your business as a trusted leader in your industry.
       </p>
       <ul className="space-y-3 text-gray-800">
@@ -524,7 +557,7 @@ export default function DigitalMarketing() {
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power your digital growth. As our dedicated digital marketing hub, MindTrick.io is focused on delivering result-oriented solutions that help businesses build strong online visibility, generate quality leads, and achieve sustainable success.
-      From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make an impact. It’s not just marketing—it’s a smarter, more strategic way to grow your business in the digital world.
+      From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make an impact. It's not just marketing—it's a smarter, more strategic way to grow your business in the digital world.
       </p>
       <ul className="space-y-3 text-gray-800">
         <li>✔ End-to-end digital marketing solutions under one platform</li>
@@ -544,7 +577,7 @@ export default function DigitalMarketing() {
             Benefits of Partnering with 99 Visual Digital Marketing
           </h2>
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
-            With <span className="font-semibold">99 Visual Solutions</span>, digital marketing is more than just ads—it’s about creating meaningful connections that turn into long-term business growth. Here’s why brands trust us:
+            With <span className="font-semibold">99 Visual Solutions</span>, digital marketing is more than just ads—it's about creating meaningful connections that turn into long-term business growth. Here's why brands trust us:
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">

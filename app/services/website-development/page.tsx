@@ -4,73 +4,99 @@ import Header from "@/app/components/header";
 import WebDevBanner from "@/app/components/webdevbanner";
 import { FaCogs, FaRocket, FaMobileAlt, FaClock, FaUsers, FaTools, FaWrench, FaLaptopCode, FaRegSmile } from "react-icons/fa";
 import Footer from "@/app/components/footer";
+
 export const metadata = {
-  title: "99 Visual Solutions | 3D Visualization, Web Development & Digital Marketing Experts",
-  
+  title: "Website & Web App Development Services | 99 Visual Solutions",
+
   description:
-    "99Visual is a leading digital solutions company offering 3D visualization, web development, SEO, and digital marketing services. Transform your ideas into powerful digital experiences with our expert team.",
+    "99 Visual Solutions offers end-to-end web development services including custom web applications, front-end & back-end development, UX design, e-commerce, CMS, SEO optimization, API integrations, and web security. Trusted by startups, enterprises, and e-commerce brands worldwide.",
 
   keywords: [
-    "3D Visualization Services",
-    "Architectural Visualization Company",
-    "Web Development Company India",
-    "Custom Web Application Development",
-    "SEO Services Company",
-    "Digital Marketing Agency India",
-    "E-commerce Website Development",
-    "UI UX Design Services",
-    "3D Rendering Services",
-    "Best IT Consulting Company",
-    "99Visual Solutions",
-    "Website Design Company Bangalore",
+    // Core Web Development
+    "Web Development Services",
+    "Custom Web Development Company",
+    "Web Application Development",
+    "Full Stack Web Development",
     "Next.js Development Services",
-    "Startup Digital Solutions",
-    "Branding and Marketing Agency"
+    "React Web Development",
+
+    // Front-End & Back-End
+    "Front-End Development Services",
+    "Back-End Development Services",
+    "Responsive Web Design",
+    "Mobile-First Web Development",
+
+    // UX & Design
+    "UI UX Design Services",
+    "User Experience Design Agency",
+    "Website Customization Services",
+    "Landing Page Design and Development",
+    "Custom Dashboard Development",
+    "Admin Panel Development",
+
+    // E-Commerce & CMS
+    "E-Commerce Website Development",
+    "CMS Development Services",
+    "Custom E-Commerce Solutions",
+    "WordPress Development Services",
+
+    // SEO & Performance
+    "SEO Optimization Services",
+    "Website Performance Optimization",
+    "Core Web Vitals Optimization",
+    "Technical SEO Services",
+
+    // Security & Hosting
+    "Web Security Services",
+    "Website Hosting and Deployment",
+    "API Integration Services",
+    "Third-Party API Integration",
+
+    // Modernization
+    "Web App Modernization",
+    "Legacy System Upgrade",
+    "Cloud Migration Services",
+
+    // Audience & Brand
+    "Web Development for Startups",
+    "Web Development for Enterprises",
+    "Website Design Company",
+    "99 Visual Solutions",
+    "99 Visual",
   ],
 
   openGraph: {
-    title:
-      "99 Visual Solutions | 3D Visualization, Web Development & Digital Growth",
-    
+    title: "Web Development & Web App Development Services | 99 Visual Solutions",
     description:
-      "Boost your business with 99Visual’s expert services in 3D visualization, web development, and digital marketing. Scalable, innovative, and result-driven solutions.",
-    
-    url: "https://www.99visual.com/",
-    
+      "From custom web apps and UX design to e-commerce, SEO, API integrations, and web security — 99 Visual Solutions delivers full-cycle web development services for startups, enterprises, and e-commerce brands globally.",
+    url: "https://www.99visual.com/services/web-development",
     siteName: "99 Visual Solutions",
-
     images: [
       {
-        url: "https://www.99visual.com/images/og/home-og.jpg",
+        url: "https://www.99visual.com/images/og/web-development-og.jpg",
         width: 1200,
         height: 630,
-        alt: "99 Visual Solutions - Digital & 3D Experts",
+        alt: "Web Development & Web App Services by 99 Visual Solutions",
       },
     ],
-
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title:
-      "99 Visual Solutions | 3D, Web & Digital Marketing Experts",
-
+    title: "Web Development & Web App Development Services | 99 Visual Solutions",
     description:
-      "Grow your business with cutting-edge 3D visualization, web apps, and digital marketing solutions by 99Visual.",
-
-    site: "@99visual",
-    creator: "@99visual",
-
-    images: ["https://www.99visual.com/images/og/home-og.jpg"],
+      "Custom web apps, front-end & back-end development, e-commerce, SEO, API integrations & more — built for performance by 99Visual Solutions.",
+    site: "@99 visual",
+    creator: "@99 visual",
+    images: ["https://www.99visual.com/images/og/web-development-og.jpg"],
   },
 
   metadataBase: new URL("https://www.99visual.com"),
 
   alternates: {
-    canonical: "/",
+    canonical: "/services/web-development",
   },
 };
 
@@ -130,8 +156,8 @@ export default function WebsiteDevelopment() {
     </h1>
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
+      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
+      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -181,8 +207,8 @@ export default function WebsiteDevelopment() {
     </p>
 
     <p className="text-gray-700 leading-relaxed text-justify mb-6">
-      In today’s fast-moving digital world, your website is the first impression
-      customers have of your brand. That’s why we create{" "}
+      In today's fast-moving digital world, your website is the first impression
+      customers have of your brand. That's why we create{" "}
       <span className="font-semibold">modern, responsive, and SEO-optimized websites</span>
       tailored to your business goals. Whether you are a startup, an enterprise,
       or an e-commerce brand, our solutions are built to help you stand out and
@@ -235,7 +261,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Great design is not just about how it looks—it’s about how it works and how it feels. We craft seamless, intuitive user experiences that guide users effortlessly through your digital products.{" "}
+        Great design is not just about how it looks—it's about how it works and how it feels. We craft seamless, intuitive user experiences that guide users effortlessly through your digital products.{" "}
         <span className="font-semibold">By deeply understanding user behavior, business goals, and market trends, we create designs that reduce friction, enhance usability, and keep users engaged. </span> 
        Our UX approach blends research, strategy, and creativity to deliver meaningful interactions that drive satisfaction, loyalty, and conversions.
       </p>
@@ -300,7 +326,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-       Your website’s first impression is everything—and we make it count. Our front-end development services focus on creating visually stunning, highly interactive, and lightning-fast user interfaces that captivate users from the very first click.{" "}
+       Your website's first impression is everything—and we make it count. Our front-end development services focus on creating visually stunning, highly interactive, and lightning-fast user interfaces that captivate users from the very first click.{" "}
         <span className="font-semibold">By leveraging modern frameworks and best practices,  </span> 
         we build responsive, accessible, and performance-driven interfaces that deliver a seamless experience across all devices and browsers. The result is a digital presence that not only looks exceptional but also feels intuitive and engaging.
       </p>
@@ -364,9 +390,9 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        In today’s digital-first world, having a powerful online store and an easy-to-manage content system is essential for business growth. We specialize in developing scalable e-commerce platforms and intuitive Content Management Systems (CMS) that give you complete control over your digital presence. {" "}
+        In today's digital-first world, having a powerful online store and an easy-to-manage content system is essential for business growth. We specialize in developing scalable e-commerce platforms and intuitive Content Management Systems (CMS) that give you complete control over your digital presence. {" "}
         <span className="font-semibold">Our e-commerce solutions are designed to deliver seamless shopping experiences—</span> 
-        from product browsing to secure checkout—ensuring higher engagement and conversions. Whether you’re launching a new online store or upgrading an existing one, we build customized platforms tailored to your business model, target audience, and growth strategy.
+        from product browsing to secure checkout—ensuring higher engagement and conversions. Whether you're launching a new online store or upgrading an existing one, we build customized platforms tailored to your business model, target audience, and growth strategy.
       </p>
 
       <ul className="space-y-3 text-gray-800">
@@ -405,7 +431,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        In today’s fast-evolving digital landscape, outdated applications can slow down performance, limit scalability, and impact user experience. We help businesses transform legacy web applications into modern, high-performing, and future-ready platforms. <span className="font-semibold">By leveraging the latest technologies, cloud capabilities, and responsive frameworks, we ensure your application is faster, more secure, and aligned with current user expectations</span> 
+        In today's fast-evolving digital landscape, outdated applications can slow down performance, limit scalability, and impact user experience. We help businesses transform legacy web applications into modern, high-performing, and future-ready platforms. <span className="font-semibold">By leveraging the latest technologies, cloud capabilities, and responsive frameworks, we ensure your application is faster, more secure, and aligned with current user expectations</span> 
         Our modernization approach not only enhances functionality but also improves efficiency, reduces maintenance costs, and unlocks new growth opportunities.
       </p>
 
@@ -428,7 +454,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        A powerful digital presence goes beyond just having a website—it’s about being discoverable, fast, and optimized for both users and search engines. {" "}
+        A powerful digital presence goes beyond just having a website—it's about being discoverable, fast, and optimized for both users and search engines. {" "}
         <span className="font-semibold">We combine advanced SEO strategies with performance optimization techniques to ensure your website ranks higher, loads faster, and delivers a seamless experience across all devices. </span> 
         From technical SEO improvements to speed enhancements, we focus on driving organic traffic, reducing bounce rates, and maximizing your online visibility and conversions.
       </p>
@@ -469,7 +495,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        In an era where cyber threats are constantly evolving, securing your digital assets is no longer optional—it’s essential. We provide comprehensive web security solutions designed to protect your website, applications, and user data from vulnerabilities and attacks. <span className="font-semibold">By implementing advanced security protocols, continuous monitoring, and proactive threat prevention strategies, we ensure your platform remains safe, reliable, and compliant.</span> 
+        In an era where cyber threats are constantly evolving, securing your digital assets is no longer optional—it's essential. We provide comprehensive web security solutions designed to protect your website, applications, and user data from vulnerabilities and attacks. <span className="font-semibold">By implementing advanced security protocols, continuous monitoring, and proactive threat prevention strategies, we ensure your platform remains safe, reliable, and compliant.</span> 
         Our approach not only safeguards your business reputation but also builds trust and confidence among your users.
       </p>
 
@@ -533,7 +559,7 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Modern digital ecosystems thrive on connectivity. We enable your applications to seamlessly communicate with external platforms, services, and tools through secure and efficient API integrations. <span className="font-semibold">Whether it’s payment gateways, CRM systems, analytics tools, or custom services, we ensure smooth data flow and real-time synchronization. </span> 
+        Modern digital ecosystems thrive on connectivity. We enable your applications to seamlessly communicate with external platforms, services, and tools through secure and efficient API integrations. <span className="font-semibold">Whether it's payment gateways, CRM systems, analytics tools, or custom services, we ensure smooth data flow and real-time synchronization. </span> 
         Our integration solutions are designed to enhance functionality, automate processes, and create a unified digital experience—helping your business operate smarter, faster, and more efficiently.
       </p>
 
@@ -556,9 +582,9 @@ export default function WebsiteDevelopment() {
       </h2>
 
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Your landing page is more than just a destination—it’s a powerful conversion engine. We design and develop high-impact landing pages that are strategically crafted to capture attention, communicate value instantly, and drive user action. {" "}
+        Your landing page is more than just a destination—it's a powerful conversion engine. We design and develop high-impact landing pages that are strategically crafted to capture attention, communicate value instantly, and drive user action. {" "}
         <span className="font-semibold">By combining compelling visuals, persuasive copy, and data-driven design principles, </span> 
-        we create pages that guide visitors seamlessly toward your goals—whether it’s lead generation, product sales, or campaign success.
+        we create pages that guide visitors seamlessly toward your goals—whether it's lead generation, product sales, or campaign success.
       </p>
 
       <ul className="space-y-3 text-gray-800">
@@ -611,7 +637,6 @@ export default function WebsiteDevelopment() {
   </div>
 </div>
 
-      {/* Already have E-Commerce & Landing Page sections */}
       {/* Why Choose Us Section */}
       <div className="bg-gray-50 py-12 px-6 md:px-20">
         <div className="max-w-6xl mx-auto text-center">
@@ -622,7 +647,7 @@ export default function WebsiteDevelopment() {
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
             Partnering with <span className="font-semibold">99 Visual Solutions</span> means 
             more than just building a website—it means creating a lasting digital impact. 
-            Here’s why businesses trust us:
+            Here's why businesses trust us:
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -638,7 +663,6 @@ export default function WebsiteDevelopment() {
           ))}
         </div>
       </div>
-
 
       <Footer />
     </>

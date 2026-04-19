@@ -8,62 +8,93 @@ import Footer from "@/app/components/footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99Visual",
-  
+  title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping, Spatial Analysis & Geospatial Solutions - 99Visual Solutions",
+
   description:
-    "Deliver precision-driven results with 99Visual’s CAD drafting, GIS mapping, LiDAR processing, and photogrammetry services. We provide accurate geospatial data, 3D mapping, and engineering support for infrastructure, construction, and planning projects.",
-  
+    "99 Visual Solutions delivers precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, 3D modeling, and end-to-end geospatial solutions. Trusted by infrastructure, engineering, construction, urban planning, and government projects worldwide.",
+
   keywords: [
+    // CAD Services
     "CAD Drafting Services",
-    "GIS Mapping Services",
-    "Photogrammetry Services",
-    "LiDAR Data Processing",
-    "3D Mapping Services",
-    "Geospatial Data Solutions",
-    "Survey Mapping Services",
-    "Topographic Mapping",
-    "Remote Sensing Services",
-    "Infrastructure Mapping Solutions",
     "Engineering CAD Services",
-    "GIS Company India",
-    "Photogrammetry Company India",
-    "99Visual Geospatial Services"
+    "2D CAD Drafting Services",
+    "3D CAD Modeling Services",
+    "CAD Design and Drafting",
+    "Architectural CAD Services",
+    "Infrastructure CAD Services",
+
+    // GIS Services
+    "GIS Mapping Services",
+    "GIS Data Management Services",
+    "Geographic Information System Services",
+    "Spatial Analysis Services",
+    "Geospatial Data Solutions",
+    "GIS Consulting Services",
+    "Urban GIS Planning Services",
+    "GIS for Infrastructure Projects",
+
+    // Photogrammetry
+    "Photogrammetry Services",
+    "Drone Photogrammetry Services",
+    "Aerial Photogrammetry Services",
+    "3D Photogrammetry Modeling",
+    "Orthomosaic Mapping Services",
+
+    // LiDAR
+    "LiDAR Data Processing Services",
+    "LiDAR Point Cloud Processing",
+    "LiDAR 3D Mapping Services",
+    "Digital Terrain Model Services",
+    "Digital Surface Model Services",
+    "Airborne LiDAR Services",
+
+    // Mapping & Remote Sensing
+    "3D Mapping Services",
+    "Topographic Mapping Services",
+    "Survey Mapping Services",
+    "Remote Sensing Services",
+    "Satellite Mapping Services",
+    "Land Mapping Services",
+
+    // Industry Applications
+    "Geospatial Solutions for Infrastructure",
+    "Geospatial Solutions for Construction",
+    "Geospatial Solutions for Urban Planning",
+    "Geospatial Solutions for Environmental Analysis",
+    "Engineering Mapping Services",
+    "Asset Management GIS Solutions",
+
+    // Brand
+    "99 Visual Solutions",
+    "99 Visual Geospatial Services",
+    "99 Visual CAD GIS",
   ],
 
   openGraph: {
-    title: "CAD, GIS, LiDAR & Photogrammetry Services - 99Visual",
-    
+    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
-      "Accurate CAD drafting, GIS mapping, LiDAR processing, and photogrammetry solutions for infrastructure, engineering, and geospatial projects.",
-    
+      "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99Visual Solutions delivers precision geospatial services for infrastructure, engineering, urban planning, and environmental projects worldwide.",
     url: "https://www.99visual.com/services/cad-gis-photogrammetry",
-    
-    siteName: "99Visual",
-    
+    siteName: "99Visual Solutions",
     images: [
       {
         url: "https://www.99visual.com/images/services/cad-gis-og.jpg",
         width: 1200,
         height: 630,
-        alt: "CAD GIS Photogrammetry Services by 99Visual",
+        alt: "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
       },
     ],
-    
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    
-    title: "CAD, GIS & Photogrammetry Services | 99Visual",
-    
+    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
-      "Advanced geospatial solutions including CAD drafting, GIS mapping, LiDAR processing, and 3D photogrammetry.",
-    
-    site: "@99visual",
-    creator: "@99visual",
-    
+      "CAD drafting, GIS mapping, LiDAR processing, photogrammetry, spatial analysis & 3D modeling — precision geospatial solutions by 99Visual Solutions for projects worldwide.",
+    site: "@99 visual",
+    creator: "@99 visual",
     images: [
       "https://www.99visual.com/images/services/cad-gis-og.jpg",
     ],
@@ -134,8 +165,8 @@ export default function CADGISPhotogrammetry() {
     </h1>
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99Visual Solutions is the place for you.
+      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
+      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -180,7 +211,7 @@ export default function CADGISPhotogrammetry() {
     </p>
 
     <p className="text-gray-700 leading-8 text-justify text-[17px]">
-      Whether it’s <span className="font-semibold">surveying, infrastructure planning, urban development, or environmental analysis</span>, our advanced tools and expertise provide actionable insights that drive efficiency, precision, and project success.
+      Whether it's <span className="font-semibold">surveying, infrastructure planning, urban development, or environmental analysis</span>, our advanced tools and expertise provide actionable insights that drive efficiency, precision, and project success.
     </p>
 
   </div>
@@ -233,7 +264,7 @@ export default function CADGISPhotogrammetry() {
       </h2>
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         From data capture to final visualization, we deliver comprehensive CAD, GIS, and mapping solutions tailored to your project needs. Our end-to-end approach ensures seamless integration of geospatial data, engineering design, and advanced mapping technologies to support accurate planning, analysis, and execution.
-      Whether it’s infrastructure development, urban planning, or asset management, we provide scalable and precise solutions that streamline workflows, reduce errors, and enhance decision-making across every stage of your project lifecycle.
+      Whether it's infrastructure development, urban planning, or asset management, we provide scalable and precise solutions that streamline workflows, reduce errors, and enhance decision-making across every stage of your project lifecycle.
       </p>
       <ul className="space-y-2 text-gray-800">
         <li>✔ Complete workflow from data collection to final map delivery</li>
@@ -297,7 +328,7 @@ export default function CADGISPhotogrammetry() {
       </p>
       <ul className="space-y-2 text-gray-800">
         <li>✔ Geospatial data collection, cleaning & database management</li>
-        <li>✔ Geospatial data collection, cleaning & database management</li>
+        <li>✔ Spatial pattern analysis, trend identification & reporting</li>
         <li>✔ Data-driven decision support for planning & operations</li>
       </ul>
     </div>
@@ -341,7 +372,7 @@ export default function CADGISPhotogrammetry() {
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-orange-500 font-semibold mb-2">Why Choose Us?</p>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Benefits of Partnering with 99Visual CAD, GIS & Photogrammetry
+            Benefits of Partnering with 99 Visual CAD, GIS & Photogrammetry
           </h2>
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
             With <span className="font-semibold">99 Visual Solutions</span>, precision and innovation go hand in hand. Our services are designed to provide reliable, scalable, and accurate geospatial insights for complex projects.

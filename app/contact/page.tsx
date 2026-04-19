@@ -5,48 +5,53 @@ import ContactUsBanner from '../components/contactus-banner';
 import Header from '../components/header';
 import Footer from '../components/footer';
 
-export const metadata = {
-  title:
-    "Contact 99 Visual Solutions | Get in Touch for 3D, Web & Digital Services",
+export const metadata: Metadata = {
+  title: "Contact 99 Visual | Get a Free Quote for Web, 3D & Digital Marketing - Bangalore India",
 
   description:
-    "Contact 99 Visual for expert 3D visualization, web development, SEO, and digital marketing services. Reach out today for a free consultation and grow your business.",
+    "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing. Reach out today and let's build something great together.",
 
   keywords: [
-    "Contact 99Visual",
-    "Contact Web Development Company",
-    "Contact Digital Marketing Agency",
-    "3D Visualization Company Contact",
-    "SEO Company Contact India",
-    "IT Consulting Contact",
-    "Website Development Enquiry",
-    "Digital Agency Contact Page",
-    "Get Quote Web Development",
+    // Primary
+    "Contact 99 Visual",
+    "Contact 99 Visual Solutions",
+    // Quote & Consultation
+    "Get Free Quote Web Development India",
+    "Free Consultation Digital Marketing",
+    "Request Quote 3D Visualization",
     "Hire Web Developers India",
-    "Contact 99Visual Solutions",
-    "Business Enquiry Digital Services",
-    "Bangalore Web Development Contact",
-    "Request Quote Digital Agency",
-    "Free Consultation SEO Services"
+    "Website Development Enquiry India",
+    // Service-Specific Contact
+    "Contact Web Development Company India",
+    "Contact Digital Marketing Agency India",
+    "Contact SEO Company India",
+    "3D Visualization Company Contact India",
+    "IT Consulting Contact Bangalore",
+    // Location
+    "Web Development Company Bangalore Contact",
+    "Digital Agency Bangalore Enquiry",
+    "Bangalore IT Company Contact",
+    // General
+    "Business Enquiry Digital Services India",
+    "Digital Agency Contact Page",
+    "Start a Project 99Visual",
   ],
 
   openGraph: {
-    title:
-      "Contact 99 Visual | Start Your Project Today",
+    title: "Contact 99 Visual | Free Consultation for Web, 3D & Digital Marketing - Bangalore",
 
     description:
-      "Have a project in mind? Contact 99Visual for web development, 3D visualization, and digital marketing solutions tailored to your business needs.",
+      "Have a project in mind? Contact 99Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing services.",
 
     url: "https://www.99visual.com/contact",
-
-    siteName: "99 Visual Solutions",
+    siteName: "99Visual Solutions",
 
     images: [
       {
         url: "https://www.99visual.com/images/og/contact-og.jpg",
         width: 1200,
         height: 630,
-        alt: "Contact 99 Visual Solutions",
+        alt: "Contact 99Visual Solutions - Free Consultation for Web, 3D & Digital Services",
       },
     ],
 
@@ -56,16 +61,11 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-
-    title:
-      "Contact 99 Visual | Let’s Build Something Great",
-
+    title: "Contact 99 Visual | Free Quote for Web, 3D & Digital Marketing",
     description:
-      "Reach out to 99 Visual for expert digital solutions in 3D, web, and marketing. Let’s discuss your project today.",
-
+      "Get in touch with 99 Visual Solutions in Bangalore for expert web development, 3D visualization, and digital marketing. Free consultation available.",
     site: "@99visual",
     creator: "@99visual",
-
     images: ["https://www.99visual.com/images/og/contact-og.jpg"],
   },
 
@@ -74,11 +74,85 @@ export const metadata = {
   alternates: {
     canonical: "/contact",
   },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+
+  authors: [{ name: "99 Visual Solutions", url: "https://www.99visual.com" }],
+
+  category: "Technology",
 };
+
 export default function ContactPage() {
-  return (       
+  return (
     <>
       <Header />
+
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "name": "Contact 99Visual Solutions",
+            "description":
+              "Get in touch with 99Visual Solutions for web development, 3D visualization, SEO, and digital marketing services. Free consultation available.",
+            "url": "https://www.99visual.com/contact",
+            "mainEntity": {
+              "@type": "Organization",
+              "name": "99 Visual Solutions",
+              "url": "https://www.99visual.com",
+              "logo": "https://www.99visual.com/images/logo.png",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Bangalore",
+                "addressRegion": "Karnataka",
+                "addressCountry": "IN",
+              },
+              "sameAs": [
+                "https://twitter.com/99visual",
+                "https://www.linkedin.com/company/99visual",
+              ],
+              "contactPoint": [
+                {
+                  "@type": "ContactPoint",
+                  "contactType": "Sales",
+                  "url": "https://www.99visual.com/contact",
+                  "areaServed": "Worldwide",
+                  "availableLanguage": "English",
+                },
+                {
+                  "@type": "ContactPoint",
+                  "contactType": "Customer Support",
+                  "url": "https://www.99visual.com/contact",
+                  "areaServed": "Worldwide",
+                  "availableLanguage": "English",
+                },
+              ],
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "name": "Free Consultation",
+                  "description": "Free consultation for web development, 3D visualization, SEO, and digital marketing services.",
+                  "price": "0",
+                  "priceCurrency": "INR",
+                  "url": "https://www.99visual.com/contact",
+                },
+              ],
+            },
+          }),
+        }}
+      />
 
       {/* Hero Banner */}
       <section className="relative py-24 text-center overflow-hidden bg-black text-white">
@@ -96,7 +170,7 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {/* 🔽 Arrow Swing Scroll Indicator */}
+        {/* Arrow Swing Scroll Indicator */}
         <a
           href="#contact-form"
           className="absolute bottom-6 left-1/2 arrowSwing"
@@ -116,7 +190,7 @@ export default function ContactPage() {
 
       </section>
 
-      {/* ✅ FIX: Added wrapper with ID */}
+      {/* Contact Form */}
       <section id="contact-form">
         <ContactForm />
       </section>

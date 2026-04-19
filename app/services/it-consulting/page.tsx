@@ -9,61 +9,91 @@ import ITConsultBanner from "@/app/components/itconsultingbanner";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "IT Consulting Services | Cloud, Infrastructure, Cybersecurity & Digital Transformation - 99Visual",
-  
+  title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
+
   description:
-    "Empower your business with 99Visual’s IT consulting services including infrastructure management, cloud migration, cybersecurity, server support, and digital transformation. Trusted by enterprises and growing businesses.",
-  
+    "99 Visual Solutions provides end-to-end IT consulting services including IT infrastructure planning, cloud migration, cybersecurity & risk management, software consulting, IoT integration, system migration, and IT project management. Trusted by enterprises and growing businesses worldwide.",
+
   keywords: [
+    // Core IT Consulting
     "IT Consulting Services",
-    "IT Consulting Company India",
-    "IT Infrastructure Management",
-    "Cloud Migration Services",
-    "Cybersecurity Consulting",
-    "Server Management Services",
-    "Network Security Solutions",
-    "Digital Transformation Services",
+    "IT Consulting Company",
+    "Technology Consulting Services",
+    "Enterprise IT Consulting",
     "Managed IT Services",
-    "Enterprise IT Solutions",
     "IT Support Services",
-    "Technology Consulting Company",
-    "99Visual IT Solutions"
+    "IT Advisory Services",
+
+    // Infrastructure
+    "IT Infrastructure Planning",
+    "IT Infrastructure Management",
+    "IT Infrastructure Optimization",
+    "Network Infrastructure Services",
+    "Server Management Services",
+    "System Migration Services",
+    "IT Installation Services",
+
+    // Cloud
+    "Cloud Migration Services",
+    "Cloud Transformation Services",
+    "AWS Migration Services",
+    "Azure Cloud Services",
+    "Google Cloud Migration",
+    "Cloud Infrastructure Management",
+    "Digital Transformation Services",
+
+    // Cybersecurity
+    "Cybersecurity Consulting Services",
+    "Cybersecurity Risk Management",
+    "Network Security Solutions",
+    "Endpoint Security Services",
+    "IT Compliance Services",
+    "Threat Monitoring Services",
+
+    // Software & Applications
+    "Software Consulting Services",
+    "Application Modernization Services",
+    "IT Project Management Services",
+    "Agile IT Project Delivery",
+
+    // IoT
+    "IoT Integration Services",
+    "Smart Device Integration",
+    "IoT Consulting Services",
+    "Industrial IoT Solutions",
+
+    // Audience & Brand
+    "IT Solutions for Enterprises",
+    "IT Solutions for Startups",
+    "99 Visual Solutions",
+    "99 Visual IT Consulting",
   ],
 
   openGraph: {
-    title: "IT Consulting & Technology Solutions - 99Visual",
-    
+    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
-      "From IT infrastructure and cybersecurity to cloud and digital transformation, 99Visual delivers scalable and secure IT consulting solutions.",
-    
+      "From cloud migration and cybersecurity to IT infrastructure, software consulting, IoT integration, and project management — 99Visual Solutions delivers strategic IT consulting for enterprises and growing businesses worldwide.",
     url: "https://www.99visual.com/services/it-consulting",
-    
-    siteName: "99Visual",
-    
+    siteName: "99 Visual Solutions",
     images: [
       {
         url: "https://www.99visual.com/images/services/it-consulting-og.jpg",
         width: 1200,
         height: 630,
-        alt: "IT Consulting Services by 99Visual",
+        alt: "IT Consulting Services by 99 Visual Solutions",
       },
     ],
-    
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    
-    title: "IT Consulting Services | 99Visual Solutions",
-    
+    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
-      "Expert IT consulting for infrastructure, cloud, cybersecurity, and enterprise technology solutions.",
-    
-    site: "@99visual",
-    creator: "@99visual",
-    
+      "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99Visual Solutions for businesses worldwide.",
+    site: "@99 visual",
+    creator: "@99 visual",
     images: [
       "https://www.99visual.com/images/services/it-consulting-og.jpg",
     ],
@@ -132,8 +162,8 @@ export default function ITConsulting() {
     </h1>
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99Visual Solutions is the place for you.
+      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
+      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -174,11 +204,11 @@ export default function ITConsulting() {
     </h1>
 
     <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
-      At <span className="font-semibold">99 Visual Solutions</span>, we don’t just solve IT challenges—we help you harness technology as a powerful growth driver. Our <span className="font-semibold">IT consulting services</span> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future.
+      At <span className="font-semibold">99 Visual Solutions</span>, we don't just solve IT challenges—we help you harness technology as a powerful growth driver. Our <span className="font-semibold">IT consulting services</span> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future.
     </p>
 
     <p className="text-gray-700 leading-8 text-justify text-[17px]">
-      Whether you’re modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-ready IT solutions</span> tailored to your business goals.
+      Whether you're modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-ready IT solutions</span> tailored to your business goals.
     </p>
 
   </div>
@@ -207,7 +237,7 @@ export default function ITConsulting() {
       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure. From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity and performance.
       
-      Our team ensures smooth transitions—whether it’s migrating data, configuring hardware, or integrating new devices—so your business can operate efficiently without downtime or risk. With a focus on reliability, security, and scalability, we help you modernize your IT environment with confidence and ease.
+      Our team ensures smooth transitions—whether it's migrating data, configuring hardware, or integrating new devices—so your business can operate efficiently without downtime or risk. With a focus on reliability, security, and scalability, we help you modernize your IT environment with confidence and ease.
       </p>
 
       <ul className="space-y-3 text-gray-800">
@@ -439,7 +469,7 @@ export default function ITConsulting() {
             Partnering with 99 Visual IT Consulting
           </h2>
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
-             IT isn’t just a support function—it becomes a competitive advantage. Here’s how we empower businesses with technology:
+             IT isn't just a support function—it becomes a competitive advantage. Here's how we empower businesses with technology:
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">

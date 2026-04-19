@@ -4,40 +4,49 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaHandshake, FaGlobe, FaUsers, FaLightbulb } from "react-icons/fa";
 
-export const metadata = {
-  title:
-    "Partner With 99Visual | Business Collaboration & Growth Opportunities",
+export const metadata: Metadata = {
+  title: "Partner With 99  Visual | Agency, Technology & Business Collaboration India",
 
   description:
-    "Join hands with 99Visual to unlock powerful business partnerships. Collaborate with us in 3D visualization, web development, SEO, and digital marketing to grow faster and scale globally.",
+    "Partner with 99 Visual — a trusted digital agency in India offering white-label web development, 3D visualization, SEO, and digital marketing partnerships. Scale globally with expert collaboration.",
 
   keywords: [
-    "Partner with 99Visual",
-    "Business Partnership Opportunities",
-    "Digital Agency Partnership",
+    // Primary
+    "Partner with 99 Visual",
+    "Business Partnership India",
+    "Digital Agency Partnership India",
+    // White Label & Outsourcing
+    "White Label Web Development India",
+    "Outsource Web Development India",
+    "White Label SEO Services India",
+    "White Label Digital Marketing",
+    // Partnership Types
+    "Technology Partnership Agency",
+    "Creative Agency Collaboration",
+    "B2B Partnership Agency India",
+    "IT Consulting Partnership",
+    "Startup Collaboration India",
+    // Service-Specific
     "3D Visualization Partnership",
     "Web Development Collaboration",
     "SEO Agency Partnership",
     "Digital Marketing Collaboration",
-    "IT Consulting Partnership",
-    "Startup Collaboration India",
-    "B2B Partnership Agency",
-    "White Label Web Development",
-    "Outsource Web Development India",
-    "Agency Collaboration Services",
+    // Global
+    "Global Digital Agency Partner",
     "Strategic Business Partnerships",
-    "99Visual Partners"
+    "Agency Collaboration Services",
+    // Brand
+    "99 Visual Partners",
+    "99 Visual Collaboration",
   ],
 
   openGraph: {
-    title:
-      "Partner With 99 Visual | Collaborate & Grow Your Business",
+    title: "Partner With 99 Visual | White-Label & Business Collaboration - India",
 
     description:
-      "Collaborate with 99Visual for web development, 3D visualization, and digital marketing services. Build strong partnerships and scale your business globally.",
+      "Join 99 Visual's partner ecosystem for white-label web development, 3D visualization, SEO, and digital marketing. Build strategic collaborations and scale your business globally.",
 
     url: "https://www.99visual.com/partner",
-
     siteName: "99 Visual Solutions",
 
     images: [
@@ -45,7 +54,7 @@ export const metadata = {
         url: "https://www.99visual.com/images/og/partner-og.jpg",
         width: 1200,
         height: 630,
-        alt: "Partner With 99 Visual",
+        alt: "Partner With 99Visual - Business Collaboration & Growth Opportunities",
       },
     ],
 
@@ -55,16 +64,11 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-
-    title:
-      "Partner With 99 Visual | Business Growth & Collaboration",
-
+    title: "Partner With 99 Visual | Agency & Business Collaboration India",
     description:
-      "Looking for a reliable digital partner? Join 99Visual and grow with expert services in 3D, web, and marketing.",
-
+      "Looking for a reliable digital partner in India? Join 99 Visual for white-label web development, 3D visualization, SEO & digital marketing collaborations.",
     site: "@99visual",
     creator: "@99visual",
-
     images: ["https://www.99visual.com/images/og/partner-og.jpg"],
   },
 
@@ -73,6 +77,22 @@ export const metadata = {
   alternates: {
     canonical: "/partner",
   },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+
+  authors: [{ name: "99 Visual Solutions", url: "https://www.99visual.com" }],
+
+  category: "Technology",
 };
 
 export default function PartnersPage() {
@@ -80,7 +100,60 @@ export default function PartnersPage() {
     <>
       <Header />
 
-      {/* 🔥 HERO */}
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "99 Visual Solutions",
+            "url": "https://www.99visual.com",
+            "logo": "https://www.99visual.com/images/logo.png",
+            "description":
+              "99 Visual Solutions is a digital agency in India offering partnership opportunities in web development, 3D visualization, SEO, and digital marketing.",
+            "sameAs": [
+              "https://twitter.com/99visual",
+              "https://www.linkedin.com/company/99visual",
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "Partnership Enquiry",
+              "url": "https://www.99visual.com/contact",
+              "areaServed": "Worldwide",
+              "availableLanguage": "English",
+            },
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Partnership Services",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "name": "Business Partnership",
+                  "description": "Collaborate with enterprises to deliver tailored IT and visualization solutions.",
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Global Partnership",
+                  "description": "Expand your reach with international collaborations and global impact.",
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Technology Partnership",
+                  "description": "Work with innovators to build next-gen digital transformation solutions.",
+                },
+                {
+                  "@type": "Offer",
+                  "name": "Creative Partnership",
+                  "description": "Partner with agencies and designers to create impactful digital experiences.",
+                },
+              ],
+            },
+          }),
+        }}
+      />
+
+      {/* HERO */}
       <section className="relative py-24 text-center bg-black text-white overflow-hidden">
 
         {/* Glow */}
@@ -103,7 +176,7 @@ export default function PartnersPage() {
           </Link>
         </div>
 
-        {/* 🔽 Arrow Scroll Indicator */}
+        {/* Arrow Scroll Indicator */}
         <a
           href="#services"
           className="absolute bottom-8 left-1/2 arrowSwing z-20 cursor-pointer"
@@ -123,7 +196,7 @@ export default function PartnersPage() {
 
       </section>
 
-      {/* 🚀 PARTNER TYPES */}
+      {/* PARTNER TYPES */}
       <section id="services" className="py-20 px-6 bg-white dark:bg-black">
         <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Types of Partnerships
@@ -137,7 +210,7 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* 💎 WHY PARTNER */}
+      {/* WHY PARTNER */}
       <section className="py-20 px-6 bg-gray-50 dark:bg-zinc-950">
         <h2 className="text-3xl md:text-3xl font-bold text-center mb-14 text-gray-900 dark:text-white">
           Why Partner With Us?
@@ -150,7 +223,7 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* 🔥 CTA */}
+      {/* CTA */}
       <section className="relative py-20 text-center bg-black text-white overflow-hidden">
 
         {/* Glow */}
@@ -158,7 +231,7 @@ export default function PartnersPage() {
 
         <div className="relative z-10">
           <h2 className="text-2xl md:text-4xl font-bold mb-6">
-            Let’s Build the Future Together
+            Let's Build the Future Together
           </h2>
           <p className="text-gray-400 mb-8 max-w-xl mx-auto">
             Join our ecosystem and grow your business through strategic collaboration.
@@ -179,7 +252,7 @@ export default function PartnersPage() {
 }
 
 /* ========================= */
-/* 💎 CARD */
+/* CARD */
 /* ========================= */
 
 function Card({ icon, title, desc, color }: any) {
@@ -205,7 +278,7 @@ function Card({ icon, title, desc, color }: any) {
 }
 
 /* ========================= */
-/* 💎 INFO CARD */
+/* INFO CARD */
 /* ========================= */
 
 function InfoCard({ title, desc }: any) {
