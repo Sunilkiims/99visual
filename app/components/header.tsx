@@ -181,9 +181,15 @@ const Header = () => {
               >
                 {/* Header bar */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-                  <span className="text-xs font-semibold tracking-[0.2em] uppercase text-orange-400">
-                    99 Visual Solutions
-                  </span>
+                  <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                    <Image
+                      src="/logo.png"
+                      alt="Logo"
+                      width={110}
+                      height={36}
+                      priority
+                    />
+                  </Link>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 hover:border-orange-500 hover:text-orange-500 transition-all duration-200"
