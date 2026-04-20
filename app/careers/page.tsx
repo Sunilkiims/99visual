@@ -104,124 +104,347 @@ export default function CareersPage() {
     <>
       <Header />
 
-      {/* JSON-LD Structured Data */}
+      {/* ── JSON-LD: Organization ── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "EmployerAggregateRating",
-            "itemReviewed": {
-              "@type": "Organization",
-              "name": "99Visual Solutions",
+            "@type": "Organization",
+            "@id": "https://www.99visual.com/#organization",
+            "name": "99Visual Solutions",
+            "url": "https://www.99visual.com",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://www.99visual.com/images/logo.png",
+              "width": 200,
+              "height": 60,
+            },
+            "description":
+              "99Visual Solutions is a digital agency based in Bangalore, India, offering services in web development, 3D visualization, SEO, and digital marketing.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Bangalore",
+              "addressRegion": "Karnataka",
+              "addressCountry": "IN",
+            },
+            "sameAs": [
+              "https://twitter.com/99visual",
+              "https://www.linkedin.com/company/99visual",
+            ],
+            "knowsAbout": [
+              "Web Development",
+              "3D Visualization",
+              "UI/UX Design",
+              "Digital Marketing",
+              "SEO",
+              "GIS",
+              "Automation Testing",
+            ],
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: WebPage ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": "https://www.99visual.com/careers#webpage",
+            "url": "https://www.99visual.com/careers",
+            "name": "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
+            "description":
+              "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@type": "WebSite",
+              "@id": "https://www.99visual.com/#website",
               "url": "https://www.99visual.com",
+              "name": "99Visual Solutions",
+              "publisher": {
+                "@id": "https://www.99visual.com/#organization",
+              },
+            },
+            "about": {
+              "@id": "https://www.99visual.com/#organization",
+            },
+            "breadcrumb": {
+              "@id": "https://www.99visual.com/careers#breadcrumb",
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://www.99visual.com/images/og/careers-og.jpg",
+              "width": 1200,
+              "height": 630,
+            },
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: BreadcrumbList ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": "https://www.99visual.com/careers#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.99visual.com",
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Careers",
+                "item": "https://www.99visual.com/careers",
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: JobPosting × 4 (individual scripts for Google Jobs eligibility) ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            "title": "Web Developer",
+            "description":
+              "Build scalable web apps and platforms powering global businesses. Work with modern frameworks like React and Next.js to deliver high-performance digital solutions for clients worldwide.",
+            "identifier": {
+              "@type": "PropertyValue",
+              "name": "99Visual Solutions",
+              "value": "99visual-web-developer",
+            },
+            "hiringOrganization": {
+              "@type": "Organization",
+              "@id": "https://www.99visual.com/#organization",
+              "name": "99Visual Solutions",
+              "sameAs": "https://www.99visual.com",
               "logo": "https://www.99visual.com/images/logo.png",
-              "description":
-                "99Visual Solutions is a digital agency based in Bangalore, India, offering services in web development, 3D visualization, SEO, and digital marketing.",
+            },
+            "jobLocation": {
+              "@type": "Place",
               "address": {
                 "@type": "PostalAddress",
+                "streetAddress": "Bangalore",
                 "addressLocality": "Bangalore",
                 "addressRegion": "Karnataka",
+                "postalCode": "560001",
                 "addressCountry": "IN",
               },
-              "sameAs": [
-                "https://twitter.com/99visual",
-                "https://www.linkedin.com/company/99visual",
-              ],
-              "knowsAbout": [
-                "Web Development",
-                "3D Visualization",
-                "UI/UX Design",
-                "Digital Marketing",
-                "SEO",
-                "GIS",
-                "Automation Testing",
-              ],
             },
-            "jobPosting": [
+            "employmentType": "FULL_TIME",
+            "workHours": "Monday to Friday, 9am - 6pm IST",
+            "url": "https://www.99visual.com/careers",
+            "applicantLocationRequirements": {
+              "@type": "Country",
+              "name": "India",
+            },
+            "skills": "React, Next.js, JavaScript, TypeScript, HTML, CSS, REST APIs",
+            "occupationalCategory": "15-1254 Web Developers",
+            "jobBenefits": "Growth opportunities, mentorship, collaborative culture, impactful projects",
+            "datePosted": "2025-01-01",
+            "validThrough": "2025-12-31",
+          }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            "title": "UI/UX Designer",
+            "description":
+              "Create intuitive, human-centered designs that elevate user experiences. Collaborate with developers and stakeholders to design wireframes, prototypes, and pixel-perfect interfaces.",
+            "identifier": {
+              "@type": "PropertyValue",
+              "name": "99Visual Solutions",
+              "value": "99visual-ui-ux-designer",
+            },
+            "hiringOrganization": {
+              "@type": "Organization",
+              "@id": "https://www.99visual.com/#organization",
+              "name": "99Visual Solutions",
+              "sameAs": "https://www.99visual.com",
+              "logo": "https://www.99visual.com/images/logo.png",
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Bangalore",
+                "addressLocality": "Bangalore",
+                "addressRegion": "Karnataka",
+                "postalCode": "560001",
+                "addressCountry": "IN",
+              },
+            },
+            "employmentType": "FULL_TIME",
+            "workHours": "Monday to Friday, 9am - 6pm IST",
+            "url": "https://www.99visual.com/careers",
+            "applicantLocationRequirements": {
+              "@type": "Country",
+              "name": "India",
+            },
+            "skills": "Figma, Adobe XD, Wireframing, Prototyping, User Research, Design Systems",
+            "occupationalCategory": "27-1021 Commercial and Industrial Designers",
+            "jobBenefits": "Growth opportunities, mentorship, collaborative culture, impactful projects",
+            "datePosted": "2025-01-01",
+            "validThrough": "2025-12-31",
+          }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            "title": "Digital Marketing Specialist",
+            "description":
+              "Drive growth with SEO, paid campaigns, and creative strategies. Plan and execute digital marketing campaigns across search, social, and display channels for a diverse client base.",
+            "identifier": {
+              "@type": "PropertyValue",
+              "name": "99Visual Solutions",
+              "value": "99visual-digital-marketing-specialist",
+            },
+            "hiringOrganization": {
+              "@type": "Organization",
+              "@id": "https://www.99visual.com/#organization",
+              "name": "99Visual Solutions",
+              "sameAs": "https://www.99visual.com",
+              "logo": "https://www.99visual.com/images/logo.png",
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Bangalore",
+                "addressLocality": "Bangalore",
+                "addressRegion": "Karnataka",
+                "postalCode": "560001",
+                "addressCountry": "IN",
+              },
+            },
+            "employmentType": "FULL_TIME",
+            "workHours": "Monday to Friday, 9am - 6pm IST",
+            "url": "https://www.99visual.com/careers",
+            "applicantLocationRequirements": {
+              "@type": "Country",
+              "name": "India",
+            },
+            "skills": "SEO, Google Ads, Meta Ads, Content Marketing, Analytics, Email Marketing",
+            "occupationalCategory": "11-2021 Marketing Managers",
+            "jobBenefits": "Growth opportunities, mentorship, collaborative culture, impactful projects",
+            "datePosted": "2025-01-01",
+            "validThrough": "2025-12-31",
+          }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "JobPosting",
+            "title": "3D Visualization Artist",
+            "description":
+              "Work on AI, 3D visualization, GIS, and next-gen technologies. Create photorealistic renders, animations, and interactive 3D content for architecture, product, and digital projects.",
+            "identifier": {
+              "@type": "PropertyValue",
+              "name": "99Visual Solutions",
+              "value": "99visual-3d-visualization-artist",
+            },
+            "hiringOrganization": {
+              "@type": "Organization",
+              "@id": "https://www.99visual.com/#organization",
+              "name": "99Visual Solutions",
+              "sameAs": "https://www.99visual.com",
+              "logo": "https://www.99visual.com/images/logo.png",
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Bangalore",
+                "addressLocality": "Bangalore",
+                "addressRegion": "Karnataka",
+                "postalCode": "560001",
+                "addressCountry": "IN",
+              },
+            },
+            "employmentType": "FULL_TIME",
+            "workHours": "Monday to Friday, 9am - 6pm IST",
+            "url": "https://www.99visual.com/careers",
+            "applicantLocationRequirements": {
+              "@type": "Country",
+              "name": "India",
+            },
+            "skills": "Blender, 3ds Max, Cinema 4D, V-Ray, Unreal Engine, GIS, Photorealistic Rendering",
+            "occupationalCategory": "27-1014 Special Effects Artists and Animators",
+            "jobBenefits": "Growth opportunities, mentorship, collaborative culture, impactful projects",
+            "datePosted": "2025-01-01",
+            "validThrough": "2025-12-31",
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: FAQPage ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
               {
-                "@type": "JobPosting",
-                "title": "Web Developer",
-                "description": "Build scalable web apps and platforms powering global businesses.",
-                "hiringOrganization": {
-                  "@type": "Organization",
-                  "name": "99Visual Solutions",
-                  "sameAs": "https://www.99visual.com",
+                "@type": "Question",
+                "name": "What roles is 99Visual hiring for in Bangalore?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "99Visual is currently hiring for Web Developers, UI/UX Designers, Digital Marketing Specialists, and 3D Visualization Artists at its Bangalore office.",
                 },
-                "jobLocation": {
-                  "@type": "Place",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Bangalore",
-                    "addressRegion": "Karnataka",
-                    "addressCountry": "IN",
-                  },
-                },
-                "employmentType": "FULL_TIME",
-                "url": "https://www.99visual.com/careers",
               },
               {
-                "@type": "JobPosting",
-                "title": "UI/UX Designer",
-                "description": "Create intuitive, human-centered designs that elevate user experiences.",
-                "hiringOrganization": {
-                  "@type": "Organization",
-                  "name": "99Visual Solutions",
-                  "sameAs": "https://www.99visual.com",
+                "@type": "Question",
+                "name": "Is 99Visual a good place to work for freshers?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "Yes. 99Visual offers continuous learning, mentorship, and real-world project experience, making it an excellent environment for freshers and early-career professionals to grow quickly.",
                 },
-                "jobLocation": {
-                  "@type": "Place",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Bangalore",
-                    "addressRegion": "Karnataka",
-                    "addressCountry": "IN",
-                  },
-                },
-                "employmentType": "FULL_TIME",
-                "url": "https://www.99visual.com/careers",
               },
               {
-                "@type": "JobPosting",
-                "title": "Digital Marketing Specialist",
-                "description": "Drive growth with SEO, paid campaigns, and creative strategies.",
-                "hiringOrganization": {
-                  "@type": "Organization",
-                  "name": "99Visual Solutions",
-                  "sameAs": "https://www.99visual.com",
+                "@type": "Question",
+                "name": "Does 99Visual offer remote or hybrid work options?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "Work arrangements vary by role. Please visit the Contact page at https://www.99visual.com/contact or apply directly to inquire about remote or hybrid options for a specific position.",
                 },
-                "jobLocation": {
-                  "@type": "Place",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Bangalore",
-                    "addressRegion": "Karnataka",
-                    "addressCountry": "IN",
-                  },
-                },
-                "employmentType": "FULL_TIME",
-                "url": "https://www.99visual.com/careers",
               },
               {
-                "@type": "JobPosting",
-                "title": "3D Visualization Artist",
-                "description": "Work on AI, 3D visualization, GIS, and next-gen technologies.",
-                "hiringOrganization": {
-                  "@type": "Organization",
-                  "name": "99Visual Solutions",
-                  "sameAs": "https://www.99visual.com",
+                "@type": "Question",
+                "name": "How do I apply for a job at 99Visual?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "You can apply by visiting https://www.99visual.com/contact and submitting your details along with your resume. The hiring team will reach out regarding suitable openings.",
                 },
-                "jobLocation": {
-                  "@type": "Place",
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Bangalore",
-                    "addressRegion": "Karnataka",
-                    "addressCountry": "IN",
-                  },
-                },
-                "employmentType": "FULL_TIME",
-                "url": "https://www.99visual.com/careers",
               },
             ],
           }),

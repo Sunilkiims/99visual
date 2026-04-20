@@ -100,18 +100,32 @@ export default function PartnersPage() {
     <>
       <Header />
 
-      {/* JSON-LD Structured Data */}
+      {/* ── JSON-LD: Organization ── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
+            "@id": "https://www.99visual.com/#organization",
             "name": "99 Visual Solutions",
             "url": "https://www.99visual.com",
-            "logo": "https://www.99visual.com/images/logo.png",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://www.99visual.com/images/logo.png",
+              "width": 200,
+              "height": 60,
+            },
             "description":
               "99 Visual Solutions is a digital agency in India offering partnership opportunities in web development, 3D visualization, SEO, and digital marketing.",
+            "foundingLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "IN",
+              },
+            },
+            "areaServed": "Worldwide",
             "sameAs": [
               "https://twitter.com/99visual",
               "https://www.linkedin.com/company/99visual",
@@ -130,25 +144,212 @@ export default function PartnersPage() {
                 {
                   "@type": "Offer",
                   "name": "Business Partnership",
-                  "description": "Collaborate with enterprises to deliver tailored IT and visualization solutions.",
+                  "description":
+                    "Collaborate with enterprises to deliver tailored IT and visualization solutions.",
                 },
                 {
                   "@type": "Offer",
                   "name": "Global Partnership",
-                  "description": "Expand your reach with international collaborations and global impact.",
+                  "description":
+                    "Expand your reach with international collaborations and global impact.",
                 },
                 {
                   "@type": "Offer",
                   "name": "Technology Partnership",
-                  "description": "Work with innovators to build next-gen digital transformation solutions.",
+                  "description":
+                    "Work with innovators to build next-gen digital transformation solutions.",
                 },
                 {
                   "@type": "Offer",
                   "name": "Creative Partnership",
-                  "description": "Partner with agencies and designers to create impactful digital experiences.",
+                  "description":
+                    "Partner with agencies and designers to create impactful digital experiences.",
                 },
               ],
             },
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: WebPage ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": "https://www.99visual.com/partner#webpage",
+            "url": "https://www.99visual.com/partner",
+            "name": "Partner With 99 Visual | Agency, Technology & Business Collaboration India",
+            "description":
+              "Partner with 99 Visual — a trusted digital agency in India offering white-label web development, 3D visualization, SEO, and digital marketing partnerships. Scale globally with expert collaboration.",
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@type": "WebSite",
+              "@id": "https://www.99visual.com/#website",
+              "url": "https://www.99visual.com",
+              "name": "99 Visual Solutions",
+              "publisher": {
+                "@id": "https://www.99visual.com/#organization",
+              },
+            },
+            "about": {
+              "@id": "https://www.99visual.com/#organization",
+            },
+            "breadcrumb": {
+              "@id": "https://www.99visual.com/partner#breadcrumb",
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://www.99visual.com/images/og/partner-og.jpg",
+              "width": 1200,
+              "height": 630,
+            },
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: BreadcrumbList ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": "https://www.99visual.com/partner#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.99visual.com",
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Partner",
+                "item": "https://www.99visual.com/partner",
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: ItemList — Partnership Types ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Types of Partnerships at 99 Visual",
+            "description":
+              "Explore the different partnership models available with 99 Visual Solutions — business, global, technology, and creative partnerships.",
+            "url": "https://www.99visual.com/partner#services",
+            "numberOfItems": 4,
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "Service",
+                  "name": "Business Partners",
+                  "description":
+                    "Collaborate with enterprises to deliver tailored IT and visualization solutions.",
+                  "provider": { "@id": "https://www.99visual.com/#organization" },
+                  "areaServed": "Worldwide",
+                  "serviceType": "Business Partnership",
+                },
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "Service",
+                  "name": "Global Partners",
+                  "description":
+                    "Expand your reach with international collaborations and global impact.",
+                  "provider": { "@id": "https://www.99visual.com/#organization" },
+                  "areaServed": "Worldwide",
+                  "serviceType": "Global Partnership",
+                },
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "Service",
+                  "name": "Technology Partners",
+                  "description":
+                    "Work with innovators to build next-gen digital transformation solutions.",
+                  "provider": { "@id": "https://www.99visual.com/#organization" },
+                  "areaServed": "Worldwide",
+                  "serviceType": "Technology Partnership",
+                },
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                  "@type": "Service",
+                  "name": "Creative Partners",
+                  "description":
+                    "Partner with agencies and designers to create impactful digital experiences.",
+                  "provider": { "@id": "https://www.99visual.com/#organization" },
+                  "areaServed": "Worldwide",
+                  "serviceType": "Creative Partnership",
+                },
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* ── JSON-LD: FAQPage ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What types of partnerships does 99 Visual offer?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "99 Visual offers four partnership models: Business Partnerships for enterprise IT and visualization collaboration, Global Partnerships for international reach, Technology Partnerships for digital transformation innovation, and Creative Partnerships for agencies and designers.",
+                },
+              },
+              {
+                "@type": "Question",
+                "name": "Does 99 Visual provide white-label web development services?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "Yes. 99 Visual offers white-label web development, SEO, 3D visualization, and digital marketing services, allowing agencies and businesses to resell or co-deliver under their own brand.",
+                },
+              },
+              {
+                "@type": "Question",
+                "name": "Can international businesses partner with 99 Visual?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "Absolutely. 99 Visual works with clients and partners worldwide through its Global Partnership program, enabling businesses outside India to collaborate and scale with expert digital services.",
+                },
+              },
+              {
+                "@type": "Question",
+                "name": "How do I start a partnership with 99 Visual?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text":
+                    "You can initiate a partnership by visiting the Contact page at https://www.99visual.com/contact and submitting a partnership enquiry. The team will get in touch to discuss collaboration opportunities.",
+                },
+              },
+            ],
           }),
         }}
       />

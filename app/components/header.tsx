@@ -17,25 +17,21 @@ const Header = () => {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
-  // Activate mounted flag for portal (avoid SSR issues)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Track scroll to adjust header style
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : 'auto';
     return () => { document.body.style.overflow = 'auto'; };
   }, [mobileMenuOpen]);
 
-  // Helper to check active route
   const isActive = (href: string) => pathname === href;
   const serviceRoutes = [
     '/services/visualization',
@@ -47,16 +43,16 @@ const Header = () => {
   ];
   const isServiceActive = serviceRoutes.includes(pathname);
 
-  // CSS classes for nav links
   const navLinkClass = (href: string) =>
     clsx(
       'relative text-[15px] transition-transform duration-200 hover:scale-105 hover:text-orange-500',
       'after:content-[""] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-orange-500 after:w-0 hover:after:w-full after:transition-all after:duration-300',
       isActive(href) && 'text-orange-500 after:w-full'
     );
+
   const dropdownLinkClass = () =>
     'group/link flex items-center gap-2 px-4 py-2 text-gray-800 transition-all duration-300 hover:bg-yellow-100 hover:pl-6';
-  
+
   const ArrowIcon = () => (
     <span className="w-4 h-4 text-orange-500 transform transition-transform duration-300 group-hover/link:translate-x-1">
       <svg fill="currentColor" viewBox="0 0 20 20" className="w-full h-full">
@@ -83,6 +79,7 @@ const Header = () => {
                 priority
               />
             </Link>
+
             {/* Desktop Nav */}
             <nav className={clsx(
               'hidden md:flex items-center gap-6 lg:gap-8 font-medium transition-colors duration-300',
@@ -148,14 +145,14 @@ const Header = () => {
 
           {/* Mobile menu toggle */}
           <div className="md:hidden">
-  <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-    {mobileMenuOpen ? (
-      <X className="text-orange-500 w-7 h-7" />
-    ) : (
-      <Menu className="text-orange-500 w-7 h-7" />
-    )}
-  </button>
-</div>
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? (
+                <X className="text-orange-500 w-7 h-7" />
+              ) : (
+                <Menu className="text-orange-500 w-7 h-7" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -163,182 +160,187 @@ const Header = () => {
       {mounted && createPortal(
         <AnimatePresence>
           {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9999] bg-gradient-to-b from-black via-black to-gray-900 text-white px-6 overflow-y-auto"
-            >
-              {/* Close button */}
-              <div className="flex justify-end py-6">
-                <button onClick={() => setMobileMenuOpen(false)}>
-                  <X className="w-7 h-7 text-orange-500"/>
-                </button>
-              </div>
-              {/* Menu items */}
-              <div className="flex flex-col items-center justify-start pt-10 pb-12 space-y-8 text-center">
-                <Link
-  href="/"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "text-3xl font-semibold transition-colors",
-    pathname === "/" ? "text-orange-500" : "text-white"
-  )}
->
-  Home
-</Link>
-                <Link
-  href="/about"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "text-3xl font-semibold transition-colors",
-    pathname === "/about"
-      ? "text-orange-500"
-      : "text-white"
-  )}
->
-  About
-</Link>
-                
-                {/* Mobile Services */}
-                <div className="flex flex-col items-center">
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+
+              {/* Drawer */}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'tween', duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                className="fixed top-0 right-0 h-full w-[85%] max-w-sm z-[9999] bg-[#0f1c2e] text-white flex flex-col shadow-2xl"
+              >
+                {/* Header bar */}
+                <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+                  <span className="text-xs font-semibold tracking-[0.2em] uppercase text-orange-400">
+                    99 Visual Solutions
+                  </span>
                   <button
-  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-  className={clsx(
-    "flex items-center gap-2 text-2xl transition-colors",
-    isServiceActive ? "text-orange-500" : "text-white"
-  )}
->
-                    Services
-                    <ChevronDown className={clsx(mobileServicesOpen && 'rotate-180 transition-transform')} />
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 hover:border-orange-500 hover:text-orange-500 transition-all duration-200"
+                  >
+                    <X className="w-4 h-4" />
                   </button>
-                  {mobileServicesOpen && (
+                </div>
+
+                {/* Nav links */}
+                <nav className="flex-1 overflow-y-auto px-6 py-6 space-y-1">
+                  {/* Home & About */}
+                  {[
+                    { href: '/', label: 'Home' },
+                    { href: '/about', label: 'About' },
+                  ].map((item, i) => (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex flex-col items-center mt-4 space-y-3 text-lg text-gray-300"
+                      key={item.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + i * 0.05, duration: 0.3 }}
                     >
                       <Link
-  href="/services/visualization"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/visualization" ? "text-orange-500" : "text-gray-300"
-  )}
->
-  Visualization
-</Link>
-                      <Link
-  href="/services/website-development"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/website-development"
-      ? "text-orange-500"
-      : "text-gray-300"
-  )}
->
-  Website Development
-</Link>
-                      <Link
-  href="/services/it-consulting"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/it-consulting"
-      ? "text-orange-500"
-      : "text-gray-300"
-  )}
->
-  IT Consulting
-</Link>
-                      <Link
-  href="/services/digital-marketing-seo"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/digital-marketing-seo"
-      ? "text-orange-500"
-      : "text-gray-300"
-  )}
->
-  Digital Marketing & SEO
-</Link>
-                      <Link
-  href="/services/cad-gis-photogrammetry"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/cad-gis-photogrammetry"
-      ? "text-orange-500"
-      : "text-gray-300"
-  )}
->
-  CAD, GIS & Photogrammetry
-</Link>
-                      <Link
-  href="/services/automation-testing"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "transition-colors",
-    pathname === "/services/automation-testing"
-      ? "text-orange-500"
-      : "text-gray-300"
-  )}
->
-  Automation & Testing
-</Link>
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={clsx(
+                          'block py-3 px-4 rounded-lg text-[15px] font-medium tracking-wide transition-all duration-200',
+                          'hover:bg-white/5 hover:text-orange-400 hover:pl-6',
+                          pathname === item.href
+                            ? 'text-orange-400 bg-white/5 border-l-2 border-orange-500 pl-6'
+                            : 'text-gray-300'
+                        )}
+                      >
+                        {item.label}
+                      </Link>
                     </motion.div>
-                  )}
-                </div>
+                  ))}
 
-                <Link
-  href="/partner"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "text-3xl font-semibold transition-colors",
-    pathname === "/partner"
-      ? "text-orange-500"
-      : "text-white"
-  )}
->
-  Partner
-</Link>
-                <Link
-  href="/careers"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "text-3xl font-semibold transition-colors",
-    pathname === "/careers"
-      ? "text-orange-500"
-      : "text-white"
-  )}
->
-  Career
-</Link>
-                <Link
-  href="/contact"
-  onClick={() => setMobileMenuOpen(false)}
-  className={clsx(
-    "text-3xl font-semibold transition-colors",
-    pathname === "/contact"
-      ? "text-orange-500"
-      : "text-white"
-  )}
->
-  Contact
-</Link>
+                  {/* Services accordion */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                  >
+                    <button
+                      onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                      className={clsx(
+                        'w-full flex items-center justify-between py-3 px-4 rounded-lg text-[15px] font-medium tracking-wide transition-all duration-200',
+                        'hover:bg-white/5 hover:text-orange-400',
+                        isServiceActive
+                          ? 'text-orange-400 bg-white/5 border-l-2 border-orange-500 pl-6'
+                          : 'text-gray-300'
+                      )}
+                    >
+                      Services
+                      <ChevronDown
+                        className={clsx(
+                          'w-4 h-4 transition-transform duration-300',
+                          mobileServicesOpen ? 'rotate-180 text-orange-400' : 'text-gray-500'
+                        )}
+                      />
+                    </button>
 
-                {/* Social Icons */}
-                <div className="flex gap-6 mt-6 text-xl">
-                  <a href="https://www.facebook.com/profile.php?id=100093639888151" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-orange-500"><FaFacebookF /></a>
-                  <a href="https://x.com/99VisualSoluti1" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="hover:text-orange-500"><FaXTwitter /></a>
-                  <a href="https://www.linkedin.com/company/99-visual-solutions/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:text-orange-500"><FaLinkedinIn /></a>
-                  <a href="https://www.instagram.com/99visualsolutions/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-orange-500"><FaInstagram /></a>
+                    <AnimatePresence>
+                      {mobileServicesOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="ml-4 mt-1 border-l border-white/10 pl-4 space-y-1 pb-2">
+                            {[
+                              { href: '/services/visualization', label: 'Visualization' },
+                              { href: '/services/website-development', label: 'Website Development' },
+                              { href: '/services/it-consulting', label: 'IT Consulting' },
+                              { href: '/services/digital-marketing-seo', label: 'Digital Marketing & SEO' },
+                              { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry' },
+                              { href: '/services/automation-testing', label: 'Automation & Testing' },
+                            ].map((service) => (
+                              <Link
+                                key={service.href}
+                                href={service.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={clsx(
+                                  'block py-2 px-3 rounded text-[13px] tracking-wide transition-all duration-200',
+                                  'hover:text-orange-400 hover:bg-white/5',
+                                  pathname === service.href
+                                    ? 'text-orange-400'
+                                    : 'text-gray-400'
+                                )}
+                              >
+                                {service.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+
+                  {/* Partner, Career, Contact */}
+                  {[
+                    { href: '/partner', label: 'Partner' },
+                    { href: '/careers', label: 'Career' },
+                    { href: '/contact', label: 'Contact' },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.25 + i * 0.05, duration: 0.3 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={clsx(
+                          'block py-3 px-4 rounded-lg text-[15px] font-medium tracking-wide transition-all duration-200',
+                          'hover:bg-white/5 hover:text-orange-400 hover:pl-6',
+                          pathname === item.href
+                            ? 'text-orange-400 bg-white/5 border-l-2 border-orange-500 pl-6'
+                            : 'text-gray-300'
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
+
+                {/* Footer: Social icons */}
+                <div className="px-6 py-5 border-t border-white/10">
+                  <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3">
+                    Follow Us
+                  </p>
+                  <div className="flex gap-3">
+                    {[
+                      { href: 'https://www.facebook.com/profile.php?id=100093639888151', icon: <FaFacebookF />, label: 'Facebook' },
+                      { href: 'https://x.com/99VisualSoluti1', icon: <FaXTwitter />, label: 'Twitter' },
+                      { href: 'https://www.linkedin.com/company/99-visual-solutions/', icon: <FaLinkedinIn />, label: 'LinkedIn' },
+                      { href: 'https://www.instagram.com/99visualsolutions/', icon: <FaInstagram />, label: 'Instagram' },
+                    ].map((s) => (
+                      <a
+                        key={s.label}
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-gray-400 hover:border-orange-500 hover:text-orange-500 transition-all duration-200 text-sm"
+                      >
+                        {s.icon}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>,
         document.body
