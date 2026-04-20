@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +10,7 @@ type Slide = {
   type: "image" | "video";
   image?: string;
   video?: string;
+  label?: string;
   title: string;
   description: string;
   cta: string;
@@ -21,6 +22,7 @@ const slides: Slide[] = [
     id: 1,
     type: "image",
     image: "/slider/slide1.jpg",
+    label: "IT Consulting",
     title: "Smarter IT Solutions",
     description:
       "Expert IT consulting and data visualization solutions tailored to drive innovation, efficiency, and growth.",
@@ -31,6 +33,7 @@ const slides: Slide[] = [
     id: 2,
     type: "image",
     image: "/slider/slide2.jpg",
+    label: "Web Development",
     title: "Website and Web-App Development",
     description:
       "Elevating Your Digital Blueprint, Redefining Online Excellence.",
@@ -41,6 +44,7 @@ const slides: Slide[] = [
     id: 3,
     type: "image",
     image: "/slider/slide4.jpg",
+    label: "CAD & GIS",
     title: "Precision Mapping & Design",
     description:
       "Unlock accurate spatial analysis and high-detail drafting solutions.",
@@ -51,6 +55,7 @@ const slides: Slide[] = [
     id: 4,
     type: "image",
     image: "/slider/slide3.jpg",
+    label: "Digital Marketing",
     title: "Empower your Brand",
     description:
       "Dynamic Digital Marketing & SEO Strategies beyond competition.",
@@ -61,6 +66,7 @@ const slides: Slide[] = [
     id: 5,
     type: "video",
     video: "/slider/background.mp4",
+    label: "3D & Visualization",
     title: "Creative Visualizations",
     description:
       "We bring your products to life with stunning 3D modeling and rendering.",
@@ -69,136 +75,197 @@ const slides: Slide[] = [
   },
 ];
 
-// 🔥 Smooth slide animation
-const slideVariants: Variants = {
-  enter: { opacity: 0, scale: 1.1 },
+const SLIDE_DURATION = 6000;
+
+const slideVariants = (direction: number): Variants => ({
+  enter: {
+    opacity: 0,
+    x: direction > 0 ? 60 : -60,
+    scale: 1.04,
+  },
   center: {
     opacity: 1,
+    x: 0,
     scale: 1,
-    transition: { duration: 1.4, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
   },
-  exit: {
+  exit: (dir: number) => ({
     opacity: 0,
-    scale: 0.95,
-    transition: { duration: 1.2, ease: [0.4, 0, 1, 1] },
-  },
-};
+    x: dir > 0 ? -60 : 60,
+    scale: 0.97,
+    transition: { duration: 0.85, ease: [0.4, 0, 1, 1] },
+  }),
+});
 
-// 🔥 Text container (stagger effect)
-const containerVariants: Variants = {
+const textContainer: Variants = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.25,
-      delayChildren: 0.3,
-    },
+    transition: { staggerChildren: 0.18, delayChildren: 0.35 },
   },
 };
 
-// 🔥 Individual text animation
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
+const textItem: Variants = {
+  hidden: { opacity: 0, y: 32 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] },
+    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const HomeSlider: React.FC = () => {
   const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const paginate = (newIndex: number) => {
-    setCurrent((prev) => (newIndex + slides.length) % slides.length);
-  };
+  const clearTimers = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (progressRef.current) clearInterval(progressRef.current);
+  }, []);
+
+  const startTimers = useCallback(() => {
+    clearTimers();
+    setProgress(0);
+
+    const step = 100 / (SLIDE_DURATION / 50);
+    progressRef.current = setInterval(() => {
+      setProgress((p) => Math.min(p + step, 100));
+    }, 50);
+
+    intervalRef.current = setInterval(() => {
+      setDirection(1);
+      setCurrent((prev) => (prev + 1) % slides.length);
+      setProgress(0);
+    }, SLIDE_DURATION);
+  }, [clearTimers]);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 8000);
+    if (!paused) {
+      startTimers();
+    } else {
+      clearTimers();
+    }
+    return clearTimers;
+  }, [paused, current, startTimers, clearTimers]);
 
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
+  const paginate = useCallback(
+    (newIndex: number) => {
+      const next = ((newIndex % slides.length) + slides.length) % slides.length;
+      setDirection(newIndex >= current ? 1 : -1);
+      setCurrent(next);
+    },
+    [current]
+  );
 
   const currentSlide = slides[current];
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden bg-black">
-      <AnimatePresence mode="wait">
+    <div
+      className="relative w-full h-[50vh] md:h-[600px] min-h-[340px] overflow-hidden bg-black select-none"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentSlide.id}
-          className="absolute w-full h-full"
-          variants={slideVariants}
+          className="absolute w-full h-full will-change-transform"
+          variants={slideVariants(direction)}
+          custom={direction}
           initial="enter"
           animate="center"
           exit="exit"
         >
-          {/* Background */}
+          {/* Ken Burns background */}
           <motion.div
-            className="absolute w-full h-full"
+            className="absolute inset-0 will-change-transform"
+            initial={{ scale: 1 }}
             animate={{ scale: 1.08 }}
-            transition={{ duration: 8, ease: "linear" }}
+            transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
           >
-            {currentSlide.type === "video" && currentSlide.video && (
+            {currentSlide.type === "video" && currentSlide.video ? (
               <video
                 className="w-full h-full object-cover"
                 autoPlay
                 loop
                 muted
                 playsInline
+                preload="metadata"
               >
                 <source src={currentSlide.video} type="video/mp4" />
               </video>
-            )}
-
-            {currentSlide.type === "image" && currentSlide.image && (
+            ) : currentSlide.image ? (
               <Image
                 src={currentSlide.image}
                 alt={currentSlide.title}
                 fill
+                sizes="100vw"
                 style={{ objectFit: "cover" }}
                 priority={current === 0}
               />
-            )}
+            ) : null}
           </motion.div>
 
-          {/* Overlay Content */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80 flex items-center justify-center text-center px-4">
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+          {/* Text content */}
+          <div className="absolute inset-0 flex items-center">
             <motion.div
-              className="text-white max-w-2xl"
-              variants={containerVariants}
+              className="text-white px-6 md:px-16 max-w-xl md:max-w-2xl"
+              variants={textContainer}
               initial="hidden"
               animate="show"
             >
+              {currentSlide.label && (
+                <motion.span
+                  variants={textItem}
+                  className="inline-block text-xs md:text-sm font-semibold tracking-widest uppercase text-cyan-400 border border-cyan-400/40 bg-cyan-400/10 backdrop-blur-sm px-3 py-1 rounded-full mb-4"
+                >
+                  {currentSlide.label}
+                </motion.span>
+              )}
+
               <motion.h2
-                variants={itemVariants}
-                className="text-3xl md:text-4xl font-extrabold mb-6 text-yellow-300"
+                variants={textItem}
+                className="text-2xl sm:text-3xl md:text-5xl font-extrabold leading-tight mb-4 text-white drop-shadow-lg"
               >
                 {currentSlide.title}
               </motion.h2>
 
               <motion.p
-                variants={itemVariants}
-                className="text-lg md:text-xl mb-6"
+                variants={textItem}
+                className="text-sm sm:text-base md:text-lg text-white/80 leading-relaxed mb-7 max-w-md"
               >
                 {currentSlide.description}
               </motion.p>
 
               {currentSlide.link && (
-                <motion.div variants={itemVariants}>
+                <motion.div variants={textItem}>
                   <Link href={currentSlide.link}>
                     <motion.button
-                      className="bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 text-black font-semibold px-6 py-3 rounded-full border border-white shadow-lg"
-                      whileHover={{
-                        scale: 1.1,
-                        boxShadow: "0 0 25px rgba(0,255,255,0.6)",
-                      }}
+                      className="relative inline-flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 text-black font-bold text-sm md:text-base px-6 py-3 rounded-full shadow-lg"
+                      whileHover={{ scale: 1.07, boxShadow: "0 0 28px rgba(0,220,255,0.55)" }}
                       whileTap={{ scale: 0.95 }}
                     >
                       {currentSlide.cta}
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3 8h10M9 4l4 4-4 4"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </motion.button>
                   </Link>
                 </motion.div>
@@ -208,32 +275,49 @@ const HomeSlider: React.FC = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Controls */}
-      <button
-        onClick={() => paginate(current - 1)}
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl z-10"
-      >
-        ‹
-      </button>
+      {/* Pause indicator */}
+      <AnimatePresence>
+        {paused && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute top-4 right-4 z-20 text-white/50 text-xs tracking-widest uppercase"
+          >
+            ⏸ Paused
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <button
-        onClick={() => paginate(current + 1)}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl z-10"
-      >
-        ›
-      </button>
-
-      {/* Dots */}
-      <div className="absolute bottom-6 w-full flex justify-center gap-3 z-10">
+      {/* Progress dot indicators */}
+      <div className="absolute bottom-5 w-full flex justify-center gap-3 z-20">
         {slides.map((_, i) => (
           <button
             key={i}
+            aria-label={`Go to slide ${i + 1}`}
             onClick={() => paginate(i)}
-            className={`w-3 h-3 rounded-full ${
-              i === current ? "bg-white scale-125" : "bg-gray-400"
-            }`}
-          />
+            className="relative flex items-center justify-center"
+          >
+            <span
+              className={`block rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-8 md:w-10 h-1.5 bg-white/30"
+                  : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
+              }`}
+            />
+            {i === current && (
+              <span
+                className="absolute left-0 top-0 h-full rounded-full bg-cyan-400"
+                style={{ width: `${progress}%`, transition: "width 50ms linear" }}
+              />
+            )}
+          </button>
         ))}
+      </div>
+
+      {/* Slide counter */}
+      <div className="absolute bottom-5 right-4 md:right-8 z-20 text-white/40 text-xs font-mono tracking-wider">
+        {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
       </div>
     </div>
   );
