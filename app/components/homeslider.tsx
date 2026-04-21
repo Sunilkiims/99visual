@@ -113,13 +113,30 @@ const textItem: Variants = {
   },
 };
 
+// Pause Icon SVG
+const PauseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="1.5" width="3.5" height="11" rx="1" fill="currentColor" />
+    <rect x="8.5" y="1.5" width="3.5" height="11" rx="1" fill="currentColor" />
+  </svg>
+);
+
+// Play Icon SVG
+const PlayIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 1.5L12 7L3 12.5V1.5Z" fill="currentColor" />
+  </svg>
+);
+
 const HomeSlider: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [paused, setPaused] = useState(false);
+  const [manualPause, setManualPause] = useState(false);
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const paused = manualPause;
 
   const clearTimers = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -160,14 +177,50 @@ const HomeSlider: React.FC = () => {
     [current]
   );
 
+  const toggleManualPause = useCallback(() => {
+    setManualPause((prev) => !prev);
+  }, []);
+
   const currentSlide = slides[current];
 
   return (
     <div
       className="relative w-full h-[50vh] md:h-[600px] min-h-[340px] overflow-hidden bg-black select-none"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
+      {/* Google Fonts import for refined typography */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+        .slider-label {
+          font-family: 'DM Sans', sans-serif;
+          letter-spacing: 0.18em;
+          font-weight: 500;
+        }
+        .slider-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 700;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
+        }
+        .slider-description {
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 300;
+          letter-spacing: 0.02em;
+          line-height: 1.7;
+        }
+        .slider-cta {
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          font-size: 0.78rem;
+        }
+        .slider-counter {
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 300;
+          letter-spacing: 0.15em;
+        }
+      `}</style>
+
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentSlide.id}
@@ -220,40 +273,56 @@ const HomeSlider: React.FC = () => {
               initial="hidden"
               animate="show"
             >
+              {/* Label pill — refined, smaller, spaced */}
               {currentSlide.label && (
                 <motion.span
                   variants={textItem}
-                  className="inline-block text-xs md:text-sm font-semibold tracking-widest uppercase text-cyan-400 border border-cyan-400/40 bg-cyan-400/10 backdrop-blur-sm px-3 py-1 rounded-full mb-4"
+                  className="slider-label inline-block text-[10px] md:text-[11px] uppercase text-cyan-300 border border-cyan-400/30 bg-cyan-400/8 backdrop-blur-sm px-3 py-1 rounded-full mb-5 tracking-widest"
                 >
                   {currentSlide.label}
                 </motion.span>
               )}
 
+              {/* Title — large editorial serif */}
               <motion.h2
                 variants={textItem}
-                className="text-2xl sm:text-3xl md:text-5xl font-extrabold leading-tight mb-4 text-white drop-shadow-lg"
+                className="slider-title text-4xl sm:text-4xl md:text-6xl mb-4 text-white"
+                style={{ textShadow: "0 2px 32px rgba(0,0,0,0.45)" }}
               >
                 {currentSlide.title}
               </motion.h2>
 
+              {/* Thin rule beneath title */}
+              <motion.div
+                variants={textItem}
+                className="w-12 h-px bg-cyan-400/60 mb-5"
+              />
+
+              {/* Description — light weight, airy */}
               <motion.p
                 variants={textItem}
-                className="text-sm sm:text-base md:text-lg text-white/80 leading-relaxed mb-7 max-w-md"
+                className="slider-description text-sm sm:text-base md:text-[1.05rem] text-white/70 mb-8 max-w-sm md:max-w-md"
               >
                 {currentSlide.description}
               </motion.p>
 
+              {/* CTA button — refined capsule */}
               {currentSlide.link && (
                 <motion.div variants={textItem}>
                   <Link href={currentSlide.link}>
                     <motion.button
-                      className="relative inline-flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 text-black font-bold text-sm md:text-base px-6 py-3 rounded-full shadow-lg"
-                      whileHover={{ scale: 1.07, boxShadow: "0 0 28px rgba(0,220,255,0.55)" }}
-                      whileTap={{ scale: 0.95 }}
+                      className="slider-cta relative inline-flex items-center gap-2.5 bg-white text-black px-7 py-3 rounded-full shadow-xl"
+                      whileHover={{
+                        scale: 1.05,
+                        backgroundColor: "#22d3ee",
+                        boxShadow: "0 0 32px rgba(0,220,255,0.4)",
+                      }}
+                      whileTap={{ scale: 0.96 }}
+                      transition={{ duration: 0.2 }}
                     >
                       {currentSlide.cta}
                       <svg
-                        className="w-4 h-4"
+                        className="w-3.5 h-3.5"
                         viewBox="0 0 16 16"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -275,19 +344,39 @@ const HomeSlider: React.FC = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Pause indicator */}
-      <AnimatePresence>
-        {paused && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-4 right-4 z-20 text-white/50 text-xs tracking-widest uppercase"
-          >
-            ⏸ Paused
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── Top-right controls: Pause/Play button + counter ── */}
+      <div className="absolute top-4 right-4 z-30 flex items-center gap-3">
+        {/* Slide counter */}
+        <span className="slider-counter text-white/40 text-xs">
+          {String(current + 1).padStart(2, "0")}
+          <span className="text-white/20 mx-1">/</span>
+          {String(slides.length).padStart(2, "0")}
+        </span>
+
+        {/* Pause / Play toggle button */}
+        <motion.button
+          onClick={toggleManualPause}
+          aria-label={manualPause ? "Play slideshow" : "Pause slideshow"}
+          className="flex items-center justify-center w-8 h-8 rounded-full border border-white/20 bg-black/30 backdrop-blur-md text-white/70 hover:text-white hover:border-white/50 transition-colors duration-200"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={manualPause ? "play" : "pause"}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center justify-center"
+            >
+              {manualPause ? <PlayIcon /> : <PauseIcon />}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
+      </div>
+
+
 
       {/* Progress dot indicators */}
       <div className="absolute bottom-5 w-full flex justify-center gap-3 z-20">
@@ -301,8 +390,8 @@ const HomeSlider: React.FC = () => {
             <span
               className={`block rounded-full transition-all duration-300 ${
                 i === current
-                  ? "w-8 md:w-10 h-1.5 bg-white/30"
-                  : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
+                  ? "w-8 md:w-10 h-1.5 bg-white/20"
+                  : "w-1.5 h-1.5 bg-white/25 hover:bg-white/50"
               }`}
             />
             {i === current && (
@@ -313,11 +402,6 @@ const HomeSlider: React.FC = () => {
             )}
           </button>
         ))}
-      </div>
-
-      {/* Slide counter */}
-      <div className="absolute bottom-5 right-4 md:right-8 z-20 text-white/40 text-xs font-mono tracking-wider">
-        {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
       </div>
     </div>
   );

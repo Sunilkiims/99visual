@@ -128,17 +128,18 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 text-center">
 
           {/* ✅ Updated H1 */}
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-3">
-            Driving Innovation - We Don&apos;t Just Build Technology. We Build What&apos;s Next.
-            
-          </h1>
+         <h1 className="text-2xl sm:text-2xl md:text-2xl lg:text-3xl font-bold leading-tight mb-4 
+bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 
+bg-clip-text text-transparent">
+  We Don&apos;t Just Build Technology. We Build What&apos;s Next.
+</h1>
 
           <h2 className="text-lg md:text-xl font-medium text-gray-500 mb-5">
             Trusted by Startups &amp; Enterprises Across India, USA, UK, UAE &amp; Australia
           </h2>
 
           <p className="text-base md:text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto mb-4">
-            At <span className="font-semibold text-black">99 Visual Solutions</span>, we believe
+            We believe
             technology should not just support businesses — it should drive growth, innovation, and
             long-term success. We are a full-service IT solutions and digital transformation company
             specialising in{' '}
