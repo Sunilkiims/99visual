@@ -1,20 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/app/components/header";
-import CADGISBanner from "@/app/components/cadgisbanner";
-import { FaDraftingCompass, FaMapMarkedAlt, FaCubes, FaSatellite, FaGlobe, FaChartArea, FaLayerGroup, FaProjectDiagram } from "react-icons/fa";
 import Footer from "@/app/components/footer";
+import {
+  FaDraftingCompass,
+  FaMapMarkedAlt,
+  FaCubes,
+  FaSatellite,
+  FaLayerGroup,
+  FaProjectDiagram,
+} from "react-icons/fa";
 
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping, Spatial Analysis & Geospatial Solutions - 99Visual Solutions",
-
+  title:
+    "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping, Spatial Analysis & Geospatial Solutions - 99Visual Solutions",
   description:
     "99 Visual Solutions delivers precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, 3D modeling, and end-to-end geospatial solutions. Trusted by infrastructure, engineering, construction, urban planning, and government projects worldwide.",
-
   keywords: [
-    // CAD Services
     "CAD Drafting Services",
     "Engineering CAD Services",
     "2D CAD Drafting Services",
@@ -22,8 +26,6 @@ export const metadata: Metadata = {
     "CAD Design and Drafting",
     "Architectural CAD Services",
     "Infrastructure CAD Services",
-
-    // GIS Services
     "GIS Mapping Services",
     "GIS Data Management Services",
     "Geographic Information System Services",
@@ -32,46 +34,36 @@ export const metadata: Metadata = {
     "GIS Consulting Services",
     "Urban GIS Planning Services",
     "GIS for Infrastructure Projects",
-
-    // Photogrammetry
     "Photogrammetry Services",
     "Drone Photogrammetry Services",
     "Aerial Photogrammetry Services",
     "3D Photogrammetry Modeling",
     "Orthomosaic Mapping Services",
-
-    // LiDAR
     "LiDAR Data Processing Services",
     "LiDAR Point Cloud Processing",
     "LiDAR 3D Mapping Services",
     "Digital Terrain Model Services",
     "Digital Surface Model Services",
     "Airborne LiDAR Services",
-
-    // Mapping & Remote Sensing
     "3D Mapping Services",
     "Topographic Mapping Services",
     "Survey Mapping Services",
     "Remote Sensing Services",
     "Satellite Mapping Services",
     "Land Mapping Services",
-
-    // Industry Applications
     "Geospatial Solutions for Infrastructure",
     "Geospatial Solutions for Construction",
     "Geospatial Solutions for Urban Planning",
     "Geospatial Solutions for Environmental Analysis",
     "Engineering Mapping Services",
     "Asset Management GIS Solutions",
-
-    // Brand
     "99 Visual Solutions",
     "99 Visual Geospatial Services",
     "99 Visual CAD GIS",
   ],
-
   openGraph: {
-    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+    title:
+      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
       "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99Visual Solutions delivers precision geospatial services for infrastructure, engineering, urban planning, and environmental projects worldwide.",
     url: "https://www.99visual.com/services/cad-gis-photogrammetry",
@@ -87,310 +79,706 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+    title:
+      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
       "CAD drafting, GIS mapping, LiDAR processing, photogrammetry, spatial analysis & 3D modeling — precision geospatial solutions by 99Visual Solutions for projects worldwide.",
-    site: "@99 visual",
-    creator: "@99 visual",
-    images: [
-      "https://www.99visual.com/images/services/cad-gis-og.jpg",
-    ],
+    site: "@99visual",
+    creator: "@99visual",
+    images: ["https://www.99visual.com/images/services/cad-gis-og.jpg"],
   },
-
   metadataBase: new URL("https://www.99visual.com"),
-
-  alternates: {
-    canonical: "/services/cad-gis-photogrammetry",
-  },
+  alternates: { canonical: "/services/cad-gis-photogrammetry" },
 };
-
-
 
 export default function CADGISPhotogrammetry() {
   const benefits = [
     {
-      icon: <FaDraftingCompass className="text-blue-600 text-3xl" />,
+      icon: <FaDraftingCompass />,
       title: "Accurate CAD Drafting",
       description:
         "We provide precise CAD drawings and drafting services for engineering, architecture, and infrastructure projects.",
     },
     {
-      icon: <FaMapMarkedAlt className="text-green-600 text-3xl" />,
+      icon: <FaMapMarkedAlt />,
       title: "Comprehensive GIS Solutions",
       description:
         "Our GIS services transform raw geospatial data into actionable insights for urban planning and resource management.",
     },
     {
-      icon: <FaSatellite className="text-purple-600 text-3xl" />,
+      icon: <FaSatellite />,
       title: "Advanced Photogrammetry",
       description:
         "We deliver accurate 3D models and orthomosaics using drone and satellite imagery for surveying and analysis.",
     },
     {
-      icon: <FaCubes className="text-orange-500 text-3xl" />,
+      icon: <FaCubes />,
       title: "LiDAR Data Processing",
       description:
         "We process LiDAR point cloud data to generate precise digital terrain models and surface mapping outputs.",
     },
     {
-      icon: <FaLayerGroup className="text-pink-600 text-3xl" />,
+      icon: <FaLayerGroup />,
       title: "Multi-Layer Mapping",
       description:
         "Our layered mapping solutions allow integration of CAD, GIS, and photogrammetry data for holistic insights.",
     },
     {
-      icon: <FaProjectDiagram className="text-yellow-600 text-3xl" />,
+      icon: <FaProjectDiagram />,
       title: "Project-Ready Deliverables",
       description:
         "We deliver data in client-specified formats, ensuring compatibility and readiness for project implementation.",
     },
   ];
 
+  const services = [
+    {
+      id: "advanced-cad-gis",
+      title: "Advanced CAD, GIS & Geospatial Services",
+      image: "/images/advanced-cad-gis.png",
+      imageAlt: "Advanced CAD, GIS & Geospatial",
+      description:
+        "Transform complex spatial data into actionable insights with our advanced CAD, GIS, and geospatial solutions. We help businesses, infrastructure projects, and government organizations visualize, analyze, and manage geographic and engineering data with precision.",
+      highlight:
+        "By combining cutting-edge tools, accurate data processing, and domain expertise, we deliver high-quality mapping, modeling, and analysis that support smarter planning and decision-making.",
+      bullets: [
+        "CAD drafting, 2D/3D modeling & engineering design support",
+        "GIS mapping, spatial analysis & geospatial data management",
+        "LiDAR, photogrammetry & high-precision data processing",
+      ],
+      imageLeft: false,
+    },
+    {
+      id: "end-to-end-mapping",
+      title: "End-to-End CAD, GIS & Mapping Solutions",
+      image: "/images/GIS-Mapping.png",
+      imageAlt: "GIS mapping solutions",
+      description:
+        "From data capture to final visualization, we deliver comprehensive CAD, GIS, and mapping solutions tailored to your project needs. Our end-to-end approach ensures seamless integration of geospatial data, engineering design, and advanced mapping technologies.",
+      highlight:
+        "Whether it's infrastructure development, urban planning, or asset management, we provide scalable and precise solutions that streamline workflows, reduce errors, and enhance decision-making.",
+      bullets: [
+        "Complete workflow from data collection to final map delivery",
+        "Integrated CAD, GIS & mapping for accurate planning & execution",
+        "Scalable solutions for infrastructure, utilities & land management",
+      ],
+      imageLeft: true,
+    },
+    {
+      id: "lidar-services",
+      title: "Precision CAD, GIS & LiDAR Services",
+      image: "/images/Precision-CAD-GIS.png",
+      imageAlt: "Precision CAD, GIS & LiDAR",
+      description:
+        "Achieve unmatched accuracy and detail with our precision-driven CAD, GIS, and LiDAR services. We specialize in transforming complex spatial and survey data into highly accurate models, maps, and actionable insights.",
+      highlight:
+        "By leveraging advanced LiDAR technology alongside expert CAD drafting and GIS analysis, we deliver reliable outputs that support critical decision-making across infrastructure, engineering, and environmental projects.",
+      bullets: [
+        "High-precision LiDAR data processing & 3D modeling",
+        "Accurate CAD drafting & GIS-based spatial analysis",
+        "Reliable data outputs for infrastructure, planning & surveying projects",
+      ],
+      imageLeft: false,
+    },
+    {
+      id: "gis-data-management",
+      title: "GIS Data Management & Spatial Analysis",
+      image: "/images/GIS-Data-Management.png",
+      imageAlt: "GIS Data Management & Spatial Analysis",
+      description:
+        "Turn complex geographic data into meaningful insights with our advanced GIS data management and spatial analysis services. We help organizations collect, organize, and analyze spatial data to support smarter planning, decision-making, and resource management.",
+      highlight:
+        "By leveraging powerful GIS tools and analytical techniques, we uncover patterns, trends, and relationships that drive efficiency and strategic growth.",
+      bullets: [
+        "Geospatial data collection, cleaning & database management",
+        "Spatial pattern analysis, trend identification & reporting",
+        "Data-driven decision support for planning & operations",
+      ],
+      imageLeft: true,
+    },
+    {
+      id: "engineering-mapping",
+      title: "Engineering, Mapping & Geospatial Solutions",
+      image: "/images/Engineering-Mapping.png",
+      imageAlt: "Engineering, Mapping & Geospatial",
+      description:
+        "Bridge the gap between engineering precision and geospatial intelligence with our integrated solutions. We deliver comprehensive engineering, mapping, and geospatial services that support accurate planning, design, and execution across infrastructure and development projects.",
+      highlight:
+        "By combining advanced technologies with domain expertise, we transform complex data into clear, actionable insights—helping you improve efficiency, reduce risks, and make informed decisions at every stage.",
+      bullets: [
+        "Integrated engineering design, mapping & geospatial analysis",
+        "High-accuracy data processing for infrastructure & development projects",
+        "Scalable solutions for planning, execution & asset management",
+      ],
+      imageLeft: false,
+    },
+  ];
+
   return (
     <>
       <Header />
-       {/* Hero Banner */}
-<section className="relative py-24 text-center overflow-hidden bg-black text-white">
 
-  {/* Glow */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.25),transparent_60%)]"></div>
+      {/* ─── Shared Design Tokens ─── */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-  <div className="relative z-10 max-w-3xl mx-auto px-4">
+        :root {
+          --c-bg:       #080808;
+          --c-surface:  #0f0f0f;
+          --c-surface2: #141414;
+          --c-border:   rgba(255,255,255,0.07);
+          --c-orange:   #f97316;
+          --c-orange-dim: rgba(249,115,22,0.12);
+          --c-muted:    rgba(255,255,255,0.45);
+          --c-muted2:   rgba(255,255,255,0.65);
+          --ff-serif:   'Cormorant Garamond', serif;
+          --ff-sans:    'DM Sans', sans-serif;
+        }
 
-    <h1 className="text-2xl md:text-4xl font-bold mb-6">
-      CAD, GIS & <span className="text-orange-500">Photogrammetry</span>
-    </h1>
+        /* ── HERO ── */
+        .wd-hero {
+          position: relative; min-height: 90vh;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          background: var(--c-bg); overflow: hidden;
+          padding: 8rem 1.5rem 6rem; text-align: center;
+        }
+        .wd-hero__bg { position: absolute; inset: 0; z-index: 0; }
+        .wd-hero__orb {
+          position: absolute; border-radius: 50%; filter: blur(100px);
+          animation: wdOrbDrift 16s ease-in-out infinite alternate;
+        }
+        .wd-hero__orb--1 {
+          width: 540px; height: 540px;
+          background: radial-gradient(circle, #6366f1, #4f46e5);
+          top: -160px; left: -100px; opacity: .13;
+        }
+        .wd-hero__orb--2 {
+          width: 460px; height: 460px;
+          background: radial-gradient(circle, #f97316, #ea580c);
+          bottom: -130px; right: -80px; opacity: .12;
+          animation-delay: -8s;
+        }
+        .wd-hero__orb--3 {
+          width: 300px; height: 300px;
+          background: radial-gradient(circle, #06b6d4, #0891b2);
+          top: 40%; right: 15%; opacity: .07;
+          animation-delay: -4s;
+        }
+        @keyframes wdOrbDrift {
+          0%   { transform: translate(0,0) scale(1); }
+          100% { transform: translate(32px,24px) scale(1.06); }
+        }
+        .wd-hero__grid {
+          position: absolute; inset: 0;
+          background-image:
+            linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+          background-size: 60px 60px;
+        }
+        .wd-hero__grain {
+          position: absolute; inset: 0; opacity: .03;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 180px 180px;
+        }
+        .wd-hero__content {
+          position: relative; z-index: 10; max-width: 800px; margin: 0 auto;
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes wdFadeUp {
+          from { opacity: 0; transform: translateY(36px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .wd-hero__eyebrow {
+          display: inline-flex; align-items: center; gap: 8px;
+          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--c-orange);
+          border: 1px solid rgba(249,115,22,.28);
+          background: rgba(249,115,22,.07);
+          padding: 6px 16px; border-radius: 100px;
+          margin-bottom: 1.8rem; backdrop-filter: blur(8px);
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
+        }
+        .wd-hero__dot {
+          width: 5px; height: 5px; border-radius: 50%;
+          background: var(--c-orange);
+          animation: wdPulse 2s ease-in-out infinite;
+        }
+        @keyframes wdPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: .35; transform: scale(.65); }
+        }
+        .wd-hero__h1 {
+          font-family: var(--ff-serif);
+          font-size: clamp(3rem, 8.5vw, 6.8rem);
+          font-weight: 700; line-height: 1.0; letter-spacing: -.02em;
+          color: #fff; margin: 0 0 1.1rem;
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
+        }
+        .wd-hero__h1 em {
+          font-style: italic; color: transparent;
+          -webkit-text-stroke: 1.5px var(--c-orange);
+        }
+        .wd-hero__rule {
+          width: 48px; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
+          margin: 0 auto 1.5rem;
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
+        }
+        .wd-hero__sub {
+          font-family: var(--ff-sans);
+          font-size: clamp(.95rem, 2vw, 1.12rem);
+          font-weight: 300; line-height: 1.75; color: var(--c-muted);
+          max-width: 560px; margin: 0 auto 2.6rem;
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
+        }
+        .wd-hero__cta {
+          display: inline-flex; align-items: center; gap: 10px;
+          font-family: var(--ff-sans); font-size: 11px; font-weight: 600;
+          letter-spacing: .12em; text-transform: uppercase;
+          color: #080808;
+          background: linear-gradient(135deg, #fb923c, #f97316);
+          padding: 14px 34px; border-radius: 100px; text-decoration: none;
+          box-shadow: 0 8px 32px rgba(249,115,22,.35);
+          transition: transform .2s ease, box-shadow .2s ease;
+          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
+        }
+        .wd-hero__cta:hover {
+          transform: translateY(-2px) scale(1.04);
+          box-shadow: 0 14px 40px rgba(249,115,22,.5);
+        }
+        .wd-hero__scroll {
+          position: absolute; bottom: 2rem; left: 50%;
+          transform: translateX(-50%);
+          z-index: 20; display: flex; flex-direction: column;
+          align-items: center; gap: 6px; text-decoration: none;
+          animation: wdFadeUp .9s ease .8s both;
+        }
+        .wd-hero__scroll-line {
+          width: 1px; height: 40px;
+          background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
+          animation: wdScrollLine 1.8s ease-in-out infinite;
+        }
+        @keyframes wdScrollLine {
+          0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+          50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+          100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+        }
+        .wd-hero__scroll-lbl {
+          font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
+          letter-spacing: .2em; text-transform: uppercase;
+          color: rgba(255,255,255,.22);
+        }
 
-    <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
-      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
-    </p>
+        /* corner marks */
+        .wd-corner {
+          position: absolute; width: 28px; height: 28px; z-index: 5; opacity: .2;
+        }
+        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
+        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
+        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
-    <a
-      href="#services"
-      className="inline-block mt-8 bg-gradient-to-r from-orange-500 to-orange-400 px-8 py-4 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
-    >
-      Explore Our Services
-    </a>
+        /* ── INTRO ── */
+        .wd-intro {
+          background: var(--c-surface);
+          border-bottom: 1px solid var(--c-border);
+          padding: 5rem 1.5rem;
+        }
+        .wd-intro__inner { max-width: 860px; margin: 0 auto; text-align: center; }
+        .wd-intro__label {
+          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--c-orange); margin-bottom: 1.2rem; display: block;
+        }
+        .wd-intro__h2 {
+          font-family: var(--ff-serif);
+          font-size: clamp(1.9rem, 4vw, 3rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
+          color: #fff; margin: 0 0 1.5rem;
+        }
+        .wd-intro__h2 em { font-style: italic; color: var(--c-orange); }
+        .wd-intro__rule {
+          width: 40px; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
+          margin: 0 auto 1.8rem;
+        }
+        .wd-intro__p {
+          font-family: var(--ff-sans); font-size: 1rem;
+          font-weight: 300; line-height: 1.85; color: var(--c-muted);
+          max-width: 680px; margin: 0 auto .9rem;
+        }
+        .wd-intro__p strong { color: var(--c-muted2); font-weight: 500; }
 
-  </div>
+        /* ── SERVICE SECTIONS ── */
+        .wd-services { background: var(--c-bg); }
 
-  {/* 🔽 Arrow Swing Scroll Indicator */}
-  <a
-    href="#services"
-    className="absolute bottom-6 left-1/2 arrowSwing"
-    style={{ transform: "translateX(-50%)" }}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-10 w-10 text-orange-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </svg>
-  </a>
+        .wd-svc {
+          padding: 5rem 1.5rem;
+          border-bottom: 1px solid var(--c-border);
+          position: relative;
+        }
+        .wd-svc:nth-child(odd)  { background: var(--c-surface); }
+        .wd-svc:nth-child(even) { background: var(--c-bg); }
 
-</section>
+        .wd-svc__inner--img-left {
+          max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: 3fr 4fr;
+          gap: 4rem; align-items: center;
+        }
+        .wd-svc__inner--img-right {
+          max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: 4fr 3fr;
+          gap: 4rem; align-items: center;
+        }
+        @media (max-width: 768px) {
+          .wd-svc__inner--img-left,
+          .wd-svc__inner--img-right { grid-template-columns: 1fr; gap: 2.5rem; }
+          .wd-svc__img-wrap { order: 2 !important; }
+          .wd-svc__body    { order: 1 !important; }
+        }
 
-     {/* Intro Section */}
-<div id="services" className="bg-gray-50 py-10 px-4 md:px-20">
-  <div className="max-w-4xl mx-auto">
+        .wd-svc__img-wrap {
+          position: relative; border-radius: 16px; overflow: hidden;
+        }
+        .wd-svc__img-wrap::before {
+          content: ''; position: absolute; inset: 0; z-index: 1;
+          background: linear-gradient(135deg, rgba(249,115,22,.08), transparent 60%);
+          border-radius: 16px;
+        }
+        .wd-svc__img-wrap img {
+          width: 100%; height: auto; display: block;
+          border-radius: 16px; border: 1px solid var(--c-border);
+          transition: transform .4s ease;
+        }
+        .wd-svc__img-wrap:hover img { transform: scale(1.03); }
 
-    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
-      CAD, GIS & Photogrammetry Services for Precision & Innovation
-    </h1>
+        .wd-svc__num {
+          font-family: var(--ff-serif);
+          font-size: clamp(3.5rem, 6vw, 5.5rem);
+          font-weight: 700; line-height: 1;
+          color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
+          position: absolute; top: -1.5rem; left: 0;
+          pointer-events: none; user-select: none;
+        }
+        .wd-svc__body { position: relative; }
+        .wd-svc__eyebrow {
+          font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--c-orange); margin-bottom: .9rem; display: block;
+        }
+        .wd-svc__h3 {
+          font-family: var(--ff-serif);
+          font-size: clamp(1.6rem, 3vw, 2.4rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
+          color: #fff; margin: 0 0 .6rem;
+        }
+        .wd-svc__rule {
+          width: 32px; height: 1px;
+          background: linear-gradient(90deg, var(--c-orange), transparent);
+          margin: 0 0 1.4rem;
+        }
+        .wd-svc__p {
+          font-family: var(--ff-sans); font-size: .95rem;
+          font-weight: 300; line-height: 1.85; color: var(--c-muted);
+          margin-bottom: .8rem;
+        }
+        .wd-svc__highlight {
+          font-family: var(--ff-sans); font-size: .93rem;
+          font-weight: 400; line-height: 1.8;
+          color: rgba(255,255,255,.6);
+          border-left: 2px solid rgba(249,115,22,.4);
+          padding-left: 1rem; margin-bottom: 1.6rem;
+          font-style: italic;
+        }
+        .wd-svc__bullets {
+          list-style: none; padding: 0; margin: 0;
+          display: flex; flex-direction: column; gap: .5rem;
+        }
+        .wd-svc__bullets li {
+          font-family: var(--ff-sans); font-size: .88rem;
+          font-weight: 400; color: var(--c-muted2);
+          display: flex; align-items: flex-start; gap: .6rem;
+        }
+        .wd-svc__bullets li::before {
+          content: ''; width: 5px; height: 5px; border-radius: 50%;
+          background: var(--c-orange); margin-top: .45rem; flex-shrink: 0;
+        }
 
-    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
-      At <span className="font-semibold">99 Visual Solutions</span>, we specialize in <span className="font-semibold">Computer-Aided Design (CAD)</span>, <span className="font-semibold">Geographic Information Systems (GIS)</span>, and <span className="font-semibold">Photogrammetry</span>, delivering data-rich and high-accuracy solutions that empower businesses, government agencies, and planners to make informed decisions.
-    </p>
+        /* ── BENEFITS ── */
+        .wd-benefits {
+          background: var(--c-surface); padding: 6rem 1.5rem;
+          border-top: 1px solid var(--c-border);
+        }
+        .wd-benefits__inner { max-width: 1200px; margin: 0 auto; }
+        .wd-benefits__head  { text-align: center; margin-bottom: 3.5rem; }
+        .wd-benefits__label {
+          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--c-orange); margin-bottom: 1rem; display: block;
+        }
+        .wd-benefits__h2 {
+          font-family: var(--ff-serif);
+          font-size: clamp(1.8rem, 4vw, 3rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
+          color: #fff; margin: 0 0 1rem;
+        }
+        .wd-benefits__h2 em { font-style: italic; color: var(--c-orange); }
+        .wd-benefits__rule {
+          width: 40px; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
+          margin: 0 auto 1.4rem;
+        }
+        .wd-benefits__sub {
+          font-family: var(--ff-sans); font-size: .95rem;
+          font-weight: 300; line-height: 1.8; color: var(--c-muted);
+          max-width: 520px; margin: 0 auto;
+        }
+        .wd-benefits__grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+        }
+        @media (max-width: 1024px) { .wd-benefits__grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 640px)  { .wd-benefits__grid { grid-template-columns: 1fr; } }
 
-    <p className="text-gray-700 leading-8 text-justify text-[17px]">
-      Whether it's <span className="font-semibold">surveying, infrastructure planning, urban development, or environmental analysis</span>, our advanced tools and expertise provide actionable insights that drive efficiency, precision, and project success.
-    </p>
+        .wd-benefit-card {
+          background: var(--c-surface2); border: 1px solid var(--c-border);
+          border-radius: 16px; padding: 2rem 1.75rem;
+          transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+          position: relative; overflow: hidden;
+        }
+        .wd-benefit-card::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(249,115,22,.5), transparent);
+          opacity: 0; transition: opacity .25s ease;
+        }
+        .wd-benefit-card:hover {
+          border-color: rgba(249,115,22,.25); transform: translateY(-4px);
+          box-shadow: 0 20px 40px rgba(0,0,0,.4);
+        }
+        .wd-benefit-card:hover::before { opacity: 1; }
+        .wd-benefit-card__icon {
+          width: 44px; height: 44px; border-radius: 10px;
+          background: var(--c-orange-dim); border: 1px solid rgba(249,115,22,.2);
+          display: flex; align-items: center; justify-content: center;
+          color: var(--c-orange); font-size: 1.1rem; margin-bottom: 1.2rem;
+        }
+        .wd-benefit-card__title {
+          font-family: var(--ff-sans); font-size: .95rem; font-weight: 600;
+          color: #fff; margin-bottom: .5rem;
+        }
+        .wd-benefit-card__desc {
+          font-family: var(--ff-sans); font-size: .85rem;
+          font-weight: 300; line-height: 1.75; color: var(--c-muted);
+        }
 
-  </div>
-</div>
-      {/* Advanced CAD, GIS & Geospatial Services Section */}
-<div className="bg-white py-12 px-6 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-[3fr_2fr] gap-12 items-center">
-    
-    <div>
-      <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
-        Advanced CAD, GIS & Geospatial Services
-      </h2>
-      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Transform complex spatial data into actionable insights with our advanced CAD, GIS, and geospatial solutions. We help businesses, infrastructure projects, and government organizations visualize, analyze, and manage geographic and engineering data with precision.
-      By combining cutting-edge tools, accurate data processing, and domain expertise, we deliver high-quality mapping, modeling, and analysis that support smarter planning and decision-making. Our solutions enhance efficiency, improve accuracy, and enable you to unlock the true potential of your spatial data.
-      </p>
-      <ul className="space-y-3 text-gray-800">
-        <li>✔ CAD drafting, 2D/3D modeling & engineering design support</li>
-        <li>✔ GIS mapping, spatial analysis & geospatial data management</li>
-        <li>✔ LIDAR, photogrammetry & high-precision data processing</li>
-      </ul>
-    </div>
+        /* ── CTA STRIP ── */
+        .wd-cta {
+          background: var(--c-bg); border-top: 1px solid var(--c-border);
+          padding: 5rem 1.5rem; text-align: center;
+          position: relative; overflow: hidden;
+        }
+        .wd-cta__orb {
+          position: absolute; width: 400px; height: 400px; border-radius: 50%;
+          background: radial-gradient(circle, #f97316, transparent 70%);
+          opacity: .05; top: 50%; left: 50%;
+          transform: translate(-50%,-50%);
+          filter: blur(60px); pointer-events: none;
+        }
+        .wd-cta__inner { position: relative; z-index: 10; max-width: 560px; margin: 0 auto; }
+        .wd-cta__eyebrow {
+          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--c-orange); margin-bottom: 1.2rem; display: block;
+        }
+        .wd-cta__h2 {
+          font-family: var(--ff-serif);
+          font-size: clamp(1.9rem, 4vw, 3.2rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
+          color: #fff; margin: 0 0 1rem;
+        }
+        .wd-cta__h2 em { font-style: italic; color: var(--c-orange); }
+        .wd-cta__rule {
+          width: 40px; height: 1px;
+          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
+          margin: 0 auto 1.4rem;
+        }
+        .wd-cta__sub {
+          font-family: var(--ff-sans); font-size: .95rem;
+          font-weight: 300; line-height: 1.8; color: var(--c-muted);
+          margin-bottom: 2.4rem;
+        }
+        .wd-cta__btn {
+          display: inline-flex; align-items: center; gap: 10px;
+          font-family: var(--ff-sans); font-size: 11px; font-weight: 600;
+          letter-spacing: .12em; text-transform: uppercase; color: #080808;
+          background: linear-gradient(135deg, #fb923c, #f97316);
+          padding: 14px 34px; border-radius: 100px; text-decoration: none;
+          box-shadow: 0 8px 32px rgba(249,115,22,.35);
+          transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .wd-cta__btn:hover {
+          transform: translateY(-2px) scale(1.04);
+          box-shadow: 0 14px 40px rgba(249,115,22,.5);
+        }
+      `}</style>
 
-    <Image
-      src="/images/advanced-cad-gis.png"
-      alt="Advanced CAD, GIS & Geospatial"
-      width={500}
-      height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
-    />
+      {/* ══ HERO ══════════════════════════════════════════════ */}
+      <section className="wd-hero">
+        <div className="wd-hero__bg">
+          <div className="wd-hero__orb wd-hero__orb--1" />
+          <div className="wd-hero__orb wd-hero__orb--2" />
+          <div className="wd-hero__orb wd-hero__orb--3" />
+          <div className="wd-hero__grid" />
+          <div className="wd-hero__grain" />
+        </div>
 
-  </div>
-</div>
+        <div className="wd-corner wd-corner--tl" />
+        <div className="wd-corner wd-corner--tr" />
+        <div className="wd-corner wd-corner--bl" />
+        <div className="wd-corner wd-corner--br" />
 
-      {/* End-to-End CAD, GIS & Mapping Solutions Section */}
-<div className="bg-gray-50 py-12 px-6 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-[2fr_3fr] gap-10 items-center">
-    
-    <Image
-      src="/images/GIS-Mapping.png"
-      alt="GIS mapping solutions"
-      width={500}
-      height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
-    />
+        <div className="wd-hero__content">
+          <div className="wd-hero__eyebrow">
+            <span className="wd-hero__dot" />
+            Services · CAD, GIS & Photogrammetry
+          </div>
 
-    <div className="order-1 md:order-2"> 
-      <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
-        End-to-End CAD, GIS & Mapping Solutions
-      </h2>
-      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        From data capture to final visualization, we deliver comprehensive CAD, GIS, and mapping solutions tailored to your project needs. Our end-to-end approach ensures seamless integration of geospatial data, engineering design, and advanced mapping technologies to support accurate planning, analysis, and execution.
-      Whether it's infrastructure development, urban planning, or asset management, we provide scalable and precise solutions that streamline workflows, reduce errors, and enhance decision-making across every stage of your project lifecycle.
-      </p>
-      <ul className="space-y-2 text-gray-800">
-        <li>✔ Complete workflow from data collection to final map delivery</li>
-        <li>✔ Integrated CAD, GIS & mapping for accurate planning & execution</li>
-        <li>✔ Scalable solutions for infrastructure, utilities & land management</li>
-      </ul>
-    </div>
+          <h1 className="wd-hero__h1">
+            Precision mapping for<br />
+            a smarter <em>world</em>
+          </h1>
 
-  </div>
-</div>
+          <div className="wd-hero__rule" />
 
-      {/* Precision CAD, GIS & LiDAR Services Section */}
-<div className="bg-white py-12 px-6 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-[3fr_2fr] gap-12 items-center">
-    
-    <div>
-      <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
-        Precision CAD, GIS & LiDAR Services
-      </h2>
-      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Achieve unmatched accuracy and detail with our precision-driven CAD, GIS, and LiDAR services. We specialize in transforming complex spatial and survey data into highly accurate models, maps, and actionable insights.
-      By leveraging advanced LiDAR technology alongside expert CAD drafting and GIS analysis, we deliver reliable outputs that support critical decision-making across infrastructure, engineering, and environmental projects. Our solutions are designed to enhance accuracy, reduce risks, and ensure efficiency at every stage.
-      </p>
-      <ul className="space-y-3 text-gray-800">
-        <li>✔ High-precision LiDAR data processing & 3D modeling</li>
-        <li>✔ Accurate CAD drafting & GIS-based spatial analysis</li>
-        <li>✔ Reliable data outputs for infrastructure, planning & surveying projects</li>
-      </ul>
-    </div>
+          <p className="wd-hero__sub">
+            From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, and spatial analysis—we deliver precision-driven geospatial solutions for infrastructure, engineering, and urban planning worldwide.
+          </p>
 
-    <Image
-      src="/images/Precision-CAD-GIS.png"
-      alt="Precision CAD, GIS & LiDAR"
-      width={500}
-      height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
-    />
+          <a href="#services" className="wd-hero__cta">
+            Explore Services
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        </div>
 
-  </div>
-</div>
+        <a href="#services" className="wd-hero__scroll" aria-label="Scroll down">
+          <div className="wd-hero__scroll-line" />
+          <span className="wd-hero__scroll-lbl">Scroll</span>
+        </a>
+      </section>
 
-{/* GIS Data Management & Spatial Analysis */}
-<div className="bg-gray-50 py-12 px-6 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-[2fr_3fr] gap-10 items-center">
-    
-    <Image
-      src="/images/GIS-Data-Management.png"
-      alt="GIS Data Management & Spatial Analysis"
-      width={500}
-      height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain order-2 md:order-1"
-    />
-
-    <div className="order-1 md:order-2"> 
-      <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
-        GIS Data Management & Spatial Analysis
-      </h2>
-      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Turn complex geographic data into meaningful insights with our advanced GIS data management and spatial analysis services. We help organizations collect, organize, and analyze spatial data to support smarter planning, decision-making, and resource management.
-      By leveraging powerful GIS tools and analytical techniques, we uncover patterns, trends, and relationships that drive efficiency and strategic growth. Our solutions ensure your geospatial data is accurate, accessible, and actionable across all your projects.
-      </p>
-      <ul className="space-y-2 text-gray-800">
-        <li>✔ Geospatial data collection, cleaning & database management</li>
-        <li>✔ Spatial pattern analysis, trend identification & reporting</li>
-        <li>✔ Data-driven decision support for planning & operations</li>
-      </ul>
-    </div>
-
-  </div>
-</div>
-  
-      {/* Engineering, Mapping & Geospatial Solutions Section */}
-<div className="bg-white py-12 px-6 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-[3fr_2fr] gap-10 items-center">
-    
-    <div>
-      <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
-        Engineering, Mapping & Geospatial Solutions
-      </h2>
-      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
-        Using advanced imaging and{" "}
-        Bridge the gap between engineering precision and geospatial intelligence with our integrated solutions. We deliver comprehensive engineering, mapping, and geospatial services that support accurate planning, design, and execution across infrastructure and development projects.
-      By combining advanced technologies with domain expertise, we transform complex data into clear, actionable insights—helping you improve efficiency, reduce risks, and make informed decisions at every stage of your project lifecycle.
-      </p>
-      <ul className="space-y-2 text-gray-800">
-        <li>✔ Integrated engineering design, mapping & geospatial analysis</li>
-        <li>✔ High-accuracy data processing for infrastructure & development projects</li>
-        <li>✔ Scalable solutions for planning, execution & asset management</li>
-      </ul>
-    </div>
-
-    <Image
-      src="/images/Engineering-Mapping.png"
-      alt="Engineering, Mapping & Geospatial"
-      width={500}
-      height={400}
-      className="rounded-xl shadow-lg w-full h-auto object-contain"
-    />
-
-  </div>
-</div>
-
-      {/* Why Choose Us Section */}
-      <div className="bg-gray-50 py-12 px-6 md:px-20">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-orange-500 font-semibold mb-2">Why Choose Us?</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Benefits of Partnering with 99 Visual CAD, GIS & Photogrammetry
+      {/* ══ INTRO ══════════════════════════════════════════════ */}
+      <section className="wd-intro">
+        <div className="wd-intro__inner">
+          <span className="wd-intro__label">Our Expertise</span>
+          <h2 className="wd-intro__h2">
+            Precision, innovation & data-driven<br />
+            geospatial <em>intelligence</em>
           </h2>
-          <p className="text-gray-700 max-w-3xl mx-auto mb-12">
-            With <span className="font-semibold">99 Visual Solutions</span>, precision and innovation go hand in hand. Our services are designed to provide reliable, scalable, and accurate geospatial insights for complex projects.
+          <div className="wd-intro__rule" />
+          <p className="wd-intro__p">
+            At <strong>99 Visual Solutions</strong>, we specialize in <strong>Computer-Aided Design (CAD)</strong>, <strong>Geographic Information Systems (GIS)</strong>, and <strong>Photogrammetry</strong>, delivering data-rich and high-accuracy solutions that empower businesses, government agencies, and planners to make informed decisions.
+          </p>
+          <p className="wd-intro__p">
+            Whether it's <strong>surveying, infrastructure planning, urban development, or environmental analysis</strong>, our advanced tools and expertise provide actionable insights that drive efficiency, precision, and project success.
           </p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {benefits.map((benefit, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="flex justify-center mb-4">{benefit.icon}</div>
-              <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">{benefit.description}</p>
+      </section>
+
+      {/* ══ SERVICE SECTIONS ══════════════════════════════════ */}
+      <div id="services" className="wd-services">
+        {services.map((svc, idx) => (
+          <section key={svc.id} id={svc.id} className="wd-svc">
+            <div className={`wd-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
+
+              {/* Image */}
+              <div
+                className="wd-svc__img-wrap"
+                style={{ order: svc.imageLeft ? 1 : 2 }}
+              >
+                <Image
+                  src={svc.image}
+                  alt={svc.imageAlt}
+                  width={600}
+                  height={460}
+                  style={{ width: "100%", height: "auto" }}
+                />
+              </div>
+
+              {/* Text */}
+              <div
+                className="wd-svc__body"
+                style={{ order: svc.imageLeft ? 2 : 1 }}
+              >
+                <span className="wd-svc__num">
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <span className="wd-svc__eyebrow">Service 0{idx + 1}</span>
+                <h2 className="wd-svc__h3">{svc.title}</h2>
+                <div className="wd-svc__rule" />
+                <p className="wd-svc__p">{svc.description}</p>
+                <p className="wd-svc__highlight">{svc.highlight}</p>
+                <ul className="wd-svc__bullets">
+                  {svc.bullets.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          ))}
-        </div>
+          </section>
+        ))}
       </div>
+
+      {/* ══ BENEFITS ══════════════════════════════════════════ */}
+      <section className="wd-benefits">
+        <div className="wd-benefits__inner">
+          <div className="wd-benefits__head">
+            <span className="wd-benefits__label">Why Choose Us?</span>
+            <h2 className="wd-benefits__h2">
+              Benefits of partnering with<br /><em>99 Visual</em> CAD, GIS & Photogrammetry
+            </h2>
+            <div className="wd-benefits__rule" />
+            <p className="wd-benefits__sub">
+              With 99 Visual Solutions, precision and innovation go hand in hand. Our services are designed to provide reliable, scalable, and accurate geospatial insights for complex projects.
+            </p>
+          </div>
+
+          <div className="wd-benefits__grid">
+            {benefits.map((b, i) => (
+              <div className="wd-benefit-card" key={i}>
+                <div className="wd-benefit-card__icon">{b.icon}</div>
+                <div className="wd-benefit-card__title">{b.title}</div>
+                <p className="wd-benefit-card__desc">{b.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ CTA STRIP ═════════════════════════════════════════ */}
+      <section className="wd-cta">
+        <div className="wd-cta__orb" />
+        <div className="wd-cta__inner">
+          <span className="wd-cta__eyebrow">Start a Project</span>
+          <h2 className="wd-cta__h2">
+            Ready to map your next big <em>project</em>?
+          </h2>
+          <div className="wd-cta__rule" />
+          <p className="wd-cta__sub">
+            Get in touch with our team for a free consultation. We'll help you design the right CAD, GIS, or geospatial strategy to meet your project goals.
+          </p>
+          <Link href="/contact" className="wd-cta__btn">
+            Get a Free Consultation
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Link>
+        </div>
+      </section>
 
       <Footer />
     </>

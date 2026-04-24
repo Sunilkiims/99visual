@@ -27,7 +27,7 @@ setTimeout(() => viewer.resize(), 300);
 
 return (
 
-<div className="w-full md:w-[40%]">
+<div className="w-full md:w-[100%]">
 
 <div
 ref={containerRef}

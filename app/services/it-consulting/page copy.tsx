@@ -9,61 +9,91 @@ import ITConsultBanner from "@/app/components/itconsultingbanner";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "IT Consulting Services | Cloud, Infrastructure, Cybersecurity & Digital Transformation - 99Visual",
-  
+  title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
+
   description:
-    "Empower your business with 99Visual’s IT consulting services including infrastructure management, cloud migration, cybersecurity, server support, and digital transformation. Trusted by enterprises and growing businesses.",
-  
+    "99 Visual Solutions provides end-to-end IT consulting services including IT infrastructure planning, cloud migration, cybersecurity & risk management, software consulting, IoT integration, system migration, and IT project management. Trusted by enterprises and growing businesses worldwide.",
+
   keywords: [
+    // Core IT Consulting
     "IT Consulting Services",
-    "IT Consulting Company India",
-    "IT Infrastructure Management",
-    "Cloud Migration Services",
-    "Cybersecurity Consulting",
-    "Server Management Services",
-    "Network Security Solutions",
-    "Digital Transformation Services",
+    "IT Consulting Company",
+    "Technology Consulting Services",
+    "Enterprise IT Consulting",
     "Managed IT Services",
-    "Enterprise IT Solutions",
     "IT Support Services",
-    "Technology Consulting Company",
-    "99Visual IT Solutions"
+    "IT Advisory Services",
+
+    // Infrastructure
+    "IT Infrastructure Planning",
+    "IT Infrastructure Management",
+    "IT Infrastructure Optimization",
+    "Network Infrastructure Services",
+    "Server Management Services",
+    "System Migration Services",
+    "IT Installation Services",
+
+    // Cloud
+    "Cloud Migration Services",
+    "Cloud Transformation Services",
+    "AWS Migration Services",
+    "Azure Cloud Services",
+    "Google Cloud Migration",
+    "Cloud Infrastructure Management",
+    "Digital Transformation Services",
+
+    // Cybersecurity
+    "Cybersecurity Consulting Services",
+    "Cybersecurity Risk Management",
+    "Network Security Solutions",
+    "Endpoint Security Services",
+    "IT Compliance Services",
+    "Threat Monitoring Services",
+
+    // Software & Applications
+    "Software Consulting Services",
+    "Application Modernization Services",
+    "IT Project Management Services",
+    "Agile IT Project Delivery",
+
+    // IoT
+    "IoT Integration Services",
+    "Smart Device Integration",
+    "IoT Consulting Services",
+    "Industrial IoT Solutions",
+
+    // Audience & Brand
+    "IT Solutions for Enterprises",
+    "IT Solutions for Startups",
+    "99 Visual Solutions",
+    "99 Visual IT Consulting",
   ],
 
   openGraph: {
-    title: "IT Consulting & Technology Solutions - 99Visual",
-    
+    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
-      "From IT infrastructure and cybersecurity to cloud and digital transformation, 99Visual delivers scalable and secure IT consulting solutions.",
-    
+      "From cloud migration and cybersecurity to IT infrastructure, software consulting, IoT integration, and project management — 99Visual Solutions delivers strategic IT consulting for enterprises and growing businesses worldwide.",
     url: "https://www.99visual.com/services/it-consulting",
-    
-    siteName: "99Visual",
-    
+    siteName: "99 Visual Solutions",
     images: [
       {
         url: "https://www.99visual.com/images/services/it-consulting-og.jpg",
         width: 1200,
         height: 630,
-        alt: "IT Consulting Services by 99Visual",
+        alt: "IT Consulting Services by 99 Visual Solutions",
       },
     ],
-    
     locale: "en_US",
     type: "website",
   },
 
   twitter: {
     card: "summary_large_image",
-    
-    title: "IT Consulting Services | 99Visual Solutions",
-    
+    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
-      "Expert IT consulting for infrastructure, cloud, cybersecurity, and enterprise technology solutions.",
-    
-    site: "@99visual",
-    creator: "@99visual",
-    
+      "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99Visual Solutions for businesses worldwide.",
+    site: "@99 visual",
+    creator: "@99 visual",
     images: [
       "https://www.99visual.com/images/services/it-consulting-og.jpg",
     ],
@@ -132,8 +162,8 @@ export default function ITConsulting() {
     </h1>
 
     <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-      We’re more than a workplace—we’re a community of creators, tech enthusiasts, and problem-solvers. 
-      If you’re passionate about building impactful digital experiences, 99Visual Solutions is the place for you.
+      We're more than a workplace—we're a community of creators, tech enthusiasts, and problem-solvers. 
+      If you're passionate about building impactful digital experiences, 99 Visual Solutions is the place for you.
     </p>
 
     <a
@@ -166,27 +196,29 @@ export default function ITConsulting() {
 </section>
 
       {/* Intro Section */}
-      <div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
-            Strategic IT Consulting for Smarter, Secure & Scalable Businesses
-          </h1>
+<div id="services" className="bg-gray-50 py-12 px-6 md:px-20">
+  <div className="max-w-4xl mx-auto">
 
-          <p className="text-gray-700 leading-relaxed mb-2">
-            At <span className="font-semibold">99 Visual Solutions</span>, we don’t just solve IT challenges—we help you harness technology as a growth driver. Our <span className="font-semibold">IT consulting services</span> provide strategic guidance, robust security, and scalable infrastructure that prepares your business for the digital future.
-          </p>
+    <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-snug mb-6">
+      Strategic IT Consulting for Smarter, Secure & Scalable Businesses
+    </h1>
 
-          <p className="text-gray-700 leading-relaxed mb-2">
-            Whether you’re modernizing legacy systems, migrating to the cloud, or enhancing cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-proof IT solutions</span>.
-          </p>
-        </div>
-      </div>
+    <p className="text-gray-700 leading-8 text-justify text-[17px] mb-4">
+      At <span className="font-semibold">99 Visual Solutions</span>, we don't just solve IT challenges—we help you harness technology as a powerful growth driver. Our <span className="font-semibold">IT consulting services</span> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future.
+    </p>
+
+    <p className="text-gray-700 leading-8 text-justify text-[17px]">
+      Whether you're modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <span className="font-semibold">sustainable, cost-effective, and future-ready IT solutions</span> tailored to your business goals.
+    </p>
+
+  </div>
+</div>
 {/* Installation & System Migration Services */}
 <div className="bg-gray-50 py-12 px-6 md:px-20">
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
       <Image
         src="/images/Installation-services.png"
         alt="Installation & System Migration Services"
@@ -202,10 +234,10 @@ export default function ITConsulting() {
         Installation & System Migration Services
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure. From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity and performance.
       
-      Our team ensures smooth transitions—whether it’s migrating data, configuring hardware, or integrating new devices—so your business can operate efficiently without downtime or risk. With a focus on reliability, security, and scalability, we help you modernize your IT environment with confidence and ease.
+      Our team ensures smooth transitions—whether it's migrating data, configuring hardware, or integrating new devices—so your business can operate efficiently without downtime or risk. With a focus on reliability, security, and scalability, we help you modernize your IT environment with confidence and ease.
       </p>
 
       <ul className="space-y-3 text-gray-800">
@@ -222,12 +254,12 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3">
+    <div className="md:col-span-3 order-2 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         IT Infrastructure Planning & Optimization
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-6">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
       A strong digital foundation is critical for business growth and operational efficiency. We design and optimize IT infrastructures that are reliable, scalable, and aligned with your business goals.      
       From network architecture to cloud environments, we ensure your systems are built for performance, security, and future expansion. Our strategic approach helps reduce downtime, improve resource utilization, and enhance overall system efficiency—empowering your business to operate seamlessly and scale with confidence.</p>
       <ul className="space-y-3 text-gray-800">
@@ -238,7 +270,7 @@ export default function ITConsulting() {
     </div>
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
       <Image
         src="/images/it-infrastructure.png"
         alt="IT infrastructure illustration"
@@ -255,7 +287,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
       <Image
         src="/images/cybersecurity.png"
         alt="Cybersecurity illustration"
@@ -271,7 +303,7 @@ export default function ITConsulting() {
         Cybersecurity & Risk Management
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems, data, and operations.
         By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets compliance standards and ensures long-term protection against emerging threats.
       </p>
@@ -291,12 +323,12 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3">
+    <div className="md:col-span-3 order-2 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Cloud Migration & Digital Transformation
       </h2>
 
-       <p className="text-gray-700 leading-relaxed mb-8">
+       <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Transform your business for the future with seamless cloud migration and strategic digital transformation. We help you move from traditional infrastructure to modern, cloud-powered environments that enhance flexibility, scalability, and performance.
         By adopting the latest technologies and optimizing your digital ecosystem, we enable faster innovation, improved collaboration, and cost efficiency. Our end-to-end approach ensures a smooth transition with minimal disruption, empowering your business to stay competitive in a rapidly evolving digital landscape.
       </p>
@@ -309,7 +341,7 @@ export default function ITConsulting() {
     </div>
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
       <Image
         src="/images/cloud-migration.png"
         alt="Cloud migration illustration"
@@ -327,7 +359,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
       <Image
         src="/images/it-project.png"
         alt="IT project management illustration"
@@ -343,7 +375,7 @@ export default function ITConsulting() {
         IT Project Management & Support
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
        Successful digital initiatives require more than just great ideas—they demand structured execution, clear communication, and ongoing support. We provide end-to-end IT project management and support services to ensure your projects are delivered on time, within budget, and aligned with your business goals.
         From planning and resource allocation to deployment and post-launch support, we manage every phase with precision. Our proactive support ensures your systems continue to perform optimally, allowing you to focus on growth while we handle the complexities.
       </p>
@@ -362,12 +394,12 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Text Area (3 parts) */}
-    <div className="md:col-span-3">
+    <div className="md:col-span-3 order-2 md:order-2">
       <h2 className="text-1xl md:text-2xl font-bold text-gray-900 mb-6">
         Software & Application Consulting
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Turn your ideas into powerful, scalable digital solutions with expert software and application consulting. We work closely with you to understand your business objectives, challenges, and opportunities, providing strategic guidance on the right technologies, architectures, and development approaches. 
         Whether you're building from scratch, upgrading existing systems, or optimizing performance, our consulting ensures your applications are efficient, secure, and future-ready—driving innovation and long-term success.
       </p>
@@ -379,8 +411,8 @@ export default function ITConsulting() {
       </ul>
     </div>
 
-    {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+     {/* Image Area (2 parts) */}
+    <div className="md:col-span-2 flex justify-center order-2 md:order-1">
       <Image
         src="/images/software-application.png"
         alt="Software Application Consulting"
@@ -398,7 +430,7 @@ export default function ITConsulting() {
   <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-12 items-center">
 
     {/* Image Area (2 parts) */}
-    <div className="md:col-span-2 flex justify-center">
+    <div className="md:col-span-2 flex justify-center order-1 md:order-1">
       <Image
         src="/images/iot-smart-devices.png"
         alt="IoT & Smart Device Integration"
@@ -414,7 +446,7 @@ export default function ITConsulting() {
         IoT & Smart Device Integration
       </h2>
 
-      <p className="text-gray-700 leading-relaxed mb-8">
+      <p className="text-gray-700 leading-relaxed mb-8 text-justify">
         Unlock the power of connected ecosystems with intelligent IoT and smart device integration. We enable seamless communication between devices, applications, and cloud platforms to create efficient, data-driven environments.
         From sensors and automation systems to advanced analytics, our solutions help you monitor, control, and optimize operations in real time. By combining innovation with reliability, we transform everyday processes into smart, connected experiences that drive efficiency, reduce costs, and open new opportunities for growth.
       </p>
@@ -437,7 +469,7 @@ export default function ITConsulting() {
             Partnering with 99 Visual IT Consulting
           </h2>
           <p className="text-gray-700 max-w-3xl mx-auto mb-12">
-             IT isn’t just a support function—it becomes a competitive advantage. Here’s how we empower businesses with technology:
+             IT isn't just a support function—it becomes a competitive advantage. Here's how we empower businesses with technology:
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">

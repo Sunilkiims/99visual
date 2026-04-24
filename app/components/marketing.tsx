@@ -2,7 +2,7 @@
 
 export default function AnimationVideo() {
   return (
-    <div className="w-full md:w-[40%]">
+    <div className="w-full md:w-[100%]">
       <div className="aspect-[16/10] relative">
         <video
           src="/videos/marketing.mp4"
