@@ -8,6 +8,8 @@ import WeServe from './components/weserve';
 import Footer from './components/footer';
 import ScrollDown from './components/scrolldown';
 import Chatbot from './components/chatbot';
+import Whatsappbutton from './components/wahtsappbutton';
+
 
 // ─── Structured Data ──────────────────────────────────────────────────────────
 
@@ -316,6 +318,7 @@ export default function Home() {
 
       {/* Chatbot */}
       <Chatbot />
+      <Whatsappbutton />
     </>
   );
 }
