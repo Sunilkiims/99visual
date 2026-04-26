@@ -13,28 +13,58 @@ import { BiLinkExternal } from 'react-icons/bi';
 
 export default function PoweredBySection() {
   return (
-    <section className="relative py-16 bg-white dark:bg-black overflow-hidden">
+    <section className="relative py-16 overflow-hidden" style={{ background: '#080808', borderTop: '1px solid rgba(255,255,255,0.07)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
 
-      {/* 🔥 Background Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,115,0,0.08),transparent_60%)]"></div>
+      {/* Grid overlay */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+      {/* Grain */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', inset: 0, opacity: .025, pointerEvents: 'none',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: '180px 180px',
+        }}
+      />
+
+      {/* Orb */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', borderRadius: '50%',
+          width: 420, height: 420,
+          background: 'radial-gradient(circle, #f97316, transparent 70%)',
+          top: -160, right: -100, opacity: .06,
+          filter: 'blur(100px)', pointerEvents: 'none',
+        }}
+      />
 
       {/* Badge */}
       <div className="relative z-10 flex justify-center mb-8">
-        <div className="bg-gray-900 text-white dark:bg-white dark:text-black text-sm px-6 py-2 rounded-full font-semibold shadow-lg tracking-wide">
-          SERVICES WE OFFER
+        <div className="text-sm px-6 py-2 rounded-full font-semibold shadow-lg tracking-wide" style={{ background: 'rgba(249,115,22,0.07)', border: '1px solid rgba(249,115,22,0.28)', color: '#f97316', letterSpacing: '.15em', fontSize: 10, textTransform: 'uppercase' }}>
+          Services We Offer
         </div>
       </div>
 
       {/* Title */}
-    <h1 className="text-xl md:text-2xl font-semibold text-center text-gray-900 dark:text-white mb-12 max-w-4xl mx-auto px-6 md:px-12 leading-relaxed">
-  From Ideas to Impact — One Service. Endless Possibilities.
-  <span className="block mt-2">
-    Powered by <span className="text-orange-500 font-bold">99 Visual</span>.
-  </span>
-</h1>
+      <h1 className="relative z-10 text-xl md:text-2xl font-semibold text-center mb-12 max-w-4xl mx-auto px-6 md:px-12 leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+        From Ideas to Impact — One Service. Endless Possibilities.
+        <span className="block mt-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          Powered by <span style={{ color: '#f97316', fontWeight: 700 }}>99 Visual</span>.
+        </span>
+      </h1>
 
       {/* Grid */}
-      <div className="relative z-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3 px-6 max-w-6xl mx-auto">
+      <div className="relative z-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 px-6 max-w-6xl mx-auto">
         <FeatureCard
           icon={<FaEye />}
           color="text-blue-500"
@@ -94,7 +124,7 @@ function FeatureCard({ icon, title, desc, link, color }: FeatureCardProps) {
   return (
     <a href={link} className="group relative block">
 
-      {/* 🔥 Animated Border (Tracing Effect) */}
+      {/* Animated Border */}
       <svg className="absolute inset-0 w-full h-full rounded-2xl pointer-events-none">
         <rect
           x="1"
@@ -119,29 +149,39 @@ function FeatureCard({ icon, title, desc, link, color }: FeatureCardProps) {
       </svg>
 
       {/* Card */}
-      <div className="relative h-full backdrop-blur-xl bg-white/80 dark:bg-zinc-900/80 border border-white/20 dark:border-white/10 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform group-hover:-translate-y-2 overflow-hidden">
+      <div
+        className="relative h-full p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform group-hover:-translate-y-2 overflow-hidden"
+        style={{
+          background: '#141414',
+          border: '1px solid rgba(255,255,255,0.07)',
+        }}
+      >
 
-        {/* 🔥 Spotlight */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_center,rgba(255,115,0,0.15),transparent_60%)] pointer-events-none rounded-2xl"></div>
+        {/* Spotlight */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none rounded-2xl"
+          style={{ background: 'radial-gradient(circle at center, rgba(249,115,22,0.1), transparent 60%)' }}
+        />
 
         {/* Icon */}
-        <div className={`flex items-center justify-center w-14 h-14 mb-4 rounded-xl bg-gray-100 dark:bg-zinc-800 ${color} text-xl group-hover:scale-110 transition`}>
+        <div className={`flex items-center justify-center w-14 h-14 mb-4 rounded-xl ${color} text-xl group-hover:scale-110 transition`}
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
           {icon}
         </div>
 
         {/* Title */}
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-orange-500 transition">
+          <h3 className="text-lg font-semibold group-hover:text-orange-500 transition" style={{ color: 'rgba(255,255,255,0.85)' }}>
             {title}
           </h3>
           <BiLinkExternal
             size={16}
-            className="text-gray-400 group-hover:text-orange-400 group-hover:translate-x-1 transition"
+            className="text-gray-600 group-hover:text-orange-400 group-hover:translate-x-1 transition"
           />
         </div>
 
         {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
           {desc}
         </p>
 
