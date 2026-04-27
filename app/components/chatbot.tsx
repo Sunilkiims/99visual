@@ -502,7 +502,7 @@ export default function Chatbot() {
                   <RobotIcon size={26} />
                 </div>
                 <div>
-                  <div className="cb-header__title">99 Visual AI</div>
+                  <div className="cb-header__title">99 Visual Help Desk</div>
                   <div className="cb-header__status">
                     <span className="cb-header__status-dot" />
                     Online · Ready to help
@@ -529,7 +529,7 @@ export default function Chatbot() {
                     <RobotIcon size={52} />
                   </div>
                   <p className="cb-empty__text">
-                    Hi! I&apos;m the 99 Visual AI.<br />
+                    Hi! I&apos;m the Virtual Assistant of 99 Visual.<br />
                     Ask me anything about our services.
                   </p>
                 </div>
