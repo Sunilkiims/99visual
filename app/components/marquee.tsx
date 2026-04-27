@@ -24,8 +24,8 @@ const PartnerMarquee = () => {
           background: #080b12;
           padding: 4.5rem 0;
           overflow: hidden;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          border-top: 0.5px solid rgba(255, 255, 255, 0.05);
+          border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
           isolation: isolate;
         }
 
@@ -166,7 +166,7 @@ const PartnerMarquee = () => {
           align-items: center;
           width: max-content;
           animation: pmScroll 28s linear infinite;
-          padding: 1.4rem 0;
+          padding: .4rem 0;
         }
 
         @keyframes pmScroll {
