@@ -529,7 +529,7 @@ export default function Chatbot() {
                     <RobotIcon size={52} />
                   </div>
                   <p className="cb-empty__text">
-                    Hi! I&apos;m the Virtual Assistant of 99 Visual.<br />
+                    Namaste 🙏 I&apos;m Vera, your assistant from 99 Visual.<br />
                     Ask me anything about our services.
                   </p>
                 </div>
@@ -589,7 +589,7 @@ export default function Chatbot() {
             <div className="cb-hello__inner">
               <span className="cb-hello__typed">Hello 👋</span>
             </div>
-            <div className="cb-hello__sub">Chat with 99 Visual AI</div>
+            <div className="cb-hello__sub">Chat with me</div>
           </div>
         )}
 

@@ -9,6 +9,7 @@ import Footer from './components/footer';
 import ScrollDown from './components/scrolldown';
 import Chatbot from './components/chatbot';
 import Whatsappbutton from './components/wahtsappbutton';
+import PageLoader from './components/PageLoader'; // ← NEW
 
 
 // ─── Structured Data ──────────────────────────────────────────────────────────
@@ -115,6 +116,9 @@ export const metadata = {
 export default function Home() {
   return (
     <>
+      {/* Page Loader — renders on top while content hydrates */}
+      <PageLoader />
+
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
