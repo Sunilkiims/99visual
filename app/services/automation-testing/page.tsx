@@ -16,10 +16,16 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title:
-    "QA & Automation Testing Services | Manual, Performance & CI/CD Testing - 99 Visual",
+    "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD - 99 Visual",
   description:
-    "99 Visual delivers end-to-end QA and automation testing services — manual testing, Selenium automation, performance & load testing, API testing, security testing, and CI/CD pipeline integration. Ship bug-free software faster.",
+    "99 Visual delivers next-generation QA and automation testing powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance & load testing, API testing, security testing, and CI/CD pipeline integration. Ship intelligent, bug-free software faster.",
   keywords: [
+    "Agentic AI Testing Services",
+    "AI-Powered QA Services India",
+    "Autonomous Test Automation",
+    "Self-Healing Test Automation",
+    "LLM Testing Services",
+    "Generative AI QA",
     "QA Testing Services India",
     "Automation Testing Services",
     "Software Testing Company India",
@@ -28,8 +34,11 @@ export const metadata: Metadata = {
     "Exploratory Testing",
     "Regression Testing Services",
     "Selenium Automation Testing",
+    "Playwright Testing Services",
+    "Cypress Automation Testing",
     "Test Automation Framework",
     "Automated QA Testing",
+    "AI Agent Testing",
     "RPA Testing Services",
     "Performance Testing Services",
     "Load Testing Services",
@@ -49,9 +58,9 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title:
-      "QA & Automation Testing Services | Bug-Free Software Delivery - 99 Visual",
+      "AI-Powered QA & Automation Testing | Agentic AI, Self-Healing Tests & Bug-Free Delivery - 99 Visual",
     description:
-      "End-to-end QA and automation testing: manual testing, Selenium automation, load & performance testing, security testing, and CI/CD integration. Trusted by startups and enterprises across India.",
+      "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, load & performance testing, security testing, and CI/CD integration. Trusted by startups and enterprises across India.",
     url: "https://www.99visual.com/services/testing-development",
     siteName: "99 Visual",
     images: [
@@ -59,7 +68,7 @@ export const metadata: Metadata = {
         url: "https://www.99visual.com/images/services/testing-og.jpg",
         width: 1200,
         height: 630,
-        alt: "QA & Automation Testing Services by 99 Visual - Bug-Free Software Delivery",
+        alt: "AI-Powered QA & Automation Testing Services by 99 Visual",
       },
     ],
     locale: "en_US",
@@ -67,9 +76,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QA & Automation Testing Services | 99 Visual",
+    title: "AI-Powered QA & Automation Testing | 99 Visual",
     description:
-      "Ship reliable software with 99 Visual's QA services — manual testing, Selenium automation, performance testing, security testing & CI/CD integration.",
+      "Ship reliable software with 99 Visual's Agentic AI QA services — autonomous test agents, self-healing automation, performance testing, security testing & CI/CD integration.",
     site: "@99visual",
     creator: "@99visual",
     images: ["https://www.99visual.com/images/services/testing-og.jpg"],
@@ -95,136 +104,136 @@ export default function TestingDevelopment() {
   const benefits = [
     {
       icon: <FaBug />,
-      title: "Bug-Free Software",
+      title: "Zero-Defect Delivery",
       description:
-        "Our thorough testing process detects and resolves issues early, ensuring a stable and reliable product at launch.",
+        "Our Agentic AI test agents autonomously explore edge cases and failure paths humans often miss — catching critical defects before they ever reach production.",
     },
     {
       icon: <FaCogs />,
-      title: "Automated Efficiency",
+      title: "Self-Healing Automation",
       description:
-        "With automation frameworks, we streamline testing cycles, saving time and delivering faster releases.",
+        "AI-powered test scripts that automatically adapt to UI changes and DOM shifts, drastically reducing maintenance overhead and keeping your pipelines green.",
     },
     {
       icon: <FaChartLine />,
-      title: "Performance Optimization",
+      title: "Intelligent Performance Insights",
       description:
-        "We test system performance under real-world conditions to ensure scalability, speed, and responsiveness.",
+        "We combine real-world load simulation with ML-driven analysis to pinpoint bottlenecks, predict failure thresholds, and optimize system throughput at scale.",
     },
     {
       icon: <FaShieldAlt />,
-      title: "Security Assurance",
+      title: "AI-Augmented Security",
       description:
-        "Through rigorous testing, we identify vulnerabilities and safeguard your applications against threats.",
+        "LLM-assisted vulnerability scanning and threat modeling identify security weaknesses faster and with greater accuracy than traditional rule-based tools alone.",
     },
     {
       icon: <FaRocket />,
-      title: "Faster Time-to-Market",
+      title: "Accelerated Time-to-Market",
       description:
-        "Streamlined testing processes reduce delays, helping you launch your software quicker without sacrificing quality.",
+        "Autonomous test generation and intelligent regression selection cut test cycles by up to 70%, letting you ship high-quality releases at the speed your business demands.",
     },
     {
       icon: <FaTools />,
-      title: "Continuous Support",
+      title: "Continuous AI-Driven QA",
       description:
-        "Even after release, we provide ongoing QA and testing support to maintain peak system performance.",
+        "From code commit to production, our AI agents monitor, test, and validate continuously — providing real-time quality intelligence at every stage of your SDLC.",
     },
   ];
 
   const services = [
     {
       id: "manual-testing",
-      title: "Human-Centric Manual Testing",
+      title: "AI-Augmented Human Testing",
       image: "/images/manual-testing.png",
-      imageAlt: "Manual Testing illustration",
+      imageAlt: "AI-Augmented Manual Testing illustration",
       description:
-        "Deliver flawless user experiences with our human-centric manual testing approach. We go beyond automated checks by simulating real user behavior to identify usability issues, functional gaps, and edge-case scenarios that machines often miss.",
+        "Combine the irreplaceable intuition of expert human testers with the analytical power of AI assistants. Our QA engineers are equipped with LLM-driven test case generators, context-aware checklists, and real-time anomaly suggestion tools — elevating manual testing from a checklist exercise to a high-signal quality intelligence process.",
       highlight:
-        "Our testers combine domain expertise with attention to detail to ensure your application performs seamlessly across all user journeys, helping you launch products that are truly polished and error-free.",
+        "Our testers don't just follow scripts — they think like users, reason like engineers, and leverage AI to surface the insights that define truly exceptional software. The result: fewer escaped defects, richer coverage, and faster feedback cycles from day one.",
       bullets: [
-        "Real-user scenario testing & usability validation",
-        "Functional, regression & exploratory testing",
-        "Detailed bug reporting & quality assurance insights",
+        "AI-assisted exploratory testing with LLM-generated scenario suggestions",
+        "Functional, regression, usability & accessibility validation",
+        "Structured defect reporting enriched with root cause context",
       ],
       imageLeft: false,
     },
     {
       id: "automation",
-      title: "Intelligent Automation Engineering",
+      title: "Agentic AI Test Automation",
       image: "/images/automated-testing.png",
-      imageAlt: "Automated Testing illustration",
+      imageAlt: "Agentic AI Automation Testing illustration",
       description:
-        "Accelerate efficiency and innovation with intelligent automation engineered for modern businesses. We design and implement smart automation solutions that streamline complex processes, reduce manual effort, and enhance operational accuracy.",
+        "Move beyond traditional script-based automation with autonomous AI agents that plan, generate, execute, and self-heal test suites with minimal human intervention. Powered by Playwright, Cypress, and Selenium — orchestrated by intelligent agents — our automation frameworks adapt to your evolving product in real time.",
       highlight:
-        "By combining AI-driven technologies, robust frameworks, and scalable architectures, we enable faster workflows, improved productivity, and consistent performance across your entire development lifecycle.",
+        "Agentic AI doesn't just run tests; it reasons about your application's behavior, identifies untested paths, and autonomously expands coverage as your codebase grows. Integrate with LangChain, AutoGen, or custom agent architectures for truly autonomous QA pipelines.",
       bullets: [
-        "Process automation, workflow optimization & RPA solutions",
-        "AI-driven decision-making & intelligent system integration",
-        "Scalable, secure & performance-focused automation architecture",
+        "Autonomous test generation, execution & self-healing via AI agents",
+        "Playwright, Cypress & Selenium frameworks with AI-driven orchestration",
+        "LLM-powered test plan creation, RPA integration & intelligent regression selection",
       ],
       imageLeft: true,
     },
     {
       id: "performance-testing",
-      title: "Performance & Load Testing",
+      title: "Intelligent Performance & Load Testing",
       image: "/images/performance-testing.png",
-      imageAlt: "Performance Testing illustration",
+      imageAlt: "AI Performance Testing illustration",
       description:
-        "Ensure your applications perform flawlessly under pressure with comprehensive performance and load testing. We evaluate how your system behaves under varying user loads, identify bottlenecks, and optimize performance to deliver a fast, stable, and reliable user experience.",
+        "Go beyond pass/fail load benchmarks with ML-assisted performance engineering. We simulate millions of concurrent users across geographies, analyze system telemetry with predictive models, and deliver actionable optimization recommendations — not just numbers on a dashboard.",
       highlight:
-        "By simulating real-world traffic scenarios, we help you prepare for peak demand, minimize downtime, and maintain consistent performance across all environments.",
+        "Our AI-driven performance analysis correlates infrastructure metrics, application traces, and user behavior patterns to pinpoint the exact bottlenecks costing you speed and stability — before they ever impact your customers.",
       bullets: [
-        "Load, stress & scalability testing for real-world scenarios",
-        "Bottleneck identification & performance optimization",
-        "Detailed reporting with actionable insights & recommendations",
+        "AI-guided load, stress, spike & endurance testing at scale",
+        "Predictive bottleneck detection & ML-assisted root cause analysis",
+        "Observability integration with Datadog, Grafana & custom APM tooling",
       ],
       imageLeft: false,
     },
     {
       id: "continuous-qa",
-      title: "Continuous QA & Support",
+      title: "Continuous AI-Driven QA & Support",
       image: "/images/continuous-qa.png",
-      imageAlt: "Continuous QA support",
+      imageAlt: "Continuous AI QA support",
       description:
-        "Maintain consistent quality and reliability with our continuous QA and support services. We integrate testing seamlessly into your development lifecycle, ensuring issues are identified and resolved early and efficiently.",
+        "Quality is not a phase — it's a continuous signal. We embed intelligent QA agents directly into your CI/CD pipelines, enabling autonomous test execution, real-time quality gates, and proactive defect prediction at every stage of your delivery workflow.",
       highlight:
-        "Through proactive monitoring, regular testing cycles, and ongoing support, we help you deliver stable, high-performing applications that evolve with your business needs.",
+        "Our AI-driven QA agents learn from your codebase history and defect patterns to predict where failures are most likely to emerge next — shifting quality left and dramatically reducing the cost of late-stage bug discovery.",
       bullets: [
-        "Continuous testing integration within CI/CD pipelines",
-        "Proactive issue detection, monitoring & quick resolution",
-        "Ongoing support, maintenance & quality improvements",
+        "Autonomous CI/CD-integrated quality gates with AI decision logic",
+        "Predictive defect detection using historical code & test pattern analysis",
+        "Continuous monitoring, alerting & intelligent regression triage",
       ],
       imageLeft: true,
     },
     {
       id: "scale-readiness",
-      title: "Performance & Scale Readiness",
+      title: "AI-Optimized Scale Readiness",
       image: "/images/performance-scale.png",
-      imageAlt: "Performance & Scale Readiness",
+      imageAlt: "AI-Optimized Performance & Scale Readiness",
       description:
-        "Prepare your applications to perform flawlessly and scale effortlessly as your business grows. We ensure your systems are optimized to handle increasing user demands, high traffic spikes, and expanding data loads without compromising speed or stability.",
+        "Prepare your architecture for exponential growth with AI-guided capacity planning and scale validation. We stress-test your systems across distributed cloud environments, model traffic surge scenarios with precision, and validate auto-scaling configurations to ensure zero-downtime performance under any load.",
       highlight:
-        "By combining performance engineering with scalable architecture design, we help you build resilient systems that are ready for both current needs and future growth.",
+        "By combining chaos engineering principles with AI-generated failure scenario modeling, we harden your infrastructure against real-world turbulence — so when traffic spikes, your systems scale gracefully, not catastrophically.",
       bullets: [
-        "Load & stress testing for high-traffic scenarios",
-        "Scalability validation across environments",
-        "Resource usage optimization & performance benchmarking",
+        "AI-modeled traffic surge simulation & chaos engineering integration",
+        "Cloud-native scalability validation across AWS, GCP & Azure",
+        "Auto-scaling configuration testing & resource efficiency benchmarking",
       ],
       imageLeft: false,
     },
     {
       id: "security-testing",
-      title: "Security-Aware Testing",
+      title: "LLM-Assisted Security Testing",
       image: "/images/security-aware-testing.png",
-      imageAlt: "Security-Aware Testing",
+      imageAlt: "LLM-Assisted Security Testing",
       description:
-        "Protect your applications from vulnerabilities by embedding security into every stage of testing. Our security-aware testing approach focuses on identifying potential threats, weaknesses, and risks before they can be exploited.",
+        "Security in the age of AI demands AI-native testing strategies. Our security testing practice combines OWASP-aligned penetration testing, automated vulnerability scanning, and LLM-assisted threat modeling to identify risks that static analyzers and legacy tools routinely miss.",
       highlight:
-        "By combining functional testing with security best practices, we ensure your applications are not only reliable but also resilient against cyber attacks, delivering secure and trustworthy digital products.",
+        "We test not only your application's traditional attack surface but also the emerging risks unique to AI-integrated systems — including prompt injection, model data poisoning, and adversarial input vulnerabilities — ensuring your product is secure in the era of intelligent software.",
       bullets: [
-        "Vulnerability assessment & secure code validation",
-        "Authentication, authorization & data protection testing",
-        "Risk analysis, compliance checks & threat mitigation",
+        "LLM-assisted threat modeling, OWASP testing & penetration assessment",
+        "AI-specific security testing: prompt injection, adversarial inputs & model safety",
+        "Compliance validation, risk scoring & remediation roadmap delivery",
       ],
       imageLeft: true,
     },
@@ -241,9 +250,9 @@ export default function TestingDevelopment() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: "QA & Automation Testing Services",
+            name: "AI-Powered QA & Automation Testing Services",
             description:
-              "End-to-end software QA and automation testing services including manual testing, Selenium automation, performance testing, security testing, API testing, and CI/CD pipeline integration.",
+              "Next-generation software QA and automation testing powered by Agentic AI — including autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
             provider: {
               "@type": "Organization",
               name: "99 Visual Solutions",
@@ -256,11 +265,11 @@ export default function TestingDevelopment() {
             },
             areaServed: { "@type": "Country", name: "India" },
             serviceType: [
+              "Agentic AI Testing",
+              "Self-Healing Test Automation",
+              "LLM-Assisted Security Testing",
               "Manual Testing",
-              "Automation Testing",
               "Performance Testing",
-              "Security Testing",
-              "API Testing",
               "CI/CD QA Integration",
             ],
             url: "https://www.99visual.com/services/testing-development",
@@ -698,18 +707,18 @@ export default function TestingDevelopment() {
         <div className="wd-hero__content">
           <div className="wd-hero__eyebrow">
             <span className="wd-hero__dot" />
-            Services · QA & Automation Testing
+            Services · Agentic AI QA & Automation Testing
           </div>
 
           <h1 className="wd-hero__h1">
-            Software quality you can<br />
-            ship with <em>confidence</em>
+            Intelligent quality engineering<br />
+            powered by <em>Agentic AI</em>
           </h1>
 
           <div className="wd-hero__rule" />
 
           <p className="wd-hero__sub">
-            From manual testing and Selenium automation to performance, security, and CI/CD integration—we deliver end-to-end QA solutions that help you ship bug-free software faster.
+            From AI-augmented manual testing and autonomous agent-driven automation to LLM-assisted security testing and predictive performance engineering — we deliver next-generation QA that helps you ship intelligent, bug-free software at scale.
           </p>
 
           <a href="#services" className="wd-hero__cta">
@@ -731,15 +740,15 @@ export default function TestingDevelopment() {
         <div className="wd-intro__inner">
           <span className="wd-intro__label">Our Approach</span>
           <h2 className="wd-intro__h2">
-            Quality embedded at every stage of<br />
-            your <em>development lifecycle</em>
+            Agentic AI quality intelligence embedded at<br />
+            every stage of your <em>development lifecycle</em>
           </h2>
           <div className="wd-intro__rule" />
           <p className="wd-intro__p">
-            At <strong>99 Visual Solutions</strong>, we embed quality into every stage of development. Our automation and testing services integrate seamlessly with modern delivery pipelines, combining <strong>precision-driven manual testing</strong> with robust automation to ensure stability, performance, and security at scale.
+            At <strong>99 Visual Solutions</strong>, we've reimagined quality assurance for the era of intelligent software. Our Agentic AI-powered testing practice deploys <strong>autonomous test agents</strong> that plan, generate, execute, and self-heal test suites — integrating seamlessly into your CI/CD pipelines alongside precision-driven human expertise.
           </p>
           <p className="wd-intro__p">
-            We help engineering teams minimize release risks, optimize test coverage, and maintain confidence as system complexity grows—delivering <strong>bug-free, scalable, and secure software</strong> that users can rely on.
+            Whether you're building traditional web applications, LLM-powered products, or complex distributed systems, we help your engineering teams <strong>minimize release risk, maximize test coverage, and ship with confidence</strong> — at the velocity modern businesses demand.
           </p>
         </div>
       </section>
@@ -794,11 +803,11 @@ export default function TestingDevelopment() {
           <div className="wd-benefits__head">
             <span className="wd-benefits__label">Why Choose Us?</span>
             <h2 className="wd-benefits__h2">
-              Benefits of testing with<br /><em>99 Visual</em> Solutions
+              The competitive advantage of<br /><em>AI-native</em> quality engineering
             </h2>
             <div className="wd-benefits__rule" />
             <p className="wd-benefits__sub">
-              Partnering with 99 Visual Solutions ensures your digital products are reliable, secure, and future-ready—with quality built in from day one.
+              Partnering with 99 Visual Solutions gives your engineering org an Agentic AI quality layer that delivers faster releases, deeper coverage, and production-grade confidence — built in from day one.
             </p>
           </div>
 
@@ -820,11 +829,11 @@ export default function TestingDevelopment() {
         <div className="wd-cta__inner">
           <span className="wd-cta__eyebrow">Start a Project</span>
           <h2 className="wd-cta__h2">
-            Ready to ship <em>bug-free</em> software?
+            Ready to ship software with<br /><em>AI-powered</em> confidence?
           </h2>
           <div className="wd-cta__rule" />
           <p className="wd-cta__sub">
-            Get in touch with our QA team for a free consultation. We'll help you build the right testing strategy for faster, more confident releases.
+            Talk to our Agentic AI QA specialists for a free strategy consultation. We'll design an intelligent testing architecture tailored to your stack, your team, and your release velocity goals.
           </p>
           <Link href="/contact" className="wd-cta__btn">
             Get a Free Consultation
