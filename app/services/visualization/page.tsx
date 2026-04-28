@@ -2,11 +2,13 @@ import Header from "@/app/components/header";
 import Seriously from "@/app/components/seriously";
 import Footer from "@/app/components/footer";
 import Services from "@/app/components/services";
+import ContactCTA from "@/app/components/Contactcta";
 
 /* =====================================================
 SEO METADATA
 ===================================================== */
 import type { Metadata } from "next";
+
 
 export const metadata: Metadata = {
   title: "3D Visualization & Architectural Rendering Services | 99 Visual",
@@ -332,6 +334,7 @@ export default function VisualizationPage() {
       <HeroSection />
       <Services />
       <Seriously />
+      <ContactCTA />
       <Footer />
     </>
   );

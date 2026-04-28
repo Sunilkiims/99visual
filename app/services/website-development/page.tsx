@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
+
 import {
   FaCogs,
   FaRocket,
@@ -940,7 +941,7 @@ export default function WebsiteDevelopment() {
           </Link>
         </div>
       </section>
-
+      
       <Footer />
     </>
   );

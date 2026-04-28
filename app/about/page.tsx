@@ -5,6 +5,7 @@ import Footer from "../components/footer";
 import TabAbout from "../components/tabstory";
 import WhyChooseUs from "../components/whychooseus";
 import DataPrivacy from "../components/dataprivacy";
+import ContactCTA from "@/app/components/Contactcta";
 
 export const metadata: Metadata = {
   title: "About 99 Visual | IT, Web & 3D Visualization Company in Bangalore, India",
@@ -446,7 +447,7 @@ export default function AboutPage() {
         <WhyChooseUs />
         <DataPrivacy />
       </div>
-
+          <ContactCTA />
       <Footer />
     </>
   );

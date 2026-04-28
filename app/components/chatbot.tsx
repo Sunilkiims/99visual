@@ -589,7 +589,7 @@ export default function Chatbot() {
             <div className="cb-hello__inner">
               <span className="cb-hello__typed">Hello 👋</span>
             </div>
-            <div className="cb-hello__sub">Chat with me</div>
+            <div className="cb-hello__sub">How can I assist you today?</div>
           </div>
         )}
 
