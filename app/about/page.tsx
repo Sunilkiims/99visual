@@ -7,102 +7,263 @@ import WhyChooseUs from "../components/whychooseus";
 import DataPrivacy from "../components/dataprivacy";
 import ContactCTA from "@/app/components/Contactcta";
 
+import { BASE, breadcrumb, webPage, faqSchema } from "@/lib/schema";
+
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "About 99 Visual | IT, Web & 3D Visualization Company in Bangalore, India",
   description:
-    "99 Visual is a Bangalore-based IT solutions company specializing in web development, SEO, digital marketing, 3D visualization, CAD/GIS, and QA testing.",
-  metadataBase: new URL("https://www.99visual.com"),
+    "99 Visual is a Bangalore-based IT solutions company specializing in web development, SEO, digital marketing, 3D visualization, CAD/GIS, and QA testing. 10+ years, 500+ projects.",
+  metadataBase: new URL(BASE),
   alternates: { canonical: "/about" },
+  keywords: [
+    "About 99 Visual Solutions",
+    "IT Company Bangalore",
+    "Web Development Company Bangalore",
+    "3D Visualisation Company Bangalore",
+    "Digital Transformation Company India",
+    "Software Company Bangalore",
+    "IT Consulting Firm India",
+  ],
+  openGraph: {
+    title: "About 99 Visual | IT, Web & 3D Visualization Company in Bangalore, India",
+    description:
+      "10+ years, 500+ projects. 99 Visual Solutions is a full-service IT and digital transformation company based in Bengaluru, India.",
+    url: `${BASE}/about`,
+    siteName: "99 Visual Solutions",
+    images: [
+      {
+        url: `${BASE}/images/about-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "About 99 Visual Solutions",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About 99 Visual | IT & Digital Transformation Company in Bangalore",
+    description:
+      "10+ years, 500+ projects, 6 specialisations. Based in Bengaluru, serving clients globally.",
+    images: [`${BASE}/images/about-og.jpg`],
+  },
 };
 
-// ✅ Organization Schema
-const organizationSchema = {
+// ─── Unified @graph schema ────────────────────────────────────────────────────
+const schemaGraph = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "@id": "https://www.99visual.com/#organization",
-  name: "99Visual",
-  alternateName: "99 Visual Solutions",
-  url: "https://www.99visual.com",
-  logo: {
-    "@type": "ImageObject",
-    url: "https://www.99visual.com/images/logo.png",
-  },
-  foundingDate: "2015",
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Bangalore",
-    addressRegion: "Karnataka",
-    addressCountry: "IN",
-  },
-  sameAs: [
-    "https://twitter.com/99visual",
-    "https://www.linkedin.com/company/99visual",
-    "https://www.instagram.com/99visual",
+  "@graph": [
+
+    // 1. Organization
+    {
+      "@type": "Organization",
+      "@id": `${BASE}/#organization`,
+      name: "99 Visual Solutions",
+      alternateName: "99Visual",
+      description:
+        "Bangalore-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
+      url: BASE,
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${BASE}/#logo`,
+        url: `${BASE}/logo.png`,
+        contentUrl: `${BASE}/logo.png`,
+        width: 300,
+        height: 60,
+        caption: "99 Visual Solutions Logo",
+      },
+      image: { "@id": `${BASE}/#logo` },
+      foundingDate: "2015",
+      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "Customer Support",
+          url: `${BASE}/contact`,
+          email: "contact@99visual.com",
+          availableLanguage: ["English", "Kannada", "Hindi"],
+          areaServed: ["IN", "US", "GB", "AU", "AE"],
+        },
+      ],
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+      knowsAbout: [
+        "Web Development",
+        "Search Engine Optimisation",
+        "Digital Marketing",
+        "3D Visualisation",
+        "CAD Drafting",
+        "GIS Mapping",
+        "LiDAR Data Processing",
+        "QA Testing",
+        "IT Consulting",
+        "Cloud Migration",
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "IT & Digital Services",
+        itemListElement: [
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "3D Visualisation & Architectural Rendering" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web & App Development" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Consulting" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Marketing & SEO" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "CAD, GIS & Photogrammetry" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI-Powered QA & Automation Testing" } },
+        ],
+      },
+    },
+
+    // 2. LocalBusiness (Bangalore local SEO)
+    {
+      "@type": ["LocalBusiness", "ProfessionalService"],
+      "@id": `${BASE}/#localbusiness`,
+      name: "99 Visual Solutions",
+      image: `${BASE}/images/about-og.jpg`,
+      url: BASE,
+      email: "contact@99visual.com",
+      description:
+        "IT and digital solutions company in Bengaluru offering web development, SEO, 3D visualisation, CAD/GIS, and QA testing services.",
+      priceRange: "$$",
+      currenciesAccepted: "INR, USD, GBP, AED, AUD",
+      paymentAccepted: "Cash, Credit Card, Bank Transfer",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 12.9716,
+        longitude: 77.5946,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      ],
+      parentOrganization: { "@id": `${BASE}/#organization` },
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+    },
+
+    // 3. WebSite (Sitelinks Search Box)
+    {
+      "@type": "WebSite",
+      "@id": `${BASE}/#website`,
+      url: BASE,
+      name: "99 Visual Solutions",
+      description:
+        "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
+      publisher: { "@id": `${BASE}/#organization` },
+      inLanguage: "en-IN",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE}/?s={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+
+    // 4. AboutPage
+    {
+      "@type": "AboutPage",
+      "@id": `${BASE}/about#webpage`,
+      url: `${BASE}/about`,
+      name: "About 99 Visual Solutions | IT, Web & 3D Visualisation Company in Bangalore",
+      description:
+        "Learn about 99 Visual Solutions — a Bengaluru IT company founded in 2015 with 500+ projects across web development, SEO, 3D visualisation, CAD/GIS, and QA testing.",
+      inLanguage: "en-IN",
+      datePublished: "2023-01-01",
+      dateModified: "2025-07-01",
+      isPartOf: { "@id": `${BASE}/#website` },
+      about: { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${BASE}/images/about-og.jpg`,
+        width: 1200,
+        height: 630,
+      },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".about-hero__sub", ".about-hero__heading"],
+      },
+      breadcrumb: { "@id": `${BASE}/about#breadcrumb` },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home", url: "/" },
+        { name: "About", url: "/about" },
+      ]),
+      "@id": `${BASE}/about#breadcrumb`,
+    },
+
+    // 6. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What services does 99 Visual Solutions offer?",
+          answer:
+            "99 Visual Solutions offers web development, SEO, digital marketing, 3D visualisation, CAD drafting, GIS mapping, LiDAR data processing, and QA testing services from Bengaluru, India.",
+        },
+        {
+          question: "When was 99 Visual Solutions founded?",
+          answer:
+            "99 Visual Solutions was founded in 2015 and is headquartered in Bengaluru, Karnataka, India.",
+        },
+        {
+          question: "How many projects has 99 Visual Solutions completed?",
+          answer:
+            "99 Visual Solutions has successfully delivered over 500 projects across IT, web development, 3D visualisation, and spatial data domains.",
+        },
+        {
+          question: "Does 99 Visual Solutions work with international clients?",
+          answer:
+            "Yes. We serve startups and enterprises across India, the USA, UK, UAE, and Australia, offering competitive offshore IT services with fast turnaround times.",
+        },
+        {
+          question: "How can I contact 99 Visual Solutions?",
+          answer:
+            "You can reach us via our contact page at 99visual.com/contact or email us at contact@99visual.com. We typically reply within 24 hours.",
+        },
+      ]),
+      "@id": `${BASE}/about#faq`,
+    },
+
   ],
 };
 
-// ✅ Website Schema
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "@id": "https://www.99visual.com/#website",
-  url: "https://www.99visual.com",
-  name: "99Visual",
-  publisher: {
-    "@id": "https://www.99visual.com/#organization",
-  },
-};
-
-// ✅ WebPage Schema
-const webPageSchema = {
-  "@context": "https://schema.org",
-  "@type": "AboutPage",
-  "@id": "https://www.99visual.com/about#webpage",
-  url: "https://www.99visual.com/about",
-  name: "About 99Visual",
-  isPartOf: {
-    "@id": "https://www.99visual.com/#website",
-  },
-  about: {
-    "@id": "https://www.99visual.com/#organization",
-  },
-  breadcrumb: {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://www.99visual.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "About",
-        item: "https://www.99visual.com/about",
-      },
-    ],
-  },
-};
-
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AboutPage() {
   return (
     <>
-      {/* ✅ JSON-LD */}
+      {/* ✅ Single unified JSON-LD @graph block */}
       <Script
-        id="org-schema"
+        id="schema-about-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <Script
-        id="website-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <Script
-        id="webpage-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
       <Header />
@@ -447,7 +608,7 @@ export default function AboutPage() {
         <WhyChooseUs />
         <DataPrivacy />
       </div>
-          <ContactCTA />
+      <ContactCTA />
       <Footer />
     </>
   );

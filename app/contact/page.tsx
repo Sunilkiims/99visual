@@ -1,16 +1,18 @@
 // app/contact/page.tsx
 import type { Metadata } from "next";
-import ContactForm from '../components/contactform';
-import ContactUsBanner from '../components/contactus-banner';
-import Header from '../components/header';
-import Footer from '../components/footer';
+import Script from "next/script";
+import ContactForm from "../components/contactform";
+import ContactUsBanner from "../components/contactus-banner";
+import Header from "../components/header";
+import Footer from "../components/footer";
+import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Contact 99 Visual | Get a Free Quote for Web, 3D & Digital Marketing - Bangalore India",
-
   description:
     "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing. Reach out today and let's build something great together.",
-
+  metadataBase: new URL(BASE),
+  alternates: { canonical: "/contact" },
   keywords: [
     // Primary
     "Contact 99 Visual",
@@ -36,37 +38,30 @@ export const metadata: Metadata = {
     "Digital Agency Contact Page",
     "Start a Project 99Visual",
   ],
-
   openGraph: {
     title: "Contact 99 Visual | Free Consultation for Web, 3D & Digital Marketing - Bangalore",
     description:
-      "Have a project in mind? Contact 99Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing services.",
-    url: "https://www.99visual.com/contact",
-    siteName: "99Visual Solutions",
+      "Have a project in mind? Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing services.",
+    url: `${BASE}/contact`,
+    siteName: "99 Visual Solutions",
     images: [
       {
-        url: "https://www.99visual.com/images/og/contact-og.jpg",
+        url: `${BASE}/images/og/contact-og.jpg`,
         width: 1200,
         height: 630,
-        alt: "Contact 99Visual Solutions - Free Consultation for Web, 3D & Digital Services",
+        alt: "Contact 99 Visual Solutions - Free Consultation for Web, 3D & Digital Services",
       },
     ],
-    locale: "en_US",
+    locale: "en_IN",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
     title: "Contact 99 Visual | Free Quote for Web, 3D & Digital Marketing",
     description:
       "Get in touch with 99 Visual Solutions in Bangalore for expert web development, 3D visualization, and digital marketing. Free consultation available.",
-    site: "@99visual",
-    creator: "@99visual",
-    images: ["https://www.99visual.com/images/og/contact-og.jpg"],
+    images: [`${BASE}/images/og/contact-og.jpg`],
   },
-
-  metadataBase: new URL("https://www.99visual.com"),
-  alternates: { canonical: "/contact" },
   robots: {
     index: true,
     follow: true,
@@ -78,243 +73,268 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  authors: [{ name: "99 Visual Solutions", url: "https://www.99visual.com" }],
+  authors: [{ name: "99 Visual Solutions", url: BASE }],
   category: "Technology",
 };
 
+// ─── Unified @graph schema ────────────────────────────────────────────────────
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 1. Organization
+    {
+      "@type": "Organization",
+      "@id": `${BASE}/#organization`,
+      name: "99 Visual Solutions",
+      alternateName: "99Visual",
+      description:
+        "Bangalore-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
+      url: BASE,
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${BASE}/#logo`,
+        url: `${BASE}/logo.png`,
+        contentUrl: `${BASE}/logo.png`,
+        width: 300,
+        height: 60,
+        caption: "99 Visual Solutions Logo",
+      },
+      image: { "@id": `${BASE}/#logo` },
+      foundingDate: "2015",
+      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      areaServed: ["IN", "US", "GB", "AU", "AE"],
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "Sales",
+          url: `${BASE}/contact`,
+          email: "contact@99visual.com",
+          availableLanguage: ["English", "Kannada", "Hindi"],
+          areaServed: ["IN", "US", "GB", "AU", "AE"],
+        },
+        {
+          "@type": "ContactPoint",
+          contactType: "Customer Support",
+          url: `${BASE}/contact`,
+          email: "contact@99visual.com",
+          availableLanguage: ["English", "Kannada", "Hindi"],
+          areaServed: ["IN", "US", "GB", "AU", "AE"],
+        },
+      ],
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+      knowsAbout: [
+        "Web Development",
+        "Search Engine Optimisation",
+        "Digital Marketing",
+        "3D Visualisation",
+        "CAD Drafting",
+        "GIS Mapping",
+        "LiDAR Data Processing",
+        "QA Testing",
+        "IT Consulting",
+      ],
+    },
+
+    // 2. LocalBusiness (Bangalore local SEO + offer catalog)
+    {
+      "@type": ["LocalBusiness", "ProfessionalService"],
+      "@id": `${BASE}/#localbusiness`,
+      name: "99 Visual Solutions",
+      image: `${BASE}/images/og/contact-og.jpg`,
+      url: BASE,
+      email: "contact@99visual.com",
+      description:
+        "Full-service digital agency in Bengaluru offering web development, 3D visualisation, SEO, and digital marketing with free initial consultations.",
+      priceRange: "$$",
+      currenciesAccepted: "INR, USD, GBP, AED, AUD",
+      paymentAccepted: "Cash, Credit Card, Bank Transfer",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 12.9716,
+        longitude: 77.5946,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      ],
+      parentOrganization: { "@id": `${BASE}/#organization` },
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Digital Services",
+        itemListElement: [
+          {
+            "@type": "Offer",
+            name: "Free Consultation",
+            description:
+              "Free initial consultation for web development, 3D visualisation, SEO, and digital marketing services.",
+            price: "0",
+            priceCurrency: "INR",
+            url: `${BASE}/contact`,
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "Web & App Development" },
+            url: `${BASE}/services`,
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "3D Visualisation & Architectural Rendering" },
+            url: `${BASE}/services`,
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "SEO & Digital Marketing" },
+            url: `${BASE}/services`,
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "CAD, GIS & Photogrammetry" },
+            url: `${BASE}/services`,
+          },
+          {
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: "AI-Powered QA & Automation Testing" },
+            url: `${BASE}/services`,
+          },
+        ],
+      },
+    },
+
+    // 3. WebSite (Sitelinks Search Box)
+    {
+      "@type": "WebSite",
+      "@id": `${BASE}/#website`,
+      url: BASE,
+      name: "99 Visual Solutions",
+      description:
+        "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
+      publisher: { "@id": `${BASE}/#organization` },
+      inLanguage: "en-IN",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE}/?s={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+
+    // 4. ContactPage
+    {
+      "@type": "ContactPage",
+      "@id": `${BASE}/contact#webpage`,
+      url: `${BASE}/contact`,
+      name: "Contact 99 Visual | Get a Free Quote for Web, 3D & Digital Marketing - Bangalore India",
+      description:
+        "Get in touch with 99 Visual Solutions in Bengaluru for a free consultation on web development, 3D visualisation, SEO, and digital marketing services.",
+      inLanguage: "en-IN",
+      datePublished: "2023-01-01",
+      dateModified: "2025-01-01",
+      isPartOf: { "@id": `${BASE}/#website` },
+      about: { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${BASE}/images/og/contact-og.jpg`,
+        width: 1200,
+        height: 630,
+      },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".ct-hero__sub", ".ct-hero__h1"],
+      },
+      breadcrumb: { "@id": `${BASE}/contact#breadcrumb` },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home", url: "/" },
+        { name: "Contact", url: "/contact" },
+      ]),
+      "@id": `${BASE}/contact#breadcrumb`,
+    },
+
+    // 6. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "Does 99 Visual offer a free consultation?",
+          answer:
+            "Yes. 99 Visual Solutions offers a free initial consultation for web development, 3D visualisation, SEO, and digital marketing projects. Simply fill out the contact form and the team will get back to you within one business day.",
+        },
+        {
+          question: "Where is 99 Visual Solutions located?",
+          answer:
+            "99 Visual Solutions is based in Bengaluru, Karnataka, India. The team works with clients both locally and globally across the USA, UK, UAE, and Australia.",
+        },
+        {
+          question: "How quickly does 99 Visual respond to enquiries?",
+          answer:
+            "The team typically responds to all enquiries within one business day. You can reach out via the contact form at 99visual.com/contact or by emailing contact@99visual.com.",
+        },
+        {
+          question: "What services can I get a quote for?",
+          answer:
+            "You can request a quote for web development, UI/UX design, 3D visualisation, SEO, digital marketing, GIS services, CAD drafting, and IT consulting. Use the contact form to describe your project requirements.",
+        },
+        {
+          question: "Does 99 Visual work with international clients?",
+          answer:
+            "Yes. 99 Visual Solutions serves startups and enterprises across India, the USA, UK, UAE, and Australia, offering competitive offshore IT services with fast turnaround times.",
+        },
+      ]),
+      "@id": `${BASE}/contact#faq`,
+    },
+
+  ],
+};
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ContactPage() {
   return (
     <>
+      {/* ✅ Single unified JSON-LD @graph block */}
+      <Script
+        id="schema-contact-graph"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+      />
+
       <Header />
-
-      {/* ── JSON-LD: Organization ── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "@id": "https://www.99visual.com/#organization",
-            "name": "99 Visual Solutions",
-            "url": "https://www.99visual.com",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://www.99visual.com/images/logo.png",
-              "width": 200,
-              "height": 60,
-            },
-            "description":
-              "99 Visual Solutions is a digital agency based in Bangalore, India, specializing in web development, 3D visualization, SEO, and digital marketing.",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Bangalore",
-              "addressRegion": "Karnataka",
-              "postalCode": "560001",
-              "addressCountry": "IN",
-            },
-            "areaServed": "Worldwide",
-            "sameAs": [
-              "https://twitter.com/99visual",
-              "https://www.linkedin.com/company/99visual",
-            ],
-            "contactPoint": [
-              {
-                "@type": "ContactPoint",
-                "contactType": "Sales",
-                "url": "https://www.99visual.com/contact",
-                "areaServed": "Worldwide",
-                "availableLanguage": "English",
-              },
-              {
-                "@type": "ContactPoint",
-                "contactType": "Customer Support",
-                "url": "https://www.99visual.com/contact",
-                "areaServed": "Worldwide",
-                "availableLanguage": "English",
-              },
-            ],
-          }),
-        }}
-      />
-
-      {/* ── JSON-LD: ContactPage ── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ContactPage",
-            "@id": "https://www.99visual.com/contact#webpage",
-            "name": "Contact 99 Visual | Get a Free Quote for Web, 3D & Digital Marketing - Bangalore India",
-            "description":
-              "Get in touch with 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing services.",
-            "url": "https://www.99visual.com/contact",
-            "inLanguage": "en-US",
-            "isPartOf": {
-              "@type": "WebSite",
-              "@id": "https://www.99visual.com/#website",
-              "url": "https://www.99visual.com",
-              "name": "99 Visual Solutions",
-              "publisher": { "@id": "https://www.99visual.com/#organization" },
-            },
-            "about": { "@id": "https://www.99visual.com/#organization" },
-            "breadcrumb": { "@id": "https://www.99visual.com/contact#breadcrumb" },
-            "primaryImageOfPage": {
-              "@type": "ImageObject",
-              "url": "https://www.99visual.com/images/og/contact-og.jpg",
-              "width": 1200,
-              "height": 630,
-            },
-          }),
-        }}
-      />
-
-      {/* ── JSON-LD: BreadcrumbList ── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "@id": "https://www.99visual.com/contact#breadcrumb",
-            "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.99visual.com" },
-              { "@type": "ListItem", "position": 2, "name": "Contact", "item": "https://www.99visual.com/contact" },
-            ],
-          }),
-        }}
-      />
-
-      {/* ── JSON-LD: LocalBusiness ── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ProfessionalService",
-            "@id": "https://www.99visual.com/#localbusiness",
-            "name": "99 Visual Solutions",
-            "url": "https://www.99visual.com",
-            "image": "https://www.99visual.com/images/og/contact-og.jpg",
-            "logo": "https://www.99visual.com/images/logo.png",
-            "description":
-              "Full-service digital agency in Bangalore offering web development, 3D visualization, SEO, and digital marketing with free initial consultations.",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Bangalore",
-              "addressRegion": "Karnataka",
-              "postalCode": "560001",
-              "addressCountry": "IN",
-            },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": 12.9716,
-              "longitude": 77.5946,
-            },
-            "areaServed": [
-              { "@type": "Country", "name": "India" },
-              { "@type": "AdministrativeArea", "name": "Worldwide" },
-            ],
-            "priceRange": "$$",
-            "currenciesAccepted": "INR, USD",
-            "paymentAccepted": "Bank Transfer, Online Payment",
-            "openingHoursSpecification": [
-              {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                "opens": "09:00",
-                "closes": "18:00",
-              },
-            ],
-            "sameAs": [
-              "https://twitter.com/99visual",
-              "https://www.linkedin.com/company/99visual",
-            ],
-            "hasOfferCatalog": {
-              "@type": "OfferCatalog",
-              "name": "Digital Services",
-              "itemListElement": [
-                {
-                  "@type": "Offer",
-                  "name": "Free Consultation",
-                  "description": "Free initial consultation for web development, 3D visualization, SEO, and digital marketing services.",
-                  "price": "0",
-                  "priceCurrency": "INR",
-                  "url": "https://www.99visual.com/contact",
-                },
-                {
-                  "@type": "Offer",
-                  "name": "Web Development",
-                  "description": "Custom web development services including frontend, backend, and full-stack solutions.",
-                  "url": "https://www.99visual.com/services",
-                },
-                {
-                  "@type": "Offer",
-                  "name": "3D Visualization",
-                  "description": "Photorealistic 3D rendering and visualization for architecture, product, and digital projects.",
-                  "url": "https://www.99visual.com/services",
-                },
-                {
-                  "@type": "Offer",
-                  "name": "SEO & Digital Marketing",
-                  "description": "End-to-end SEO, paid campaigns, and digital marketing strategies to drive growth.",
-                  "url": "https://www.99visual.com/services",
-                },
-              ],
-            },
-          }),
-        }}
-      />
-
-      {/* ── JSON-LD: FAQPage ── */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "Does 99 Visual offer a free consultation?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes. 99 Visual Solutions offers a free initial consultation for web development, 3D visualization, SEO, and digital marketing projects. Simply fill out the contact form and the team will get back to you.",
-                },
-              },
-              {
-                "@type": "Question",
-                "name": "Where is 99 Visual Solutions located?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "99 Visual Solutions is based in Bangalore, Karnataka, India. The team works with clients both locally and globally.",
-                },
-              },
-              {
-                "@type": "Question",
-                "name": "How quickly does 99 Visual respond to enquiries?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "The team typically responds to all enquiries within one business day. You can reach out via the contact form at https://www.99visual.com/contact.",
-                },
-              },
-              {
-                "@type": "Question",
-                "name": "What services can I get a quote for?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "You can request a quote for web development, UI/UX design, 3D visualization, SEO, digital marketing, GIS services, and IT consulting. Use the contact form to describe your project requirements.",
-                },
-              },
-            ],
-          }),
-        }}
-      />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ─── Shared tokens (mirrors careers page) ─── */
+        /* ─── Shared tokens ─── */
         :root {
           --c-bg:      #080808;
           --c-surface: #0f0f0f;

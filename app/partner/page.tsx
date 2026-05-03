@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaHandshake, FaGlobe, FaUsers, FaLightbulb } from "react-icons/fa";
+import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Partner With 99  Visual | Agency, Technology & Business Collaboration India",
+  title: "Partner With 99 Visual | Agency, Technology & Business Collaboration India",
   description:
     "Partner with 99 Visual — a trusted digital agency in India offering white-label web development, 3D visualization, SEO, and digital marketing partnerships. Scale globally with expert collaboration.",
+  metadataBase: new URL(BASE),
+  alternates: { canonical: "/partner" },
   keywords: [
     "Partner with 99 Visual", "Business Partnership India", "Digital Agency Partnership India",
     "White Label Web Development India", "Outsource Web Development India", "White Label SEO Services India",
@@ -19,60 +23,262 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Partner With 99 Visual | White-Label & Business Collaboration - India",
-    description: "Join 99 Visual's partner ecosystem for white-label web development, 3D visualization, SEO, and digital marketing. Build strategic collaborations and scale your business globally.",
-    url: "https://www.99visual.com/partner",
+    description:
+      "Join 99 Visual's partner ecosystem for white-label web development, 3D visualization, SEO, and digital marketing. Build strategic collaborations and scale your business globally.",
+    url: `${BASE}/partner`,
     siteName: "99 Visual Solutions",
-    images: [{ url: "https://www.99visual.com/images/og/partner-og.jpg", width: 1200, height: 630, alt: "Partner With 99Visual - Business Collaboration & Growth Opportunities" }],
-    locale: "en_US",
+    images: [
+      {
+        url: `${BASE}/images/og/partner-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Partner With 99 Visual - Business Collaboration & Growth Opportunities",
+      },
+    ],
+    locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Partner With 99 Visual | Agency & Business Collaboration India",
-    description: "Looking for a reliable digital partner in India? Join 99 Visual for white-label web development, 3D visualization, SEO & digital marketing collaborations.",
-    site: "@99visual",
-    creator: "@99visual",
-    images: ["https://www.99visual.com/images/og/partner-og.jpg"],
+    description:
+      "Looking for a reliable digital partner in India? Join 99 Visual for white-label web development, 3D visualization, SEO & digital marketing collaborations.",
+    images: [`${BASE}/images/og/partner-og.jpg`],
   },
-  metadataBase: new URL("https://www.99visual.com"),
-  alternates: { canonical: "/partner" },
   robots: {
-    index: true, follow: true,
-    googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
-  authors: [{ name: "99 Visual Solutions", url: "https://www.99visual.com" }],
+  authors: [{ name: "99 Visual Solutions", url: BASE }],
   category: "Technology",
 };
 
+// ─── Unified @graph schema ────────────────────────────────────────────────────
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 1. Organization
+    {
+      "@type": "Organization",
+      "@id": `${BASE}/#organization`,
+      name: "99 Visual Solutions",
+      alternateName: "99Visual",
+      description:
+        "Bangalore-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
+      url: BASE,
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${BASE}/#logo`,
+        url: `${BASE}/logo.png`,
+        contentUrl: `${BASE}/logo.png`,
+        width: 300,
+        height: 60,
+        caption: "99 Visual Solutions Logo",
+      },
+      image: { "@id": `${BASE}/#logo` },
+      foundingDate: "2015",
+      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "Partnership Enquiry",
+          url: `${BASE}/contact`,
+          email: "contact@99visual.com",
+          availableLanguage: ["English", "Kannada", "Hindi"],
+          areaServed: ["IN", "US", "GB", "AU", "AE"],
+        },
+      ],
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+      knowsAbout: [
+        "Web Development",
+        "Search Engine Optimisation",
+        "Digital Marketing",
+        "3D Visualisation",
+        "CAD Drafting",
+        "GIS Mapping",
+        "LiDAR Data Processing",
+        "QA Testing",
+        "IT Consulting",
+        "White-Label Services",
+      ],
+    },
+
+    // 2. LocalBusiness (Bangalore local SEO)
+    {
+      "@type": ["LocalBusiness", "ProfessionalService"],
+      "@id": `${BASE}/#localbusiness`,
+      name: "99 Visual Solutions",
+      image: `${BASE}/images/og/partner-og.jpg`,
+      url: BASE,
+      email: "contact@99visual.com",
+      description:
+        "IT and digital solutions company in Bengaluru offering partnership opportunities in web development, 3D visualisation, SEO, and digital marketing.",
+      priceRange: "$$",
+      currenciesAccepted: "INR, USD, GBP, AED, AUD",
+      paymentAccepted: "Cash, Credit Card, Bank Transfer",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 12.9716,
+        longitude: 77.5946,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      ],
+      parentOrganization: { "@id": `${BASE}/#organization` },
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+    },
+
+    // 3. WebSite (Sitelinks Search Box)
+    {
+      "@type": "WebSite",
+      "@id": `${BASE}/#website`,
+      url: BASE,
+      name: "99 Visual Solutions",
+      description:
+        "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
+      publisher: { "@id": `${BASE}/#organization` },
+      inLanguage: "en-IN",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE}/?s={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+
+    // 4. WebPage (Partner page)
+    {
+      "@type": "WebPage",
+      "@id": `${BASE}/partner#webpage`,
+      url: `${BASE}/partner`,
+      name: "Partner With 99 Visual | Agency, Technology & Business Collaboration India",
+      description:
+        "Join 99 Visual's partner ecosystem for white-label web development, 3D visualisation, SEO, and digital marketing. Build strategic collaborations and scale your business globally.",
+      inLanguage: "en-IN",
+      datePublished: "2023-01-01",
+      dateModified: "2025-01-01",
+      isPartOf: { "@id": `${BASE}/#website` },
+      about: { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${BASE}/images/og/partner-og.jpg`,
+        width: 1200,
+        height: 630,
+      },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".p-hero__sub", ".p-hero__h1"],
+      },
+      breadcrumb: { "@id": `${BASE}/partner#breadcrumb` },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home", url: "/" },
+        { name: "Partner", url: "/partner" },
+      ]),
+      "@id": `${BASE}/partner#breadcrumb`,
+    },
+
+    // 6. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What types of partnerships does 99 Visual Solutions offer?",
+          answer:
+            "99 Visual Solutions offers four partnership models: Business Partnerships, Global Partnerships, Technology Partnerships, and Creative Partnerships — each tailored to agencies, startups, enterprises, and innovators.",
+        },
+        {
+          question: "Does 99 Visual offer white-label web development services?",
+          answer:
+            "Yes. We provide white-label web development, SEO, digital marketing, and 3D visualisation services so agencies can resell our expertise under their own brand.",
+        },
+        {
+          question: "Can international agencies partner with 99 Visual?",
+          answer:
+            "Absolutely. We work with partners across India, the USA, UK, UAE, and Australia, providing offshore IT collaboration with competitive pricing and fast turnaround.",
+        },
+        {
+          question: "How many global partners does 99 Visual currently work with?",
+          answer:
+            "99 Visual Solutions has a network of over 30 global partners across various industries and regions.",
+        },
+        {
+          question: "How do I start a partnership with 99 Visual Solutions?",
+          answer:
+            "You can initiate a partnership by visiting our contact page at 99visual.com/contact or emailing us at contact@99visual.com. Our team typically responds within 24 hours.",
+        },
+      ]),
+      "@id": `${BASE}/partner#faq`,
+    },
+
+  ],
+};
+
+// ─── Page data ────────────────────────────────────────────────────────────────
 const partnerTypes = [
-  { icon: FaHandshake, accent: "#f97316", label: "Business Partners", desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
-  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",   desc: "Expand your reach with international collaborations and worldwide digital impact." },
-  { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners", desc: "Work with innovators to build next-gen digital transformation solutions." },
-  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners", desc: "Partner with agencies and designers to create unforgettable digital experiences." },
+  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",    desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
+  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",      desc: "Expand your reach with international collaborations and worldwide digital impact." },
+  { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners",  desc: "Work with innovators to build next-gen digital transformation solutions." },
+  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",    desc: "Partner with agencies and designers to create unforgettable digital experiences." },
 ];
 
 const whyItems = [
-  { num: "01", title: "Trusted Expertise", desc: "Proven depth in web development, IT consulting, 3D visualization, and performance marketing." },
-  { num: "02", title: "Global Network",    desc: "Strong collaborations with clients and partners across industries on every continent." },
-  { num: "03", title: "Innovation Driven", desc: "Constantly evolving with cutting-edge technologies and data-backed growth strategies." },
+  { num: "01", title: "Trusted Expertise",  desc: "Proven depth in web development, IT consulting, 3D visualization, and performance marketing." },
+  { num: "02", title: "Global Network",     desc: "Strong collaborations with clients and partners across industries on every continent." },
+  { num: "03", title: "Innovation Driven",  desc: "Constantly evolving with cutting-edge technologies and data-backed growth strategies." },
 ];
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PartnersPage() {
   return (
     <>
-      <Header />
+      {/* ✅ Single unified JSON-LD @graph block */}
+      <Script
+        id="schema-partner-graph"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+      />
 
-      {/* ── JSON-LD blocks (unchanged) ── */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context":"https://schema.org","@type":"Organization","@id":"https://www.99visual.com/#organization",
-        "name":"99 Visual Solutions","url":"https://www.99visual.com",
-        "logo":{"@type":"ImageObject","url":"https://www.99visual.com/images/logo.png","width":200,"height":60},
-        "description":"99 Visual Solutions is a digital agency in India offering partnership opportunities in web development, 3D visualization, SEO, and digital marketing.",
-        "foundingLocation":{"@type":"Place","address":{"@type":"PostalAddress","addressCountry":"IN"}},
-        "areaServed":"Worldwide",
-        "sameAs":["https://twitter.com/99visual","https://www.linkedin.com/company/99visual"],
-        "contactPoint":{"@type":"ContactPoint","contactType":"Partnership Enquiry","url":"https://www.99visual.com/contact","areaServed":"Worldwide","availableLanguage":"English"},
-      })}} />
+      <Header />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -375,7 +581,7 @@ export default function PartnersPage() {
         <div className="p-hero__content">
           <div className="p-hero__eyebrow">
             <span className="p-hero__dot" />
-            Strategic Collaboration · India & Global
+            Strategic Collaboration · India &amp; Global
           </div>
 
           <h1 className="p-hero__h1">
@@ -410,7 +616,7 @@ export default function PartnersPage() {
           <p className="p-section-label">What we offer</p>
           <h2 className="p-section-h2">Types of Partnerships</h2>
           <p className="p-section-sub" style={{ margin: "0 auto" }}>
-            Four distinct models — each designed to meet you where you are and grow where you're going.
+            Four distinct models — each designed to meet you where you are and grow where you&apos;re going.
           </p>
         </div>
 
@@ -422,7 +628,10 @@ export default function PartnersPage() {
               </div>
               <div className="p-type-card__title">{label}</div>
               <div className="p-type-card__desc">{desc}</div>
-              <div className="p-type-card__line" style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+              <div
+                className="p-type-card__line"
+                style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+              />
             </div>
           ))}
         </div>
@@ -488,10 +697,10 @@ export default function PartnersPage() {
         <div className="p-cta__orb" />
         <div className="p-cta__content">
           <h2 className="p-cta__h2">
-            Let's build the<br /><em>future</em> together
+            Let&apos;s build the<br /><em>future</em> together
           </h2>
           <p className="p-cta__sub">
-            Join our ecosystem and grow your business through strategic, long-term collaboration with a team that's invested in your success.
+            Join our ecosystem and grow your business through strategic, long-term collaboration with a team that&apos;s invested in your success.
           </p>
           <Link href="/contact" className="p-cta__btn">
             Partner With Us

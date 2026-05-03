@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
+import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
   description:
     "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers. Build your career with a forward-thinking digital agency.",
+  metadataBase: new URL(BASE),
+  alternates: { canonical: "/careers" },
   keywords: [
     "99Visual Careers", "Jobs at 99Visual", "Work at 99Visual",
     "IT Company Jobs Bangalore", "Digital Agency Jobs Bangalore", "Startup Jobs Bangalore", "IT Jobs India",
@@ -18,93 +22,368 @@ export const metadata: Metadata = {
     "Creative Agency Careers India", "Hiring Web Developers India", "Careers in Digital Agency India", "Join Digital Agency Team India",
   ],
   openGraph: {
-    title: "Careers at 99Visual | Web, Design & Digital Marketing Jobs - Bangalore",
-    description: "We're hiring! Join 99Visual in Bangalore — roles in web development, UI/UX design, 3D visualization, SEO, and digital marketing. Shape the future of digital with us.",
-    url: "https://www.99visual.com/careers",
-    siteName: "99Visual Solutions",
-    images: [{ url: "https://www.99visual.com/images/og/careers-og.jpg", width: 1200, height: 630, alt: "Careers at 99Visual - Web Developer, Designer & Digital Marketing Jobs Bangalore" }],
-    locale: "en_US",
+    title: "Careers at 99 Visual | Web, Design & Digital Marketing Jobs - Bangalore",
+    description:
+      "We're hiring! Join 99 Visual in Bangalore — roles in web development, UI/UX design, 3D visualization, SEO, and digital marketing. Shape the future of digital with us.",
+    url: `${BASE}/careers`,
+    siteName: "99 Visual Solutions",
+    images: [
+      {
+        url: `${BASE}/images/og/careers-og.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Careers at 99 Visual - Web Developer, Designer & Digital Marketing Jobs Bangalore",
+      },
+    ],
+    locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Careers at 99Visual | Join Our Creative Team in Bangalore",
-    description: "We're hiring web developers, UI/UX designers, 3D artists, and digital marketers in Bangalore. Grow your career at 99Visual.",
-    site: "@99visual",
-    creator: "@99visual",
-    images: ["https://www.99visual.com/images/og/careers-og.jpg"],
+    title: "Careers at 99 Visual | Join Our Creative Team in Bangalore",
+    description:
+      "We're hiring web developers, UI/UX designers, 3D artists, and digital marketers in Bangalore. Grow your career at 99 Visual.",
+    images: [`${BASE}/images/og/careers-og.jpg`],
   },
-  metadataBase: new URL("https://www.99visual.com"),
-  alternates: { canonical: "/careers" },
   robots: {
-    index: true, follow: true,
-    googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large", "max-video-preview": -1 },
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
   },
-  authors: [{ name: "99Visual Solutions", url: "https://www.99visual.com" }],
+  authors: [{ name: "99 Visual Solutions", url: BASE }],
   category: "Technology",
 };
 
+// ─── Unified @graph schema ────────────────────────────────────────────────────
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 1. Organization
+    {
+      "@type": "Organization",
+      "@id": `${BASE}/#organization`,
+      name: "99 Visual Solutions",
+      alternateName: "99Visual",
+      description:
+        "Bangalore-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
+      url: BASE,
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${BASE}/#logo`,
+        url: `${BASE}/logo.png`,
+        contentUrl: `${BASE}/logo.png`,
+        width: 300,
+        height: 60,
+        caption: "99 Visual Solutions Logo",
+      },
+      image: { "@id": `${BASE}/#logo` },
+      foundingDate: "2015",
+      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "HR / Careers",
+          url: `${BASE}/contact`,
+          email: "contact@99visual.com",
+          availableLanguage: ["English", "Kannada", "Hindi"],
+          areaServed: ["IN", "US", "GB", "AU", "AE"],
+        },
+      ],
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+      knowsAbout: [
+        "Web Development",
+        "Search Engine Optimisation",
+        "Digital Marketing",
+        "3D Visualisation",
+        "CAD Drafting",
+        "GIS Mapping",
+        "LiDAR Data Processing",
+        "QA Testing",
+        "IT Consulting",
+        "UI/UX Design",
+      ],
+    },
+
+    // 2. LocalBusiness (Bangalore local SEO)
+    {
+      "@type": ["LocalBusiness", "ProfessionalService"],
+      "@id": `${BASE}/#localbusiness`,
+      name: "99 Visual Solutions",
+      image: `${BASE}/images/og/careers-og.jpg`,
+      url: BASE,
+      email: "contact@99visual.com",
+      description:
+        "IT and digital solutions company in Bengaluru hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
+      priceRange: "$$",
+      currenciesAccepted: "INR, USD, GBP, AED, AUD",
+      paymentAccepted: "Cash, Credit Card, Bank Transfer",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bengaluru",
+        addressRegion: "Karnataka",
+        postalCode: "560087",
+        addressCountry: "IN",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 12.9716,
+        longitude: 77.5946,
+      },
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      ],
+      parentOrganization: { "@id": `${BASE}/#organization` },
+      sameAs: [
+        "https://x.com/99VisualSoluti1",
+        "https://www.linkedin.com/company/99-visual-solutions/",
+        "https://www.facebook.com/profile.php?id=100093639888151",
+      ],
+    },
+
+    // 3. WebSite (Sitelinks Search Box)
+    {
+      "@type": "WebSite",
+      "@id": `${BASE}/#website`,
+      url: BASE,
+      name: "99 Visual Solutions",
+      description:
+        "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
+      publisher: { "@id": `${BASE}/#organization` },
+      inLanguage: "en-IN",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${BASE}/?s={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+
+    // 4. WebPage (Careers page)
+    {
+      "@type": "WebPage",
+      "@id": `${BASE}/careers#webpage`,
+      url: `${BASE}/careers`,
+      name: "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
+      description:
+        "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
+      inLanguage: "en-IN",
+      datePublished: "2023-01-01",
+      dateModified: "2025-01-01",
+      isPartOf: { "@id": `${BASE}/#website` },
+      about: { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: `${BASE}/images/og/careers-og.jpg`,
+        width: 1200,
+        height: 630,
+      },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: [".c-hero__sub", ".c-hero__h1"],
+      },
+      breadcrumb: { "@id": `${BASE}/careers#breadcrumb` },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home", url: "/" },
+        { name: "Careers", url: "/careers" },
+      ]),
+      "@id": `${BASE}/careers#breadcrumb`,
+    },
+
+    // 6. JobPosting nodes (rich results for open roles)
+    {
+      "@type": "JobPosting",
+      "@id": `${BASE}/careers#job-web-developer`,
+      title: "Web Developer",
+      description:
+        "Build scalable web apps and platforms powering global businesses with modern React and Next.js stacks at 99 Visual Solutions, Bengaluru.",
+      datePosted: "2025-01-01",
+      validThrough: "2025-12-31",
+      employmentType: "FULL_TIME",
+      hiringOrganization: { "@id": `${BASE}/#organization` },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Bengaluru",
+          addressRegion: "Karnataka",
+          postalCode: "560087",
+          addressCountry: "IN",
+        },
+      },
+      applicantLocationRequirements: { "@type": "Country", name: "India" },
+      directApply: true,
+      url: `${BASE}/contact`,
+    },
+    {
+      "@type": "JobPosting",
+      "@id": `${BASE}/careers#job-uiux-designer`,
+      title: "UI/UX Designer",
+      description:
+        "Create intuitive, human-centered designs that elevate every user touchpoint and brand interaction at 99 Visual Solutions, Bengaluru.",
+      datePosted: "2025-01-01",
+      validThrough: "2025-12-31",
+      employmentType: "FULL_TIME",
+      hiringOrganization: { "@id": `${BASE}/#organization` },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Bengaluru",
+          addressRegion: "Karnataka",
+          postalCode: "560087",
+          addressCountry: "IN",
+        },
+      },
+      applicantLocationRequirements: { "@type": "Country", name: "India" },
+      directApply: true,
+      url: `${BASE}/contact`,
+    },
+    {
+      "@type": "JobPosting",
+      "@id": `${BASE}/careers#job-digital-marketing`,
+      title: "Digital Marketing Specialist",
+      description:
+        "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies at 99 Visual Solutions, Bengaluru.",
+      datePosted: "2025-01-01",
+      validThrough: "2025-12-31",
+      employmentType: "FULL_TIME",
+      hiringOrganization: { "@id": `${BASE}/#organization` },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Bengaluru",
+          addressRegion: "Karnataka",
+          postalCode: "560087",
+          addressCountry: "IN",
+        },
+      },
+      applicantLocationRequirements: { "@type": "Country", name: "India" },
+      directApply: true,
+      url: `${BASE}/contact`,
+    },
+    {
+      "@type": "JobPosting",
+      "@id": `${BASE}/careers#job-3d-artist`,
+      title: "3D Visualization Artist",
+      description:
+        "Work on AI, 3D visualization, GIS, and next-generation technologies that redefine industries at 99 Visual Solutions, Bengaluru.",
+      datePosted: "2025-01-01",
+      validThrough: "2025-12-31",
+      employmentType: "FULL_TIME",
+      hiringOrganization: { "@id": `${BASE}/#organization` },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Bengaluru",
+          addressRegion: "Karnataka",
+          postalCode: "560087",
+          addressCountry: "IN",
+        },
+      },
+      applicantLocationRequirements: { "@type": "Country", name: "India" },
+      directApply: true,
+      url: `${BASE}/contact`,
+    },
+
+    // 7. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What roles is 99 Visual hiring for in Bangalore?",
+          answer:
+            "99 Visual is currently hiring for Web Developers, UI/UX Designers, Digital Marketing Specialists, and 3D Visualization Artists at its Bengaluru office.",
+        },
+        {
+          question: "Is 99 Visual a good place to work for freshers?",
+          answer:
+            "Yes. 99 Visual offers continuous learning, mentorship, and real-world project experience, making it an excellent environment for freshers and early-career professionals to grow quickly.",
+        },
+        {
+          question: "Does 99 Visual offer remote or hybrid work options?",
+          answer:
+            "Work arrangements vary by role. Please visit the Contact page at 99visual.com/contact or apply directly to inquire about remote or hybrid options for a specific position.",
+        },
+        {
+          question: "How do I apply for a job at 99 Visual?",
+          answer:
+            "You can apply by visiting 99visual.com/contact and submitting your details along with your resume. The hiring team will reach out regarding suitable openings.",
+        },
+        {
+          question: "How many years of experience does 99 Visual have?",
+          answer:
+            "99 Visual Solutions was founded in 2015 and has over 10 years of expertise, delivering 500+ projects across web development, 3D visualisation, SEO, and digital marketing.",
+        },
+      ]),
+      "@id": `${BASE}/careers#faq`,
+    },
+
+  ],
+};
+
+// ─── Page data ────────────────────────────────────────────────────────────────
 const careerAreas = [
-  { icon: FaLaptopCode, accent: "#6366f1", label: "Development",       desc: "Build scalable web apps and platforms powering global businesses with modern React and Next.js stacks." },
-  { icon: FaUsers,     accent: "#22d3ee", label: "Design & UX",        desc: "Create intuitive, human-centered designs that elevate every user touchpoint and brand interaction." },
-  { icon: FaLightbulb, accent: "#fbbf24", label: "Innovation",         desc: "Work on AI, 3D visualization, GIS, and next-generation technologies that redefine industries." },
-  { icon: FaRocket,    accent: "#f97316", label: "Digital Marketing",  desc: "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies." },
+  { icon: FaLaptopCode, accent: "#6366f1", label: "Development",      desc: "Build scalable web apps and platforms powering global businesses with modern React and Next.js stacks." },
+  { icon: FaUsers,      accent: "#22d3ee", label: "Design & UX",      desc: "Create intuitive, human-centered designs that elevate every user touchpoint and brand interaction." },
+  { icon: FaLightbulb,  accent: "#fbbf24", label: "Innovation",       desc: "Work on AI, 3D visualization, GIS, and next-generation technologies that redefine industries." },
+  { icon: FaRocket,     accent: "#f97316", label: "Digital Marketing", desc: "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies." },
 ];
 
 const whyItems = [
-  { num: "01", title: "Growth & Learning",      desc: "Continuous mentorship, structured learning, and real-world experience that accelerates your career trajectory." },
-  { num: "02", title: "Collaborative Culture",  desc: "A supportive, diverse, and creative team environment that values your voice and ideas at every level." },
-  { num: "03", title: "Impactful Projects",     desc: "Work on meaningful global projects that create tangible business impact and push your craft further." },
+  { num: "01", title: "Growth & Learning",     desc: "Continuous mentorship, structured learning, and real-world experience that accelerates your career trajectory." },
+  { num: "02", title: "Collaborative Culture", desc: "A supportive, diverse, and creative team environment that values your voice and ideas at every level." },
+  { num: "03", title: "Impactful Projects",    desc: "Work on meaningful global projects that create tangible business impact and push your craft further." },
 ];
 
+const openRoles = [
+  { title: "Web Developer",               dept: "Development", type: "Full-time", loc: "Bangalore" },
+  { title: "UI/UX Designer",              dept: "Design",      type: "Full-time", loc: "Bangalore" },
+  { title: "Digital Marketing Specialist", dept: "Marketing",  type: "Full-time", loc: "Bangalore" },
+  { title: "3D Visualization Artist",     dept: "Innovation",  type: "Full-time", loc: "Bangalore" },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function CareersPage() {
   return (
     <>
+      {/* ✅ Single unified JSON-LD @graph block */}
+      <Script
+        id="schema-careers-graph"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+      />
+
       <Header />
-
-      {/* ── JSON-LD: Organization ── */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org", "@type": "Organization",
-        "@id": "https://www.99visual.com/#organization",
-        "name": "99Visual Solutions", "url": "https://www.99visual.com",
-        "logo": { "@type": "ImageObject", "url": "https://www.99visual.com/images/logo.png", "width": 200, "height": 60 },
-        "description": "99Visual Solutions is a digital agency based in Bangalore, India, offering services in web development, 3D visualization, SEO, and digital marketing.",
-        "address": { "@type": "PostalAddress", "addressLocality": "Bangalore", "addressRegion": "Karnataka", "addressCountry": "IN" },
-        "sameAs": ["https://twitter.com/99visual", "https://www.linkedin.com/company/99visual"],
-        "knowsAbout": ["Web Development", "3D Visualization", "UI/UX Design", "Digital Marketing", "SEO", "GIS", "Automation Testing"],
-      })}} />
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org", "@type": "WebPage",
-        "@id": "https://www.99visual.com/careers#webpage",
-        "url": "https://www.99visual.com/careers",
-        "name": "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
-        "description": "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
-        "inLanguage": "en-US",
-        "isPartOf": { "@type": "WebSite", "@id": "https://www.99visual.com/#website", "url": "https://www.99visual.com", "name": "99Visual Solutions", "publisher": { "@id": "https://www.99visual.com/#organization" } },
-        "about": { "@id": "https://www.99visual.com/#organization" },
-        "breadcrumb": { "@id": "https://www.99visual.com/careers#breadcrumb" },
-        "primaryImageOfPage": { "@type": "ImageObject", "url": "https://www.99visual.com/images/og/careers-og.jpg", "width": 1200, "height": 630 },
-      })}} />
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org", "@type": "BreadcrumbList",
-        "@id": "https://www.99visual.com/careers#breadcrumb",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.99visual.com" },
-          { "@type": "ListItem", "position": 2, "name": "Careers", "item": "https://www.99visual.com/careers" },
-        ],
-      })}} />
-
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org", "@type": "FAQPage",
-        "mainEntity": [
-          { "@type": "Question", "name": "What roles is 99Visual hiring for in Bangalore?", "acceptedAnswer": { "@type": "Answer", "text": "99Visual is currently hiring for Web Developers, UI/UX Designers, Digital Marketing Specialists, and 3D Visualization Artists at its Bangalore office." } },
-          { "@type": "Question", "name": "Is 99Visual a good place to work for freshers?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. 99Visual offers continuous learning, mentorship, and real-world project experience, making it an excellent environment for freshers and early-career professionals to grow quickly." } },
-          { "@type": "Question", "name": "Does 99Visual offer remote or hybrid work options?", "acceptedAnswer": { "@type": "Answer", "text": "Work arrangements vary by role. Please visit the Contact page at https://www.99visual.com/contact or apply directly to inquire about remote or hybrid options for a specific position." } },
-          { "@type": "Question", "name": "How do I apply for a job at 99Visual?", "acceptedAnswer": { "@type": "Answer", "text": "You can apply by visiting https://www.99visual.com/contact and submitting your details along with your resume. The hiring team will reach out regarding suitable openings." } },
-        ],
-      })}} />
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -332,9 +611,7 @@ export default function CareersPage() {
           border-radius:20px;padding:2.5rem;
           display:flex;flex-direction:column;gap:1.2rem;
         }
-        .c-why__stat {
-          display:flex;flex-direction:column;
-        }
+        .c-why__stat { display:flex;flex-direction:column; }
         .c-why__stat-num {
           font-family:var(--ff-serif);font-size:clamp(2.2rem,4vw,3rem);
           font-weight:700;color:var(--c-orange);line-height:1;margin-bottom:4px;
@@ -345,7 +622,7 @@ export default function CareersPage() {
         }
         .c-why__divider { height:1px;background:var(--c-border); }
 
-        /* ─── OPEN ROLES (new section) ─── */
+        /* ─── OPEN ROLES ─── */
         .c-roles {
           background:var(--c-surface);
           padding:6rem 1.5rem;
@@ -473,7 +750,7 @@ export default function CareersPage() {
           <div className="c-hero__rule" />
 
           <p className="c-hero__sub">
-            We're not just hiring — we're building a team of innovators, creators, and problem-solvers who shape the future of digital experiences together.
+            We&apos;re not just hiring — we&apos;re building a team of innovators, creators, and problem-solvers who shape the future of digital experiences together.
           </p>
 
           <Link href="#careers" className="c-hero__cta">
@@ -510,7 +787,10 @@ export default function CareersPage() {
               </div>
               <div className="c-area-card__title">{label}</div>
               <div className="c-area-card__desc">{desc}</div>
-              <div className="c-area-card__line" style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+              <div
+                className="c-area-card__line"
+                style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+              />
             </div>
           ))}
         </div>
@@ -578,17 +858,12 @@ export default function CareersPage() {
             <p className="c-section-label">Open positions</p>
             <h2 className="c-section-h2">Current Openings</h2>
             <p className="c-section-sub" style={{ margin: "0 auto" }}>
-              We're actively hiring across all disciplines. Don't see a perfect fit? Apply anyway — we're always interested in exceptional talent.
+              We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit? Apply anyway — we&apos;re always interested in exceptional talent.
             </p>
           </div>
 
           <div className="c-roles__list">
-            {[
-              { title: "Web Developer",              dept: "Development",      type: "Full-time", loc: "Bangalore" },
-              { title: "UI/UX Designer",             dept: "Design",           type: "Full-time", loc: "Bangalore" },
-              { title: "Digital Marketing Specialist", dept: "Marketing",      type: "Full-time", loc: "Bangalore" },
-              { title: "3D Visualization Artist",    dept: "Innovation",       type: "Full-time", loc: "Bangalore" },
-            ].map(({ title, dept, type, loc }) => (
+            {openRoles.map(({ title, dept, type, loc }) => (
               <div className="c-role-row" key={title}>
                 <div className="c-role-row__left">
                   <div className="c-role-row__title">{title}</div>
