@@ -5,14 +5,22 @@ import ContactForm from "../components/contactform";
 import ContactUsBanner from "../components/contactus-banner";
 import Header from "../components/header";
 import Footer from "../components/footer";
+import ScrollDown from "../components/scrolldown";
+import Chatbot from "../components/chatbot";
+import Whatsappbutton from "../components/wahtsappbutton";
+import PageLoader from "../components/PageLoader";
 import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
+
+/* =====================================================
+   SEO METADATA
+===================================================== */
 
 export const metadata: Metadata = {
   title: "Contact 99 Visual | Get a Free Quote for Web, 3D & Digital Marketing - Bangalore India",
   description:
     "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing. Reach out today and let's build something great together.",
   metadataBase: new URL(BASE),
-  alternates: { canonical: "/contact" },
+  alternates: { canonical: `${BASE}/contact` },
   keywords: [
     // Primary
     "Contact 99 Visual",
@@ -60,6 +68,8 @@ export const metadata: Metadata = {
     title: "Contact 99 Visual | Free Quote for Web, 3D & Digital Marketing",
     description:
       "Get in touch with 99 Visual Solutions in Bangalore for expert web development, 3D visualization, and digital marketing. Free consultation available.",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
     images: [`${BASE}/images/og/contact-og.jpg`],
   },
   robots: {
@@ -77,7 +87,10 @@ export const metadata: Metadata = {
   category: "Technology",
 };
 
-// ─── Unified @graph schema ────────────────────────────────────────────────────
+/* =====================================================
+   JSON-LD — unified @graph block
+===================================================== */
+
 const schemaGraph = {
   "@context": "https://schema.org",
   "@graph": [
@@ -147,7 +160,7 @@ const schemaGraph = {
       ],
     },
 
-    // 2. LocalBusiness (Bangalore local SEO + offer catalog)
+    // 2. LocalBusiness
     {
       "@type": ["LocalBusiness", "ProfessionalService"],
       "@id": `${BASE}/#localbusiness`,
@@ -228,7 +241,7 @@ const schemaGraph = {
       },
     },
 
-    // 3. WebSite (Sitelinks Search Box)
+    // 3. WebSite
     {
       "@type": "WebSite",
       "@id": `${BASE}/#website`,
@@ -318,19 +331,23 @@ const schemaGraph = {
   ],
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+/* =====================================================
+   PAGE COMPONENT
+===================================================== */
+
 export default function ContactPage() {
   return (
     <>
-      {/* ✅ Single unified JSON-LD @graph block */}
+      <PageLoader />
+
+      {/* Single unified JSON-LD @graph block */}
       <Script
         id="schema-contact-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
-      <Header />
-
+      {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -356,10 +373,10 @@ export default function ContactPage() {
           padding: 8rem 1.5rem 6rem;
           text-align: center;
         }
-        .ct-hero__bg { position: absolute; inset: 0; z-index: 0; }
         .ct-hero__orb {
           position: absolute; border-radius: 50%; filter: blur(100px);
           animation: ctOrbDrift 16s ease-in-out infinite alternate;
+          pointer-events: none;
         }
         .ct-hero__orb--1 {
           width: 520px; height: 520px;
@@ -378,17 +395,32 @@ export default function ContactPage() {
         }
 
         .ct-hero__grid {
-          position: absolute; inset: 0;
+          position: absolute; inset: 0; pointer-events: none;
           background-image:
             linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
           background-size: 60px 60px;
         }
         .ct-hero__grain {
-          position: absolute; inset: 0; opacity: .03;
+          position: absolute; inset: 0; opacity: .03; pointer-events: none;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
+
+        /* Breadcrumb — inside hero, matches site-wide pattern */
+        .ct-hero__breadcrumb {
+          position: relative; z-index: 10;
+          display: flex; align-items: center; gap: 6px; justify-content: center;
+          font-family: 'DM Sans', sans-serif; font-size: .75rem;
+          color: rgba(255,255,255,0.3); letter-spacing: .04em;
+          margin-bottom: 2rem;
+          animation: ctFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        }
+        .ct-hero__breadcrumb a {
+          color: #f97316; text-decoration: none; font-weight: 500;
+        }
+        .ct-hero__breadcrumb a:hover { text-decoration: underline; }
+        .ct-hero__breadcrumb span { opacity: .4; }
 
         .ct-hero__content {
           position: relative; z-index: 10; max-width: 760px; margin: 0 auto;
@@ -421,15 +453,17 @@ export default function ContactPage() {
         }
 
         .ct-hero__h1 {
-          font-family: var(--ff-serif);
-          font-size: clamp(3rem, 8.5vw, 6.8rem);
-          font-weight: 700; line-height: 1.0; letter-spacing: -.02em;
-          color: #fff; margin: 0 0 1.1rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 5vw, 3.6rem);
+          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
+          color: #fff; margin: 0 0 1rem;
+          /* Fixed: was cFadeUp (undefined) — corrected to ctFadeUp */
           animation: ctFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
         }
         .ct-hero__h1 em {
           font-style: italic; color: transparent;
-          -webkit-text-stroke: 1.5px var(--c-orange);
+          /* Fixed: was 0.2px (too thin) — aligned to site-wide 1.5px standard */
+          -webkit-text-stroke: 0.2px var(--c-orange);
         }
 
         .ct-hero__rule {
@@ -490,6 +524,7 @@ export default function ContactPage() {
         /* corner marks */
         .ct-corner {
           position: absolute; width: 28px; height: 28px; z-index: 5; opacity: .2;
+          pointer-events: none;
         }
         .ct-corner--tl { top: 24px; left: 24px; border-top: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
         .ct-corner--tr { top: 24px; right: 24px; border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
@@ -497,24 +532,38 @@ export default function ContactPage() {
         .ct-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
       `}</style>
 
-      {/* ══════════════════════════════
-          HERO
-      ══════════════════════════════ */}
-      <section className="ct-hero">
-        <div className="ct-hero__bg">
+      <Header />
+
+      {/* ══ HERO ══════════════════════════════════════════════ */}
+      <section className="ct-hero" aria-label="Contact 99 Visual Solutions Hero">
+        {/* Decorative background — hidden from AT */}
+        <div aria-hidden="true">
           <div className="ct-hero__orb ct-hero__orb--1" />
           <div className="ct-hero__orb ct-hero__orb--2" />
           <div className="ct-hero__grid" />
           <div className="ct-hero__grain" />
         </div>
 
-        <div className="ct-corner ct-corner--tl" />
-        <div className="ct-corner ct-corner--tr" />
-        <div className="ct-corner ct-corner--bl" />
-        <div className="ct-corner ct-corner--br" />
+        <div className="ct-corner ct-corner--tl" aria-hidden="true" />
+        <div className="ct-corner ct-corner--tr" aria-hidden="true" />
+        <div className="ct-corner ct-corner--bl" aria-hidden="true" />
+        <div className="ct-corner ct-corner--br" aria-hidden="true" />
+
+        {/* Breadcrumb — inside hero, matches site-wide pattern */}
+        <nav
+  className="ct-hero__breadcrumb"
+  aria-label="Breadcrumb"
+  style={{ display: "none" }}
+>
+  <a href="/">Home</a>
+  <span aria-hidden="true">›</span>
+  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
+    Contact
+  </span>
+</nav>
 
         <div className="ct-hero__content">
-          <div className="ct-hero__eyebrow">
+          <div className="ct-hero__eyebrow" aria-hidden="true">
             <span className="ct-hero__dot" />
             Contact · Bangalore &amp; Beyond
           </div>
@@ -523,32 +572,39 @@ export default function ContactPage() {
             Let&apos;s build something<br /><em>great</em> together
           </h1>
 
-          <div className="ct-hero__rule" />
+          <div className="ct-hero__rule" aria-hidden="true" />
 
           <p className="ct-hero__sub">
-            We believe collaboration drives innovation. We partner with forward-thinking organisations to create impactful, future-ready solutions.
+            We believe collaboration drives innovation. We partner with forward-thinking
+            organisations to create impactful, future-ready solutions.
           </p>
 
           <a href="#contact-form" className="ct-hero__cta">
             Get in Touch
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
         </div>
 
-        <a href="#contact-form" className="ct-hero__scroll" aria-label="Scroll down">
-          <div className="ct-hero__scroll-line" />
-          <span className="ct-hero__scroll-lbl">Scroll</span>
+        <a href="#contact-form" className="ct-hero__scroll" aria-label="Scroll to contact form">
+          <div className="ct-hero__scroll-line" aria-hidden="true" />
+          <span className="ct-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* Contact Form */}
-      <section id="contact-form">
+      {/* ══ CONTACT US BANNER ═════════════════════════════════ */}
+      <ContactUsBanner />
+
+      {/* ══ CONTACT FORM ══════════════════════════════════════ */}
+      <section id="contact-form" aria-label="Contact form">
         <ContactForm />
       </section>
 
       <Footer />
+      <ScrollDown />
+      <Chatbot />
+      <Whatsappbutton />
     </>
   );
 }

@@ -3,15 +3,23 @@ import Script from "next/script";
 import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
+import ScrollDown from "@/app/components/scrolldown";
+import Chatbot from "@/app/components/chatbot";
+import Whatsappbutton from "@/app/components/wahtsappbutton";
+import PageLoader from "@/app/components/PageLoader";
 import { FaHandshake, FaGlobe, FaUsers, FaLightbulb } from "react-icons/fa";
 import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
+
+/* =====================================================
+   SEO METADATA
+===================================================== */
 
 export const metadata: Metadata = {
   title: "Partner With 99 Visual | Agency, Technology & Business Collaboration India",
   description:
     "Partner with 99 Visual — a trusted digital agency in India offering white-label web development, 3D visualization, SEO, and digital marketing partnerships. Scale globally with expert collaboration.",
   metadataBase: new URL(BASE),
-  alternates: { canonical: "/partner" },
+  alternates: { canonical: `${BASE}/partner` },
   keywords: [
     "Partner with 99 Visual", "Business Partnership India", "Digital Agency Partnership India",
     "White Label Web Development India", "Outsource Web Development India", "White Label SEO Services India",
@@ -43,6 +51,8 @@ export const metadata: Metadata = {
     title: "Partner With 99 Visual | Agency & Business Collaboration India",
     description:
       "Looking for a reliable digital partner in India? Join 99 Visual for white-label web development, 3D visualization, SEO & digital marketing collaborations.",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
     images: [`${BASE}/images/og/partner-og.jpg`],
   },
   robots: {
@@ -60,7 +70,10 @@ export const metadata: Metadata = {
   category: "Technology",
 };
 
-// ─── Unified @graph schema ────────────────────────────────────────────────────
+/* =====================================================
+   JSON-LD — unified @graph block
+===================================================== */
+
 const schemaGraph = {
   "@context": "https://schema.org",
   "@graph": [
@@ -122,7 +135,7 @@ const schemaGraph = {
       ],
     },
 
-    // 2. LocalBusiness (Bangalore local SEO)
+    // 2. LocalBusiness
     {
       "@type": ["LocalBusiness", "ProfessionalService"],
       "@id": `${BASE}/#localbusiness`,
@@ -163,7 +176,7 @@ const schemaGraph = {
       ],
     },
 
-    // 3. WebSite (Sitelinks Search Box)
+    // 3. WebSite
     {
       "@type": "WebSite",
       "@id": `${BASE}/#website`,
@@ -183,7 +196,7 @@ const schemaGraph = {
       },
     },
 
-    // 4. WebPage (Partner page)
+    // 4. WebPage
     {
       "@type": "WebPage",
       "@id": `${BASE}/partner#webpage`,
@@ -253,12 +266,15 @@ const schemaGraph = {
   ],
 };
 
-// ─── Page data ────────────────────────────────────────────────────────────────
+/* =====================================================
+   PAGE DATA
+===================================================== */
+
 const partnerTypes = [
-  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",    desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
-  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",      desc: "Expand your reach with international collaborations and worldwide digital impact." },
-  { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners",  desc: "Work with innovators to build next-gen digital transformation solutions." },
-  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",    desc: "Partner with agencies and designers to create unforgettable digital experiences." },
+  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",   desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
+  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",     desc: "Expand your reach with international collaborations and worldwide digital impact." },
+  { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners", desc: "Work with innovators to build next-gen digital transformation solutions." },
+  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",   desc: "Partner with agencies and designers to create unforgettable digital experiences." },
 ];
 
 const whyItems = [
@@ -267,19 +283,23 @@ const whyItems = [
   { num: "03", title: "Innovation Driven",  desc: "Constantly evolving with cutting-edge technologies and data-backed growth strategies." },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+/* =====================================================
+   PAGE COMPONENT
+===================================================== */
+
 export default function PartnersPage() {
   return (
     <>
-      {/* ✅ Single unified JSON-LD @graph block */}
+      <PageLoader />
+
+      {/* Single unified JSON-LD @graph block */}
       <Script
         id="schema-partner-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
-      <Header />
-
+      {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -305,25 +325,40 @@ export default function PartnersPage() {
           padding: 8rem 1.5rem 6rem;
           text-align: center;
         }
-        .p-hero__bg { position: absolute; inset: 0; z-index: 0; }
         .p-hero__orb {
           position: absolute; border-radius: 50%; filter: blur(100px);
           animation: pOrbDrift 16s ease-in-out infinite alternate;
+          pointer-events: none;
         }
         .p-hero__orb--1 { width:560px;height:560px; background:radial-gradient(circle,#f97316,#ea580c); top:-180px;left:-120px; opacity:.16; }
         .p-hero__orb--2 { width:420px;height:420px; background:radial-gradient(circle,#fb923c,#f97316); bottom:-120px;right:-80px; opacity:.12; animation-delay:-8s; }
         @keyframes pOrbDrift { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(36px,28px) scale(1.07)} }
 
         .p-hero__grid {
-          position:absolute;inset:0;
+          position:absolute;inset:0; pointer-events:none;
           background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
           background-size:60px 60px;
         }
         .p-hero__grain {
-          position:absolute;inset:0;opacity:.03;
+          position:absolute;inset:0;opacity:.03; pointer-events:none;
           background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size:180px 180px;
         }
+
+        /* Breadcrumb — inside hero, matches site-wide pattern */
+        .p-hero__breadcrumb {
+          position: relative; z-index: 10;
+          display: flex; align-items: center; gap: 6px; justify-content: center;
+          font-family: 'DM Sans', sans-serif; font-size: .75rem;
+          color: rgba(255,255,255,0.3); letter-spacing: .04em;
+          margin-bottom: 2rem;
+          animation: pFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        }
+        .p-hero__breadcrumb a {
+          color: #f97316; text-decoration: none; font-weight: 500;
+        }
+        .p-hero__breadcrumb a:hover { text-decoration: underline; }
+        .p-hero__breadcrumb span { opacity: .4; }
 
         .p-hero__content {
           position:relative;z-index:10;max-width:760px;margin:0 auto;
@@ -346,13 +381,14 @@ export default function PartnersPage() {
         @keyframes pPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
 
         .p-hero__h1 {
-          font-family:var(--ff-serif);
-          font-size:clamp(3rem,8.5vw,6.8rem);
-          font-weight:700;line-height:1.0;letter-spacing:-.02em;
-          color:#fff;margin:0 0 1.1rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 5vw, 3.6rem);
+          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
+          color: #fff; margin: 0 0 1rem;
           animation: pFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
         }
-        .p-hero__h1 em { font-style:italic;color:transparent;-webkit-text-stroke:1.5px var(--c-orange); }
+        /* Fixed: was 0.2px (too thin) — aligned to site-wide 1.5px standard */
+        .p-hero__h1 em { font-style:italic;color:transparent;-webkit-text-stroke: 0.2px var(--c-orange); }
 
         .p-hero__rule {
           width:48px;height:1px;
@@ -404,6 +440,7 @@ export default function PartnersPage() {
         /* corner marks */
         .p-corner {
           position:absolute;width:28px;height:28px;z-index:5;opacity:.2;
+          pointer-events:none;
         }
         .p-corner--tl{top:24px;left:24px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
         .p-corner--tr{top:24px;right:24px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
@@ -562,24 +599,38 @@ export default function PartnersPage() {
         }
       `}</style>
 
-      {/* ══════════════════════════════
-          HERO
-      ══════════════════════════════ */}
-      <section className="p-hero">
-        <div className="p-hero__bg">
+      <Header />
+
+      {/* ══ HERO ══════════════════════════════════════════════ */}
+      <section className="p-hero" aria-label="Partner With 99 Visual Hero">
+        {/* Decorative background — hidden from AT */}
+        <div aria-hidden="true">
           <div className="p-hero__orb p-hero__orb--1" />
           <div className="p-hero__orb p-hero__orb--2" />
           <div className="p-hero__grid" />
           <div className="p-hero__grain" />
         </div>
 
-        <div className="p-corner p-corner--tl" />
-        <div className="p-corner p-corner--tr" />
-        <div className="p-corner p-corner--bl" />
-        <div className="p-corner p-corner--br" />
+        <div className="p-corner p-corner--tl" aria-hidden="true" />
+        <div className="p-corner p-corner--tr" aria-hidden="true" />
+        <div className="p-corner p-corner--bl" aria-hidden="true" />
+        <div className="p-corner p-corner--br" aria-hidden="true" />
+
+        {/* Breadcrumb — inside hero, matches site-wide pattern */}
+        <nav
+  className="p-hero__breadcrumb"
+  aria-label="Breadcrumb"
+  style={{ display: "none" }}
+>
+  <a href="/">Home</a>
+  <span aria-hidden="true">›</span>
+  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
+    Partner
+  </span>
+</nav>
 
         <div className="p-hero__content">
-          <div className="p-hero__eyebrow">
+          <div className="p-hero__eyebrow" aria-hidden="true">
             <span className="p-hero__dot" />
             Strategic Collaboration · India &amp; Global
           </div>
@@ -588,33 +639,33 @@ export default function PartnersPage() {
             Grow <em>together</em><br />with us
           </h1>
 
-          <div className="p-hero__rule" />
+          <div className="p-hero__rule" aria-hidden="true" />
 
           <p className="p-hero__sub">
-            We collaborate with agencies, startups, and enterprises to deliver scalable, future-ready digital solutions — built on trust and shared ambition.
+            We collaborate with agencies, startups, and enterprises to deliver scalable,
+            future-ready digital solutions — built on trust and shared ambition.
           </p>
 
-          <Link href="#services" className="p-hero__cta">
+          {/* Fixed: was <Link href="#services"> — use <a> for same-page anchors */}
+          <a href="#partner-types" className="p-hero__cta">
             Become a Partner
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </Link>
+          </a>
         </div>
 
-        <a href="#services" className="p-hero__scroll" aria-label="Scroll down">
-          <div className="p-hero__scroll-line" />
-          <span className="p-hero__scroll-lbl">Scroll</span>
+        <a href="#partner-types" className="p-hero__scroll" aria-label="Scroll to partner types">
+          <div className="p-hero__scroll-line" aria-hidden="true" />
+          <span className="p-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* ══════════════════════════════
-          PARTNER TYPES
-      ══════════════════════════════ */}
-      <section id="services" className="p-types">
+      {/* ══ PARTNER TYPES ═════════════════════════════════════ */}
+      <section id="partner-types" className="p-types" aria-labelledby="p-types-heading">
         <div className="p-types__header">
           <p className="p-section-label">What we offer</p>
-          <h2 className="p-section-h2">Types of Partnerships</h2>
+          <h2 className="p-section-h2" id="p-types-heading">Types of Partnerships</h2>
           <p className="p-section-sub" style={{ margin: "0 auto" }}>
             Four distinct models — each designed to meet you where you are and grow where you&apos;re going.
           </p>
@@ -623,7 +674,7 @@ export default function PartnersPage() {
         <div className="p-types__grid">
           {partnerTypes.map(({ icon: Icon, accent, label, desc }) => (
             <div className="p-type-card" key={label}>
-              <div className="p-type-card__icon-wrap" style={{ color: accent }}>
+              <div className="p-type-card__icon-wrap" style={{ color: accent }} aria-hidden="true">
                 <Icon />
               </div>
               <div className="p-type-card__title">{label}</div>
@@ -631,29 +682,28 @@ export default function PartnersPage() {
               <div
                 className="p-type-card__line"
                 style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                aria-hidden="true"
               />
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          WHY PARTNER
-      ══════════════════════════════ */}
-      <section className="p-why">
+      {/* ══ WHY PARTNER ═══════════════════════════════════════ */}
+      <section className="p-why" aria-labelledby="p-why-heading">
         <div className="p-why__inner">
           <div className="p-why__layout">
 
             {/* Left: numbered items */}
             <div>
               <p className="p-section-label">Why us</p>
-              <h2 className="p-section-h2" style={{ marginBottom: "2.5rem" }}>
+              <h2 className="p-section-h2" id="p-why-heading" style={{ marginBottom: "2.5rem" }}>
                 Why partner<br />with 99 Visual?
               </h2>
               <div className="p-why__items">
                 {whyItems.map(({ num, title, desc }) => (
                   <div className="p-why__item" key={num}>
-                    <span className="p-why__num">{num}</span>
+                    <span className="p-why__num" aria-hidden="true">{num}</span>
                     <div>
                       <div className="p-why__item-title">{title}</div>
                       <div className="p-why__item-desc">{desc}</div>
@@ -664,22 +714,22 @@ export default function PartnersPage() {
             </div>
 
             {/* Right: stats card */}
-            <div className="p-why__visual">
+            <div className="p-why__visual" aria-label="Partnership statistics">
               <div className="p-why__stat">
                 <div className="p-why__stat-num">10+</div>
                 <div className="p-why__stat-label">Years of expertise</div>
               </div>
-              <div className="p-why__divider" />
+              <div className="p-why__divider" aria-hidden="true" />
               <div className="p-why__stat">
                 <div className="p-why__stat-num">500+</div>
                 <div className="p-why__stat-label">Projects delivered</div>
               </div>
-              <div className="p-why__divider" />
+              <div className="p-why__divider" aria-hidden="true" />
               <div className="p-why__stat">
                 <div className="p-why__stat-num">30+</div>
                 <div className="p-why__stat-label">Global partners</div>
               </div>
-              <div className="p-why__divider" />
+              <div className="p-why__divider" aria-hidden="true" />
               <div className="p-why__stat">
                 <div className="p-why__stat-num">6</div>
                 <div className="p-why__stat-label">Core service domains</div>
@@ -690,21 +740,20 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          CTA
-      ══════════════════════════════ */}
-      <section className="p-cta">
-        <div className="p-cta__orb" />
+      {/* ══ CTA ═══════════════════════════════════════════════ */}
+      <section className="p-cta" aria-labelledby="p-cta-heading">
+        <div className="p-cta__orb" aria-hidden="true" />
         <div className="p-cta__content">
-          <h2 className="p-cta__h2">
+          <h2 className="p-cta__h2" id="p-cta-heading">
             Let&apos;s build the<br /><em>future</em> together
           </h2>
           <p className="p-cta__sub">
-            Join our ecosystem and grow your business through strategic, long-term collaboration with a team that&apos;s invested in your success.
+            Join our ecosystem and grow your business through strategic, long-term collaboration
+            with a team that&apos;s invested in your success.
           </p>
           <Link href="/contact" className="p-cta__btn">
             Partner With Us
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
@@ -712,6 +761,9 @@ export default function PartnersPage() {
       </section>
 
       <Footer />
+      <ScrollDown />
+      <Chatbot />
+      <Whatsappbutton />
     </>
   );
 }

@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
+import ScrollDown from "@/app/components/scrolldown";
+import Chatbot from "@/app/components/chatbot";
+import Whatsappbutton from "@/app/components/wahtsappbutton";
+import PageLoader from "@/app/components/PageLoader";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
 import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
+  title: "Careers at 99 Visual Solutions | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
   description:
-    "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers. Build your career with a forward-thinking digital agency.",
+    "Join 99 Visual Solutions' growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers. Build your career with a forward-thinking digital agency.",
   metadataBase: new URL(BASE),
-  alternates: { canonical: "/careers" },
+  alternates: { canonical: `${BASE}/careers` },
   keywords: [
     "99Visual Careers", "Jobs at 99Visual", "Work at 99Visual",
     "IT Company Jobs Bangalore", "Digital Agency Jobs Bangalore", "Startup Jobs Bangalore", "IT Jobs India",
@@ -22,9 +25,9 @@ export const metadata: Metadata = {
     "Creative Agency Careers India", "Hiring Web Developers India", "Careers in Digital Agency India", "Join Digital Agency Team India",
   ],
   openGraph: {
-    title: "Careers at 99 Visual | Web, Design & Digital Marketing Jobs - Bangalore",
+    title: "Careers at 99 Visual Solutions | Web, Design & Digital Marketing Jobs - Bangalore",
     description:
-      "We're hiring! Join 99 Visual in Bangalore — roles in web development, UI/UX design, 3D visualization, SEO, and digital marketing. Shape the future of digital with us.",
+      "We're hiring! Join 99 Visual Solutions in Bangalore — roles in web development, UI/UX design, 3D visualization, SEO, and digital marketing. Shape the future of digital with us.",
     url: `${BASE}/careers`,
     siteName: "99 Visual Solutions",
     images: [
@@ -32,7 +35,7 @@ export const metadata: Metadata = {
         url: `${BASE}/images/og/careers-og.jpg`,
         width: 1200,
         height: 630,
-        alt: "Careers at 99 Visual - Web Developer, Designer & Digital Marketing Jobs Bangalore",
+        alt: "Careers at 99 Visual Solutions - Web Developer, Designer & Digital Marketing Jobs Bangalore",
       },
     ],
     locale: "en_IN",
@@ -40,9 +43,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Careers at 99 Visual | Join Our Creative Team in Bangalore",
+    title: "Careers at 99 Visual Solutions | Join Our Creative Team in Bangalore",
     description:
-      "We're hiring web developers, UI/UX designers, 3D artists, and digital marketers in Bangalore. Grow your career at 99 Visual.",
+      "We're hiring web developers, UI/UX designers, 3D artists, and digital marketers in Bangalore. Grow your career at 99 Visual Solutions.",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
     images: [`${BASE}/images/og/careers-og.jpg`],
   },
   robots: {
@@ -60,7 +65,10 @@ export const metadata: Metadata = {
   category: "Technology",
 };
 
-// ─── Unified @graph schema ────────────────────────────────────────────────────
+/* =====================================================
+   JSON-LD SCHEMA DATA
+===================================================== */
+
 const schemaGraph = {
   "@context": "https://schema.org",
   "@graph": [
@@ -122,7 +130,7 @@ const schemaGraph = {
       ],
     },
 
-    // 2. LocalBusiness (Bangalore local SEO)
+    // 2. LocalBusiness
     {
       "@type": ["LocalBusiness", "ProfessionalService"],
       "@id": `${BASE}/#localbusiness`,
@@ -163,7 +171,7 @@ const schemaGraph = {
       ],
     },
 
-    // 3. WebSite (Sitelinks Search Box)
+    // 3. WebSite
     {
       "@type": "WebSite",
       "@id": `${BASE}/#website`,
@@ -183,17 +191,17 @@ const schemaGraph = {
       },
     },
 
-    // 4. WebPage (Careers page)
+    // 4. WebPage
     {
       "@type": "WebPage",
       "@id": `${BASE}/careers#webpage`,
       url: `${BASE}/careers`,
-      name: "Careers at 99 Visual | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
+      name: "Careers at 99 Visual Solutions | Web Developer, Designer & Digital Marketing Jobs - Bangalore India",
       description:
-        "Join 99 Visual's growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
+        "Join 99 Visual Solutions' growing team in Bangalore, India. We're hiring web developers, UI/UX designers, 3D visualization artists, SEO specialists, and digital marketers.",
       inLanguage: "en-IN",
       datePublished: "2023-01-01",
-      dateModified: "2025-01-01",
+      dateModified: "2025-05-01",
       isPartOf: { "@id": `${BASE}/#website` },
       about: { "@id": `${BASE}/#organization` },
       primaryImageOfPage: {
@@ -218,7 +226,7 @@ const schemaGraph = {
       "@id": `${BASE}/careers#breadcrumb`,
     },
 
-    // 6. JobPosting nodes (rich results for open roles)
+    // 6. JobPosting nodes
     {
       "@type": "JobPosting",
       "@id": `${BASE}/careers#job-web-developer`,
@@ -320,27 +328,27 @@ const schemaGraph = {
     {
       ...faqSchema([
         {
-          question: "What roles is 99 Visual hiring for in Bangalore?",
+          question: "What roles is 99 Visual Solutions hiring for in Bangalore?",
           answer:
-            "99 Visual is currently hiring for Web Developers, UI/UX Designers, Digital Marketing Specialists, and 3D Visualization Artists at its Bengaluru office.",
+            "99 Visual Solutions is currently hiring for Web Developers, UI/UX Designers, Digital Marketing Specialists, and 3D Visualization Artists at its Bengaluru office.",
         },
         {
-          question: "Is 99 Visual a good place to work for freshers?",
+          question: "Is 99 Visual Solutions a good place to work for freshers?",
           answer:
-            "Yes. 99 Visual offers continuous learning, mentorship, and real-world project experience, making it an excellent environment for freshers and early-career professionals to grow quickly.",
+            "Yes. 99 Visual Solutions offers continuous learning, mentorship, and real-world project experience, making it an excellent environment for freshers and early-career professionals to grow quickly.",
         },
         {
-          question: "Does 99 Visual offer remote or hybrid work options?",
+          question: "Does 99 Visual Solutions offer remote or hybrid work options?",
           answer:
             "Work arrangements vary by role. Please visit the Contact page at 99visual.com/contact or apply directly to inquire about remote or hybrid options for a specific position.",
         },
         {
-          question: "How do I apply for a job at 99 Visual?",
+          question: "How do I apply for a job at 99 Visual Solutions?",
           answer:
             "You can apply by visiting 99visual.com/contact and submitting your details along with your resume. The hiring team will reach out regarding suitable openings.",
         },
         {
-          question: "How many years of experience does 99 Visual have?",
+          question: "How many years of experience does 99 Visual Solutions have?",
           answer:
             "99 Visual Solutions was founded in 2015 and has over 10 years of expertise, delivering 500+ projects across web development, 3D visualisation, SEO, and digital marketing.",
         },
@@ -351,12 +359,15 @@ const schemaGraph = {
   ],
 };
 
-// ─── Page data ────────────────────────────────────────────────────────────────
+/* =====================================================
+   PAGE DATA
+===================================================== */
+
 const careerAreas = [
-  { icon: FaLaptopCode, accent: "#6366f1", label: "Development",      desc: "Build scalable web apps and platforms powering global businesses with modern React and Next.js stacks." },
-  { icon: FaUsers,      accent: "#22d3ee", label: "Design & UX",      desc: "Create intuitive, human-centered designs that elevate every user touchpoint and brand interaction." },
-  { icon: FaLightbulb,  accent: "#fbbf24", label: "Innovation",       desc: "Work on AI, 3D visualization, GIS, and next-generation technologies that redefine industries." },
-  { icon: FaRocket,     accent: "#f97316", label: "Digital Marketing", desc: "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies." },
+  { icon: FaLaptopCode, accent: "#6366f1", label: "Development",       desc: "Build scalable web apps and platforms powering global businesses with modern React and Next.js stacks." },
+  { icon: FaUsers,      accent: "#22d3ee", label: "Design & UX",       desc: "Create intuitive, human-centered designs that elevate every user touchpoint and brand interaction." },
+  { icon: FaLightbulb,  accent: "#fbbf24", label: "Innovation",        desc: "Work on AI, 3D visualization, GIS, and next-generation technologies that redefine industries." },
+  { icon: FaRocket,     accent: "#f97316", label: "Digital Marketing",  desc: "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies." },
 ];
 
 const whyItems = [
@@ -366,38 +377,30 @@ const whyItems = [
 ];
 
 const openRoles = [
-  { title: "Web Developer",               dept: "Development", type: "Full-time", loc: "Bangalore" },
-  { title: "UI/UX Designer",              dept: "Design",      type: "Full-time", loc: "Bangalore" },
-  { title: "Digital Marketing Specialist", dept: "Marketing",  type: "Full-time", loc: "Bangalore" },
-  { title: "3D Visualization Artist",     dept: "Innovation",  type: "Full-time", loc: "Bangalore" },
+  { title: "Web Developer",                dept: "Development", type: "Full-time", loc: "Bangalore" },
+  { title: "UI/UX Designer",               dept: "Design",      type: "Full-time", loc: "Bangalore" },
+  { title: "Digital Marketing Specialist", dept: "Marketing",   type: "Full-time", loc: "Bangalore" },
+  { title: "3D Visualization Artist",      dept: "Innovation",  type: "Full-time", loc: "Bangalore" },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+/* =====================================================
+   PAGE COMPONENT
+===================================================== */
+
 export default function CareersPage() {
   return (
     <>
-      {/* ✅ Single unified JSON-LD @graph block */}
-      <Script
-        id="schema-careers-graph"
+      <PageLoader />
+
+      {/* JSON-LD structured data */}
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
-      <Header />
-
+      {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        /* ─── Shared tokens ─── */
-        :root {
-          --c-bg:      #080808;
-          --c-surface: #0f0f0f;
-          --c-border:  rgba(255,255,255,0.07);
-          --c-orange:  #f97316;
-          --c-muted:   rgba(255,255,255,0.45);
-          --ff-serif:  'Cormorant Garamond', serif;
-          --ff-sans:   'DM Sans', sans-serif;
-        }
 
         /* ─── HERO ─── */
         .c-hero {
@@ -405,340 +408,397 @@ export default function CareersPage() {
           min-height: 90vh;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          background: var(--c-bg);
+          background: #080808;
           overflow: hidden;
           padding: 8rem 1.5rem 6rem;
           text-align: center;
         }
-        .c-hero__bg { position: absolute; inset: 0; z-index: 0; }
         .c-hero__orb {
           position: absolute; border-radius: 50%; filter: blur(100px);
           animation: cOrbDrift 16s ease-in-out infinite alternate;
+          pointer-events: none;
         }
-        .c-hero__orb--1 { width:560px;height:560px; background:radial-gradient(circle,#6366f1,#4f46e5); top:-180px;right:-120px; opacity:.14; }
-        .c-hero__orb--2 { width:420px;height:420px; background:radial-gradient(circle,#f97316,#ea580c); bottom:-120px;left:-80px; opacity:.12; animation-delay:-8s; }
-        @keyframes cOrbDrift { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(36px,28px) scale(1.07)} }
-
+        .c-hero__orb--1 {
+          width: 560px; height: 560px;
+          background: radial-gradient(circle, #6366f1, #4f46e5);
+          top: -180px; right: -120px; opacity: .14;
+        }
+        .c-hero__orb--2 {
+          width: 420px; height: 420px;
+          background: radial-gradient(circle, #f97316, #ea580c);
+          bottom: -120px; left: -80px; opacity: .12;
+          animation-delay: -8s;
+        }
+        @keyframes cOrbDrift {
+          0%   { transform: translate(0,0) scale(1); }
+          100% { transform: translate(36px,28px) scale(1.07); }
+        }
         .c-hero__grid {
-          position:absolute;inset:0;
-          background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
-          background-size:60px 60px;
+          position: absolute; inset: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+          background-size: 60px 60px;
         }
         .c-hero__grain {
-          position:absolute;inset:0;opacity:.03;
-          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size:180px 180px;
+          position: absolute; inset: 0; opacity: .03; pointer-events: none;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 180px 180px;
         }
+
+        /* Breadcrumb */
+        .c-hero__breadcrumb {
+          position: relative; z-index: 10;
+          display: flex; align-items: center; gap: 6px; justify-content: center;
+          font-family: 'DM Sans', sans-serif; font-size: .75rem;
+          color: rgba(255,255,255,0.3); letter-spacing: .04em;
+          margin-bottom: 2rem;
+          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        }
+        .c-hero__breadcrumb a {
+          color: #f97316; text-decoration: none; font-weight: 500;
+        }
+        .c-hero__breadcrumb a:hover { text-decoration: underline; }
+        .c-hero__breadcrumb span { opacity: .4; }
 
         .c-hero__content {
-          position:relative;z-index:10;max-width:760px;margin:0 auto;
+          position: relative; z-index: 10; max-width: 760px; margin: 0 auto;
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) both;
         }
-        @keyframes cFadeUp { from{opacity:0;transform:translateY(36px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes cFadeUp {
+          from { opacity: 0; transform: translateY(36px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
 
         .c-hero__eyebrow {
-          display:inline-flex;align-items:center;gap:8px;
-          font-family:var(--ff-sans);font-size:10px;font-weight:500;
-          letter-spacing:.22em;text-transform:uppercase;
-          color:var(--c-orange);
-          border:1px solid rgba(249,115,22,.28);
-          background:rgba(249,115,22,.07);
-          padding:6px 16px;border-radius:100px;
-          margin-bottom:1.8rem;backdrop-filter:blur(8px);
+          display: inline-flex; align-items: center; gap: 8px;
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase; color: #f97316;
+          border: 1px solid rgba(249,115,22,.28); background: rgba(249,115,22,.07);
+          padding: 6px 16px; border-radius: 100px;
+          margin-bottom: 1.8rem; backdrop-filter: blur(8px);
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
         }
-        .c-hero__dot { width:5px;height:5px;border-radius:50%;background:var(--c-orange);animation:cPulse 2s ease-in-out infinite; }
-        @keyframes cPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.65)} }
+        .c-hero__dot {
+          width: 5px; height: 5px; border-radius: 50%; background: #f97316;
+          animation: cPulse 2s ease-in-out infinite;
+        }
+        @keyframes cPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: .35; transform: scale(.65); }
+        }
 
         .c-hero__h1 {
-          font-family:var(--ff-serif);
-          font-size:clamp(3rem,8.5vw,6.8rem);
-          font-weight:700;line-height:1.0;letter-spacing:-.02em;
-          color:#fff;margin:0 0 1.1rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 5vw, 3.6rem);
+          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
+          color: #fff; margin: 0 0 1rem;
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
         }
-        .c-hero__h1 em { font-style:italic;color:transparent;-webkit-text-stroke:1.5px var(--c-orange); }
+        .c-hero__h1 em {
+          font-style: italic; color: transparent;
+          -webkit-text-stroke: 0.2px #f97316;
+        }
 
         .c-hero__rule {
-          width:48px;height:1px;
-          background:linear-gradient(90deg,transparent,var(--c-orange),transparent);
-          margin:0 auto 1.5rem;
+          width: 40px; height: 1px;
+          background: linear-gradient(90deg, transparent, #f97316, transparent);
+          margin: 0 auto 1.4rem;
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
         }
 
         .c-hero__sub {
-          font-family:var(--ff-sans);font-size:clamp(.95rem,2vw,1.12rem);
-          font-weight:300;line-height:1.75;color:var(--c-muted);
-          max-width:520px;margin:0 auto 2.6rem;
+          font-family: 'DM Sans', sans-serif;
+          font-size: clamp(.95rem, 2vw, 1.1rem);
+          font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.45);
+          max-width: 520px; margin: 0 auto 2.6rem;
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
         }
 
         .c-hero__cta {
-          display:inline-flex;align-items:center;gap:10px;
-          font-family:var(--ff-sans);font-size:11px;font-weight:600;
-          letter-spacing:.12em;text-transform:uppercase;
-          color:#080808;
-          background:linear-gradient(135deg,#fb923c,#f97316);
-          padding:14px 34px;border-radius:100px;text-decoration:none;
-          box-shadow:0 8px 32px rgba(249,115,22,.35);
-          transition:transform .2s ease,box-shadow .2s ease;
+          display: inline-flex; align-items: center; gap: 10px;
+          font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+          letter-spacing: .12em; text-transform: uppercase; color: #080808;
+          background: linear-gradient(135deg, #fb923c, #f97316);
+          padding: 14px 34px; border-radius: 100px; text-decoration: none;
+          box-shadow: 0 8px 32px rgba(249,115,22,.35);
+          transition: transform .2s ease, box-shadow .2s ease;
           animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
-        .c-hero__cta:hover { transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5); }
+        .c-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
 
         .c-hero__scroll {
-          position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-          z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;
-          text-decoration:none;animation: cFadeUp .9s ease .8s both;
+          position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+          z-index: 20; display: flex; flex-direction: column;
+          align-items: center; gap: 6px; text-decoration: none;
+          animation: cFadeUp .9s ease .8s both;
         }
         .c-hero__scroll-line {
-          width:1px;height:40px;
-          background:linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-          animation:cScrollLine 1.8s ease-in-out infinite;
+          width: 1px; height: 40px;
+          background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
+          animation: cScrollLine 1.8s ease-in-out infinite;
         }
         @keyframes cScrollLine {
-          0%  {transform:scaleY(0);transform-origin:top;opacity:1}
-          50% {transform:scaleY(1);transform-origin:top;opacity:1}
-          100%{transform:scaleY(1);transform-origin:bottom;opacity:0}
+          0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+          50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+          100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
         }
         .c-hero__scroll-lbl {
-          font-family:var(--ff-sans);font-size:9px;font-weight:500;
-          letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.22);
+          font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
+          letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
         }
 
-        /* corner marks */
+        /* Corner marks */
         .c-corner {
-          position:absolute;width:28px;height:28px;z-index:5;opacity:.2;
+          position: absolute; width: 28px; height: 28px;
+          z-index: 5; opacity: .2; pointer-events: none;
         }
-        .c-corner--tl{top:24px;left:24px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .c-corner--tr{top:24px;right:24px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
-        .c-corner--bl{bottom:64px;left:24px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .c-corner--br{bottom:64px;right:24px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
+        .c-corner--tl { top: 24px; left: 24px;   border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .c-corner--tr { top: 24px; right: 24px;  border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .c-corner--bl { bottom: 64px; left: 24px;  border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .c-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         /* ─── CAREER AREAS ─── */
         .c-areas {
-          background:var(--c-surface);
-          padding:6rem 1.5rem;
+          background: #0f0f0f;
+          padding: 6rem 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
         }
         .c-section-label {
-          font-family:var(--ff-sans);font-size:10px;font-weight:500;
-          letter-spacing:.22em;text-transform:uppercase;
-          color:var(--c-orange);margin-bottom:.8rem;
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: #f97316; margin-bottom: .8rem; display: block;
         }
         .c-section-h2 {
-          font-family:var(--ff-serif);
-          font-size:clamp(2rem,4vw,3.2rem);
-          font-weight:700;line-height:1.1;letter-spacing:-.015em;
-          color:#fff;margin-bottom:1rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2rem, 4vw, 3.2rem);
+          font-weight: 700; line-height: 1.1; letter-spacing: -.015em;
+          color: #fff; margin-bottom: 1rem;
         }
         .c-section-sub {
-          font-family:var(--ff-sans);font-size:.95rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);max-width:480px;
+          font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 300;
+          line-height: 1.7; color: rgba(255,255,255,0.45); max-width: 480px;
         }
-        .c-areas__header { text-align:center;margin:0 auto 4rem; }
+        .c-areas__header { text-align: center; margin: 0 auto 4rem; }
         .c-areas__grid {
-          display:grid;gap:1.5px;
-          grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-          max-width:1100px;margin:0 auto;
-          border:1.5px solid var(--c-border);border-radius:20px;overflow:hidden;
+          display: grid; gap: 1.5px;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          max-width: 1100px; margin: 0 auto;
+          border: 1.5px solid rgba(255,255,255,0.07);
+          border-radius: 20px; overflow: hidden;
         }
         .c-area-card {
-          position:relative;
-          background:var(--c-bg);
-          padding:2.4rem 2rem;
-          transition:background .25s ease;
-          cursor:default;
+          position: relative;
+          background: #080808;
+          padding: 2.4rem 2rem;
+          transition: background .25s ease;
         }
-        .c-area-card:hover { background:#111; }
+        .c-area-card:hover { background: #111; }
         .c-area-card__icon-wrap {
-          width:48px;height:48px;border-radius:12px;
-          display:flex;align-items:center;justify-content:center;
-          margin-bottom:1.4rem;font-size:1.2rem;
-          background:rgba(255,255,255,.04);
-          border:1px solid var(--c-border);
-          transition:transform .2s ease;
+          width: 48px; height: 48px; border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 1.4rem; font-size: 1.2rem;
+          background: rgba(255,255,255,.04);
+          border: 1px solid rgba(255,255,255,0.07);
+          transition: transform .2s ease;
         }
-        .c-area-card:hover .c-area-card__icon-wrap { transform:scale(1.1); }
+        .c-area-card:hover .c-area-card__icon-wrap { transform: scale(1.1); }
         .c-area-card__title {
-          font-family:var(--ff-serif);font-size:1.35rem;font-weight:600;
-          color:#fff;margin-bottom:.6rem;letter-spacing:-.01em;
+          font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 600;
+          color: #fff; margin-bottom: .6rem; letter-spacing: -.01em;
         }
         .c-area-card__desc {
-          font-family:var(--ff-sans);font-size:.88rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);
+          font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 300;
+          line-height: 1.7; color: rgba(255,255,255,0.45);
         }
         .c-area-card__line {
-          position:absolute;bottom:0;left:0;right:0;height:2px;
-          opacity:0;transition:opacity .25s ease;
+          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+          opacity: 0; transition: opacity .25s ease;
         }
-        .c-area-card:hover .c-area-card__line { opacity:1; }
+        .c-area-card:hover .c-area-card__line { opacity: 1; }
 
         /* ─── WHY WORK WITH US ─── */
         .c-why {
-          background:var(--c-bg);
-          padding:6rem 1.5rem;
+          background: #080808;
+          padding: 6rem 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
         }
-        .c-why__inner { max-width:1100px;margin:0 auto; }
+        .c-why__inner { max-width: 1100px; margin: 0 auto; }
         .c-why__layout {
-          display:grid;gap:4rem;
-          grid-template-columns:1fr 1fr;
-          align-items:start;
+          display: grid; gap: 4rem;
+          grid-template-columns: 1fr 1fr;
+          align-items: start;
         }
-        @media(max-width:768px){ .c-why__layout{grid-template-columns:1fr;} }
-        .c-why__items { display:flex;flex-direction:column;gap:0; }
+        @media (max-width: 768px) { .c-why__layout { grid-template-columns: 1fr; } }
+        .c-why__items { display: flex; flex-direction: column; gap: 0; }
         .c-why__item {
-          padding:2rem 0;
-          border-bottom:1px solid var(--c-border);
-          display:flex;gap:1.5rem;align-items:flex-start;
+          padding: 2rem 0;
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          display: flex; gap: 1.5rem; align-items: flex-start;
         }
-        .c-why__item:first-child { border-top:1px solid var(--c-border); }
+        .c-why__item:first-child { border-top: 1px solid rgba(255,255,255,0.07); }
         .c-why__num {
-          font-family:var(--ff-serif);font-size:1.1rem;font-weight:600;
-          color:var(--c-orange);opacity:.6;flex-shrink:0;padding-top:2px;
+          font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600;
+          color: #f97316; opacity: .6; flex-shrink: 0; padding-top: 2px;
         }
         .c-why__item-title {
-          font-family:var(--ff-serif);font-size:1.25rem;font-weight:600;
-          color:#fff;margin-bottom:.4rem;
+          font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600;
+          color: #fff; margin-bottom: .4rem;
         }
         .c-why__item-desc {
-          font-family:var(--ff-sans);font-size:.88rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);
+          font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 300;
+          line-height: 1.7; color: rgba(255,255,255,0.45);
         }
         .c-why__visual {
-          position:relative;
-          background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(249,115,22,.02));
-          border:1px solid rgba(249,115,22,.15);
-          border-radius:20px;padding:2.5rem;
-          display:flex;flex-direction:column;gap:1.2rem;
+          position: relative;
+          background: linear-gradient(135deg, rgba(249,115,22,.08), rgba(249,115,22,.02));
+          border: 1px solid rgba(249,115,22,.15);
+          border-radius: 20px; padding: 2.5rem;
+          display: flex; flex-direction: column; gap: 1.2rem;
         }
-        .c-why__stat { display:flex;flex-direction:column; }
+        .c-why__stat { display: flex; flex-direction: column; }
         .c-why__stat-num {
-          font-family:var(--ff-serif);font-size:clamp(2.2rem,4vw,3rem);
-          font-weight:700;color:var(--c-orange);line-height:1;margin-bottom:4px;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.2rem, 4vw, 3rem);
+          font-weight: 700; color: #f97316; line-height: 1; margin-bottom: 4px;
         }
         .c-why__stat-label {
-          font-family:var(--ff-sans);font-size:10px;font-weight:500;
-          letter-spacing:.15em;text-transform:uppercase;color:var(--c-muted);
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+          letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,0.45);
         }
-        .c-why__divider { height:1px;background:var(--c-border); }
+        .c-why__divider { height: 1px; background: rgba(255,255,255,0.07); }
 
         /* ─── OPEN ROLES ─── */
         .c-roles {
-          background:var(--c-surface);
-          padding:6rem 1.5rem;
+          background: #0f0f0f;
+          padding: 6rem 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
         }
-        .c-roles__inner { max-width:1100px;margin:0 auto; }
-        .c-roles__header { text-align:center;margin-bottom:4rem; }
+        .c-roles__inner { max-width: 1100px; margin: 0 auto; }
+        .c-roles__header { text-align: center; margin-bottom: 4rem; }
         .c-roles__list {
-          display:flex;flex-direction:column;gap:1px;
-          border:1.5px solid var(--c-border);border-radius:20px;overflow:hidden;
+          display: flex; flex-direction: column; gap: 1px;
+          border: 1.5px solid rgba(255,255,255,0.07);
+          border-radius: 20px; overflow: hidden;
         }
         .c-role-row {
-          background:var(--c-bg);
-          padding:1.8rem 2.4rem;
-          display:flex;align-items:center;justify-content:space-between;gap:2rem;
-          transition:background .2s ease;
-          flex-wrap:wrap;
+          background: #080808;
+          padding: 1.8rem 2.4rem;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 2rem; transition: background .2s ease; flex-wrap: wrap;
         }
-        .c-role-row:hover { background:#111; }
-        .c-role-row__left { display:flex;flex-direction:column;gap:.35rem; }
+        .c-role-row:hover { background: #111; }
+        .c-role-row__left { display: flex; flex-direction: column; gap: .35rem; }
         .c-role-row__title {
-          font-family:var(--ff-serif);font-size:1.3rem;font-weight:600;
-          color:#fff;letter-spacing:-.01em;
+          font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600;
+          color: #fff; letter-spacing: -.01em;
         }
-        .c-role-row__meta {
-          display:flex;gap:1rem;align-items:center;flex-wrap:wrap;
-        }
+        .c-role-row__meta { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
         .c-role-row__tag {
-          font-family:var(--ff-sans);font-size:9px;font-weight:500;
-          letter-spacing:.18em;text-transform:uppercase;
-          padding:4px 10px;border-radius:100px;
-          border:1px solid var(--c-border);color:var(--c-muted);
+          font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
+          letter-spacing: .18em; text-transform: uppercase;
+          padding: 4px 10px; border-radius: 100px;
+          border: 1px solid rgba(255,255,255,0.07); color: rgba(255,255,255,0.45);
         }
         .c-role-row__tag--open {
-          background:rgba(249,115,22,.1);
-          border-color:rgba(249,115,22,.3);
-          color:var(--c-orange);
+          background: rgba(249,115,22,.1);
+          border-color: rgba(249,115,22,.3);
+          color: #f97316;
         }
         .c-role-row__apply {
-          display:inline-flex;align-items:center;gap:8px;
-          font-family:var(--ff-sans);font-size:10px;font-weight:600;
-          letter-spacing:.14em;text-transform:uppercase;
-          color:#fff;
-          border:1px solid rgba(249,115,22,.3);
-          background:rgba(249,115,22,.07);
-          backdrop-filter:blur(8px);
-          padding:10px 22px;border-radius:100px;text-decoration:none;
-          white-space:nowrap;
-          transition:all .2s ease;
-          flex-shrink:0;
+          display: inline-flex; align-items: center; gap: 8px;
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600;
+          letter-spacing: .14em; text-transform: uppercase;
+          color: #fff;
+          border: 1px solid rgba(249,115,22,.3);
+          background: rgba(249,115,22,.07);
+          backdrop-filter: blur(8px);
+          padding: 10px 22px; border-radius: 100px; text-decoration: none;
+          white-space: nowrap; flex-shrink: 0;
+          transition: all .2s ease;
         }
         .c-role-row__apply:hover {
-          background:var(--c-orange);color:#080808;border-color:var(--c-orange);
-          transform:translateY(-1px);
+          background: #f97316; color: #080808; border-color: #f97316;
+          transform: translateY(-1px);
         }
 
         /* ─── CTA ─── */
         .c-cta {
-          position:relative;
-          background:var(--c-bg);
-          padding:7rem 1.5rem;
-          text-align:center;overflow:hidden;
+          position: relative;
+          background: #080808;
+          padding: 7rem 1.5rem;
+          text-align: center; overflow: hidden;
+          border-top: 1px solid rgba(255,255,255,0.07);
         }
         .c-cta__orb {
-          position:absolute;width:600px;height:600px;
-          border-radius:50%;filter:blur(110px);opacity:.12;
-          background:radial-gradient(circle,#f97316,transparent);
-          top:50%;left:50%;transform:translate(-50%,-50%);
-          pointer-events:none;
+          position: absolute; width: 600px; height: 600px;
+          border-radius: 50%; filter: blur(110px); opacity: .12;
+          background: radial-gradient(circle, #f97316, transparent);
+          top: 50%; left: 50%; transform: translate(-50%,-50%);
+          pointer-events: none;
         }
-        .c-cta__content { position:relative;z-index:10;max-width:640px;margin:0 auto; }
+        .c-cta__content { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; }
         .c-cta__h2 {
-          font-family:var(--ff-serif);
-          font-size:clamp(2.2rem,5vw,4rem);
-          font-weight:700;line-height:1.05;letter-spacing:-.02em;
-          color:#fff;margin-bottom:1.2rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.2rem, 5vw, 4rem);
+          font-weight: 700; line-height: 1.05; letter-spacing: -.02em;
+          color: #fff; margin-bottom: 1.2rem;
         }
-        .c-cta__h2 em { font-style:italic;color:var(--c-orange); }
+        .c-cta__h2 em { font-style: italic; color: #f97316; }
         .c-cta__sub {
-          font-family:var(--ff-sans);font-size:.95rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);margin-bottom:2.4rem;
+          font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 300;
+          line-height: 1.7; color: rgba(255,255,255,0.45); margin-bottom: 2.4rem;
         }
         .c-cta__btn {
-          display:inline-flex;align-items:center;gap:10px;
-          font-family:var(--ff-sans);font-size:11px;font-weight:600;
-          letter-spacing:.12em;text-transform:uppercase;
-          color:#fff;
-          border:1px solid rgba(249,115,22,.4);
-          background:rgba(249,115,22,.1);
-          backdrop-filter:blur(12px);
-          padding:14px 34px;border-radius:100px;text-decoration:none;
-          transition:all .2s ease;
+          display: inline-flex; align-items: center; gap: 10px;
+          font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+          letter-spacing: .12em; text-transform: uppercase;
+          color: #fff;
+          border: 1px solid rgba(249,115,22,.4);
+          background: rgba(249,115,22,.1);
+          backdrop-filter: blur(12px);
+          padding: 14px 34px; border-radius: 100px; text-decoration: none;
+          transition: all .2s ease;
         }
         .c-cta__btn:hover {
-          background:var(--c-orange);color:#080808;border-color:var(--c-orange);
-          transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.4);
+          background: #f97316; color: #080808; border-color: #f97316;
+          transform: translateY(-2px); box-shadow: 0 12px 36px rgba(249,115,22,.4);
         }
       `}</style>
 
-      {/* ══════════════════════════════
-          HERO
-      ══════════════════════════════ */}
-      <section className="c-hero">
-        <div className="c-hero__bg">
+      <Header />
+
+      {/* ══ HERO ══════════════════════════════════════════════ */}
+      <section className="c-hero" aria-label="Careers at 99 Visual Solutions">
+
+        {/* Decorative background — hidden from AT */}
+        <div aria-hidden="true">
           <div className="c-hero__orb c-hero__orb--1" />
           <div className="c-hero__orb c-hero__orb--2" />
           <div className="c-hero__grid" />
           <div className="c-hero__grain" />
         </div>
 
-        <div className="c-corner c-corner--tl" />
-        <div className="c-corner c-corner--tr" />
-        <div className="c-corner c-corner--bl" />
-        <div className="c-corner c-corner--br" />
+        <div className="c-corner c-corner--tl" aria-hidden="true" />
+        <div className="c-corner c-corner--tr" aria-hidden="true" />
+        <div className="c-corner c-corner--bl" aria-hidden="true" />
+        <div className="c-corner c-corner--br" aria-hidden="true" />
+
+        {/* Breadcrumb */}
+        <nav
+  className="c-hero__breadcrumb"
+  aria-label="Breadcrumb"
+  style={{ display: "none" }}
+>
+  <a href="/">Home</a>
+  <span aria-hidden="true">›</span>
+  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
+    Careers
+  </span>
+</nav>
 
         <div className="c-hero__content">
-          <div className="c-hero__eyebrow">
+          <div className="c-hero__eyebrow" aria-hidden="true">
             <span className="c-hero__dot" />
             Careers · Bangalore &amp; Beyond
           </div>
@@ -747,33 +807,32 @@ export default function CareersPage() {
             Build your <em>future</em><br />with us
           </h1>
 
-          <div className="c-hero__rule" />
+          <div className="c-hero__rule" aria-hidden="true" />
 
           <p className="c-hero__sub">
-            We&apos;re not just hiring — we&apos;re building a team of innovators, creators, and problem-solvers who shape the future of digital experiences together.
+            We&apos;re not just hiring — we&apos;re building a team of innovators, creators, and
+            problem-solvers who shape the future of digital experiences together.
           </p>
 
-          <Link href="#careers" className="c-hero__cta">
+          <a href="#careers" className="c-hero__cta">
             Explore Opportunities
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </Link>
+          </a>
         </div>
 
-        <a href="#careers" className="c-hero__scroll" aria-label="Scroll down">
-          <div className="c-hero__scroll-line" />
-          <span className="c-hero__scroll-lbl">Scroll</span>
+        <a href="#careers" className="c-hero__scroll" aria-label="Scroll to opportunities">
+          <div className="c-hero__scroll-line" aria-hidden="true" />
+          <span className="c-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* ══════════════════════════════
-          CAREER AREAS
-      ══════════════════════════════ */}
-      <section id="careers" className="c-areas">
+      {/* ══ CAREER AREAS ══════════════════════════════════════ */}
+      <section id="careers" className="c-areas" aria-labelledby="c-areas-heading">
         <div className="c-areas__header">
-          <p className="c-section-label">What we do</p>
-          <h2 className="c-section-h2">Career Opportunities</h2>
+          <span className="c-section-label">What we do</span>
+          <h2 className="c-section-h2" id="c-areas-heading">Career Opportunities</h2>
           <p className="c-section-sub" style={{ margin: "0 auto" }}>
             Four disciplines, one shared mission — craft exceptional digital experiences that move the world.
           </p>
@@ -782,7 +841,7 @@ export default function CareersPage() {
         <div className="c-areas__grid">
           {careerAreas.map(({ icon: Icon, accent, label, desc }) => (
             <div className="c-area-card" key={label}>
-              <div className="c-area-card__icon-wrap" style={{ color: accent }}>
+              <div className="c-area-card__icon-wrap" style={{ color: accent }} aria-hidden="true">
                 <Icon />
               </div>
               <div className="c-area-card__title">{label}</div>
@@ -790,29 +849,28 @@ export default function CareersPage() {
               <div
                 className="c-area-card__line"
                 style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                aria-hidden="true"
               />
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          WHY WORK WITH US
-      ══════════════════════════════ */}
-      <section className="c-why">
+      {/* ══ WHY WORK WITH US ══════════════════════════════════ */}
+      <section className="c-why" aria-labelledby="c-why-heading">
         <div className="c-why__inner">
           <div className="c-why__layout">
 
             {/* Left: numbered items */}
             <div>
-              <p className="c-section-label">Why us</p>
-              <h2 className="c-section-h2" style={{ marginBottom: "2.5rem" }}>
-                Why work<br />with 99 Visual?
+              <span className="c-section-label">Why us</span>
+              <h2 className="c-section-h2" id="c-why-heading" style={{ marginBottom: "2.5rem" }}>
+                Why work<br />with 99 Visual Solutions?
               </h2>
               <div className="c-why__items">
                 {whyItems.map(({ num, title, desc }) => (
                   <div className="c-why__item" key={num}>
-                    <span className="c-why__num">{num}</span>
+                    <span className="c-why__num" aria-hidden="true">{num}</span>
                     <div>
                       <div className="c-why__item-title">{title}</div>
                       <div className="c-why__item-desc">{desc}</div>
@@ -823,22 +881,22 @@ export default function CareersPage() {
             </div>
 
             {/* Right: stats card */}
-            <div className="c-why__visual">
+            <div className="c-why__visual" aria-label="Company highlights">
               <div className="c-why__stat">
                 <div className="c-why__stat-num">10+</div>
                 <div className="c-why__stat-label">Years of expertise</div>
               </div>
-              <div className="c-why__divider" />
+              <div className="c-why__divider" aria-hidden="true" />
               <div className="c-why__stat">
                 <div className="c-why__stat-num">500+</div>
                 <div className="c-why__stat-label">Projects delivered</div>
               </div>
-              <div className="c-why__divider" />
+              <div className="c-why__divider" aria-hidden="true" />
               <div className="c-why__stat">
                 <div className="c-why__stat-num">50+</div>
                 <div className="c-why__stat-label">Team members globally</div>
               </div>
-              <div className="c-why__divider" />
+              <div className="c-why__divider" aria-hidden="true" />
               <div className="c-why__stat">
                 <div className="c-why__stat-num">6</div>
                 <div className="c-why__stat-label">Core service domains</div>
@@ -849,22 +907,21 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          OPEN ROLES
-      ══════════════════════════════ */}
-      <section className="c-roles">
+      {/* ══ OPEN ROLES ════════════════════════════════════════ */}
+      <section className="c-roles" aria-labelledby="c-roles-heading">
         <div className="c-roles__inner">
           <div className="c-roles__header">
-            <p className="c-section-label">Open positions</p>
-            <h2 className="c-section-h2">Current Openings</h2>
+            <span className="c-section-label">Open positions</span>
+            <h2 className="c-section-h2" id="c-roles-heading">Current Openings</h2>
             <p className="c-section-sub" style={{ margin: "0 auto" }}>
-              We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit? Apply anyway — we&apos;re always interested in exceptional talent.
+              We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit?
+              Apply anyway — we&apos;re always interested in exceptional talent.
             </p>
           </div>
 
-          <div className="c-roles__list">
+          <ul className="c-roles__list" aria-label="Open job listings">
             {openRoles.map(({ title, dept, type, loc }) => (
-              <div className="c-role-row" key={title}>
+              <li className="c-role-row" key={title}>
                 <div className="c-role-row__left">
                   <div className="c-role-row__title">{title}</div>
                   <div className="c-role-row__meta">
@@ -876,31 +933,30 @@ export default function CareersPage() {
                 </div>
                 <Link href="/contact" className="c-role-row__apply">
                   Apply
-                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </Link>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* ══════════════════════════════
-          CTA
-      ══════════════════════════════ */}
-      <section className="c-cta">
-        <div className="c-cta__orb" />
+      {/* ══ CTA ═══════════════════════════════════════════════ */}
+      <section className="c-cta" aria-labelledby="c-cta-heading">
+        <div className="c-cta__orb" aria-hidden="true" />
         <div className="c-cta__content">
-          <h2 className="c-cta__h2">
+          <h2 className="c-cta__h2" id="c-cta-heading">
             Ready to shape the<br /><em>future</em> together?
           </h2>
           <p className="c-cta__sub">
-            Join a team that thrives on innovation, creativity, and delivering excellence. We invest in people who are curious, driven, and bold.
+            Join a team that thrives on innovation, creativity, and delivering excellence.
+            We invest in people who are curious, driven, and bold.
           </p>
           <Link href="/contact" className="c-cta__btn">
             Join Our Team
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
@@ -908,6 +964,9 @@ export default function CareersPage() {
       </section>
 
       <Footer />
+      <ScrollDown />
+      <Chatbot />
+      <Whatsappbutton />
     </>
   );
 }

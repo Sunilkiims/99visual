@@ -158,7 +158,7 @@ export default function Home() {
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
-          style={{ position: 'relative', zIndex: 10, maxWidth: 860, margin: '0 auto 2rem', display: 'flex', alignItems: 'center', gap: 6, fontSize: '.75rem', fontFamily: "'DM Sans', sans-serif", color: 'rgba(255,255,255,0.3)', letterSpacing: '.04em' }}
+          style={{ position: 'relative', zIndex: 10, maxWidth: 860, margin: '0 auto 2rem', display: 'none', alignItems: 'center', gap: 6, fontSize: '.75rem', fontFamily: "'DM Sans', sans-serif", color: 'rgba(255,255,255,0.3)', letterSpacing: '.04em' }}
         >
           <a href="/" style={{ color: '#f97316', textDecoration: 'none', fontWeight: 500 }}>Home</a>
         </nav>
