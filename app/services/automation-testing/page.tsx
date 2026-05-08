@@ -18,56 +18,34 @@ import {
 
 import type { Metadata } from "next";
 
-import { BASE, breadcrumb, webPage, faqSchema } from "@/lib/schema";
+// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
+import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
 
-/* =====================================================
-   SEO METADATA
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// METADATA
+// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title:
-    "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD - 99 Visual Solutions",
+  title: "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD - 99 Visual Solutions",
   description:
     "99 Visual Solutions delivers next-generation QA and automation testing powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance & load testing, API testing, security testing, and CI/CD pipeline integration. Ship intelligent, bug-free software faster.",
-  keywords: [
-    "Agentic AI Testing Services",
-    "AI-Powered QA Services India",
-    "Autonomous Test Automation",
-    "Self-Healing Test Automation",
-    "LLM Testing Services",
-    "Generative AI QA",
-    "QA Testing Services India",
-    "Automation Testing Services",
-    "Software Testing Company India",
-    "Manual Testing Services",
-    "Functional Testing Services",
-    "Exploratory Testing",
-    "Regression Testing Services",
-    "Selenium Automation Testing",
-    "Playwright Testing Services",
-    "Cypress Automation Testing",
-    "Test Automation Framework",
-    "Automated QA Testing",
-    "AI Agent Testing",
-    "RPA Testing Services",
-    "Performance Testing Services",
-    "Load Testing Services",
-    "Stress Testing Services",
-    "Scalability Testing",
-    "Security Testing Services",
-    "Vulnerability Assessment Testing",
-    "OWASP Testing Services",
-    "API Testing Services",
-    "CI CD Pipeline Testing",
-    "DevOps QA Integration",
-    "Web Application Testing",
-    "Mobile App Testing Services",
-    "Cross Browser Testing",
-    "99 Visual Solutions QA Services",
-    "99 Visual Solutions Testing",
-  ],
+
+  // FIX: keywords[] REMOVED — ignored by all engines since 2009
+
   metadataBase: new URL(BASE),
-  alternates: { canonical: `${BASE}/services/testing-development` },
+
+  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
+  alternates: {
+    canonical: "/services/testing-development",
+    languages: {
+      "en-IN":     `${BASE}/services/testing-development`,
+      "en-US":     `${BASE}/services/testing-development`,
+      "en-GB":     `${BASE}/services/testing-development`,
+      "en-AE":     `${BASE}/services/testing-development`,
+      "en-AU":     `${BASE}/services/testing-development`,
+      "x-default": `${BASE}/services/testing-development`,
+    },
+  },
+
   robots: {
     index: true,
     follow: true,
@@ -79,81 +57,171 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+
   openGraph: {
-    title:
-      "AI-Powered QA & Automation Testing | Agentic AI, Self-Healing Tests & Bug-Free Delivery - 99 Visual Solutions",
+    title: "AI-Powered QA & Automation Testing | Agentic AI, Self-Healing Tests & Bug-Free Delivery - 99 Visual Solutions",
     description:
       "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, load & performance testing, security testing, and CI/CD integration. Trusted by startups and enterprises worldwide.",
     url: `${BASE}/services/testing-development`,
     siteName: "99 Visual Solutions",
     images: [
       {
-        url: `${BASE}/images/services/testing-og.jpg`,
-        width: 1200,
+        url:    `${BASE}/images/services/testing-og.jpg`,
+        width:  1200,
         height: 630,
-        alt: "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
+        type:   "image/jpeg",
+        alt:    "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+
+  // FIX: Twitter images changed from bare string to typed array with alt
   twitter: {
-    card: "summary_large_image",
-    title: "AI-Powered QA & Automation Testing | 99 Visual Solutions",
-    description:
-      "Ship reliable software with 99 Visual Solutions' Agentic AI QA services — autonomous test agents, self-healing automation, performance testing, security testing & CI/CD integration.",
-    site: "@99VisualSoluti1",
-    creator: "@99VisualSoluti1",
-    images: [`${BASE}/images/services/testing-og.jpg`],
+    card:        "summary_large_image",
+    title:       "AI-Powered QA & Automation Testing | 99 Visual Solutions",
+    description: "Ship reliable software with 99 Visual Solutions' Agentic AI QA services — autonomous test agents, self-healing automation, performance testing, security testing & CI/CD integration.",
+    site:        "@99VisualSoluti1",
+    creator:     "@99VisualSoluti1",
+    images: [
+      {
+        url: `${BASE}/images/services/testing-og.jpg`,
+        alt: "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
+      },
+    ],
   },
-  authors: [{ name: "99 Visual Solutions", url: BASE }],
-  category: "Technology",
+
+  // FIX: verification, publisher, referrer, formatDetection were missing
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
+  },
+  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  creator:         "99 Visual Solutions",
+  publisher:       "99 Visual Solutions",
+  category:        "Technology",
+  applicationName: "99 Visual Solutions",
+  referrer:        "origin-when-cross-origin",
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
-/* =====================================================
-   JSON-LD SCHEMA DATA
-===================================================== */
+// ─────────────────────────────────────────────────────────────────────────────
+// STRUCTURED DATA — unified @graph
+// FIX: was 3 separate <script> blocks with only breadcrumb/webPage/faq.
+//      Missing: Organization, LocalBusiness, WebSite — all added.
+//      dateModified auto-updates on every build (was missing entirely).
+// ─────────────────────────────────────────────────────────────────────────────
+const DATE_PUBLISHED = "2023-01-01";
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const testingBreadcrumb = breadcrumb([
-  { name: "Home", url: "/" },
-  { name: "Services", url: "/services" },
-  { name: "QA & Automation Testing", url: "/services/testing-development" },
-]);
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
 
-const testingWebPage = webPage({
-  url: "/services/testing-development",
-  name: "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD — 99 Visual Solutions",
-  description:
-    "Next-generation software QA and automation testing powered by Agentic AI — including autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
-});
+    // 1. Organization (entity anchor)
+    orgSchema,
 
-const testingFaq = faqSchema([
-  {
-    question: "What AI-powered QA services does 99 Visual Solutions provide?",
-    answer:
-      "We offer Agentic AI test automation, self-healing test scripts, LLM-driven exploratory testing, AI-augmented manual testing, and autonomous CI/CD quality gate integration.",
-  },
-  {
-    question: "Does 99 Visual Solutions support self-healing test automation?",
-    answer:
-      "Yes. Our AI-powered frameworks use self-healing scripts that automatically adapt to UI changes and DOM shifts, reducing maintenance overhead and keeping pipelines green.",
-  },
-  {
-    question: "What performance and load testing services are available?",
-    answer:
-      "We provide AI-guided load, stress, spike, and endurance testing with ML-assisted bottleneck detection, predictive root cause analysis, and observability integrations with Datadog and Grafana.",
-  },
-  {
-    question: "Does 99 Visual Solutions offer security testing?",
-    answer:
-      "Yes. We provide LLM-assisted threat modeling, OWASP-aligned penetration testing, AI-specific security testing for prompt injection and adversarial inputs, and compliance validation with remediation roadmaps.",
-  },
-]);
+    // 2. LocalBusiness
+    localBusinessSchema,
 
-/* =====================================================
-   PAGE DATA
-===================================================== */
+    // 3. WebSite
+    websiteSchema,
 
+    // 4. WebPage
+    {
+      "@type":       "WebPage",
+      "@id":         `${BASE}/services/testing-development#webpage`,
+      url:           `${BASE}/services/testing-development`,
+      name:          "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD — 99 Visual Solutions",
+      description:   "Next-generation software QA and automation testing powered by Agentic AI — including autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
+      inLanguage:    "en",
+      datePublished: DATE_PUBLISHED,
+      dateModified:  DATE_MODIFIED,           // FIX: was missing entirely
+      isPartOf:      { "@id": `${BASE}/#website` },
+      about:         { "@id": `${BASE}/#organization` },
+      publisher:     { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type":   "ImageObject",
+        url:       `${BASE}/images/services/testing-og.jpg`,
+        width:     1200,
+        height:    630,
+        caption:   "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
+      },
+      speakable: {
+        "@type":     "SpeakableSpecification",
+        cssSelector: [".wd-hero__h1", ".wd-hero__sub"],
+      },
+      breadcrumb:      { "@id": `${BASE}/services/testing-development#breadcrumb` },
+      potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/testing-development`] },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home",                      url: "/" },
+        { name: "Services",                  url: "/services" },
+        { name: "QA & Automation Testing",   url: "/services/testing-development" },
+      ]),
+      "@id": `${BASE}/services/testing-development#breadcrumb`,
+    },
+
+    // 6. Service node
+    {
+      "@type":       "Service",
+      "@id":         `${BASE}/services/testing-development#service`,
+      name:          "AI-Powered QA & Automation Testing",
+      description:   "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
+      provider:      { "@id": `${BASE}/#organization` },
+      areaServed:    ["IN", "US", "GB", "AU", "AE"],
+      url:           `${BASE}/services/testing-development`,
+      serviceType:   "QA & Software Testing",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name:    "QA & Automation Testing Services",
+        itemListElement: [
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI-Augmented Manual Testing" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Agentic AI Test Automation" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Performance & Load Testing" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Continuous CI/CD QA Integration" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI-Optimized Scale Readiness Testing" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "LLM-Assisted Security Testing" } },
+        ],
+      },
+    },
+
+    // 7. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What AI-powered QA services does 99 Visual Solutions provide?",
+          answer:
+            "We offer Agentic AI test automation, self-healing test scripts, LLM-driven exploratory testing, AI-augmented manual testing, and autonomous CI/CD quality gate integration.",
+        },
+        {
+          question: "Does 99 Visual Solutions support self-healing test automation?",
+          answer:
+            "Yes. Our AI-powered frameworks use self-healing scripts that automatically adapt to UI changes and DOM shifts, reducing maintenance overhead and keeping pipelines green.",
+        },
+        {
+          question: "What performance and load testing services are available?",
+          answer:
+            "We provide AI-guided load, stress, spike, and endurance testing with ML-assisted bottleneck detection, predictive root cause analysis, and observability integrations with Datadog and Grafana.",
+        },
+        {
+          question: "Does 99 Visual Solutions offer security testing?",
+          answer:
+            "Yes. We provide LLM-assisted threat modeling, OWASP-aligned penetration testing, AI-specific security testing for prompt injection and adversarial inputs, and compliance validation with remediation roadmaps.",
+        },
+      ]),
+      "@id":            `${BASE}/services/testing-development#faq`,
+      mainEntityOfPage: { "@id": `${BASE}/services/testing-development#webpage` },
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   {
     icon: <FaBug />,
@@ -230,7 +298,7 @@ const services = [
     id: "performance-testing",
     title: "Intelligent Performance & Load Testing",
     image: "/images/performance-testing.png",
-    imageAlt: "AI Performance Testing illustration",
+    imageAlt: "AI Performance & Load Testing illustration",
     description:
       "Go beyond pass/fail load benchmarks with ML-assisted performance engineering. We simulate millions of concurrent users across geographies, analyze system telemetry with predictive models, and deliver actionable optimization recommendations — not just numbers on a dashboard.",
     highlight:
@@ -246,7 +314,7 @@ const services = [
     id: "continuous-qa",
     title: "Continuous AI-Driven QA & Support",
     image: "/images/continuous-qa.png",
-    imageAlt: "Continuous AI QA support",
+    imageAlt: "Continuous AI-Driven QA & Support illustration",
     description:
       "Quality is not a phase — it's a continuous signal. We embed intelligent QA agents directly into your CI/CD pipelines, enabling autonomous test execution, real-time quality gates, and proactive defect prediction at every stage of your delivery workflow.",
     highlight:
@@ -262,7 +330,7 @@ const services = [
     id: "scale-readiness",
     title: "AI-Optimized Scale Readiness",
     image: "/images/performance-scale.png",
-    imageAlt: "AI-Optimized Performance & Scale Readiness",
+    imageAlt: "AI-Optimized Performance & Scale Readiness illustration",
     description:
       "Prepare your architecture for exponential growth with AI-guided capacity planning and scale validation. We stress-test your systems across distributed cloud environments, model traffic surge scenarios with precision, and validate auto-scaling configurations to ensure zero-downtime performance under any load.",
     highlight:
@@ -278,7 +346,7 @@ const services = [
     id: "security-testing",
     title: "LLM-Assisted Security Testing",
     image: "/images/security-aware-testing.png",
-    imageAlt: "LLM-Assisted Security Testing",
+    imageAlt: "LLM-Assisted Security Testing illustration",
     description:
       "Security in the age of AI demands AI-native testing strategies. Our security testing practice combines OWASP-aligned penetration testing, automated vulnerability scanning, and LLM-assisted threat modeling to identify risks that static analyzers and legacy tools routinely miss.",
     highlight:
@@ -292,32 +360,38 @@ const services = [
   },
 ];
 
-/* =====================================================
-   PAGE COMPONENT
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
 export default function TestingDevelopment() {
   return (
     <>
       <PageLoader />
 
-      {/* JSON-LD structured data */}
+      {/* FIX: unified @graph replaces 3 separate script blocks */}
       <script
+        id="schema-testing-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(testingBreadcrumb) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(testingWebPage) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(testingFaq) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
       {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        /* ── sr-only — invisible to users, crawlable by Googlebot ─────────
+           FIX: display:none hides from Googlebot too.
+           This clip technique keeps the element in the render tree at 1×1px.
+        ── */
+        .sr-only {
+          position: absolute !important;
+          width: 1px !important; height: 1px !important;
+          padding: 0 !important; margin: -1px !important;
+          overflow: hidden !important;
+          clip: rect(0, 0, 0, 0) !important;
+          white-space: nowrap !important;
+          border: 0 !important;
+        }
 
         /* ── HERO ── */
         .wd-hero {
@@ -365,21 +439,14 @@ export default function TestingDevelopment() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
-
-        /* Breadcrumb */
-        .wd-hero__breadcrumb {
-          position: relative; z-index: 10;
-          display: flex; align-items: center; gap: 6px; justify-content: center;
-          font-family: 'DM Sans', sans-serif; font-size: .75rem;
-          color: rgba(255,255,255,0.3); letter-spacing: .04em;
-          margin-bottom: 2rem;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        .wd-corner {
+          position: absolute; width: 28px; height: 28px;
+          z-index: 5; opacity: .2; pointer-events: none;
         }
-        .wd-hero__breadcrumb a {
-          color: #f97316; text-decoration: none; font-weight: 500;
-        }
-        .wd-hero__breadcrumb a:hover { text-decoration: underline; }
-        .wd-hero__breadcrumb span { opacity: .4; }
+        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         .wd-hero__content {
           position: relative; z-index: 10; max-width: 860px; margin: 0 auto;
@@ -438,7 +505,6 @@ export default function TestingDevelopment() {
           animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
         .wd-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
-
         .wd-hero__scroll {
           position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
           z-index: 20; display: flex; flex-direction: column;
@@ -459,16 +525,6 @@ export default function TestingDevelopment() {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
           letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
         }
-
-        /* Corner marks */
-        .wd-corner {
-          position: absolute; width: 28px; height: 28px;
-          z-index: 5; opacity: .2; pointer-events: none;
-        }
-        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
-        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         /* ── INTRO ── */
         .wd-intro {
@@ -502,14 +558,12 @@ export default function TestingDevelopment() {
 
         /* ── SERVICE SECTIONS ── */
         .wd-services { background: #080808; }
-
         .wd-svc {
           padding: 5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07);
           position: relative;
         }
         .wd-svc:nth-child(odd)  { background: #0f0f0f; }
         .wd-svc:nth-child(even) { background: #080808; }
-
         .wd-svc__inner--img-left {
           max-width: 1200px; margin: 0 auto;
           display: grid; grid-template-columns: 3fr 4fr;
@@ -526,7 +580,6 @@ export default function TestingDevelopment() {
           .wd-svc__img-wrap { order: 2 !important; }
           .wd-svc__body    { order: 1 !important; }
         }
-
         .wd-svc__img-wrap {
           position: relative; border-radius: 16px; overflow: hidden;
         }
@@ -541,11 +594,9 @@ export default function TestingDevelopment() {
           transition: transform .4s ease;
         }
         .wd-svc__img-wrap:hover img { transform: scale(1.03); }
-
         .wd-svc__num {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(3.5rem, 6vw, 5.5rem);
-          font-weight: 700; line-height: 1;
+          font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1;
           color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
           position: absolute; top: -1.5rem; left: 0;
           pointer-events: none; user-select: none;
@@ -556,7 +607,7 @@ export default function TestingDevelopment() {
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: .9rem; display: block;
         }
-        .wd-svc__h3 {
+        .wd-svc__heading {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.6rem, 3vw, 2.4rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
@@ -626,7 +677,6 @@ export default function TestingDevelopment() {
         }
         @media (max-width: 1024px) { .wd-benefits__grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 640px)  { .wd-benefits__grid { grid-template-columns: 1fr; } }
-
         .wd-benefit-card {
           background: #141414; border: 1px solid rgba(255,255,255,0.07);
           border-radius: 16px; padding: 2rem 1.75rem;
@@ -700,13 +750,21 @@ export default function TestingDevelopment() {
           transition: transform .2s ease, box-shadow .2s ease;
         }
         .wd-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
+
+        /* FIX: prefers-reduced-motion guard — WCAG 2.1 AA (was missing entirely) */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
       `}</style>
 
       <Header />
 
       {/* ══ HERO ══════════════════════════════════════════════ */}
-      <section className="wd-hero" aria-label="QA & Automation Testing Services Hero">
-        {/* Decorative background — hidden from AT */}
+      <section className="wd-hero" aria-labelledby="wd-hero-heading">
         <div aria-hidden="true">
           <div className="wd-hero__orb wd-hero__orb--1" />
           <div className="wd-hero__orb wd-hero__orb--2" />
@@ -720,20 +778,33 @@ export default function TestingDevelopment() {
         <div className="wd-corner wd-corner--bl" aria-hidden="true" />
         <div className="wd-corner wd-corner--br" aria-hidden="true" />
 
-        {/* Breadcrumb */}
-        <nav
-  className="wd-hero__breadcrumb"
-  aria-label="Breadcrumb"
-  style={{ display: "none" }}
->
-  <a href="/">Home</a>
-  <span aria-hidden="true">›</span>
-  <a href="/services">Services</a>
-  <span aria-hidden="true">›</span>
-  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
-    QA &amp; Automation Testing
-  </span>
-</nav>
+        {/*
+          FIX: breadcrumb changed from display:none → sr-only.
+          display:none hides from Googlebot. sr-only (1×1px clip) keeps it in
+          the render tree so bots can crawl it. JSON-LD handles rich results.
+        */}
+        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+          <ol
+            itemScope
+            itemType="https://schema.org/BreadcrumbList"
+            style={{ listStyle: "none", margin: 0, padding: 0 }}
+          >
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+              <meta itemProp="position" content="1" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+              <meta itemProp="position" content="2" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services/testing-development" itemProp="item" aria-current="page">
+                <span itemProp="name">QA &amp; Automation Testing</span>
+              </a>
+              <meta itemProp="position" content="3" />
+            </li>
+          </ol>
+        </nav>
 
         <div className="wd-hero__content">
           <div className="wd-hero__eyebrow" aria-hidden="true">
@@ -741,20 +812,28 @@ export default function TestingDevelopment() {
             Services · Agentic AI QA &amp; Automation Testing
           </div>
 
-          <h1 className="wd-hero__h1">
+          <h1 className="wd-hero__h1" id="wd-hero-heading">
             Intelligent quality engineering<br />
             powered by <em>Agentic AI</em>
           </h1>
 
           <div className="wd-hero__rule" aria-hidden="true" />
 
+          {/*
+            FIX: "LiDAR-assisted security testing" corrected to "LLM-assisted security testing"
+            — LiDAR is a spatial mapping technology, not a security testing tool.
+          */}
           <p className="wd-hero__sub">
-            From AI-augmented manual testing and autonomous agent-driven automation to LiDAR-assisted
-            security testing and predictive performance engineering — we deliver next-generation QA
-            that helps you ship intelligent, bug-free software at scale.
+            From AI-augmented manual testing and autonomous agent-driven automation to
+            LLM-assisted security testing and predictive performance engineering — we deliver
+            next-generation QA that helps you ship intelligent, bug-free software at scale.
           </p>
 
-          <a href="#services" className="wd-hero__cta">
+          <a
+            href="#services"
+            className="wd-hero__cta"
+            aria-label="Explore AI-powered QA and automation testing services"
+          >
             Explore Services
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -762,7 +841,7 @@ export default function TestingDevelopment() {
           </a>
         </div>
 
-        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to services">
+        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to QA and automation testing services">
           <div className="wd-hero__scroll-line" aria-hidden="true" />
           <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
@@ -803,8 +882,6 @@ export default function TestingDevelopment() {
             aria-labelledby={`wd-svc-heading-${svc.id}`}
           >
             <div className={`wd-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
-
-              {/* Image */}
               <div
                 className="wd-svc__img-wrap"
                 style={{ order: svc.imageLeft ? 1 : 2 }}
@@ -818,7 +895,6 @@ export default function TestingDevelopment() {
                 />
               </div>
 
-              {/* Text */}
               <div
                 className="wd-svc__body"
                 style={{ order: svc.imageLeft ? 2 : 1 }}
@@ -829,8 +905,9 @@ export default function TestingDevelopment() {
                 <span className="wd-svc__eyebrow">
                   Service {String(idx + 1).padStart(2, "0")}
                 </span>
+                {/* h3 was already correct in the original — preserved */}
                 <h3
-                  className="wd-svc__h3"
+                  className="wd-svc__heading"
                   id={`wd-svc-heading-${svc.id}`}
                 >
                   {svc.title}
@@ -891,7 +968,11 @@ export default function TestingDevelopment() {
             design an intelligent testing architecture tailored to your stack, your team, and your
             release velocity goals.
           </p>
-          <Link href="/contact" className="wd-cta__btn">
+          <Link
+            href="/contact"
+            className="wd-cta__btn"
+            aria-label="Get a free AI-powered QA consultation from 99 Visual Solutions"
+          >
             Get a Free Consultation
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>

@@ -17,59 +17,34 @@ import {
   FaCloud,
 } from "react-icons/fa";
 
-import { BASE, breadcrumb, webPage, faqSchema } from "@/lib/schema";
+// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
+import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
 
-/* =====================================================
-   SEO METADATA
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// METADATA
+// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
   description:
     "99 Visual Solutions provides end-to-end IT consulting services including IT infrastructure planning, cloud migration, cybersecurity & risk management, software consulting, IoT integration, system migration, and IT project management. Trusted by enterprises and growing businesses worldwide.",
-  keywords: [
-    "IT Consulting Services",
-    "IT Consulting Company",
-    "Technology Consulting Services",
-    "Enterprise IT Consulting",
-    "Managed IT Services",
-    "IT Support Services",
-    "IT Advisory Services",
-    "IT Infrastructure Planning",
-    "IT Infrastructure Management",
-    "IT Infrastructure Optimization",
-    "Network Infrastructure Services",
-    "Server Management Services",
-    "System Migration Services",
-    "IT Installation Services",
-    "Cloud Migration Services",
-    "Cloud Transformation Services",
-    "AWS Migration Services",
-    "Azure Cloud Services",
-    "Google Cloud Migration",
-    "Cloud Infrastructure Management",
-    "Digital Transformation Services",
-    "Cybersecurity Consulting Services",
-    "Cybersecurity Risk Management",
-    "Network Security Solutions",
-    "Endpoint Security Services",
-    "IT Compliance Services",
-    "Threat Monitoring Services",
-    "Software Consulting Services",
-    "Application Modernization Services",
-    "IT Project Management Services",
-    "Agile IT Project Delivery",
-    "IoT Integration Services",
-    "Smart Device Integration",
-    "IoT Consulting Services",
-    "Industrial IoT Solutions",
-    "IT Solutions for Enterprises",
-    "IT Solutions for Startups",
-    "99 Visual Solutions",
-    "99 Visual IT Consulting",
-  ],
+
+  // FIX: keywords[] REMOVED — ignored by all engines since 2009
+
   metadataBase: new URL(BASE),
-  alternates: { canonical: `${BASE}/services/it-consulting` },
+
+  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
+  alternates: {
+    canonical: "/services/it-consulting",
+    languages: {
+      "en-IN":     `${BASE}/services/it-consulting`,
+      "en-US":     `${BASE}/services/it-consulting`,
+      "en-GB":     `${BASE}/services/it-consulting`,
+      "en-AE":     `${BASE}/services/it-consulting`,
+      "en-AU":     `${BASE}/services/it-consulting`,
+      "x-default": `${BASE}/services/it-consulting`,
+    },
+  },
+
   robots: {
     index: true,
     follow: true,
@@ -81,6 +56,7 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+
   openGraph: {
     title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
@@ -89,71 +65,164 @@ export const metadata: Metadata = {
     siteName: "99 Visual Solutions",
     images: [
       {
-        url: `${BASE}/images/services/it-consulting-og.jpg`,
-        width: 1200,
+        url:    `${BASE}/images/services/it-consulting-og.jpg`,
+        width:  1200,
         height: 630,
-        alt: "IT Consulting Services by 99 Visual Solutions",
+        type:   "image/jpeg",
+        alt:    "IT Consulting Services by 99 Visual Solutions",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+
+  // FIX: Twitter images changed from bare string to typed array with alt
   twitter: {
-    card: "summary_large_image",
-    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
-    description:
-      "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99 Visual Solutions for businesses worldwide.",
-    // Aligned with the handle used across the rest of the site
-    site: "@99VisualSoluti1",
-    creator: "@99VisualSoluti1",
-    images: [`${BASE}/images/services/it-consulting-og.jpg`],
+    card:        "summary_large_image",
+    title:       "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
+    description: "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99 Visual Solutions for businesses worldwide.",
+    site:        "@99VisualSoluti1",
+    creator:     "@99VisualSoluti1",
+    images: [
+      {
+        url: `${BASE}/images/services/it-consulting-og.jpg`,
+        alt: "IT Consulting Services by 99 Visual Solutions",
+      },
+    ],
   },
+
+  // FIX: all missing from original
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
+  },
+  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  creator:         "99 Visual Solutions",
+  publisher:       "99 Visual Solutions",
+  category:        "Technology",
+  applicationName: "99 Visual Solutions",
+  referrer:        "origin-when-cross-origin",
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
-/* =====================================================
-   JSON-LD SCHEMA DATA
-===================================================== */
+// ─────────────────────────────────────────────────────────────────────────────
+// STRUCTURED DATA — unified @graph
+// FIX: was 3 separate <script> blocks with only breadcrumb/webPage/faq.
+//      Missing: Organization, LocalBusiness, WebSite — all added.
+//      dateModified auto-updates on every build (was missing entirely).
+//      Service headings fixed from h2 → h3 (heading hierarchy was broken).
+// ─────────────────────────────────────────────────────────────────────────────
+const DATE_PUBLISHED = "2023-01-01";
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const itBreadcrumb = breadcrumb([
-  { name: "Home", url: "/" },
-  { name: "Services", url: "/services" },
-  { name: "IT Consulting", url: "/services/it-consulting" },
-]);
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
 
-const itWebPage = webPage({
-  url: "/services/it-consulting",
-  name: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
-  description:
-    "End-to-end IT consulting: infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management by 99 Visual Solutions.",
-});
+    // 1. Organization (entity anchor)
+    orgSchema,
 
-const itFaq = faqSchema([
-  {
-    question: "What IT consulting services does 99 Visual Solutions provide?",
-    answer:
-      "We offer IT infrastructure planning & optimization, cloud migration & digital transformation, cybersecurity & risk management, software & application consulting, IoT & smart device integration, IT project management, and installation & system migration services.",
-  },
-  {
-    question: "Which cloud platforms do you support for migration?",
-    answer:
-      "We support migrations to and on Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP), including hybrid and multi-cloud strategies.",
-  },
-  {
-    question: "Do you provide ongoing IT support after the project is complete?",
-    answer:
-      "Yes. Our consultants provide continuous guidance, monitoring, and support to ensure your IT ecosystem evolves alongside your business needs.",
-  },
-  {
-    question: "Can you help us with cybersecurity compliance?",
-    answer:
-      "Absolutely. We provide risk assessments, vulnerability management, and compliance support aligned with industry standards, alongside threat monitoring and incident response.",
-  },
-]);
+    // 2. LocalBusiness
+    localBusinessSchema,
 
-/* =====================================================
-   PAGE DATA
-===================================================== */
+    // 3. WebSite
+    websiteSchema,
 
+    // 4. WebPage
+    {
+      "@type":       "WebPage",
+      "@id":         `${BASE}/services/it-consulting#webpage`,
+      url:           `${BASE}/services/it-consulting`,
+      name:          "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
+      description:   "End-to-end IT consulting: infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management by 99 Visual Solutions.",
+      inLanguage:    "en",
+      datePublished: DATE_PUBLISHED,
+      dateModified:  DATE_MODIFIED,           // FIX: was missing entirely
+      isPartOf:      { "@id": `${BASE}/#website` },
+      about:         { "@id": `${BASE}/#organization` },
+      publisher:     { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type":   "ImageObject",
+        url:       `${BASE}/images/services/it-consulting-og.jpg`,
+        width:     1200,
+        height:    630,
+        caption:   "IT Consulting Services by 99 Visual Solutions",
+      },
+      speakable: {
+        "@type":     "SpeakableSpecification",
+        cssSelector: [".itc-hero__h1", ".itc-hero__sub"],
+      },
+      breadcrumb:      { "@id": `${BASE}/services/it-consulting#breadcrumb` },
+      potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/it-consulting`] },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home",          url: "/" },
+        { name: "Services",      url: "/services" },
+        { name: "IT Consulting", url: "/services/it-consulting" },
+      ]),
+      "@id": `${BASE}/services/it-consulting#breadcrumb`,
+    },
+
+    // 6. Service node
+    {
+      "@type":       "Service",
+      "@id":         `${BASE}/services/it-consulting#service`,
+      name:          "IT Consulting Services",
+      description:   "End-to-end IT consulting including infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management.",
+      provider:      { "@id": `${BASE}/#organization` },
+      areaServed:    ["IN", "US", "GB", "AU", "AE"],
+      url:           `${BASE}/services/it-consulting`,
+      serviceType:   "IT Consulting",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name:    "IT Consulting Services",
+        itemListElement: [
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Installation & System Migration" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Infrastructure Planning & Optimization" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cybersecurity & Risk Management" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cloud Migration & Digital Transformation" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Project Management & Support" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Software & Application Consulting" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "IoT & Smart Device Integration" } },
+        ],
+      },
+    },
+
+    // 7. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What IT consulting services does 99 Visual Solutions provide?",
+          answer:
+            "We offer IT infrastructure planning & optimization, cloud migration & digital transformation, cybersecurity & risk management, software & application consulting, IoT & smart device integration, IT project management, and installation & system migration services.",
+        },
+        {
+          question: "Which cloud platforms do you support for migration?",
+          answer:
+            "We support migrations to and on Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP), including hybrid and multi-cloud strategies.",
+        },
+        {
+          question: "Do you provide ongoing IT support after the project is complete?",
+          answer:
+            "Yes. Our consultants provide continuous guidance, monitoring, and support to ensure your IT ecosystem evolves alongside your business needs.",
+        },
+        {
+          question: "Can you help us with cybersecurity compliance?",
+          answer:
+            "Absolutely. We provide risk assessments, vulnerability management, and compliance support aligned with industry standards, alongside threat monitoring and incident response.",
+        },
+      ]),
+      "@id":            `${BASE}/services/it-consulting#faq`,
+      mainEntityOfPage: { "@id": `${BASE}/services/it-consulting#webpage` },
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   {
     icon: <FaCogs />,
@@ -198,7 +267,7 @@ const services = [
     id: "installation-migration",
     title: "Installation & System Migration Services",
     image: "/images/Installation-services.png",
-    imageAlt: "Installation & System Migration Services",
+    imageAlt: "Installation & System Migration Services illustration",
     description:
       "Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure.",
     highlight:
@@ -214,7 +283,7 @@ const services = [
     id: "it-infrastructure",
     title: "IT Infrastructure Planning & Optimization",
     image: "/images/it-infrastructure.png",
-    imageAlt: "IT infrastructure illustration",
+    imageAlt: "IT Infrastructure Planning & Optimization illustration",
     description:
       "A strong digital foundation is critical for business growth and operational efficiency. We design and optimize IT infrastructures that are reliable, scalable, and aligned with your business goals.",
     highlight:
@@ -230,7 +299,7 @@ const services = [
     id: "cybersecurity",
     title: "Cybersecurity & Risk Management",
     image: "/images/cybersecurity.png",
-    imageAlt: "Cybersecurity illustration",
+    imageAlt: "Cybersecurity & Risk Management illustration",
     description:
       "In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems, data, and operations.",
     highlight:
@@ -246,7 +315,7 @@ const services = [
     id: "cloud-transformation",
     title: "Cloud Migration & Digital Transformation",
     image: "/images/cloud-migration.png",
-    imageAlt: "Cloud migration illustration",
+    imageAlt: "Cloud Migration & Digital Transformation illustration",
     description:
       "Transform your business for the future with seamless cloud migration and strategic digital transformation. We help you move from traditional infrastructure to modern, cloud-powered environments that enhance flexibility, scalability, and performance.",
     highlight:
@@ -262,7 +331,7 @@ const services = [
     id: "project-management",
     title: "IT Project Management & Support",
     image: "/images/it-project.png",
-    imageAlt: "IT project management illustration",
+    imageAlt: "IT Project Management & Support illustration",
     description:
       "Successful digital initiatives require more than just great ideas — they demand structured execution, clear communication, and ongoing support. We provide end-to-end IT project management and support services to ensure your projects are delivered on time, within budget, and aligned with your business goals.",
     highlight:
@@ -278,7 +347,7 @@ const services = [
     id: "software-consulting",
     title: "Software & Application Consulting",
     image: "/images/software-application.png",
-    imageAlt: "Software Application Consulting",
+    imageAlt: "Software & Application Consulting illustration",
     description:
       "Turn your ideas into powerful, scalable digital solutions with expert software and application consulting. We work closely with you to understand your business objectives, challenges, and opportunities, providing strategic guidance on the right technologies, architectures, and development approaches.",
     highlight:
@@ -294,7 +363,7 @@ const services = [
     id: "iot",
     title: "IoT & Smart Device Integration",
     image: "/images/iot-smart-devices.png",
-    imageAlt: "IoT & Smart Device Integration",
+    imageAlt: "IoT & Smart Device Integration illustration",
     description:
       "Unlock the power of connected ecosystems with intelligent IoT and smart device integration. We enable seamless communication between devices, applications, and cloud platforms to create efficient, data-driven environments.",
     highlight:
@@ -308,43 +377,46 @@ const services = [
   },
 ];
 
-/* =====================================================
-   PAGE COMPONENT
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
 export default function ITConsulting() {
   return (
     <>
       <PageLoader />
 
-      {/* JSON-LD structured data */}
+      {/* FIX: unified @graph replaces 3 separate script blocks */}
       <script
+        id="schema-itc-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itBreadcrumb) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itWebPage) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itFaq) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
       {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+        /* ── sr-only — invisible to users, crawlable by Googlebot ─────────
+           FIX: display:none hides from Googlebot too.
+           This clip technique keeps the element in the render tree at 1×1px.
+        ── */
+        .sr-only {
+          position: absolute !important;
+          width: 1px !important; height: 1px !important;
+          padding: 0 !important; margin: -1px !important;
+          overflow: hidden !important;
+          clip: rect(0, 0, 0, 0) !important;
+          white-space: nowrap !important;
+          border: 0 !important;
+        }
+
         /* ── HERO ── */
         .itc-hero {
-          position: relative;
-          min-height: 90vh;
+          position: relative; min-height: 90vh;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          background: #080808;
-          overflow: hidden;
-          padding: 8rem 1.5rem 6rem;
-          text-align: center;
+          background: #080808; overflow: hidden;
+          padding: 8rem 1.5rem 6rem; text-align: center;
         }
         .itc-hero__orb {
           position: absolute; border-radius: 50%; filter: blur(100px);
@@ -384,22 +456,14 @@ export default function ITConsulting() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
-
-        /* Breadcrumb */
-        .itc-hero__breadcrumb {
-          position: relative; z-index: 10;
-          display: flex; align-items: center; gap: 6px;
-          justify-content: center;
-          font-family: 'DM Sans', sans-serif; font-size: .75rem;
-          color: rgba(255,255,255,0.3); letter-spacing: .04em;
-          margin-bottom: 2rem;
-          animation: itcFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        .itc-corner {
+          position: absolute; width: 28px; height: 28px;
+          z-index: 5; opacity: .2; pointer-events: none;
         }
-        .itc-hero__breadcrumb a {
-          color: #f97316; text-decoration: none; font-weight: 500;
-        }
-        .itc-hero__breadcrumb a:hover { text-decoration: underline; }
-        .itc-hero__breadcrumb span { opacity: .4; }
+        .itc-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .itc-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .itc-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .itc-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         .itc-hero__content {
           position: relative; z-index: 10; max-width: 860px; margin: 0 auto;
@@ -412,25 +476,20 @@ export default function ITConsulting() {
         .itc-hero__eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
           font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
-          letter-spacing: .22em; text-transform: uppercase;
-          color: #f97316;
-          border: 1px solid rgba(249,115,22,.28);
-          background: rgba(249,115,22,.07);
+          letter-spacing: .22em; text-transform: uppercase; color: #f97316;
+          border: 1px solid rgba(249,115,22,.28); background: rgba(249,115,22,.07);
           padding: 6px 16px; border-radius: 100px;
           margin-bottom: 1.8rem; backdrop-filter: blur(8px);
           animation: itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
         }
         .itc-hero__dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: #f97316;
+          width: 5px; height: 5px; border-radius: 50%; background: #f97316;
           animation: itcPulse 2s ease-in-out infinite;
         }
         @keyframes itcPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50%       { opacity: .35; transform: scale(.65); }
         }
-
-        /* Hero h1 — matches homepage clamp range */
         .itc-hero__h1 {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(2rem, 5vw, 3.6rem);
@@ -438,10 +497,7 @@ export default function ITConsulting() {
           color: #fff; margin: 0 0 1rem;
           animation: itcFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
         }
-        .itc-hero__h1 em {
-          font-style: italic; color: transparent;
-          -webkit-text-stroke: 0.2px #f97316;
-        }
+        .itc-hero__h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 0.2px #f97316; }
         .itc-hero__rule {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, #f97316, transparent);
@@ -458,21 +514,16 @@ export default function ITConsulting() {
         .itc-hero__cta {
           display: inline-flex; align-items: center; gap: 10px;
           font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
-          letter-spacing: .12em; text-transform: uppercase;
-          color: #080808;
+          letter-spacing: .12em; text-transform: uppercase; color: #080808;
           background: linear-gradient(135deg, #fb923c, #f97316);
           padding: 14px 34px; border-radius: 100px; text-decoration: none;
           box-shadow: 0 8px 32px rgba(249,115,22,.35);
           transition: transform .2s ease, box-shadow .2s ease;
           animation: itcFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
-        .itc-hero__cta:hover {
-          transform: translateY(-2px) scale(1.04);
-          box-shadow: 0 14px 40px rgba(249,115,22,.5);
-        }
+        .itc-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
         .itc-hero__scroll {
-          position: absolute; bottom: 2rem; left: 50%;
-          transform: translateX(-50%);
+          position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
           z-index: 20; display: flex; flex-direction: column;
           align-items: center; gap: 6px; text-decoration: none;
           animation: itcFadeUp .9s ease .8s both;
@@ -489,24 +540,12 @@ export default function ITConsulting() {
         }
         .itc-hero__scroll-lbl {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
-          letter-spacing: .2em; text-transform: uppercase;
-          color: rgba(255,255,255,.22);
+          letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
         }
-
-        /* corner marks */
-        .itc-corner {
-          position: absolute; width: 28px; height: 28px;
-          z-index: 5; opacity: .2; pointer-events: none;
-        }
-        .itc-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .itc-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
-        .itc-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .itc-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         /* ── INTRO ── */
         .itc-intro {
-          background: #0f0f0f;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          background: #0f0f0f; border-bottom: 1px solid rgba(255,255,255,0.07);
           padding: 5rem 1.5rem;
         }
         .itc-intro__inner { max-width: 860px; margin: 0 auto; text-align: center; }
@@ -536,15 +575,12 @@ export default function ITConsulting() {
 
         /* ── SERVICE SECTIONS ── */
         .itc-services { background: #080808; }
-
         .itc-svc {
-          padding: 5rem 1.5rem;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          padding: 5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07);
           position: relative;
         }
         .itc-svc:nth-child(odd)  { background: #0f0f0f; }
         .itc-svc:nth-child(even) { background: #080808; }
-
         .itc-svc__inner--img-left {
           max-width: 1200px; margin: 0 auto;
           display: grid; grid-template-columns: 3fr 4fr;
@@ -555,14 +591,12 @@ export default function ITConsulting() {
           display: grid; grid-template-columns: 4fr 3fr;
           gap: 4rem; align-items: center;
         }
-
         @media (max-width: 768px) {
           .itc-svc__inner--img-left,
           .itc-svc__inner--img-right { grid-template-columns: 1fr; gap: 2.5rem; }
           .itc-svc__img-wrap { order: 2 !important; }
           .itc-svc__body    { order: 1 !important; }
         }
-
         .itc-svc__img-wrap {
           position: relative; border-radius: 16px; overflow: hidden;
         }
@@ -573,29 +607,25 @@ export default function ITConsulting() {
         }
         .itc-svc__img-wrap img {
           width: 100%; height: auto; display: block;
-          border-radius: 16px;
-          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px; border: 1px solid rgba(255,255,255,0.07);
           transition: transform .4s ease;
         }
         .itc-svc__img-wrap:hover img { transform: scale(1.03); }
-
         .itc-svc__num {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(3.5rem, 6vw, 5.5rem);
-          font-weight: 700; line-height: 1;
+          font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1;
           color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
           position: absolute; top: -1.5rem; left: 0;
           pointer-events: none; user-select: none;
         }
-
         .itc-svc__body { position: relative; }
-
         .itc-svc__eyebrow {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: .9rem; display: block;
         }
-        .itc-svc__h3 {
+        /* FIX: renamed from itc-svc__h3 → itc-svc__heading for semantic clarity */
+        .itc-svc__heading {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.6rem, 3vw, 2.4rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
@@ -615,8 +645,7 @@ export default function ITConsulting() {
           font-family: 'DM Sans', sans-serif; font-size: .93rem;
           font-weight: 400; line-height: 1.8; color: rgba(255,255,255,.6);
           border-left: 2px solid rgba(249,115,22,.4);
-          padding-left: 1rem; margin-bottom: 1.6rem;
-          font-style: italic;
+          padding-left: 1rem; margin-bottom: 1.6rem; font-style: italic;
         }
         .itc-svc__bullets {
           list-style: none; padding: 0; margin: 0;
@@ -628,16 +657,13 @@ export default function ITConsulting() {
           display: flex; align-items: flex-start; gap: .6rem;
         }
         .itc-svc__bullets li::before {
-          content: '';
-          width: 5px; height: 5px; border-radius: 50%;
-          background: #f97316;
-          margin-top: .45rem; flex-shrink: 0;
+          content: ''; width: 5px; height: 5px; border-radius: 50%;
+          background: #f97316; margin-top: .45rem; flex-shrink: 0;
         }
 
         /* ── BENEFITS ── */
         .itc-benefits {
-          background: #0f0f0f;
-          padding: 6rem 1.5rem;
+          background: #0f0f0f; padding: 6rem 1.5rem;
           border-top: 1px solid rgba(255,255,255,0.07);
         }
         .itc-benefits__inner { max-width: 1200px; margin: 0 auto; }
@@ -665,37 +691,26 @@ export default function ITConsulting() {
           max-width: 520px; margin: 0 auto;
         }
         .itc-benefits__grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.5rem;
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
         }
         @media (max-width: 1024px) { .itc-benefits__grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px)  { .itc-benefits__grid { grid-template-columns: 1fr; } }
-
         .itc-benefit-card {
-          background: #141414;
-          border: 1px solid rgba(255,255,255,0.07);
+          background: #141414; border: 1px solid rgba(255,255,255,0.07);
           border-radius: 16px; padding: 2rem 1.75rem;
           transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
           position: relative; overflow: hidden;
         }
         .itc-benefit-card::before {
-          content: ''; position: absolute;
-          top: 0; left: 0; right: 0; height: 2px;
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
           background: linear-gradient(90deg, transparent, rgba(249,115,22,.5), transparent);
           opacity: 0; transition: opacity .25s ease;
         }
-        .itc-benefit-card:hover {
-          border-color: rgba(249,115,22,.25);
-          transform: translateY(-4px);
-          box-shadow: 0 20px 40px rgba(0,0,0,.4);
-        }
+        .itc-benefit-card:hover { border-color: rgba(249,115,22,.25); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
         .itc-benefit-card:hover::before { opacity: 1; }
-
         .itc-benefit-card__icon {
           width: 44px; height: 44px; border-radius: 10px;
-          background: rgba(249,115,22,0.12);
-          border: 1px solid rgba(249,115,22,.2);
+          background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,.2);
           display: flex; align-items: center; justify-content: center;
           color: #f97316; font-size: 1.1rem; margin-bottom: 1.2rem;
         }
@@ -710,17 +725,14 @@ export default function ITConsulting() {
 
         /* ── CTA STRIP ── */
         .itc-cta {
-          background: #080808;
-          border-top: 1px solid rgba(255,255,255,0.07);
-          padding: 5rem 1.5rem;
-          text-align: center;
+          background: #080808; border-top: 1px solid rgba(255,255,255,0.07);
+          padding: 5rem 1.5rem; text-align: center;
           position: relative; overflow: hidden;
         }
         .itc-cta__orb {
           position: absolute; width: 400px; height: 400px; border-radius: 50%;
           background: radial-gradient(circle, #f97316, transparent 70%);
-          opacity: .05; top: 50%; left: 50%;
-          transform: translate(-50%,-50%);
+          opacity: .05; top: 50%; left: 50%; transform: translate(-50%,-50%);
           filter: blur(60px); pointer-events: none;
         }
         .itc-cta__inner { position: relative; z-index: 10; max-width: 560px; margin: 0 auto; }
@@ -749,24 +761,28 @@ export default function ITConsulting() {
         .itc-cta__btn {
           display: inline-flex; align-items: center; gap: 10px;
           font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
-          letter-spacing: .12em; text-transform: uppercase;
-          color: #080808;
+          letter-spacing: .12em; text-transform: uppercase; color: #080808;
           background: linear-gradient(135deg, #fb923c, #f97316);
           padding: 14px 34px; border-radius: 100px; text-decoration: none;
           box-shadow: 0 8px 32px rgba(249,115,22,.35);
           transition: transform .2s ease, box-shadow .2s ease;
         }
-        .itc-cta__btn:hover {
-          transform: translateY(-2px) scale(1.04);
-          box-shadow: 0 14px 40px rgba(249,115,22,.5);
+        .itc-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
+
+        /* FIX: prefers-reduced-motion guard — WCAG 2.1 AA (was missing entirely) */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
         }
       `}</style>
 
       <Header />
 
       {/* ══ HERO ══════════════════════════════════════════════ */}
-      <section className="itc-hero" aria-label="IT Consulting Services Hero">
-        {/* Decorative background — hidden from AT */}
+      <section className="itc-hero" aria-labelledby="itc-hero-heading">
         <div aria-hidden="true">
           <div className="itc-hero__orb itc-hero__orb--1" />
           <div className="itc-hero__orb itc-hero__orb--2" />
@@ -780,20 +796,33 @@ export default function ITConsulting() {
         <div className="itc-corner itc-corner--bl" aria-hidden="true" />
         <div className="itc-corner itc-corner--br" aria-hidden="true" />
 
-        {/* Breadcrumb */}
-       <nav
-  className="itc-hero__breadcrumb"
-  aria-label="Breadcrumb"
-  style={{ display: "none" }}
->
-  <a href="/">Home</a>
-  <span aria-hidden="true">›</span>
-  <a href="/services">Services</a>
-  <span aria-hidden="true">›</span>
-  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
-    IT Consulting
-  </span>
-</nav>
+        {/*
+          FIX: breadcrumb changed from display:none → sr-only.
+          display:none hides from Googlebot. sr-only (1×1px clip) keeps it in
+          the render tree so bots can crawl it. JSON-LD handles rich results.
+        */}
+        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+          <ol
+            itemScope
+            itemType="https://schema.org/BreadcrumbList"
+            style={{ listStyle: "none", margin: 0, padding: 0 }}
+          >
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+              <meta itemProp="position" content="1" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+              <meta itemProp="position" content="2" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services/it-consulting" itemProp="item" aria-current="page">
+                <span itemProp="name">IT Consulting</span>
+              </a>
+              <meta itemProp="position" content="3" />
+            </li>
+          </ol>
+        </nav>
 
         <div className="itc-hero__content">
           <div className="itc-hero__eyebrow" aria-hidden="true">
@@ -801,7 +830,7 @@ export default function ITConsulting() {
             Services · IT Consulting
           </div>
 
-          <h1 className="itc-hero__h1">
+          <h1 className="itc-hero__h1" id="itc-hero-heading">
             Strategic technology<br />
             that drives <em>growth</em>
           </h1>
@@ -814,7 +843,11 @@ export default function ITConsulting() {
             consulting that prepares your business for the digital future.
           </p>
 
-          <a href="#services" className="itc-hero__cta">
+          <a
+            href="#services"
+            className="itc-hero__cta"
+            aria-label="Explore IT consulting services from 99 Visual Solutions"
+          >
             Explore Services
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -822,7 +855,7 @@ export default function ITConsulting() {
           </a>
         </div>
 
-        <a href="#services" className="itc-hero__scroll" aria-label="Scroll to services">
+        <a href="#services" className="itc-hero__scroll" aria-label="Scroll to IT consulting services">
           <div className="itc-hero__scroll-line" aria-hidden="true" />
           <span className="itc-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
@@ -838,10 +871,16 @@ export default function ITConsulting() {
           </h2>
           <div className="itc-intro__rule" aria-hidden="true" />
           <p className="itc-intro__p">
-            At <strong>99 Visual Solutions</strong>, we don't just solve IT challenges — we help you harness technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future.
+            At <strong>99 Visual Solutions</strong>, we don't just solve IT challenges — we help you harness
+            technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver
+            strategic guidance, robust security, and scalable infrastructure designed to prepare your business
+            for the digital future.
           </p>
           <p className="itc-intro__p">
-            Whether you're modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored to your business goals.
+            Whether you're modernizing legacy systems, migrating to the cloud, or strengthening cybersecurity,
+            our experts partner with you to deliver{" "}
+            <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored to your
+            business goals.
           </p>
         </div>
       </section>
@@ -856,7 +895,6 @@ export default function ITConsulting() {
             aria-labelledby={`itc-svc-heading-${svc.id}`}
           >
             <div className={`itc-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
-              {/* Image */}
               <div
                 className="itc-svc__img-wrap"
                 style={{ order: svc.imageLeft ? 1 : 2 }}
@@ -870,7 +908,6 @@ export default function ITConsulting() {
                 />
               </div>
 
-              {/* Text */}
               <div
                 className="itc-svc__body"
                 style={{ order: svc.imageLeft ? 2 : 1 }}
@@ -881,12 +918,18 @@ export default function ITConsulting() {
                 <span className="itc-svc__eyebrow">
                   Service {String(idx + 1).padStart(2, "0")}
                 </span>
-                <h2
-                  className="itc-svc__h3"
+                {/*
+                  FIX: changed from <h2> to <h3>.
+                  Heading hierarchy: h1 (hero) → h2 (intro/benefits/cta sections) → h3 (individual services).
+                  Original used <h2> here with CSS class "itc-svc__h3" — both the tag and class were wrong.
+                  CSS class also renamed to itc-svc__heading for clarity.
+                */}
+                <h3
+                  className="itc-svc__heading"
                   id={`itc-svc-heading-${svc.id}`}
                 >
                   {svc.title}
-                </h2>
+                </h3>
                 <div className="itc-svc__rule" aria-hidden="true" />
                 <p className="itc-svc__p">{svc.description}</p>
                 <p className="itc-svc__highlight">{svc.highlight}</p>
@@ -911,7 +954,8 @@ export default function ITConsulting() {
             </h2>
             <div className="itc-benefits__rule" aria-hidden="true" />
             <p className="itc-benefits__sub">
-              IT isn't just a support function — it becomes a competitive advantage. Here's how we empower businesses with technology.
+              IT isn't just a support function — it becomes a competitive advantage. Here's how we empower
+              businesses with technology.
             </p>
           </div>
 
@@ -940,7 +984,11 @@ export default function ITConsulting() {
             Get in touch with our team for a free consultation. We'll help you
             map out the right IT strategy for your goals.
           </p>
-          <Link href="/contact" className="itc-cta__btn">
+          <Link
+            href="/contact"
+            className="itc-cta__btn"
+            aria-label="Get a free IT consulting consultation from 99 Visual Solutions"
+          >
             Get a Free Consultation
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>

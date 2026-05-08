@@ -18,62 +18,34 @@ import {
 
 import type { Metadata } from "next";
 
-import { BASE, breadcrumb, webPage, faqSchema } from "@/lib/schema";
+// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
+import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
 
-/* =====================================================
-   SEO METADATA
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// METADATA
+// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title:
-    "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping, Spatial Analysis & Geospatial Solutions - 99 Visual Solutions",
+  title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
   description:
     "99 Visual Solutions delivers precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, 3D modeling, and end-to-end geospatial solutions. Trusted by infrastructure, engineering, construction, urban planning, and government projects worldwide.",
-  keywords: [
-    "CAD Drafting Services",
-    "Engineering CAD Services",
-    "2D CAD Drafting Services",
-    "3D CAD Modeling Services",
-    "CAD Design and Drafting",
-    "Architectural CAD Services",
-    "Infrastructure CAD Services",
-    "GIS Mapping Services",
-    "GIS Data Management Services",
-    "Geographic Information System Services",
-    "Spatial Analysis Services",
-    "Geospatial Data Solutions",
-    "GIS Consulting Services",
-    "Urban GIS Planning Services",
-    "GIS for Infrastructure Projects",
-    "Photogrammetry Services",
-    "Drone Photogrammetry Services",
-    "Aerial Photogrammetry Services",
-    "3D Photogrammetry Modeling",
-    "Orthomosaic Mapping Services",
-    "LiDAR Data Processing Services",
-    "LiDAR Point Cloud Processing",
-    "LiDAR 3D Mapping Services",
-    "Digital Terrain Model Services",
-    "Digital Surface Model Services",
-    "Airborne LiDAR Services",
-    "3D Mapping Services",
-    "Topographic Mapping Services",
-    "Survey Mapping Services",
-    "Remote Sensing Services",
-    "Satellite Mapping Services",
-    "Land Mapping Services",
-    "Geospatial Solutions for Infrastructure",
-    "Geospatial Solutions for Construction",
-    "Geospatial Solutions for Urban Planning",
-    "Geospatial Solutions for Environmental Analysis",
-    "Engineering Mapping Services",
-    "Asset Management GIS Solutions",
-    "99 Visual Solutions",
-    "99 Visual Geospatial Services",
-    "99 Visual CAD GIS",
-  ],
+
+  // FIX: keywords[] REMOVED — ignored by all engines since 2009
+
   metadataBase: new URL(BASE),
-  alternates: { canonical: `${BASE}/services/cad-gis-photogrammetry` },
+
+  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
+  alternates: {
+    canonical: "/services/cad-gis-photogrammetry",
+    languages: {
+      "en-IN":     `${BASE}/services/cad-gis-photogrammetry`,
+      "en-US":     `${BASE}/services/cad-gis-photogrammetry`,
+      "en-GB":     `${BASE}/services/cad-gis-photogrammetry`,
+      "en-AE":     `${BASE}/services/cad-gis-photogrammetry`,
+      "en-AU":     `${BASE}/services/cad-gis-photogrammetry`,
+      "x-default": `${BASE}/services/cad-gis-photogrammetry`,
+    },
+  },
+
   robots: {
     index: true,
     follow: true,
@@ -85,80 +57,171 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+
   openGraph: {
-    title:
-      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
       "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99 Visual Solutions delivers precision geospatial services for infrastructure, engineering, urban planning, and environmental projects worldwide.",
     url: `${BASE}/services/cad-gis-photogrammetry`,
     siteName: "99 Visual Solutions",
     images: [
       {
-        url: `${BASE}/images/services/cad-gis-og.jpg`,
-        width: 1200,
+        url:    `${BASE}/images/services/cad-gis-og.jpg`,
+        width:  1200,
         height: 630,
-        alt: "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
+        type:   "image/jpeg",
+        alt:    "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+
+  // FIX: Twitter images changed from bare string to typed array with alt
   twitter: {
-    card: "summary_large_image",
-    title:
-      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
-    description:
-      "CAD drafting, GIS mapping, LiDAR processing, photogrammetry, spatial analysis & 3D modeling — precision geospatial solutions by 99 Visual Solutions for projects worldwide.",
-    site: "@99VisualSoluti1",
-    creator: "@99VisualSoluti1",
-    images: [`${BASE}/images/services/cad-gis-og.jpg`],
+    card:        "summary_large_image",
+    title:       "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+    description: "CAD drafting, GIS mapping, LiDAR processing, photogrammetry, spatial analysis & 3D modeling — precision geospatial solutions by 99 Visual Solutions for projects worldwide.",
+    site:        "@99VisualSoluti1",
+    creator:     "@99VisualSoluti1",
+    images: [
+      {
+        url: `${BASE}/images/services/cad-gis-og.jpg`,
+        alt: "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
+      },
+    ],
   },
+
+  // FIX: all missing from original
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
+  },
+  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  creator:         "99 Visual Solutions",
+  publisher:       "99 Visual Solutions",
+  category:        "Technology",
+  applicationName: "99 Visual Solutions",
+  referrer:        "origin-when-cross-origin",
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
-/* =====================================================
-   JSON-LD SCHEMA DATA
-===================================================== */
+// ─────────────────────────────────────────────────────────────────────────────
+// STRUCTURED DATA — unified @graph
+// FIX: was 3 separate <script> blocks with only breadcrumb/webPage/faq.
+//      Missing: Organization, LocalBusiness, WebSite — all added.
+//      dateModified auto-updates on every build (was missing entirely).
+// ─────────────────────────────────────────────────────────────────────────────
+const DATE_PUBLISHED = "2023-01-01";
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const cadGisBreadcrumb = breadcrumb([
-  { name: "Home", url: "/" },
-  { name: "Services", url: "/services" },
-  { name: "CAD, GIS & Photogrammetry", url: "/services/cad-gis-photogrammetry" },
-]);
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
 
-const cadGisWebPage = webPage({
-  url: "/services/cad-gis-photogrammetry",
-  name: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions — 99 Visual Solutions",
-  description:
-    "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, construction, urban planning, and government projects worldwide.",
-});
+    // 1. Organization (entity anchor)
+    orgSchema,
 
-const cadGisFaq = faqSchema([
-  {
-    question: "What CAD drafting services does 99 Visual Solutions provide?",
-    answer:
-      "We offer 2D CAD drafting, 3D CAD modeling, engineering design support, and architectural CAD services for infrastructure, construction, and industrial projects.",
-  },
-  {
-    question: "What GIS services does 99 Visual Solutions offer?",
-    answer:
-      "Our GIS services include geospatial data management, spatial analysis, urban planning mapping, asset management GIS, and custom GIS solutions for infrastructure and environmental projects.",
-  },
-  {
-    question: "Does 99 Visual Solutions process LiDAR data?",
-    answer:
-      "Yes. We specialize in LiDAR point cloud processing, digital terrain model (DTM) generation, digital surface model (DSM) creation, and 3D mapping from airborne and terrestrial LiDAR data.",
-  },
-  {
-    question: "What photogrammetry services are available?",
-    answer:
-      "We provide drone and aerial photogrammetry, orthomosaic mapping, 3D photogrammetric modeling, and survey-grade mapping for construction, engineering, and environmental monitoring.",
-  },
-]);
+    // 2. LocalBusiness
+    localBusinessSchema,
 
-/* =====================================================
-   PAGE DATA
-===================================================== */
+    // 3. WebSite
+    websiteSchema,
 
+    // 4. WebPage
+    {
+      "@type":       "WebPage",
+      "@id":         `${BASE}/services/cad-gis-photogrammetry#webpage`,
+      url:           `${BASE}/services/cad-gis-photogrammetry`,
+      name:          "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions — 99 Visual Solutions",
+      description:   "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, construction, urban planning, and government projects worldwide.",
+      inLanguage:    "en",
+      datePublished: DATE_PUBLISHED,
+      dateModified:  DATE_MODIFIED,           // FIX: was missing entirely
+      isPartOf:      { "@id": `${BASE}/#website` },
+      about:         { "@id": `${BASE}/#organization` },
+      publisher:     { "@id": `${BASE}/#organization` },
+      primaryImageOfPage: {
+        "@type":   "ImageObject",
+        url:       `${BASE}/images/services/cad-gis-og.jpg`,
+        width:     1200,
+        height:    630,
+        caption:   "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
+      },
+      speakable: {
+        "@type":     "SpeakableSpecification",
+        cssSelector: [".wd-hero__h1", ".wd-hero__sub"],
+      },
+      breadcrumb:      { "@id": `${BASE}/services/cad-gis-photogrammetry#breadcrumb` },
+      potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/cad-gis-photogrammetry`] },
+    },
+
+    // 5. BreadcrumbList
+    {
+      ...breadcrumb([
+        { name: "Home",                        url: "/" },
+        { name: "Services",                    url: "/services" },
+        { name: "CAD, GIS & Photogrammetry",   url: "/services/cad-gis-photogrammetry" },
+      ]),
+      "@id": `${BASE}/services/cad-gis-photogrammetry#breadcrumb`,
+    },
+
+    // 6. Service node
+    {
+      "@type":       "Service",
+      "@id":         `${BASE}/services/cad-gis-photogrammetry#service`,
+      name:          "CAD, GIS & Photogrammetry Services",
+      description:   "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, and government projects.",
+      provider:      { "@id": `${BASE}/#organization` },
+      areaServed:    ["IN", "US", "GB", "AU", "AE"],
+      url:           `${BASE}/services/cad-gis-photogrammetry`,
+      serviceType:   "Geospatial Services",
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name:    "CAD, GIS & Photogrammetry Services",
+        itemListElement: [
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "CAD Drafting & 3D Modeling" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "GIS Mapping & Spatial Analysis" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Drone & Aerial Photogrammetry" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "LiDAR Point Cloud Processing" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Terrain & Surface Modeling" } },
+          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Engineering Mapping & Geospatial Solutions" } },
+        ],
+      },
+    },
+
+    // 7. FAQPage
+    {
+      ...faqSchema([
+        {
+          question: "What CAD drafting services does 99 Visual Solutions provide?",
+          answer:
+            "We offer 2D CAD drafting, 3D CAD modeling, engineering design support, and architectural CAD services for infrastructure, construction, and industrial projects.",
+        },
+        {
+          question: "What GIS services does 99 Visual Solutions offer?",
+          answer:
+            "Our GIS services include geospatial data management, spatial analysis, urban planning mapping, asset management GIS, and custom GIS solutions for infrastructure and environmental projects.",
+        },
+        {
+          question: "Does 99 Visual Solutions process LiDAR data?",
+          answer:
+            "Yes. We specialize in LiDAR point cloud processing, digital terrain model (DTM) generation, digital surface model (DSM) creation, and 3D mapping from airborne and terrestrial LiDAR data.",
+        },
+        {
+          question: "What photogrammetry services are available?",
+          answer:
+            "We provide drone and aerial photogrammetry, orthomosaic mapping, 3D photogrammetric modeling, and survey-grade mapping for construction, engineering, and environmental monitoring.",
+        },
+      ]),
+      "@id":            `${BASE}/services/cad-gis-photogrammetry#faq`,
+      mainEntityOfPage: { "@id": `${BASE}/services/cad-gis-photogrammetry#webpage` },
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   {
     icon: <FaDraftingCompass />,
@@ -203,7 +266,7 @@ const services = [
     id: "advanced-cad-gis",
     title: "Advanced CAD, GIS & Geospatial Services",
     image: "/images/advanced-cad-gis.png",
-    imageAlt: "Advanced CAD, GIS & Geospatial",
+    imageAlt: "Advanced CAD, GIS & Geospatial services illustration",
     description:
       "Transform complex spatial data into actionable insights with our advanced CAD, GIS, and geospatial solutions. We help businesses, infrastructure projects, and government organizations visualize, analyze, and manage geographic and engineering data with precision.",
     highlight:
@@ -219,7 +282,7 @@ const services = [
     id: "end-to-end-mapping",
     title: "End-to-End CAD, GIS & Mapping Solutions",
     image: "/images/GIS-Mapping.png",
-    imageAlt: "GIS mapping solutions",
+    imageAlt: "End-to-end GIS mapping solutions illustration",
     description:
       "From data capture to final visualization, we deliver comprehensive CAD, GIS, and mapping solutions tailored to your project needs. Our end-to-end approach ensures seamless integration of geospatial data, engineering design, and advanced mapping technologies.",
     highlight:
@@ -235,7 +298,7 @@ const services = [
     id: "lidar-services",
     title: "Precision CAD, GIS & LiDAR Services",
     image: "/images/Precision-CAD-GIS.png",
-    imageAlt: "Precision CAD, GIS & LiDAR",
+    imageAlt: "Precision CAD, GIS & LiDAR services illustration",
     description:
       "Achieve unmatched accuracy and detail with our precision-driven CAD, GIS, and LiDAR services. We specialize in transforming complex spatial and survey data into highly accurate models, maps, and actionable insights.",
     highlight:
@@ -251,7 +314,7 @@ const services = [
     id: "gis-data-management",
     title: "GIS Data Management & Spatial Analysis",
     image: "/images/GIS-Data-Management.png",
-    imageAlt: "GIS Data Management & Spatial Analysis",
+    imageAlt: "GIS Data Management & Spatial Analysis illustration",
     description:
       "Turn complex geographic data into meaningful insights with our advanced GIS data management and spatial analysis services. We help organizations collect, organize, and analyze spatial data to support smarter planning, decision-making, and resource management.",
     highlight:
@@ -267,11 +330,11 @@ const services = [
     id: "engineering-mapping",
     title: "Engineering, Mapping & Geospatial Solutions",
     image: "/images/Engineering-Mapping.png",
-    imageAlt: "Engineering, Mapping & Geospatial",
+    imageAlt: "Engineering, Mapping & Geospatial solutions illustration",
     description:
       "Bridge the gap between engineering precision and geospatial intelligence with our integrated solutions. We deliver comprehensive engineering, mapping, and geospatial services that support accurate planning, design, and execution across infrastructure and development projects.",
     highlight:
-      "By combining advanced technologies with domain expertise, we transform complex data into clear, actionable insights—helping you improve efficiency, reduce risks, and make informed decisions at every stage.",
+      "By combining advanced technologies with domain expertise, we transform complex data into clear, actionable insights — helping you improve efficiency, reduce risks, and make informed decisions at every stage.",
     bullets: [
       "Integrated engineering design, mapping & geospatial analysis",
       "High-accuracy data processing for infrastructure & development projects",
@@ -281,32 +344,38 @@ const services = [
   },
 ];
 
-/* =====================================================
-   PAGE COMPONENT
-===================================================== */
-
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
 export default function CADGISPhotogrammetry() {
   return (
     <>
       <PageLoader />
 
-      {/* JSON-LD structured data */}
+      {/* FIX: unified @graph replaces 3 separate script blocks */}
       <script
+        id="schema-cadgis-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cadGisBreadcrumb) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cadGisWebPage) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cadGisFaq) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
       {/* ─── Styles ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        /* ── sr-only — invisible to users, crawlable by Googlebot ─────────
+           FIX: display:none hides from Googlebot too.
+           This clip technique keeps the element in the render tree at 1×1px.
+        ── */
+        .sr-only {
+          position: absolute !important;
+          width: 1px !important; height: 1px !important;
+          padding: 0 !important; margin: -1px !important;
+          overflow: hidden !important;
+          clip: rect(0, 0, 0, 0) !important;
+          white-space: nowrap !important;
+          border: 0 !important;
+        }
 
         /* ── HERO ── */
         .wd-hero {
@@ -354,21 +423,14 @@ export default function CADGISPhotogrammetry() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
-
-        /* Breadcrumb — inside hero, matches dm-hero__breadcrumb pattern */
-        .wd-hero__breadcrumb {
-          position: relative; z-index: 10;
-          display: flex; align-items: center; gap: 6px; justify-content: center;
-          font-family: 'DM Sans', sans-serif; font-size: .75rem;
-          color: rgba(255,255,255,0.3); letter-spacing: .04em;
-          margin-bottom: 2rem;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .05s both;
+        .wd-corner {
+          position: absolute; width: 28px; height: 28px;
+          z-index: 5; opacity: .2; pointer-events: none;
         }
-        .wd-hero__breadcrumb a {
-          color: #f97316; text-decoration: none; font-weight: 500;
-        }
-        .wd-hero__breadcrumb a:hover { text-decoration: underline; }
-        .wd-hero__breadcrumb span { opacity: .4; }
+        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         .wd-hero__content {
           position: relative; z-index: 10; max-width: 860px; margin: 0 auto;
@@ -427,7 +489,6 @@ export default function CADGISPhotogrammetry() {
           animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
         .wd-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
-
         .wd-hero__scroll {
           position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
           z-index: 20; display: flex; flex-direction: column;
@@ -448,16 +509,6 @@ export default function CADGISPhotogrammetry() {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
           letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
         }
-
-        /* corner marks */
-        .wd-corner {
-          position: absolute; width: 28px; height: 28px;
-          z-index: 5; opacity: .2; pointer-events: none;
-        }
-        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
-        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
         /* ── INTRO ── */
         .wd-intro {
@@ -491,14 +542,12 @@ export default function CADGISPhotogrammetry() {
 
         /* ── SERVICE SECTIONS ── */
         .wd-services { background: #080808; }
-
         .wd-svc {
           padding: 5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07);
           position: relative;
         }
         .wd-svc:nth-child(odd)  { background: #0f0f0f; }
         .wd-svc:nth-child(even) { background: #080808; }
-
         .wd-svc__inner--img-left {
           max-width: 1200px; margin: 0 auto;
           display: grid; grid-template-columns: 3fr 4fr;
@@ -515,7 +564,6 @@ export default function CADGISPhotogrammetry() {
           .wd-svc__img-wrap { order: 2 !important; }
           .wd-svc__body    { order: 1 !important; }
         }
-
         .wd-svc__img-wrap {
           position: relative; border-radius: 16px; overflow: hidden;
         }
@@ -530,11 +578,9 @@ export default function CADGISPhotogrammetry() {
           transition: transform .4s ease;
         }
         .wd-svc__img-wrap:hover img { transform: scale(1.03); }
-
         .wd-svc__num {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(3.5rem, 6vw, 5.5rem);
-          font-weight: 700; line-height: 1;
+          font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1;
           color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
           position: absolute; top: -1.5rem; left: 0;
           pointer-events: none; user-select: none;
@@ -545,7 +591,7 @@ export default function CADGISPhotogrammetry() {
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: .9rem; display: block;
         }
-        .wd-svc__h3 {
+        .wd-svc__heading {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.6rem, 3vw, 2.4rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
@@ -615,7 +661,6 @@ export default function CADGISPhotogrammetry() {
         }
         @media (max-width: 1024px) { .wd-benefits__grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 640px)  { .wd-benefits__grid { grid-template-columns: 1fr; } }
-
         .wd-benefit-card {
           background: #141414; border: 1px solid rgba(255,255,255,0.07);
           border-radius: 16px; padding: 2rem 1.75rem;
@@ -689,13 +734,21 @@ export default function CADGISPhotogrammetry() {
           transition: transform .2s ease, box-shadow .2s ease;
         }
         .wd-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
+
+        /* FIX: prefers-reduced-motion guard — WCAG 2.1 AA (was missing entirely) */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
       `}</style>
 
       <Header />
 
       {/* ══ HERO ══════════════════════════════════════════════ */}
-      <section className="wd-hero" aria-label="CAD, GIS & Photogrammetry Services Hero">
-        {/* Decorative background — hidden from AT */}
+      <section className="wd-hero" aria-labelledby="wd-hero-heading">
         <div aria-hidden="true">
           <div className="wd-hero__orb wd-hero__orb--1" />
           <div className="wd-hero__orb wd-hero__orb--2" />
@@ -709,20 +762,33 @@ export default function CADGISPhotogrammetry() {
         <div className="wd-corner wd-corner--bl" aria-hidden="true" />
         <div className="wd-corner wd-corner--br" aria-hidden="true" />
 
-        {/* Breadcrumb — inside hero, matches dm-hero__breadcrumb pattern */}
-        <nav
-  className="wd-hero__breadcrumb"
-  aria-label="Breadcrumb"
-  style={{ display: "none" }}
->
-  <a href="/">Home</a>
-  <span aria-hidden="true">›</span>
-  <a href="/services">Services</a>
-  <span aria-hidden="true">›</span>
-  <span aria-current="page" style={{ color: "rgba(255,255,255,0.5)" }}>
-    CAD, GIS &amp; Photogrammetry
-  </span>
-</nav>
+        {/*
+          FIX: breadcrumb changed from display:none → sr-only.
+          display:none hides from Googlebot. sr-only (1×1px clip) keeps it in
+          the render tree so bots can crawl it. JSON-LD handles rich results.
+        */}
+        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+          <ol
+            itemScope
+            itemType="https://schema.org/BreadcrumbList"
+            style={{ listStyle: "none", margin: 0, padding: 0 }}
+          >
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+              <meta itemProp="position" content="1" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+              <meta itemProp="position" content="2" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/services/cad-gis-photogrammetry" itemProp="item" aria-current="page">
+                <span itemProp="name">CAD, GIS &amp; Photogrammetry</span>
+              </a>
+              <meta itemProp="position" content="3" />
+            </li>
+          </ol>
+        </nav>
 
         <div className="wd-hero__content">
           <div className="wd-hero__eyebrow" aria-hidden="true">
@@ -730,7 +796,7 @@ export default function CADGISPhotogrammetry() {
             Services · CAD, GIS &amp; Photogrammetry
           </div>
 
-          <h1 className="wd-hero__h1">
+          <h1 className="wd-hero__h1" id="wd-hero-heading">
             Precision mapping for<br />
             a smarter <em>world</em>
           </h1>
@@ -743,7 +809,11 @@ export default function CADGISPhotogrammetry() {
             engineering, and urban planning worldwide.
           </p>
 
-          <a href="#services" className="wd-hero__cta">
+          <a
+            href="#services"
+            className="wd-hero__cta"
+            aria-label="Explore CAD, GIS and photogrammetry services"
+          >
             Explore Services
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -751,7 +821,7 @@ export default function CADGISPhotogrammetry() {
           </a>
         </div>
 
-        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to services">
+        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to CAD, GIS and photogrammetry services">
           <div className="wd-hero__scroll-line" aria-hidden="true" />
           <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
@@ -792,8 +862,6 @@ export default function CADGISPhotogrammetry() {
             aria-labelledby={`wd-svc-heading-${svc.id}`}
           >
             <div className={`wd-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
-
-              {/* Image */}
               <div
                 className="wd-svc__img-wrap"
                 style={{ order: svc.imageLeft ? 1 : 2 }}
@@ -807,7 +875,6 @@ export default function CADGISPhotogrammetry() {
                 />
               </div>
 
-              {/* Text */}
               <div
                 className="wd-svc__body"
                 style={{ order: svc.imageLeft ? 2 : 1 }}
@@ -818,8 +885,9 @@ export default function CADGISPhotogrammetry() {
                 <span className="wd-svc__eyebrow">
                   Service {String(idx + 1).padStart(2, "0")}
                 </span>
+                {/* h3 was already correct in the original for this page — preserved */}
                 <h3
-                  className="wd-svc__h3"
+                  className="wd-svc__heading"
                   id={`wd-svc-heading-${svc.id}`}
                 >
                   {svc.title}
@@ -879,7 +947,11 @@ export default function CADGISPhotogrammetry() {
             Get in touch with our team for a free consultation. We&apos;ll help you design
             the right CAD, GIS, or geospatial strategy to meet your project goals.
           </p>
-          <Link href="/contact" className="wd-cta__btn">
+          <Link
+            href="/contact"
+            className="wd-cta__btn"
+            aria-label="Get a free CAD, GIS and geospatial consultation from 99 Visual Solutions"
+          >
             Get a Free Consultation
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
