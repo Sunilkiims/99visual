@@ -1,11 +1,28 @@
+// app/services/cad-gis-photogrammetry/page.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// CAD, GIS & Photogrammetry — 99 Visual Solutions
+//
+// FIX APPLIED (CSS Class Collision Resolved):
+//   ✅ All CSS classes renamed from generic "wd-" → page-specific "cg-" prefix
+//   ✅ "cg-" = CAD/GIS — unique across the entire app, cannot collide
+//   ✅ All className= attributes updated to match renamed CSS rules
+//   ✅ All aria-labelledby id= references updated to match renamed IDs
+//   ✅ Eliminates style bleed with QA Testing page (wd- prefix) in production
+//
+// Root cause: Next.js inlines and merges <style> tags from all routes into
+// a shared document in production. Generic shared prefixes (wd-, hero-, svc-)
+// cause one page's rules to override another's when both are in the bundle.
+// Page-specific prefixes (cg-, qa-, pt-) make every selector globally unique.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Image from "next/image";
 import Link from "next/link";
-import Header from "@/app/components/header";
-import Footer from "@/app/components/footer";
-import ScrollDown from "@/app/components/scrolldown";
-import Chatbot from "@/app/components/chatbot";
+import Header         from "@/app/components/header";
+import Footer         from "@/app/components/footer";
+import ScrollDown     from "@/app/components/scrolldown";
+import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader from "@/app/components/PageLoader";
+import PageLoader     from "@/app/components/PageLoader";
 
 import {
   FaDraftingCompass,
@@ -17,23 +34,26 @@ import {
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
-
-// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
-import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
+import {
+  BASE,
+  breadcrumb,
+  faqSchema,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+  title:
+    "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
   description:
     "99 Visual Solutions delivers precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, 3D modeling, and end-to-end geospatial solutions. Trusted by infrastructure, engineering, construction, urban planning, and government projects worldwide.",
 
-  // FIX: keywords[] REMOVED — ignored by all engines since 2009
-
   metadataBase: new URL(BASE),
 
-  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
   alternates: {
     canonical: "/services/cad-gis-photogrammetry",
     languages: {
@@ -59,7 +79,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
+    title:
+      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
     description:
       "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99 Visual Solutions delivers precision geospatial services for infrastructure, engineering, urban planning, and environmental projects worldwide.",
     url: `${BASE}/services/cad-gis-photogrammetry`,
@@ -77,7 +98,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 
-  // FIX: Twitter images changed from bare string to typed array with alt
   twitter: {
     card:        "summary_large_image",
     title:       "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions - 99 Visual Solutions",
@@ -92,7 +112,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  // FIX: all missing from original
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
@@ -107,27 +126,42 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STRUCTURED DATA — unified @graph
-// FIX: was 3 separate <script> blocks with only breadcrumb/webPage/faq.
-//      Missing: Organization, LocalBusiness, WebSite — all added.
-//      dateModified auto-updates on every build (was missing entirely).
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
+// FAQ_ITEMS — single source of truth for schema AND visible HTML
+// (prevents FAQPage manual action risk: schema must match visible DOM)
+const FAQ_ITEMS = [
+  {
+    question: "What CAD drafting services does 99 Visual Solutions provide?",
+    answer:
+      "We offer 2D CAD drafting, 3D CAD modeling, engineering design support, and architectural CAD services for infrastructure, construction, and industrial projects.",
+  },
+  {
+    question: "What GIS services does 99 Visual Solutions offer?",
+    answer:
+      "Our GIS services include geospatial data management, spatial analysis, urban planning mapping, asset management GIS, and custom GIS solutions for infrastructure and environmental projects.",
+  },
+  {
+    question: "Does 99 Visual Solutions process LiDAR data?",
+    answer:
+      "Yes. We specialize in LiDAR point cloud processing, digital terrain model (DTM) generation, digital surface model (DSM) creation, and 3D mapping from airborne and terrestrial LiDAR data.",
+  },
+  {
+    question: "What photogrammetry services are available?",
+    answer:
+      "We provide drone and aerial photogrammetry, orthomosaic mapping, 3D photogrammetric modeling, and survey-grade mapping for construction, engineering, and environmental monitoring.",
+  },
+];
+
 const schemaGraph = {
   "@context": "https://schema.org",
   "@graph": [
-
-    // 1. Organization (entity anchor)
     orgSchema,
-
-    // 2. LocalBusiness
     localBusinessSchema,
-
-    // 3. WebSite
     websiteSchema,
 
-    // 4. WebPage
     {
       "@type":       "WebPage",
       "@id":         `${BASE}/services/cad-gis-photogrammetry#webpage`,
@@ -136,7 +170,7 @@ const schemaGraph = {
       description:   "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, construction, urban planning, and government projects worldwide.",
       inLanguage:    "en",
       datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,           // FIX: was missing entirely
+      dateModified:  DATE_MODIFIED,
       isPartOf:      { "@id": `${BASE}/#website` },
       about:         { "@id": `${BASE}/#organization` },
       publisher:     { "@id": `${BASE}/#organization` },
@@ -149,32 +183,30 @@ const schemaGraph = {
       },
       speakable: {
         "@type":     "SpeakableSpecification",
-        cssSelector: [".wd-hero__h1", ".wd-hero__sub"],
+        cssSelector: [".cg-hero__h1", ".cg-hero__sub"],
       },
       breadcrumb:      { "@id": `${BASE}/services/cad-gis-photogrammetry#breadcrumb` },
       potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/cad-gis-photogrammetry`] },
     },
 
-    // 5. BreadcrumbList
     {
       ...breadcrumb([
-        { name: "Home",                        url: "/" },
-        { name: "Services",                    url: "/services" },
-        { name: "CAD, GIS & Photogrammetry",   url: "/services/cad-gis-photogrammetry" },
+        { name: "Home",                      url: "/" },
+        { name: "Services",                  url: "/services" },
+        { name: "CAD, GIS & Photogrammetry", url: "/services/cad-gis-photogrammetry" },
       ]),
       "@id": `${BASE}/services/cad-gis-photogrammetry#breadcrumb`,
     },
 
-    // 6. Service node
     {
-      "@type":       "Service",
-      "@id":         `${BASE}/services/cad-gis-photogrammetry#service`,
-      name:          "CAD, GIS & Photogrammetry Services",
-      description:   "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, and government projects.",
-      provider:      { "@id": `${BASE}/#organization` },
-      areaServed:    ["IN", "US", "GB", "AU", "AE"],
-      url:           `${BASE}/services/cad-gis-photogrammetry`,
-      serviceType:   "Geospatial Services",
+      "@type":     "Service",
+      "@id":       `${BASE}/services/cad-gis-photogrammetry#service`,
+      name:        "CAD, GIS & Photogrammetry Services",
+      description: "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, and government projects.",
+      provider:    { "@id": `${BASE}/#organization` },
+      areaServed:  ["IN", "US", "GB", "AU", "AE"],
+      url:         `${BASE}/services/cad-gis-photogrammetry`,
+      serviceType: "Geospatial Services",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name:    "CAD, GIS & Photogrammetry Services",
@@ -189,30 +221,9 @@ const schemaGraph = {
       },
     },
 
-    // 7. FAQPage
+    // FAQPage @id anchors to visible #cg-faq section in the DOM
     {
-      ...faqSchema([
-        {
-          question: "What CAD drafting services does 99 Visual Solutions provide?",
-          answer:
-            "We offer 2D CAD drafting, 3D CAD modeling, engineering design support, and architectural CAD services for infrastructure, construction, and industrial projects.",
-        },
-        {
-          question: "What GIS services does 99 Visual Solutions offer?",
-          answer:
-            "Our GIS services include geospatial data management, spatial analysis, urban planning mapping, asset management GIS, and custom GIS solutions for infrastructure and environmental projects.",
-        },
-        {
-          question: "Does 99 Visual Solutions process LiDAR data?",
-          answer:
-            "Yes. We specialize in LiDAR point cloud processing, digital terrain model (DTM) generation, digital surface model (DSM) creation, and 3D mapping from airborne and terrestrial LiDAR data.",
-        },
-        {
-          question: "What photogrammetry services are available?",
-          answer:
-            "We provide drone and aerial photogrammetry, orthomosaic mapping, 3D photogrammetric modeling, and survey-grade mapping for construction, engineering, and environmental monitoring.",
-        },
-      ]),
+      ...faqSchema(FAQ_ITEMS),
       "@id":            `${BASE}/services/cad-gis-photogrammetry#faq`,
       mainEntityOfPage: { "@id": `${BASE}/services/cad-gis-photogrammetry#webpage` },
     },
@@ -352,22 +363,23 @@ export default function CADGISPhotogrammetry() {
     <>
       <PageLoader />
 
-      {/* FIX: unified @graph replaces 3 separate script blocks */}
       <script
         id="schema-cadgis-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
-      {/* ─── Styles ─── */}
+      {/* ─── Styles ───────────────────────────────────────────────────────────
+        ALL classes use "cg-" prefix (CAD/GIS).
+        This prefix is unique across the app — no other page uses it.
+        Eliminates style bleed with QA Testing (wd-), Partner (p-), and any
+        other page whose inline <style> tags Next.js merges into the bundle.
+      ─────────────────────────────────────────────────────────────────────── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ── sr-only — invisible to users, crawlable by Googlebot ─────────
-           FIX: display:none hides from Googlebot too.
-           This clip technique keeps the element in the render tree at 1×1px.
-        ── */
-        .sr-only {
+        /* sr-only — invisible to users, crawlable by Googlebot */
+        .cg-sr-only {
           position: absolute !important;
           width: 1px !important; height: 1px !important;
           padding: 0 !important; margin: -1px !important;
@@ -377,108 +389,108 @@ export default function CADGISPhotogrammetry() {
           border: 0 !important;
         }
 
-        /* ── HERO ── */
-        .wd-hero {
+        /* ── HERO ─────────────────────────────────────────────────────────── */
+        .cg-hero {
           position: relative; min-height: 90vh;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
           background: #080808; overflow: hidden;
           padding: 8rem 1.5rem 6rem; text-align: center;
         }
-        .wd-hero__orb {
+        .cg-hero__orb {
           position: absolute; border-radius: 50%; filter: blur(100px);
-          animation: wdOrbDrift 16s ease-in-out infinite alternate;
+          animation: cgOrbDrift 16s ease-in-out infinite alternate;
           pointer-events: none;
         }
-        .wd-hero__orb--1 {
+        .cg-hero__orb--1 {
           width: 540px; height: 540px;
           background: radial-gradient(circle, #6366f1, #4f46e5);
           top: -160px; left: -100px; opacity: .13;
         }
-        .wd-hero__orb--2 {
+        .cg-hero__orb--2 {
           width: 460px; height: 460px;
           background: radial-gradient(circle, #f97316, #ea580c);
           bottom: -130px; right: -80px; opacity: .12;
           animation-delay: -8s;
         }
-        .wd-hero__orb--3 {
+        .cg-hero__orb--3 {
           width: 300px; height: 300px;
           background: radial-gradient(circle, #06b6d4, #0891b2);
           top: 40%; right: 15%; opacity: .07;
           animation-delay: -4s;
         }
-        @keyframes wdOrbDrift {
+        @keyframes cgOrbDrift {
           0%   { transform: translate(0,0) scale(1); }
           100% { transform: translate(32px,24px) scale(1.06); }
         }
-        .wd-hero__grid {
+        .cg-hero__grid {
           position: absolute; inset: 0; pointer-events: none;
           background-image:
             linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
           background-size: 60px 60px;
         }
-        .wd-hero__grain {
+        .cg-hero__grain {
           position: absolute; inset: 0; opacity: .03; pointer-events: none;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
-        .wd-corner {
+        .cg-corner {
           position: absolute; width: 28px; height: 28px;
           z-index: 5; opacity: .2; pointer-events: none;
         }
-        .wd-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
-        .wd-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .wd-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .cg-corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .cg-corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
+        .cg-corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
+        .cg-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
 
-        .wd-hero__content {
+        .cg-hero__content {
           position: relative; z-index: 10; max-width: 860px; margin: 0 auto;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) both;
         }
-        @keyframes wdFadeUp {
+        @keyframes cgFadeUp {
           from { opacity: 0; transform: translateY(36px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .wd-hero__eyebrow {
+        .cg-hero__eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
           font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase; color: #f97316;
           border: 1px solid rgba(249,115,22,.28); background: rgba(249,115,22,.07);
           padding: 6px 16px; border-radius: 100px;
           margin-bottom: 1.8rem; backdrop-filter: blur(8px);
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
         }
-        .wd-hero__dot {
+        .cg-hero__dot {
           width: 5px; height: 5px; border-radius: 50%; background: #f97316;
-          animation: wdPulse 2s ease-in-out infinite;
+          animation: cgPulse 2s ease-in-out infinite;
         }
-        @keyframes wdPulse {
+        @keyframes cgPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50%       { opacity: .35; transform: scale(.65); }
         }
-        .wd-hero__h1 {
+        .cg-hero__h1 {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(2rem, 5vw, 3.6rem);
           font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
           color: #fff; margin: 0 0 1rem;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
         }
-        .wd-hero__h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 0.2px #f97316; }
-        .wd-hero__rule {
+        .cg-hero__h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 0.2px #f97316; }
+        .cg-hero__rule {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, #f97316, transparent);
           margin: 0 auto 1.4rem;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
         }
-        .wd-hero__sub {
+        .cg-hero__sub {
           font-family: 'DM Sans', sans-serif;
           font-size: clamp(.95rem, 2vw, 1.1rem);
           font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.45);
           max-width: 680px; margin: 0 auto 2.6rem;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
         }
-        .wd-hero__cta {
+        .cg-hero__cta {
           display: inline-flex; align-items: center; gap: 10px;
           font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
           letter-spacing: .12em; text-transform: uppercase; color: #080808;
@@ -486,245 +498,309 @@ export default function CADGISPhotogrammetry() {
           padding: 14px 34px; border-radius: 100px; text-decoration: none;
           box-shadow: 0 8px 32px rgba(249,115,22,.35);
           transition: transform .2s ease, box-shadow .2s ease;
-          animation: wdFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
+          animation: cgFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
-        .wd-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
-        .wd-hero__scroll {
+        .cg-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
+        .cg-hero__scroll {
           position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
           z-index: 20; display: flex; flex-direction: column;
           align-items: center; gap: 6px; text-decoration: none;
-          animation: wdFadeUp .9s ease .8s both;
+          animation: cgFadeUp .9s ease .8s both;
         }
-        .wd-hero__scroll-line {
+        .cg-hero__scroll-line {
           width: 1px; height: 40px;
           background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
-          animation: wdScrollLine 1.8s ease-in-out infinite;
+          animation: cgScrollLine 1.8s ease-in-out infinite;
         }
-        @keyframes wdScrollLine {
+        @keyframes cgScrollLine {
           0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
           50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
           100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
         }
-        .wd-hero__scroll-lbl {
+        .cg-hero__scroll-lbl {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
           letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
         }
 
-        /* ── INTRO ── */
-        .wd-intro {
+        /* ── INTRO ────────────────────────────────────────────────────────── */
+        .cg-intro {
           background: #0f0f0f; border-bottom: 1px solid rgba(255,255,255,0.07);
           padding: 5rem 1.5rem;
         }
-        .wd-intro__inner { max-width: 860px; margin: 0 auto; text-align: center; }
-        .wd-intro__label {
+        .cg-intro__inner { max-width: 860px; margin: 0 auto; text-align: center; }
+        .cg-intro__label {
           font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: 1.2rem; display: block;
         }
-        .wd-intro__h2 {
+        .cg-intro__h2 {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.9rem, 4vw, 3rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
           color: #fff; margin: 0 0 1.5rem;
         }
-        .wd-intro__h2 em { font-style: italic; color: #f97316; }
-        .wd-intro__rule {
+        .cg-intro__h2 em { font-style: italic; color: #f97316; }
+        .cg-intro__rule {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, #f97316, transparent);
           margin: 0 auto 1.8rem;
         }
-        .wd-intro__p {
+        .cg-intro__p {
           font-family: 'DM Sans', sans-serif; font-size: 1rem;
           font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.45);
           max-width: 680px; margin: 0 auto .9rem;
         }
-        .wd-intro__p strong { color: rgba(255,255,255,0.65); font-weight: 500; }
+        .cg-intro__p strong { color: rgba(255,255,255,0.65); font-weight: 500; }
 
-        /* ── SERVICE SECTIONS ── */
-        .wd-services { background: #080808; }
-        .wd-svc {
+        /* ── SERVICE SECTIONS ─────────────────────────────────────────────── */
+        .cg-services { background: #080808; }
+        .cg-svc {
           padding: 5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07);
           position: relative;
         }
-        .wd-svc:nth-child(odd)  { background: #0f0f0f; }
-        .wd-svc:nth-child(even) { background: #080808; }
-        .wd-svc__inner--img-left {
+        .cg-svc:nth-child(odd)  { background: #0f0f0f; }
+        .cg-svc:nth-child(even) { background: #080808; }
+        .cg-svc__inner--img-left {
           max-width: 1200px; margin: 0 auto;
           display: grid; grid-template-columns: 3fr 4fr;
           gap: 4rem; align-items: center;
         }
-        .wd-svc__inner--img-right {
+        .cg-svc__inner--img-right {
           max-width: 1200px; margin: 0 auto;
           display: grid; grid-template-columns: 4fr 3fr;
           gap: 4rem; align-items: center;
         }
         @media (max-width: 768px) {
-          .wd-svc__inner--img-left,
-          .wd-svc__inner--img-right { grid-template-columns: 1fr; gap: 2.5rem; }
-          .wd-svc__img-wrap { order: 2 !important; }
-          .wd-svc__body    { order: 1 !important; }
+          .cg-svc__inner--img-left,
+          .cg-svc__inner--img-right { grid-template-columns: 1fr; gap: 2.5rem; }
+          .cg-svc__img-wrap { order: 2 !important; }
+          .cg-svc__body    { order: 1 !important; }
         }
-        .wd-svc__img-wrap {
+        .cg-svc__img-wrap {
           position: relative; border-radius: 16px; overflow: hidden;
         }
-        .wd-svc__img-wrap::before {
+        .cg-svc__img-wrap::before {
           content: ''; position: absolute; inset: 0; z-index: 1;
           background: linear-gradient(135deg, rgba(249,115,22,.08), transparent 60%);
           border-radius: 16px;
         }
-        .wd-svc__img-wrap img {
+        .cg-svc__img-wrap img {
           width: 100%; height: auto; display: block;
           border-radius: 16px; border: 1px solid rgba(255,255,255,0.07);
           transition: transform .4s ease;
         }
-        .wd-svc__img-wrap:hover img { transform: scale(1.03); }
-        .wd-svc__num {
+        .cg-svc__img-wrap:hover img { transform: scale(1.03); }
+        .cg-svc__num {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1;
           color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
           position: absolute; top: -1.5rem; left: 0;
           pointer-events: none; user-select: none;
         }
-        .wd-svc__body { position: relative; }
-        .wd-svc__eyebrow {
+        .cg-svc__body { position: relative; }
+        .cg-svc__eyebrow {
           font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: .9rem; display: block;
         }
-        .wd-svc__heading {
+        .cg-svc__heading {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.6rem, 3vw, 2.4rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
           color: #fff; margin: 0 0 .6rem;
         }
-        .wd-svc__rule {
+        .cg-svc__rule {
           width: 32px; height: 1px;
           background: linear-gradient(90deg, #f97316, transparent);
           margin: 0 0 1.4rem;
         }
-        .wd-svc__p {
+        .cg-svc__p {
           font-family: 'DM Sans', sans-serif; font-size: .95rem;
           font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.45);
           margin-bottom: .8rem;
         }
-        .wd-svc__highlight {
+        .cg-svc__highlight {
           font-family: 'DM Sans', sans-serif; font-size: .93rem;
           font-weight: 400; line-height: 1.8; color: rgba(255,255,255,.6);
           border-left: 2px solid rgba(249,115,22,.4);
           padding-left: 1rem; margin-bottom: 1.6rem; font-style: italic;
         }
-        .wd-svc__bullets {
+        .cg-svc__bullets {
           list-style: none; padding: 0; margin: 0;
           display: flex; flex-direction: column; gap: .5rem;
         }
-        .wd-svc__bullets li {
+        .cg-svc__bullets li {
           font-family: 'DM Sans', sans-serif; font-size: .88rem;
           font-weight: 400; color: rgba(255,255,255,0.65);
           display: flex; align-items: flex-start; gap: .6rem;
         }
-        .wd-svc__bullets li::before {
+        .cg-svc__bullets li::before {
           content: ''; width: 5px; height: 5px; border-radius: 50%;
           background: #f97316; margin-top: .45rem; flex-shrink: 0;
         }
 
-        /* ── BENEFITS ── */
-        .wd-benefits {
+        /* ── BENEFITS ─────────────────────────────────────────────────────── */
+        .cg-benefits {
           background: #0f0f0f; padding: 6rem 1.5rem;
           border-top: 1px solid rgba(255,255,255,0.07);
         }
-        .wd-benefits__inner { max-width: 1200px; margin: 0 auto; }
-        .wd-benefits__head  { text-align: center; margin-bottom: 3.5rem; }
-        .wd-benefits__label {
+        .cg-benefits__inner { max-width: 1200px; margin: 0 auto; }
+        .cg-benefits__head  { text-align: center; margin-bottom: 3.5rem; }
+        .cg-benefits__label {
           font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: 1rem; display: block;
         }
-        .wd-benefits__h2 {
+        .cg-benefits__h2 {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.8rem, 4vw, 3rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
           color: #fff; margin: 0 0 1rem;
         }
-        .wd-benefits__h2 em { font-style: italic; color: #f97316; }
-        .wd-benefits__rule {
+        .cg-benefits__h2 em { font-style: italic; color: #f97316; }
+        .cg-benefits__rule {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, #f97316, transparent);
           margin: 0 auto 1.4rem;
         }
-        .wd-benefits__sub {
+        .cg-benefits__sub {
           font-family: 'DM Sans', sans-serif; font-size: .95rem;
           font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.45);
           max-width: 520px; margin: 0 auto;
         }
-        .wd-benefits__grid {
+        .cg-benefits__grid {
           display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
         }
-        @media (max-width: 1024px) { .wd-benefits__grid { grid-template-columns: repeat(2,1fr); } }
-        @media (max-width: 640px)  { .wd-benefits__grid { grid-template-columns: 1fr; } }
-        .wd-benefit-card {
+        @media (max-width: 1024px) { .cg-benefits__grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 640px)  { .cg-benefits__grid { grid-template-columns: 1fr; } }
+        .cg-benefit-card {
           background: #141414; border: 1px solid rgba(255,255,255,0.07);
           border-radius: 16px; padding: 2rem 1.75rem;
           transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
           position: relative; overflow: hidden;
         }
-        .wd-benefit-card::before {
+        .cg-benefit-card::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
           background: linear-gradient(90deg, transparent, rgba(249,115,22,.5), transparent);
           opacity: 0; transition: opacity .25s ease;
         }
-        .wd-benefit-card:hover { border-color: rgba(249,115,22,.25); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
-        .wd-benefit-card:hover::before { opacity: 1; }
-        .wd-benefit-card__icon {
+        .cg-benefit-card:hover { border-color: rgba(249,115,22,.25); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+        .cg-benefit-card:hover::before { opacity: 1; }
+        .cg-benefit-card__icon {
           width: 44px; height: 44px; border-radius: 10px;
           background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,.2);
           display: flex; align-items: center; justify-content: center;
           color: #f97316; font-size: 1.1rem; margin-bottom: 1.2rem;
         }
-        .wd-benefit-card__title {
+        .cg-benefit-card__title {
           font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 600;
           color: #fff; margin-bottom: .5rem;
         }
-        .wd-benefit-card__desc {
+        .cg-benefit-card__desc {
           font-family: 'DM Sans', sans-serif; font-size: .85rem;
           font-weight: 300; line-height: 1.75; color: rgba(255,255,255,0.45);
         }
 
-        /* ── CTA STRIP ── */
-        .wd-cta {
+        /* ── FAQ ──────────────────────────────────────────────────────────── */
+        .cg-faq {
+          background: #080808; padding: 6rem 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .cg-faq__inner { max-width: 800px; margin: 0 auto; }
+        .cg-faq__header { text-align: center; margin-bottom: 3.5rem; }
+        .cg-faq__label {
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: #f97316; margin-bottom: 1rem; display: block;
+        }
+        .cg-faq__h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.8rem, 4vw, 3rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
+          color: #fff; margin: 0 0 1rem;
+        }
+        .cg-faq__list {
+          display: flex; flex-direction: column; gap: 0;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px; overflow: hidden;
+        }
+        /* <details>/<summary> — native accordion, no JS, no "use client" */
+        .cg-faq__item {
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          background: #0f0f0f;
+          transition: background .2s ease;
+        }
+        .cg-faq__item:last-child { border-bottom: none; }
+        .cg-faq__item[open] { background: #141414; }
+        .cg-faq__q {
+          list-style: none;
+          display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+          padding: 1.5rem 1.75rem; cursor: pointer; user-select: none;
+        }
+        .cg-faq__q::-webkit-details-marker { display: none; }
+        .cg-faq__q::marker { display: none; }
+        .cg-faq__q-text {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.15rem; font-weight: 600;
+          color: rgba(255,255,255,.85); line-height: 1.35; flex: 1;
+          transition: color .2s ease;
+        }
+        .cg-faq__item[open] .cg-faq__q-text,
+        .cg-faq__q:hover .cg-faq__q-text { color: #fff; }
+        .cg-faq__chevron {
+          flex-shrink: 0; color: #f97316; opacity: .7;
+          transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .2s ease;
+        }
+        .cg-faq__item[open] .cg-faq__chevron { transform: rotate(180deg); opacity: 1; }
+        .cg-faq__a {
+          padding: 0 1.75rem 1.5rem;
+          animation: cgFaqOpen .3s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes cgFaqOpen {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .cg-faq__a p {
+          font-family: 'DM Sans', sans-serif; font-size: .92rem;
+          font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.45); margin: 0;
+        }
+
+        /* ── CTA STRIP ────────────────────────────────────────────────────── */
+        .cg-cta {
           background: #080808; border-top: 1px solid rgba(255,255,255,0.07);
           padding: 5rem 1.5rem; text-align: center;
           position: relative; overflow: hidden;
         }
-        .wd-cta__orb {
+        .cg-cta__orb {
           position: absolute; width: 400px; height: 400px; border-radius: 50%;
           background: radial-gradient(circle, #f97316, transparent 70%);
           opacity: .05; top: 50%; left: 50%; transform: translate(-50%,-50%);
           filter: blur(60px); pointer-events: none;
         }
-        .wd-cta__inner { position: relative; z-index: 10; max-width: 560px; margin: 0 auto; }
-        .wd-cta__eyebrow {
+        .cg-cta__inner { position: relative; z-index: 10; max-width: 560px; margin: 0 auto; }
+        .cg-cta__eyebrow {
           font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: #f97316; margin-bottom: 1.2rem; display: block;
         }
-        .wd-cta__h2 {
+        .cg-cta__h2 {
           font-family: 'Cormorant Garamond', serif;
           font-size: clamp(1.9rem, 4vw, 3.2rem);
           font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
           color: #fff; margin: 0 0 1rem;
         }
-        .wd-cta__h2 em { font-style: italic; color: #f97316; }
-        .wd-cta__rule {
+        .cg-cta__h2 em { font-style: italic; color: #f97316; }
+        .cg-cta__rule {
           width: 40px; height: 1px;
           background: linear-gradient(90deg, transparent, #f97316, transparent);
           margin: 0 auto 1.4rem;
         }
-        .wd-cta__sub {
+        .cg-cta__sub {
           font-family: 'DM Sans', sans-serif; font-size: .95rem;
           font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.45);
           margin-bottom: 2.4rem;
         }
-        .wd-cta__btn {
+        .cg-cta__btn {
           display: inline-flex; align-items: center; gap: 10px;
           font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
           letter-spacing: .12em; text-transform: uppercase; color: #080808;
@@ -733,9 +809,15 @@ export default function CADGISPhotogrammetry() {
           box-shadow: 0 8px 32px rgba(249,115,22,.35);
           transition: transform .2s ease, box-shadow .2s ease;
         }
-        .wd-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
+        .cg-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
 
-        /* FIX: prefers-reduced-motion guard — WCAG 2.1 AA (was missing entirely) */
+        /* ── Responsive ───────────────────────────────────────────────────── */
+        @media (max-width: 600px) {
+          .cg-faq__q { padding: 1.25rem; }
+          .cg-faq__a { padding: 0 1.25rem 1.25rem; }
+        }
+
+        /* WCAG 2.1 AA — prefers-reduced-motion */
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
             animation-duration: 0.01ms !important;
@@ -747,27 +829,22 @@ export default function CADGISPhotogrammetry() {
 
       <Header />
 
-      {/* ══ HERO ══════════════════════════════════════════════ */}
-      <section className="wd-hero" aria-labelledby="wd-hero-heading">
+      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+      <section className="cg-hero" aria-labelledby="cg-hero-heading">
         <div aria-hidden="true">
-          <div className="wd-hero__orb wd-hero__orb--1" />
-          <div className="wd-hero__orb wd-hero__orb--2" />
-          <div className="wd-hero__orb wd-hero__orb--3" />
-          <div className="wd-hero__grid" />
-          <div className="wd-hero__grain" />
+          <div className="cg-hero__orb cg-hero__orb--1" />
+          <div className="cg-hero__orb cg-hero__orb--2" />
+          <div className="cg-hero__orb cg-hero__orb--3" />
+          <div className="cg-hero__grid" />
+          <div className="cg-hero__grain" />
         </div>
 
-        <div className="wd-corner wd-corner--tl" aria-hidden="true" />
-        <div className="wd-corner wd-corner--tr" aria-hidden="true" />
-        <div className="wd-corner wd-corner--bl" aria-hidden="true" />
-        <div className="wd-corner wd-corner--br" aria-hidden="true" />
+        <div className="cg-corner cg-corner--tl" aria-hidden="true" />
+        <div className="cg-corner cg-corner--tr" aria-hidden="true" />
+        <div className="cg-corner cg-corner--bl" aria-hidden="true" />
+        <div className="cg-corner cg-corner--br" aria-hidden="true" />
 
-        {/*
-          FIX: breadcrumb changed from display:none → sr-only.
-          display:none hides from Googlebot. sr-only (1×1px clip) keeps it in
-          the render tree so bots can crawl it. JSON-LD handles rich results.
-        */}
-        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+        <nav className="cg-sr-only" aria-label="Breadcrumb" aria-hidden="true">
           <ol
             itemScope
             itemType="https://schema.org/BreadcrumbList"
@@ -790,28 +867,28 @@ export default function CADGISPhotogrammetry() {
           </ol>
         </nav>
 
-        <div className="wd-hero__content">
-          <div className="wd-hero__eyebrow" aria-hidden="true">
-            <span className="wd-hero__dot" />
+        <div className="cg-hero__content">
+          <div className="cg-hero__eyebrow" aria-hidden="true">
+            <span className="cg-hero__dot" />
             Services · CAD, GIS &amp; Photogrammetry
           </div>
 
-          <h1 className="wd-hero__h1" id="wd-hero-heading">
+          <h1 className="cg-hero__h1" id="cg-hero-heading">
             Precision mapping for<br />
             a smarter <em>world</em>
           </h1>
 
-          <div className="wd-hero__rule" aria-hidden="true" />
+          <div className="cg-hero__rule" aria-hidden="true" />
 
-          <p className="wd-hero__sub">
+          <p className="cg-hero__sub">
             From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, and spatial
             analysis — we deliver precision-driven geospatial solutions for infrastructure,
             engineering, and urban planning worldwide.
           </p>
 
           <a
-            href="#services"
-            className="wd-hero__cta"
+            href="#cg-services"
+            className="cg-hero__cta"
             aria-label="Explore CAD, GIS and photogrammetry services"
           >
             Explore Services
@@ -821,29 +898,29 @@ export default function CADGISPhotogrammetry() {
           </a>
         </div>
 
-        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to CAD, GIS and photogrammetry services">
-          <div className="wd-hero__scroll-line" aria-hidden="true" />
-          <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
+        <a href="#cg-services" className="cg-hero__scroll" aria-label="Scroll to CAD, GIS and photogrammetry services">
+          <div className="cg-hero__scroll-line" aria-hidden="true" />
+          <span className="cg-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* ══ INTRO ══════════════════════════════════════════════ */}
-      <section className="wd-intro" aria-labelledby="wd-intro-heading">
-        <div className="wd-intro__inner">
-          <span className="wd-intro__label">Our Expertise</span>
-          <h2 className="wd-intro__h2" id="wd-intro-heading">
+      {/* ══ INTRO ════════════════════════════════════════════════════════ */}
+      <section className="cg-intro" aria-labelledby="cg-intro-heading">
+        <div className="cg-intro__inner">
+          <span className="cg-intro__label">Our Expertise</span>
+          <h2 className="cg-intro__h2" id="cg-intro-heading">
             Precision, innovation &amp; data-driven<br />
             geospatial <em>intelligence</em>
           </h2>
-          <div className="wd-intro__rule" aria-hidden="true" />
-          <p className="wd-intro__p">
+          <div className="cg-intro__rule" aria-hidden="true" />
+          <p className="cg-intro__p">
             At <strong>99 Visual Solutions</strong>, we specialize in{" "}
             <strong>Computer-Aided Design (CAD)</strong>,{" "}
             <strong>Geographic Information Systems (GIS)</strong>, and{" "}
             <strong>Photogrammetry</strong>, delivering data-rich and high-accuracy solutions
             that empower businesses, government agencies, and planners to make informed decisions.
           </p>
-          <p className="wd-intro__p">
+          <p className="cg-intro__p">
             Whether it&apos;s{" "}
             <strong>surveying, infrastructure planning, urban development, or environmental analysis</strong>,
             our advanced tools and expertise provide actionable insights that drive efficiency,
@@ -852,18 +929,18 @@ export default function CADGISPhotogrammetry() {
         </div>
       </section>
 
-      {/* ══ SERVICE SECTIONS ══════════════════════════════════ */}
-      <div id="services" className="wd-services">
+      {/* ══ SERVICE SECTIONS ═════════════════════════════════════════════ */}
+      <div id="cg-services" className="cg-services">
         {services.map((svc, idx) => (
           <section
             key={svc.id}
             id={svc.id}
-            className="wd-svc"
-            aria-labelledby={`wd-svc-heading-${svc.id}`}
+            className="cg-svc"
+            aria-labelledby={`cg-svc-heading-${svc.id}`}
           >
-            <div className={`wd-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
+            <div className={`cg-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
               <div
-                className="wd-svc__img-wrap"
+                className="cg-svc__img-wrap"
                 style={{ order: svc.imageLeft ? 1 : 2 }}
               >
                 <Image
@@ -876,26 +953,25 @@ export default function CADGISPhotogrammetry() {
               </div>
 
               <div
-                className="wd-svc__body"
+                className="cg-svc__body"
                 style={{ order: svc.imageLeft ? 2 : 1 }}
               >
-                <span className="wd-svc__num" aria-hidden="true">
+                <span className="cg-svc__num" aria-hidden="true">
                   {String(idx + 1).padStart(2, "0")}
                 </span>
-                <span className="wd-svc__eyebrow">
+                <span className="cg-svc__eyebrow">
                   Service {String(idx + 1).padStart(2, "0")}
                 </span>
-                {/* h3 was already correct in the original for this page — preserved */}
                 <h3
-                  className="wd-svc__heading"
-                  id={`wd-svc-heading-${svc.id}`}
+                  className="cg-svc__heading"
+                  id={`cg-svc-heading-${svc.id}`}
                 >
                   {svc.title}
                 </h3>
-                <div className="wd-svc__rule" aria-hidden="true" />
-                <p className="wd-svc__p">{svc.description}</p>
-                <p className="wd-svc__highlight">{svc.highlight}</p>
-                <ul className="wd-svc__bullets">
+                <div className="cg-svc__rule" aria-hidden="true" />
+                <p className="cg-svc__p">{svc.description}</p>
+                <p className="cg-svc__highlight">{svc.highlight}</p>
+                <ul className="cg-svc__bullets">
                   {svc.bullets.map((b) => (
                     <li key={b}>{b}</li>
                   ))}
@@ -906,50 +982,101 @@ export default function CADGISPhotogrammetry() {
         ))}
       </div>
 
-      {/* ══ BENEFITS ══════════════════════════════════════════ */}
-      <section className="wd-benefits" aria-labelledby="wd-benefits-heading">
-        <div className="wd-benefits__inner">
-          <div className="wd-benefits__head">
-            <span className="wd-benefits__label">Why Choose Us?</span>
-            <h2 className="wd-benefits__h2" id="wd-benefits-heading">
+      {/* ══ BENEFITS ════════════════════════════════════════════════════ */}
+      <section className="cg-benefits" aria-labelledby="cg-benefits-heading">
+        <div className="cg-benefits__inner">
+          <div className="cg-benefits__head">
+            <span className="cg-benefits__label">Why Choose Us?</span>
+            <h2 className="cg-benefits__h2" id="cg-benefits-heading">
               Benefits of partnering with<br /><em>99 Visual</em> CAD, GIS &amp; Photogrammetry
             </h2>
-            <div className="wd-benefits__rule" aria-hidden="true" />
-            <p className="wd-benefits__sub">
+            <div className="cg-benefits__rule" aria-hidden="true" />
+            <p className="cg-benefits__sub">
               With 99 Visual Solutions, precision and innovation go hand in hand. Our services
               are designed to provide reliable, scalable, and accurate geospatial insights for
               complex projects.
             </p>
           </div>
 
-          <div className="wd-benefits__grid">
+          <div className="cg-benefits__grid">
             {benefits.map((b, i) => (
-              <div className="wd-benefit-card" key={i}>
-                <div className="wd-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                <div className="wd-benefit-card__title">{b.title}</div>
-                <p className="wd-benefit-card__desc">{b.description}</p>
+              <div className="cg-benefit-card" key={i}>
+                <div className="cg-benefit-card__icon" aria-hidden="true">{b.icon}</div>
+                <div className="cg-benefit-card__title">{b.title}</div>
+                <p className="cg-benefit-card__desc">{b.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ CTA STRIP ═════════════════════════════════════════ */}
-      <section className="wd-cta" aria-labelledby="wd-cta-heading">
-        <div className="wd-cta__orb" aria-hidden="true" />
-        <div className="wd-cta__inner">
-          <span className="wd-cta__eyebrow">Start a Project</span>
-          <h2 className="wd-cta__h2" id="wd-cta-heading">
+      {/* ══ FAQ ═════════════════════════════════════════════════════════
+        Visible FAQ matching FAQPage schema — prevents manual action risk.
+        <details>/<summary> = pure HTML, no JS, Server Component safe.
+        @id="${BASE}/services/cad-gis-photogrammetry#faq" resolves to id="cg-faq".
+      ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="cg-faq"
+        className="cg-faq"
+        aria-labelledby="cg-faq-heading"
+        itemScope
+        itemType="https://schema.org/FAQPage"
+      >
+        <div className="cg-faq__inner">
+          <div className="cg-faq__header">
+            <span className="cg-faq__label">Got Questions?</span>
+            <h2 className="cg-faq__h2" id="cg-faq-heading">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <dl className="cg-faq__list">
+            {FAQ_ITEMS.map(({ question, answer }, i) => (
+              <details
+                key={i}
+                className="cg-faq__item"
+                itemScope
+                itemProp="mainEntity"
+                itemType="https://schema.org/Question"
+              >
+                <summary className="cg-faq__q" itemProp="name">
+                  <span className="cg-faq__q-text">{question}</span>
+                  <span className="cg-faq__chevron" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                <div
+                  className="cg-faq__a"
+                  itemScope
+                  itemProp="acceptedAnswer"
+                  itemType="https://schema.org/Answer"
+                >
+                  <p itemProp="text">{answer}</p>
+                </div>
+              </details>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ══ CTA STRIP ═══════════════════════════════════════════════════ */}
+      <section className="cg-cta" aria-labelledby="cg-cta-heading">
+        <div className="cg-cta__orb" aria-hidden="true" />
+        <div className="cg-cta__inner">
+          <span className="cg-cta__eyebrow">Start a Project</span>
+          <h2 className="cg-cta__h2" id="cg-cta-heading">
             Ready to map your next big <em>project</em>?
           </h2>
-          <div className="wd-cta__rule" aria-hidden="true" />
-          <p className="wd-cta__sub">
+          <div className="cg-cta__rule" aria-hidden="true" />
+          <p className="cg-cta__sub">
             Get in touch with our team for a free consultation. We&apos;ll help you design
             the right CAD, GIS, or geospatial strategy to meet your project goals.
           </p>
           <Link
             href="/contact"
-            className="wd-cta__btn"
+            className="cg-cta__btn"
             aria-label="Get a free CAD, GIS and geospatial consultation from 99 Visual Solutions"
           >
             Get a Free Consultation

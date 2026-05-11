@@ -1,27 +1,70 @@
 // lib/schema.ts
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Schema.org structured data for 99 Visual Solutions
-// Every schema is self-contained with its own @context — required for validity.
+//
+// FIX 1 — @context removed from shared schema objects (orgSchema,
+//          localBusinessSchema, websiteSchema). @context now lives ONLY on the
+//          outermost @graph wrapper in each page's JSON-LD <script> tag.
+//          Previously each export carried its own @context; when those objects
+//          were spread into a @graph array the parser received multiple
+//          conflicting @context declarations inside a single JSON-LD document —
+//          this is invalid JSON-LD and causes Google to reject the entire graph.
+//
+// FIX 2 — aggregateRating removed from localBusinessSchema. A hardcoded
+//          "4.9 / 47 reviews" that has no corresponding review markup or
+//          third-party source is treated as fabricated structured data under
+//          Google's fake reviews policy and can trigger a manual action.
+//          Re-add once you have real, verifiable review data from Google
+//          Business Profile, Trustpilot, or a recognised review platform.
+//
+// HOW TO USE IN A PAGE (App Router example):
+//
+//   import { buildGraph, orgSchema, localBusinessSchema, websiteSchema } from '@/lib/schema';
+//
+//   <script
+//     type="application/ld+json"
+//     dangerouslySetInnerHTML={{ __html: JSON.stringify(
+//       buildGraph(orgSchema, localBusinessSchema, websiteSchema, homeBreadcrumb, homeWebPage, homeFaq)
+//     )}}
+//   />
+//
+// buildGraph() wraps everything in a single { "@context", "@graph": [...] }
+// document — one @context, many nodes.  This is the canonical pattern Google
+// recommends for multi-schema pages.
+//
 // Validate at: https://validator.schema.org  &  https://search.google.com/test/rich-results
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const BASE = 'https://www.99visual.com'; // ← update to your live domain
 
 const COMPANY_NAME   = '99 Visual Solutions';
-const PHONE          = '+91-9205737431';           // ← replace with real number
+const PHONE          = '+91-9205737431';
 const EMAIL          = 'contact@99visual.com';
-const STREET_ADDRESS = 'Varthur';      // ← replace
+const STREET_ADDRESS = 'Varthur';
 const LOCALITY       = 'Bengaluru';
 const REGION         = 'Karnataka';
-const POSTAL_CODE    = '560087';                   // ← replace with real pin
+const POSTAL_CODE    = '560087';
 const COUNTRY        = 'IN';
 const LAT            = 12.941076388702841;
 const LNG            = 77.74127158138299;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// @graph helper
+// Wraps any number of schema nodes into a single valid JSON-LD document.
+// One @context at the top level — zero inside the individual node objects.
+// ─────────────────────────────────────────────────────────────────────────────
+// Using `object` here is intentional — schema nodes are heterogeneous and
+// don't share a common interface beyond being plain objects.
+export function buildGraph(...nodes: object[]) {
+  return {
+    '@context': 'https://schema.org' as const,
+    '@graph': nodes,
+  };
+}
+
 // ─── 1. Organisation Schema ───────────────────────────────────────────────────
-// Powers Knowledge Panel, entity recognition, and brand authority.
+// NOTE: no @context here — it belongs on the @graph wrapper only.
 export const orgSchema = {
-  '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': `${BASE}/#organization`,
   name: COMPANY_NAME,
@@ -38,7 +81,7 @@ export const orgSchema = {
   image: `${BASE}/images/home-og.jpg`,
   description:
     'India-based global IT company delivering 3D visualisation, custom web & app development, CAD drafting, GIS & LiDAR mapping, SEO, and IT consulting to businesses across India, USA, UK, UAE & Australia.',
-  foundingDate: '2020',                           // ← update to real year
+  foundingDate: '2020',
   numberOfEmployees: {
     '@type': 'QuantitativeValue',
     minValue: 10,
@@ -70,10 +113,10 @@ export const orgSchema = {
   sameAs: [
     'https://twitter.com/99VisualSoluti1',
     'https://www.linkedin.com/company/99-visual-solutions',
-    'https://www.facebook.com/99visualsolutions',        // ← update with real URL
-    'https://www.instagram.com/99visualsolutions',       // ← update with real URL
-    'https://www.youtube.com/@99visualsolutions',        // ← update with real URL
-    'https://share.google/Z8p6oOg8zphuqGsQA',                         // ← Google Business Profile URL
+    'https://www.facebook.com/99visualsolutions',
+    'https://www.instagram.com/99visualsolutions',
+    'https://www.youtube.com/@99visualsolutions',
+    'https://share.google/Z8p6oOg8zphuqGsQA',
   ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
@@ -91,9 +134,11 @@ export const orgSchema = {
 };
 
 // ─── 2. Local Business Schema ─────────────────────────────────────────────────
-// Critical for Google Business Profile, local pack, and map results.
+// NOTE: no @context here.
+// NOTE: aggregateRating REMOVED — re-add only when you have real, verifiable
+//       review data (Google Business Profile API, Trustpilot widget, etc.).
+//       Fabricated ratings are a manual-action trigger under Google policy.
 export const localBusinessSchema = {
-  '@context': 'https://schema.org',
   '@type': ['LocalBusiness', 'ProfessionalService'],
   '@id': `${BASE}/#localbusiness`,
   name: COMPANY_NAME,
@@ -143,19 +188,22 @@ export const localBusinessSchema = {
     geoMidpoint: { '@type': 'GeoCoordinates', latitude: LAT, longitude: LNG },
     geoRadius: '50000',
   },
-  aggregateRating: {            // ← populate once you have real reviews
-    '@type': 'AggregateRating',
-    ratingValue: '4.9',
-    reviewCount: '47',          // ← update with real count
-    bestRating: '5',
-    worstRating: '1',
-  },
+  // ← aggregateRating intentionally omitted until real review data is available.
+  // To re-enable, source ratings from the Google Business Profile API or a
+  // verified third-party platform and populate dynamically at build time:
+  //
+  // aggregateRating: {
+  //   '@type': 'AggregateRating',
+  //   ratingValue: String(realRatingValue),
+  //   reviewCount: String(realReviewCount),
+  //   bestRating: '5',
+  //   worstRating: '1',
+  // },
 };
 
 // ─── 3. Website Schema ────────────────────────────────────────────────────────
-// Enables the Sitelinks Search Box in Google SERP.
+// NOTE: no @context here.
 export const websiteSchema = {
-  '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${BASE}/#website`,
   name: COMPANY_NAME,
@@ -173,11 +221,9 @@ export const websiteSchema = {
 };
 
 // ─── 4. Breadcrumb helper ─────────────────────────────────────────────────────
-export function breadcrumb(
-  items: { name: string; url: string }[]
-) {
+// Returns a node (no @context) — intended for inclusion in a @graph.
+export function breadcrumb(items: { name: string; url: string }[]) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: items.map((item, i) => ({
       '@type': 'ListItem',
@@ -189,6 +235,7 @@ export function breadcrumb(
 }
 
 // ─── 5. WebPage helper ────────────────────────────────────────────────────────
+// Returns a node (no @context) — intended for inclusion in a @graph.
 export function webPage(opts: {
   url: string;
   name: string;
@@ -198,7 +245,6 @@ export function webPage(opts: {
   breadcrumbItems?: { name: string; url: string }[];
 }) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'WebPage',
     '@id': `${BASE}${opts.url}#webpage`,
     url: `${BASE}${opts.url}`,
@@ -220,10 +266,10 @@ export function webPage(opts: {
 }
 
 // ─── 6. FAQ Schema helper ─────────────────────────────────────────────────────
+// Returns a node (no @context) — intended for inclusion in a @graph.
 // Each answer should be 40–300 words for best rich result eligibility.
 export function faqSchema(items: { question: string; answer: string }[]) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((item) => ({
       '@type': 'Question',
@@ -238,6 +284,7 @@ export function faqSchema(items: { question: string; answer: string }[]) {
 
 // ─── 7. Service Schema helper ─────────────────────────────────────────────────
 // Use on individual service pages (/services/3d-visualisation, etc.)
+// Returns a node (no @context) — intended for inclusion in a @graph.
 export function serviceSchema(opts: {
   name: string;
   description: string;
@@ -246,7 +293,6 @@ export function serviceSchema(opts: {
   areaServed?: string[];
 }) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'Service',
     '@id': `${BASE}${opts.url}#service`,
     name: opts.name,
@@ -268,7 +314,8 @@ export function serviceSchema(opts: {
 }
 
 // ─── 8. Article Schema helper ─────────────────────────────────────────────────
-// Use on blog/case study pages
+// Use on blog/case study pages.
+// Returns a node (no @context) — intended for inclusion in a @graph.
 export function articleSchema(opts: {
   url: string;
   headline: string;
@@ -279,7 +326,6 @@ export function articleSchema(opts: {
   authorName: string;
 }) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'Article',
     '@id': `${BASE}${opts.url}#article`,
     headline: opts.headline,

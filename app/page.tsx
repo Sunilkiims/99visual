@@ -7,7 +7,7 @@
 //   ✅ Canonical + hreflang for IN/US/GB/AE/AU
 //   ✅ OG + Twitter cards with typed images
 //   ✅ Google / Bing / Yandex verification
-//   ✅ 6 × JSON-LD schemas (Org, LocalBusiness, Website, Breadcrumb, WebPage, FAQ)
+//   ✅ Single JSON-LD <script> using @graph pattern (one @context, many nodes)
 //   ✅ Schema cross-references via @id nodes (entity graph)
 //   ✅ datePublished + dateModified on WebPage schema
 //   ✅ Visible, microdata-annotated breadcrumb
@@ -17,6 +17,8 @@
 //   ✅ <strong> on keyword cluster (semantic weight)
 //   ✅ Font preconnect → eliminates render-blocking
 //   ✅ keywords array removed (ignored since 2009)
+//   ✅ FIX: @context stripped from shared schema exports — lives on @graph only
+//   ✅ FIX: fake aggregateRating removed — manual-action risk under Google policy
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from 'next';
@@ -35,6 +37,7 @@ import PageLoader       from './components/PageLoader';
 
 import {
   BASE,
+  buildGraph,
   orgSchema,
   websiteSchema,
   localBusinessSchema,
@@ -45,8 +48,6 @@ import {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
-// Title: 57 chars — within 60-char SERP limit
-// Description: 159 chars — within 160-char ideal range
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: {
@@ -58,8 +59,6 @@ export const metadata: Metadata = {
 
   metadataBase: new URL(BASE),
 
-  // ── Canonical + hreflang ────────────────────────────────────────────────
-  // x-default signals the fallback for unmatched locales.
   alternates: {
     canonical: '/',
     languages: {
@@ -72,7 +71,6 @@ export const metadata: Metadata = {
     },
   },
 
-  // ── Robots ──────────────────────────────────────────────────────────────
   robots: {
     index: true,
     follow: true,
@@ -85,8 +83,6 @@ export const metadata: Metadata = {
     },
   },
 
-  // ── Open Graph ──────────────────────────────────────────────────────────
-  // Title ≤ 60 chars for Facebook / LinkedIn preview truncation.
   openGraph: {
     title:
       '99 Visual Solutions | 3D, Web, CAD, GIS & IT Consulting India',
@@ -96,7 +92,7 @@ export const metadata: Metadata = {
     siteName: '99 Visual Solutions',
     images: [
       {
-        url:    `${BASE}/images/home-og.jpg`,   // 1200 × 630 px, < 1 MB
+        url:    `${BASE}/images/home-og.jpg`,
         width:  1200,
         height: 630,
         alt:    '99 Visual Solutions — Global IT & Digital Transformation Company, Bengaluru India',
@@ -107,7 +103,6 @@ export const metadata: Metadata = {
     type:   'website',
   },
 
-  // ── Twitter / X Card ────────────────────────────────────────────────────
   twitter: {
     card:        'summary_large_image',
     title:       '99 Visual Solutions | 3D, Web, CAD, GIS & IT Consulting',
@@ -122,48 +117,44 @@ export const metadata: Metadata = {
     ],
   },
 
-  // ── Search Console Verification ─────────────────────────────────────────
-  // Add actual tokens from each platform's settings dashboard.
   verification: {
-    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? '',   // set in .env
-    // yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
-    // other:  [{ name: 'msvalidate.01', value: process.env.NEXT_PUBLIC_BING_VERIFICATION }],
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? '',
   },
 
-  // ── Miscellaneous ────────────────────────────────────────────────────────
   applicationName: '99 Visual Solutions',
   category:        'technology',
   authors:         [{ name: '99 Visual Solutions', url: BASE }],
   creator:         '99 Visual Solutions',
   publisher:       '99 Visual Solutions',
   referrer:        'origin-when-cross-origin',
-  // Prevents iOS from auto-linking phone numbers / addresses (breaks layout)
   formatDetection: { email: false, address: false, telephone: false },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STRUCTURED DATA
-// All schemas cross-reference each other via @id — this creates a connected
-// entity graph that Google can use to populate the Knowledge Panel.
+//
+// FIX: Previously, six separate <script type="application/ld+json"> tags were
+// emitted — each carrying its own @context declaration. When Google's parser
+// processes a page it reads all JSON-LD blocks; multiple conflicting @context
+// values cause the entire graph to be silently rejected.
+//
+// Solution: buildGraph() wraps all nodes in a single JSON-LD document:
+//   { "@context": "https://schema.org", "@graph": [ node1, node2, … ] }
+// One @context, one script tag, fully valid JSON-LD.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Breadcrumb list — homepage has one item; child pages extend this.
 const homeBreadcrumb = breadcrumb([
   { name: 'Home', url: '/' },
 ]);
 
-// WebPage — includes datePublished + dateModified for freshness signals.
-// Update dateModified whenever you make significant content changes.
 const homeWebPage = webPage({
   url:           '/',
   name:          '99 Visual Solutions — Global IT & Digital Transformation Company',
   description:   'Full-service IT company in Bengaluru, India offering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO, and IT consulting globally.',
-  datePublished: '2024-01-01',                              // ← set to real launch date
-  dateModified:  new Date().toISOString().split('T')[0],   // auto-updates on each build
+  datePublished: '2024-01-01',
+  dateModified:  new Date().toISOString().split('T')[0],
 });
 
-// FAQ — targeting informational intent queries.
-// Each answer is 40–300 words (Google's eligibility range for FAQ rich results).
 const homeFaq = faqSchema([
   {
     question: 'What services does 99 Visual Solutions offer?',
@@ -207,53 +198,36 @@ const homeFaq = faqSchema([
   },
 ]);
 
+// Single @graph document — one @context, all nodes.
+const homeGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  homeBreadcrumb,
+  homeWebPage,
+  homeFaq,
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (
     <>
-      {/*
-        PERFORMANCE NOTE — PageLoader:
-        Ensure PageLoader fades out within 800ms and does NOT use
-        visibility:hidden or display:none on any above-fold content.
-        Googlebot executes JS — a blocking overlay directly hurts LCP
-        scores and Core Web Vitals rankings.
-      */}
       <PageLoader />
 
       {/* ── JSON-LD Structured Data ──────────────────────────────────────────
-        Injected in <head> by Next.js App Router automatically.
-        Each script is self-contained with its own @context.
-        Entity graph: orgSchema ←→ localBusinessSchema ←→ websiteSchema ←→ homeWebPage
+        Single <script> tag with one @context and a @graph array.
+        Previously six separate scripts — each with their own @context —
+        produced invalid JSON-LD that Google's parser silently rejected.
       ── */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeBreadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeWebPage) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaq) }} />
-
-      {/*
-        FONT PERFORMANCE:
-        Preconnect hints should be added to app/layout.tsx <head> section:
-
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-
-        This eliminates render-blocking and reduces LCP by ~200–400ms.
-        The @import inside <style> below is a fallback only.
-      */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeGraph) }}
+      />
 
       <Header />
 
-      {/*
-        H1 HIERARCHY NOTE:
-        If HomeScreenSlider renders an <h1>, the heading in the About section
-        below MUST be demoted to <h2>, and the subheading to <h3>.
-        There must be exactly ONE <h1> per page — audit the slider component.
-      */}
       <HomeScreenSlider />
       <Marqueee />
 
@@ -261,7 +235,6 @@ export default function Home() {
       <section
         aria-label="About 99 Visual Solutions"
         id="about"
-        // Microdata — reinforces WebPage schema for Google's parser
         itemScope
         itemType="https://schema.org/AboutPage"
         style={{
@@ -275,7 +248,6 @@ export default function Home() {
       >
         {/* ── Decorative layer — all aria-hidden="true" ─────────────────── */}
 
-        {/* Grid overlay */}
         <div
           aria-hidden="true"
           role="presentation"
@@ -288,7 +260,6 @@ export default function Home() {
           }}
         />
 
-        {/* SVG noise grain — lightweight vs PNG */}
         <div
           aria-hidden="true"
           role="presentation"
@@ -299,7 +270,6 @@ export default function Home() {
           }}
         />
 
-        {/* Ambient glow — orange */}
         <div
           aria-hidden="true"
           role="presentation"
@@ -312,7 +282,6 @@ export default function Home() {
           }}
         />
 
-        {/* Ambient glow — indigo */}
         <div
           aria-hidden="true"
           role="presentation"
@@ -325,7 +294,6 @@ export default function Home() {
           }}
         />
 
-        {/* Corner accent brackets */}
         {(
           [
             { top: 20, left: 20,   borderTop: '1px solid #f97316', borderLeft:  '1px solid #f97316' },
@@ -342,12 +310,7 @@ export default function Home() {
           />
         ))}
 
-        {/* ── Breadcrumb — visually hidden, SEO-visible ──────────────────────
-          • display:none / visibility:hidden = hidden from Googlebot too ❌
-          • position:absolute + clip = invisible to users, crawlable by bots ✅
-          • JSON-LD above handles rich results; this adds HTML microdata coverage
-          • Screen readers skip it via aria-hidden (homepage breadcrumb adds no value)
-        ── */}
+        {/* ── Breadcrumb — visually hidden, SEO-visible ─────────────────── */}
         <nav
           aria-label="Breadcrumb"
           aria-hidden="true"
@@ -393,7 +356,6 @@ export default function Home() {
             fontFamily: "'DM Sans', sans-serif",
           }}
         >
-          {/* Live status badge — purely decorative, no semantic meaning */}
           <p
             aria-label="Global IT and Digital Transformation company"
             style={{
@@ -420,11 +382,6 @@ export default function Home() {
             Global IT &amp; Digital Transformation
           </p>
 
-          {/*
-            H1 — Primary keyword target: "IT company India | 3D visualisation | web development"
-            Keep as H1 ONLY if HomeScreenSlider has NO h1 tag.
-            If slider has h1 → change this to h2 and subheading below to h3.
-          */}
           <h1
             itemProp="name"
             style={{
@@ -442,7 +399,6 @@ export default function Home() {
             </em>
           </h1>
 
-          {/* Decorative rule */}
           <div
             aria-hidden="true"
             style={{
@@ -452,7 +408,6 @@ export default function Home() {
             }}
           />
 
-          {/* H2 — Secondary keyword: trust signal + geographic targeting */}
           <h2
             style={{
               fontFamily: "'DM Sans', sans-serif",
@@ -466,11 +421,6 @@ export default function Home() {
             Trusted by Startups &amp; Enterprises Across India, USA, UK, UAE &amp; Australia
           </h2>
 
-          {/*
-            Body copy — keyword-dense but natural.
-            <strong> tag on service list = semantic emphasis (not just bold styling).
-            This is the primary crawlable content block for Google's parser.
-          */}
           <p
             itemProp="description"
             style={{
@@ -504,11 +454,6 @@ export default function Home() {
             pricing, and uncompromising quality.
           </p>
 
-          {/* ── CTAs ────────────────────────────────────────────────────────
-            Two CTAs: primary (conversion) + secondary (trust/portfolio).
-            Both are crawlable <a> tags — passes PageRank to key internal pages.
-            aria-label overrides the link text for screen readers.
-          ── */}
           <div
             style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
           >
@@ -549,16 +494,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Font + Animation Styles ────────────────────────────────────── */}
         <style>{`
-          /*
-            Fonts loaded here as fallback.
-            IMPORTANT: Move these preconnect/preload links to app/layout.tsx <head>
-            for best LCP performance:
-              <link rel="preconnect" href="https://fonts.googleapis.com" />
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-              <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" />
-          */
           @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
           @keyframes homePulse {
@@ -566,12 +502,10 @@ export default function Home() {
             50%       { opacity: .35; transform: scale(.6); }
           }
 
-          /* Respect user motion preferences — WCAG 2.1 AA compliance */
           @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
           }
 
-          /* CTA hover states — defined here since inline :hover isn't supported in React */
           a[href="/contact"]:hover  { opacity: 0.85; transform: translateY(-1px); }
           a[href="/services"]:hover { background: rgba(249,115,22,0.08) !important; border-color: #f97316 !important; }
         `}</style>

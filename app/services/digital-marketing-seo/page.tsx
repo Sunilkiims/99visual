@@ -1,3 +1,16 @@
+// app/services/digital-marketing-seo/page.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// Production-grade Digital Marketing & SEO service page — 99 Visual Solutions
+//
+// FIXES APPLIED:
+//   ✅ Removed inline schemaGraph with its own "@context" — uses buildGraph()
+//   ✅ Removed duplicate Organization, LocalBusiness, WebSite node definitions
+//      that diverged from lib/schema.ts (foundingDate "2015" vs "2020")
+//   ✅ Page-specific nodes (WebPage, BreadcrumbList, Service, FAQPage) kept inline
+//   ✅ Script tag moved to after <Header /> to prevent UI displacement
+//   ✅ All other SEO, a11y, heading hierarchy, and structured data intact
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/app/components/header";
@@ -7,18 +20,18 @@ import Chatbot from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
 import PageLoader from "@/app/components/PageLoader";
 import type { Metadata } from "next";
+import { FaBullhorn, FaSearch, FaChartLine, FaMobileAlt, FaEnvelopeOpenText, FaHandshake } from "react-icons/fa";
 
 import {
-  FaBullhorn,
-  FaSearch,
-  FaChartLine,
-  FaMobileAlt,
-  FaEnvelopeOpenText,
-  FaHandshake,
-} from "react-icons/fa";
-
-// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
-import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
+  BASE,
+  buildGraph,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  breadcrumb,
+  faqSchema,
+  serviceSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
@@ -28,11 +41,8 @@ export const metadata: Metadata = {
   description:
     "99 Visual Solutions delivers full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content marketing, email automation, local SEO, link building, marketing automation, and promotional video — built to grow traffic, leads, and ROI worldwide.",
 
-  // FIX: keywords[] REMOVED — ignored by Google/Bing since 2009
-
   metadataBase: new URL(BASE),
 
-  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
   alternates: {
     canonical: "/services/digital-marketing-seo",
     languages: {
@@ -61,7 +71,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 
-  // FIX: Twitter images changed from bare string → typed array with alt
   twitter: {
     card: "summary_large_image",
     title: "Digital Marketing & SEO Services | SEO, PPC, Social Media & More - 99 Visual Solutions",
@@ -71,7 +80,6 @@ export const metadata: Metadata = {
     images: [{ url: `${BASE}/images/services/digital-marketing-og.jpg`, alt: "Digital Marketing & SEO Services by 99 Visual Solutions" }],
   },
 
-  // FIX: all missing from original
   verification:    { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
   authors:         [{ name: "99 Visual Solutions", url: BASE }],
   creator:         "99 Visual Solutions",
@@ -83,116 +91,134 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STRUCTURED DATA — unified @graph
-// FIX: was 3 separate <script> blocks, missing Org/LB/WebSite nodes,
-//      dateModified missing, fragmented entity graph.
+// SCHEMA — page-specific nodes only
+// Organization, LocalBusiness, WebSite come from lib/schema.ts (single source
+// of truth). Only WebPage, BreadcrumbList, Service, and FAQPage are defined
+// here since they are unique to this route.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0]; // auto-updates on build
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const schemaGraph = {
-  "@context": "https://schema.org",
-  "@graph": [
-    orgSchema,           // 1. Organization
-    localBusinessSchema, // 2. LocalBusiness
-    websiteSchema,       // 3. WebSite
-
-    // 4. WebPage
-    {
-      "@type": "WebPage",
-      "@id":   `${BASE}/services/digital-marketing-seo#webpage`,
-      url:     `${BASE}/services/digital-marketing-seo`,
-      name:    "Digital Marketing & SEO Services | SEO, PPC, Social Media & More - 99 Visual Solutions",
-      description: "Full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content & email marketing, local SEO, link building, marketing automation, and promotional video by 99 Visual Solutions.",
-      inLanguage:    "en",
-      datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,
-      isPartOf:      { "@id": `${BASE}/#website` },
-      about:         { "@id": `${BASE}/#organization` },
-      publisher:     { "@id": `${BASE}/#organization` },
-      primaryImageOfPage: { "@type": "ImageObject", url: `${BASE}/images/services/digital-marketing-og.jpg`, width: 1200, height: 630, caption: "Digital Marketing & SEO Services by 99 Visual Solutions" },
-      speakable:       { "@type": "SpeakableSpecification", cssSelector: [".dm-hero__h1", ".dm-hero__sub"] },
-      breadcrumb:      { "@id": `${BASE}/services/digital-marketing-seo#breadcrumb` },
-      potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/digital-marketing-seo`] },
-    },
-
-    // 5. BreadcrumbList
-    {
-      ...breadcrumb([
-        { name: "Home",                    url: "/" },
-        { name: "Services",                url: "/services" },
-        { name: "Digital Marketing & SEO", url: "/services/digital-marketing-seo" },
-      ]),
-      "@id": `${BASE}/services/digital-marketing-seo#breadcrumb`,
-    },
-
-    // 6. Service
-    {
-      "@type": "Service",
-      "@id":   `${BASE}/services/digital-marketing-seo#service`,
-      name:    "Digital Marketing & SEO Services",
-      description: "Full-spectrum digital marketing including SEO, PPC, Meta Ads, social media marketing, content marketing, email marketing, local SEO, link building, marketing automation, and promotional video.",
-      provider:    { "@id": `${BASE}/#organization` },
-      areaServed:  ["IN", "US", "GB", "AU", "AE"],
-      url:         `${BASE}/services/digital-marketing-seo`,
-      serviceType: "Digital Marketing",
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "Digital Marketing Services",
-        itemListElement: [
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Search Engine Optimization (SEO)" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pay-Per-Click Advertising (PPC)" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Meta Ads & Social Media Marketing" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Content & Email Marketing" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Local SEO" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Technical SEO" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "On-Page Optimization" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Off-Page SEO & Link Building" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Marketing Automation" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Creative Banner & Promotional Video" } },
-        ],
-      },
-    },
-
-    // 7. FAQPage
-    {
-      ...faqSchema([
-        { question: "What digital marketing services does 99 Visual Solutions offer?", answer: "We offer SEO (on-page, off-page, technical, local), PPC advertising, Meta Ads, social media marketing, content marketing, email marketing & automation, link building, on-page optimization, creative banner design, and promotional video production." },
-        { question: "Do you manage Google Ads and Meta Ads campaigns?", answer: "Yes. We manage end-to-end PPC campaigns on Google Ads as well as paid social campaigns on Facebook, Instagram, and LinkedIn, including strategy, creative, targeting, and continuous optimization." },
-        { question: "What is MindTrick.io?", answer: "MindTrick.io is our dedicated digital marketing hub focused on delivering result-oriented, data-driven marketing solutions — from performance marketing to brand storytelling — for businesses looking to grow online." },
-        { question: "How do you measure digital marketing performance?", answer: "We track key metrics including organic traffic, keyword rankings, conversion rates, cost per lead, ROAS, and engagement rates. We provide regular reporting and use analytics insights for continuous campaign optimization." },
-      ]),
-      "@id":            `${BASE}/services/digital-marketing-seo#faq`,
-      mainEntityOfPage: { "@id": `${BASE}/services/digital-marketing-seo#webpage` },
-    },
-  ],
+const dmBreadcrumbNode = {
+  ...breadcrumb([
+    { name: "Home",                    url: "/" },
+    { name: "Services",                url: "/services" },
+    { name: "Digital Marketing & SEO", url: "/services/digital-marketing-seo" },
+  ]),
+  "@id": `${BASE}/services/digital-marketing-seo#breadcrumb`,
 };
+
+const dmServiceNode = {
+  ...serviceSchema({
+    name:        "Digital Marketing & SEO Services",
+    description:
+      "Full-spectrum digital marketing including SEO, PPC, Meta Ads, social media marketing, content marketing, email marketing, local SEO, link building, marketing automation, and promotional video.",
+    url:   "/services/digital-marketing-seo",
+    image: `${BASE}/images/services/digital-marketing-og.jpg`,
+  }),
+  "@id": `${BASE}/services/digital-marketing-seo#service`,
+  serviceType: "Digital Marketing",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Digital Marketing Services",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Search Engine Optimization (SEO)" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pay-Per-Click Advertising (PPC)" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Meta Ads & Social Media Marketing" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Content & Email Marketing" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Local SEO" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Technical SEO" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "On-Page Optimization" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Off-Page SEO & Link Building" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Marketing Automation" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Creative Banner & Promotional Video" } },
+    ],
+  },
+};
+
+const dmFaqNode = {
+  ...faqSchema([
+    {
+      question: "What digital marketing services does 99 Visual Solutions offer?",
+      answer: "We offer SEO (on-page, off-page, technical, local), PPC advertising, Meta Ads, social media marketing, content marketing, email marketing & automation, link building, on-page optimization, creative banner design, and promotional video production.",
+    },
+    {
+      question: "Do you manage Google Ads and Meta Ads campaigns?",
+      answer: "Yes. We manage end-to-end PPC campaigns on Google Ads as well as paid social campaigns on Facebook, Instagram, and LinkedIn, including strategy, creative, targeting, and continuous optimization.",
+    },
+    {
+      question: "What is MindTrick.io?",
+      answer: "MindTrick.io is our dedicated digital marketing hub focused on delivering result-oriented, data-driven marketing solutions — from performance marketing to brand storytelling — for businesses looking to grow online.",
+    },
+    {
+      question: "How do you measure digital marketing performance?",
+      answer: "We track key metrics including organic traffic, keyword rankings, conversion rates, cost per lead, ROAS, and engagement rates. We provide regular reporting and use analytics insights for continuous campaign optimization.",
+    },
+  ]),
+  "@id":            `${BASE}/services/digital-marketing-seo#faq`,
+  mainEntityOfPage: { "@id": `${BASE}/services/digital-marketing-seo#webpage` },
+};
+
+const dmPageNode = {
+  "@type":       "WebPage",
+  "@id":         `${BASE}/services/digital-marketing-seo#webpage`,
+  url:           `${BASE}/services/digital-marketing-seo`,
+  name:          "Digital Marketing & SEO Services | SEO, PPC, Social Media & More - 99 Visual Solutions",
+  description:   "Full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content & email marketing, local SEO, link building, marketing automation, and promotional video by 99 Visual Solutions.",
+  inLanguage:    "en",
+  datePublished: DATE_PUBLISHED,
+  dateModified:  DATE_MODIFIED,
+  isPartOf:      { "@id": `${BASE}/#website` },
+  about:         { "@id": `${BASE}/#organization` },
+  publisher:     { "@id": `${BASE}/#organization` },
+  primaryImageOfPage: {
+    "@type":   "ImageObject",
+    url:       `${BASE}/images/services/digital-marketing-og.jpg`,
+    width:     1200,
+    height:    630,
+    caption:   "Digital Marketing & SEO Services by 99 Visual Solutions",
+  },
+  speakable:       { "@type": "SpeakableSpecification", cssSelector: [".dm-hero__h1", ".dm-hero__sub"] },
+  breadcrumb:      { "@id": `${BASE}/services/digital-marketing-seo#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/digital-marketing-seo`] },
+};
+
+// Single @graph — one @context via buildGraph, zero duplicated node definitions.
+const dmGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  dmPageNode,
+  dmBreadcrumbNode,
+  dmServiceNode,
+  dmFaqNode,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
-  { icon: <FaSearch />,         title: "Search Engine Visibility",  description: "We optimize websites with proven SEO strategies to boost rankings, traffic, and conversions." },
-  { icon: <FaBullhorn />,       title: "Brand Awareness",           description: "Our campaigns build strong online visibility, ensuring your brand connects with the right audience." },
-  { icon: <FaChartLine />,      title: "Data-Driven Growth",        description: "We analyze performance metrics to refine strategies, maximizing ROI and measurable outcomes." },
-  { icon: <FaMobileAlt />,      title: "Cross-Platform Reach",      description: "From social media to mobile-first campaigns, we ensure your brand reaches users everywhere." },
-  { icon: <FaEnvelopeOpenText />, title: "Engaging Campaigns",      description: "We craft content, email, and ad campaigns that inspire action and build customer loyalty." },
-  { icon: <FaHandshake />,      title: "End-to-End Support",        description: "From strategy to execution, we provide continuous optimization and marketing support." },
+  { icon: <FaSearch />,           title: "Search Engine Visibility", description: "We optimize websites with proven SEO strategies to boost rankings, traffic, and conversions." },
+  { icon: <FaBullhorn />,         title: "Brand Awareness",          description: "Our campaigns build strong online visibility, ensuring your brand connects with the right audience." },
+  { icon: <FaChartLine />,        title: "Data-Driven Growth",       description: "We analyze performance metrics to refine strategies, maximizing ROI and measurable outcomes." },
+  { icon: <FaMobileAlt />,        title: "Cross-Platform Reach",     description: "From social media to mobile-first campaigns, we ensure your brand reaches users everywhere." },
+  { icon: <FaEnvelopeOpenText />, title: "Engaging Campaigns",       description: "We craft content, email, and ad campaigns that inspire action and build customer loyalty." },
+  { icon: <FaHandshake />,        title: "End-to-End Support",       description: "From strategy to execution, we provide continuous optimization and marketing support." },
 ];
 
 const services = [
-  { id: "seo",              title: "Search Engine Optimization (SEO)",            image: "/images/seo.png",                       imageAlt: "Search Engine Optimization services illustration",          description: "In a competitive digital landscape, visibility is everything. Our SEO services are designed to position your business at the top of search engine results, driving high-quality organic traffic and long-term growth.",                                                                                                                           highlight: "We combine strategic keyword research, technical optimization, and content excellence to ensure your website not only ranks higher but also delivers real value to your audience.",                                                                               bullets: ["Keyword research & on-page optimization", "Technical SEO audits & fixes", "High-quality backlink strategies"],                                                                                                            imageLeft: false },
-  { id: "meta-ads",         title: "Meta Ads & Social Media Marketing",           image: "/images/social-media.png",              imageAlt: "Social media marketing illustration",                        description: "Amplify your brand's reach and engagement with strategic Meta Ads and social media marketing. We create data-driven campaigns across platforms like Facebook and Instagram that not only capture attention but also convert audiences into loyal customers.",                                                                                        highlight: "By combining compelling creatives, precise audience targeting, and continuous optimization, we ensure your brand stands out in crowded digital spaces.",                                                                  bullets: ["Facebook, Instagram, LinkedIn & Twitter marketing", "Paid social ad campaigns", "Analytics & engagement tracking"],                                                                                                        imageLeft: true },
-  { id: "ppc",              title: "Pay-Per-Click (PPC) Advertising",             image: "/images/ppc.png",                       imageAlt: "PPC advertising illustration",                               description: "Drive instant visibility and measurable results with strategic Pay-Per-Click advertising. We create and manage high-performing ad campaigns that place your business in front of the right audience at the right time.",                                                                                                                            highlight: "By combining smart keyword targeting, compelling ad creatives, and continuous optimization, we ensure maximum return on your ad spend.",                                                                                  bullets: ["Keyword research, bid management & campaign strategy", "Social media ad management", "Continuous monitoring, A/B testing & ROI optimization"],                                                                            imageLeft: false },
-  { id: "email-marketing",  title: "Content & Email Marketing",                  image: "/images/email-marketing.png",           imageAlt: "Email marketing illustration",                               description: "Build meaningful connections with your audience through strategic content and personalized email marketing. We create compelling, value-driven content that attracts, engages, and nurtures your audience at every stage of their journey.",                                                                                                         highlight: "From blog posts and website content to targeted email campaigns, our approach focuses on delivering the right message to the right audience at the right time.",                                                         bullets: ["Content strategy, creation & storytelling that resonates", "Email campaign design, automation & audience segmentation", "Performance tracking, personalization & conversion optimization"],                               imageLeft: true },
-  { id: "local-seo",        title: "Local SEO",                                  image: "/images/local-seo.png",                 imageAlt: "Local SEO illustration",                                     description: "Make your business stand out in your local market and attract customers right when they need you. Our Local SEO services are designed to boost your visibility in location-based searches, helping you connect with nearby audiences and drive foot traffic or local inquiries.",                                                                     highlight: "From optimizing your business listings to managing reviews and local keywords, we ensure your brand ranks higher in local search results and maps.",                                                                      bullets: ["Google Business Profile optimization & local listings management", "Location-based keyword targeting & on-page optimization", "Review management, citations & local ranking improvements"],                              imageLeft: false },
-  { id: "technical-seo",    title: "Technical SEO",                              image: "/images/technival-seo.png",             imageAlt: "Technical SEO illustration",                                 description: "A strong SEO strategy starts with a solid technical foundation. Our Technical SEO services focus on optimizing your website's structure, performance, and crawlability to ensure search engines can efficiently access, understand, and rank your content.",                                                                                          highlight: "From fixing indexing issues to improving site speed and implementing structured data, we enhance every technical aspect that impacts your visibility.",                                                                    bullets: ["Website audit, crawlability & indexing optimization", "Core Web Vitals, speed & mobile performance enhancement", "Structured data, schema markup & technical issue resolution"],                                         imageLeft: true },
-  { id: "onpage",           title: "On-Page Optimization",                       image: "/images/onpage-optimization.png",       imageAlt: "On-Page Optimization illustration",                          description: "Maximize your website's visibility and relevance with strategic on-page optimization. We fine-tune every element of your web pages — from content and keywords to meta tags and internal linking — to ensure they align perfectly with search engine algorithms and user intent.",                                                                    highlight: "Our approach enhances both discoverability and user experience, helping your pages rank higher, engage visitors effectively, and drive meaningful conversions.",                                                         bullets: ["Keyword optimization, meta tags & content structuring", "Internal linking, URL optimization & image SEO", "User experience enhancements & search intent alignment"],                                                      imageLeft: false },
-  { id: "offpage",          title: "Off-Page SEO & Link Building",               image: "/images/off-page-link-building.png",    imageAlt: "Off-Page SEO & Link Building illustration",                  description: "Strengthen your website's authority and credibility with powerful off-page SEO and strategic link building. We focus on building high-quality, relevant backlinks from trusted sources to improve your search engine rankings and online reputation.",                                                                                                highlight: "Through ethical (white-hat) practices and outreach strategies, we enhance your domain authority, increase brand visibility, and drive referral traffic.",                                                                bullets: ["High-quality backlink acquisition & outreach campaigns", "Guest posting, citations & brand mentions", "Authority building, referral traffic & ranking improvement"],                                                      imageLeft: true },
-  { id: "content-marketing", title: "Content Marketing",                         image: "/images/content-marketing.png",         imageAlt: "Content Marketing illustration",                             description: "Turn your brand into a trusted voice with strategic, value-driven content marketing. We create and distribute high-quality content that educates, engages, and inspires your audience across every stage of their journey.",                                                                                                                         highlight: "By aligning content with your business goals and audience intent, we help you drive consistent traffic, engagement, and conversions.",                                                                                    bullets: ["Content strategy, planning & audience targeting", "Blog writing, articles & SEO-driven content creation", "Content distribution, engagement & performance optimization"],                                                imageLeft: false },
-  { id: "automation",       title: "Marketing Automation",                       image: "/images/marketing-automation.png",      imageAlt: "Marketing Automation illustration",                          description: "Streamline your marketing efforts and deliver personalized experiences at scale with powerful marketing automation solutions. We help you automate repetitive tasks, nurture leads effectively, and engage your audience with the right message at the right time.",                                                                                  highlight: "By integrating smart tools and data-driven workflows, we enhance efficiency, improve customer journeys, and maximize conversions.",                                                                                       bullets: ["Automated workflows, lead nurturing & customer journeys", "CRM integration, segmentation & personalized campaigns", "Performance tracking, analytics & continuous optimization"],                                        imageLeft: true },
-  { id: "creative",         title: "Creative Banner & Promotional Video",        image: "/images/creative-banner.png",           imageAlt: "Creative Banner & Promotional Video illustration",           description: "Capture attention and make a lasting impression with visually compelling banners and engaging promotional videos. We design high-impact creatives that not only look stunning but also communicate your brand message effectively.",                                                                                                                   highlight: "From eye-catching display ads to dynamic video content, our creative solutions are crafted to boost engagement, enhance brand recall, and drive conversions across digital platforms.",                                   bullets: ["Custom banner designs for ads, websites & social media", "Promotional videos, motion graphics & brand storytelling", "Platform-optimized creatives for maximum engagement & ROI"],                                        imageLeft: false },
-  { id: "mindtrick",        title: "MindTrick.io – Our Dedicated Digital Marketing Hub", image: "/images/mindtrick-marketing.png", imageAlt: "MindTrick.io — dedicated digital marketing hub by 99 Visual Solutions", description: "At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power your digital growth. As our dedicated digital marketing hub, MindTrick.io is focused on delivering result-oriented solutions that help businesses build strong online visibility, generate quality leads, and achieve sustainable success.", highlight: "From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make an impact.", bullets: ["End-to-end digital marketing solutions under one platform", "Data-driven campaigns focused on growth & ROI", "Expert strategies, creative execution & continuous optimization"], imageLeft: true },
+  { id: "seo",               title: "Search Engine Optimization (SEO)",             image: "/images/seo.png",                        imageAlt: "Search Engine Optimization services illustration",           description: "In a competitive digital landscape, visibility is everything. Our SEO services are designed to position your business at the top of search engine results, driving high-quality organic traffic and long-term growth.",                                                                                                    highlight: "We combine strategic keyword research, technical optimization, and content excellence to ensure your website not only ranks higher but also delivers real value to your audience.",                             bullets: ["Keyword research & on-page optimization", "Technical SEO audits & fixes", "High-quality backlink strategies"],                                                                                           imageLeft: false },
+  { id: "meta-ads",          title: "Meta Ads & Social Media Marketing",            image: "/images/social-media.png",               imageAlt: "Social media marketing illustration",                        description: "Amplify your brand's reach and engagement with strategic Meta Ads and social media marketing. We create data-driven campaigns across platforms like Facebook and Instagram that not only capture attention but also convert audiences into loyal customers.",                                                         highlight: "By combining compelling creatives, precise audience targeting, and continuous optimization, we ensure your brand stands out in crowded digital spaces.",                                                   bullets: ["Facebook, Instagram, LinkedIn & Twitter marketing", "Paid social ad campaigns", "Analytics & engagement tracking"],                                                                                        imageLeft: true },
+  { id: "ppc",               title: "Pay-Per-Click (PPC) Advertising",              image: "/images/ppc.png",                        imageAlt: "PPC advertising illustration",                               description: "Drive instant visibility and measurable results with strategic Pay-Per-Click advertising. We create and manage high-performing ad campaigns that place your business in front of the right audience at the right time.",                                                                                                highlight: "By combining smart keyword targeting, compelling ad creatives, and continuous optimization, we ensure maximum return on your ad spend.",                                                                   bullets: ["Keyword research, bid management & campaign strategy", "Social media ad management", "Continuous monitoring, A/B testing & ROI optimization"],                                                            imageLeft: false },
+  { id: "email-marketing",   title: "Content & Email Marketing",                   image: "/images/email-marketing.png",            imageAlt: "Email marketing illustration",                               description: "Build meaningful connections with your audience through strategic content and personalized email marketing. We create compelling, value-driven content that attracts, engages, and nurtures your audience at every stage of their journey.",                                                                           highlight: "From blog posts and website content to targeted email campaigns, our approach focuses on delivering the right message to the right audience at the right time.",                                          bullets: ["Content strategy, creation & storytelling that resonates", "Email campaign design, automation & audience segmentation", "Performance tracking, personalization & conversion optimization"],               imageLeft: true },
+  { id: "local-seo",         title: "Local SEO",                                   image: "/images/local-seo.png",                  imageAlt: "Local SEO illustration",                                     description: "Make your business stand out in your local market and attract customers right when they need you. Our Local SEO services are designed to boost your visibility in location-based searches, helping you connect with nearby audiences and drive foot traffic or local inquiries.",                                      highlight: "From optimizing your business listings to managing reviews and local keywords, we ensure your brand ranks higher in local search results and maps.",                                                       bullets: ["Google Business Profile optimization & local listings management", "Location-based keyword targeting & on-page optimization", "Review management, citations & local ranking improvements"],              imageLeft: false },
+  { id: "technical-seo",     title: "Technical SEO",                               image: "/images/technival-seo.png",              imageAlt: "Technical SEO illustration",                                 description: "A strong SEO strategy starts with a solid technical foundation. Our Technical SEO services focus on optimizing your website's structure, performance, and crawlability to ensure search engines can efficiently access, understand, and rank your content.",                                                            highlight: "From fixing indexing issues to improving site speed and implementing structured data, we enhance every technical aspect that impacts your visibility.",                                                     bullets: ["Website audit, crawlability & indexing optimization", "Core Web Vitals, speed & mobile performance enhancement", "Structured data, schema markup & technical issue resolution"],                         imageLeft: true },
+  { id: "onpage",            title: "On-Page Optimization",                        image: "/images/onpage-optimization.png",        imageAlt: "On-Page Optimization illustration",                          description: "Maximize your website's visibility and relevance with strategic on-page optimization. We fine-tune every element of your web pages — from content and keywords to meta tags and internal linking — to ensure they align perfectly with search engine algorithms and user intent.",                                   highlight: "Our approach enhances both discoverability and user experience, helping your pages rank higher, engage visitors effectively, and drive meaningful conversions.",                                          bullets: ["Keyword optimization, meta tags & content structuring", "Internal linking, URL optimization & image SEO", "User experience enhancements & search intent alignment"],                                      imageLeft: false },
+  { id: "offpage",           title: "Off-Page SEO & Link Building",                image: "/images/off-page-link-building.png",     imageAlt: "Off-Page SEO & Link Building illustration",                  description: "Strengthen your website's authority and credibility with powerful off-page SEO and strategic link building. We focus on building high-quality, relevant backlinks from trusted sources to improve your search engine rankings and online reputation.",                                                                highlight: "Through ethical (white-hat) practices and outreach strategies, we enhance your domain authority, increase brand visibility, and drive referral traffic.",                                                 bullets: ["High-quality backlink acquisition & outreach campaigns", "Guest posting, citations & brand mentions", "Authority building, referral traffic & ranking improvement"],                                      imageLeft: true },
+  { id: "content-marketing", title: "Content Marketing",                           image: "/images/content-marketing.png",          imageAlt: "Content Marketing illustration",                             description: "Turn your brand into a trusted voice with strategic, value-driven content marketing. We create and distribute high-quality content that educates, engages, and inspires your audience across every stage of their journey.",                                                                                          highlight: "By aligning content with your business goals and audience intent, we help you drive consistent traffic, engagement, and conversions.",                                                                    bullets: ["Content strategy, planning & audience targeting", "Blog writing, articles & SEO-driven content creation", "Content distribution, engagement & performance optimization"],                               imageLeft: false },
+  { id: "automation",        title: "Marketing Automation",                        image: "/images/marketing-automation.png",       imageAlt: "Marketing Automation illustration",                          description: "Streamline your marketing efforts and deliver personalized experiences at scale with powerful marketing automation solutions. We help you automate repetitive tasks, nurture leads effectively, and engage your audience with the right message at the right time.",                                                   highlight: "By integrating smart tools and data-driven workflows, we enhance efficiency, improve customer journeys, and maximize conversions.",                                                                        bullets: ["Automated workflows, lead nurturing & customer journeys", "CRM integration, segmentation & personalized campaigns", "Performance tracking, analytics & continuous optimization"],                        imageLeft: true },
+  { id: "creative",          title: "Creative Banner & Promotional Video",         image: "/images/creative-banner.png",            imageAlt: "Creative Banner & Promotional Video illustration",           description: "Capture attention and make a lasting impression with visually compelling banners and engaging promotional videos. We design high-impact creatives that not only look stunning but also communicate your brand message effectively.",                                                                                   highlight: "From eye-catching display ads to dynamic video content, our creative solutions are crafted to boost engagement, enhance brand recall, and drive conversions across digital platforms.",                   bullets: ["Custom banner designs for ads, websites & social media", "Promotional videos, motion graphics & brand storytelling", "Platform-optimized creatives for maximum engagement & ROI"],                        imageLeft: false },
+  { id: "mindtrick",         title: "MindTrick.io – Our Dedicated Digital Marketing Hub", image: "/images/mindtrick-marketing.png", imageAlt: "MindTrick.io — dedicated digital marketing hub by 99 Visual Solutions", description: "At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power your digital growth. As our dedicated digital marketing hub, MindTrick.io is focused on delivering result-oriented solutions that help businesses build strong online visibility, generate quality leads, and achieve sustainable success.", highlight: "From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make an impact.", bullets: ["End-to-end digital marketing solutions under one platform", "Data-driven campaigns focused on growth & ROI", "Expert strategies, creative execution & continuous optimization"], imageLeft: true },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -203,17 +229,9 @@ export default function DigitalMarketing() {
     <>
       <PageLoader />
 
-      {/* FIX: single unified @graph replaces 3 separate script blocks */}
-      <script
-        id="schema-dm-graph"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
-      />
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* FIX: sr-only replaces display:none — keeps breadcrumb crawlable by Googlebot */
         .sr-only {
           position: absolute !important; width: 1px !important; height: 1px !important;
           padding: 0 !important; margin: -1px !important; overflow: hidden !important;
@@ -272,7 +290,6 @@ export default function DigitalMarketing() {
         .dm-svc__num { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 6vw, 5.5rem); font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18); position: absolute; top: -1.5rem; left: 0; pointer-events: none; user-select: none; }
         .dm-svc__body { position: relative; }
         .dm-svc__eyebrow { font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: #f97316; margin-bottom: .9rem; display: block; }
-        /* FIX: renamed dm-svc__h3 → dm-svc__heading; tag changed h2 → h3 for correct hierarchy */
         .dm-svc__heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; color: #fff; margin: 0 0 .6rem; }
         .dm-svc__rule { width: 32px; height: 1px; background: linear-gradient(90deg, #f97316, transparent); margin: 0 0 1.4rem; }
         .dm-svc__p { font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 300; line-height: 1.85; color: rgba(255,255,255,0.45); margin-bottom: .8rem; }
@@ -311,13 +328,20 @@ export default function DigitalMarketing() {
         .dm-cta__btn { display: inline-flex; align-items: center; gap: 10px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #080808; background: linear-gradient(135deg, #fb923c, #f97316); padding: 14px 34px; border-radius: 100px; text-decoration: none; box-shadow: 0 8px 32px rgba(249,115,22,.35); transition: transform .2s ease, box-shadow .2s ease; }
         .dm-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
 
-        /* FIX: prefers-reduced-motion — WCAG 2.1 AA (was missing entirely) */
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
         }
       `}</style>
 
+      {/* Header first — prevents UI displacement */}
       <Header />
+
+      {/* Single JSON-LD script — one @context via buildGraph */}
+      <script
+        id="schema-dm-graph"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(dmGraph) }}
+      />
 
       {/* ══ HERO ══════════════════════════════════════════════ */}
       <section className="dm-hero" aria-labelledby="dm-hero-heading">
@@ -333,12 +357,6 @@ export default function DigitalMarketing() {
         <div className="dm-corner dm-corner--bl" aria-hidden="true" />
         <div className="dm-corner dm-corner--br" aria-hidden="true" />
 
-        {/*
-          FIX: display:none → sr-only
-          display:none hides content from Googlebot.
-          sr-only (1×1px clip) stays in render tree — bots crawl it, users don't see it.
-          JSON-LD @graph handles SERP rich results independently.
-        */}
         <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle: "none", margin: 0, padding: 0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -417,10 +435,6 @@ export default function DigitalMarketing() {
               <div className="dm-svc__body" style={{ order: svc.imageLeft ? 2 : 1 }}>
                 <span className="dm-svc__num" aria-hidden="true">{String(idx + 1).padStart(2, "0")}</span>
                 <span className="dm-svc__eyebrow">Service {String(idx + 1).padStart(2, "0")}</span>
-                {/*
-                  FIX: h2 → h3
-                  Correct hierarchy: h1 hero → h2 section titles (Intro/Benefits/CTA) → h3 individual services
-                */}
                 <h3 className="dm-svc__heading" id={`dm-svc-heading-${svc.id}`}>{svc.title}</h3>
                 <div className="dm-svc__rule" aria-hidden="true" />
                 <p className="dm-svc__p">{svc.description}</p>

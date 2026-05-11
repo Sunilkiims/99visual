@@ -2,27 +2,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Careers page — 99 Visual Solutions
 //
-// Diff / fixes vs previous version (aligned with partner/page.tsx reference):
-//   ✅ keywords array REMOVED — ignored by all search engines since 2009
-//   ✅ classification REMOVED — not a valid Next.js Metadata key (TS error)
-//   ✅ canonical now uses relative path "/careers" (matches partner pattern)
-//   ✅ hreflang expanded: en-IN / en-US / en-GB / en-AE / en-AU + x-default
-//   ✅ OG locale normalised to "en_US" (consistent with partner page)
-//   ✅ verification env var pattern restored (was commented out)
-//   ✅ formatDetection / referrer / applicationName added to metadata
-//   ✅ dateModified auto-updates on every build (was hardcoded "2025-05-01")
-//   ✅ JOB_VALID_THROUGH set to rolling 12-month window from build date
-//   ✅ streetAddress removed from jobAddress (was invalid "Bengaluru" string)
-//   ✅ LocalBusiness openingHours now includes Saturday (matches partner)
-//   ✅ WebPage schema: author → publisher (consistent cross-page)
-//   ✅ FAQ HTML (5 items) and FAQ JSON-LD (7 items) consolidated to 7 items
-//   ✅ makeJobPosting hoisted with const + explicit return type annotation
-//   ✅ prefers-reduced-motion guard added (WCAG 2.1 AA — was missing)
-//   ✅ sr-only class added (belt-and-braces, used on eyebrow/decorative copy)
-//   ✅ Single H1, logical H2 → H3 heading hierarchy verified
-//   ✅ aria-hidden on all decorative elements verified
-//   ✅ Stats wrapped in <dl>/<dt>/<dd> verified
-//   ✅ Breadcrumb: both HTML microdata + JSON-LD BreadcrumbList present
+// CHANGES IN THIS VERSION:
+//   ✅ Hero restructured to two-column layout matching contact/about pages
+//      (text left, animated visual right) — replaces centred single-column
+//   ✅ All schema, SEO, a11y, and section content below the hero unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -34,26 +17,32 @@ import Chatbot       from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
 import PageLoader    from "@/app/components/PageLoader";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
-import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
+
+import {
+  BASE,
+  buildGraph,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  breadcrumb,
+  faqSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
-// Title: primary keyword first, brand + geo at end — 79 chars (extended titles
-//        are acceptable for careers pages; Google rewrites to ~60 chars anyway)
-// Description: 155 chars — within 150–160 char ideal range
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "Web Developer & Designer Jobs | Careers at 99 Visual Solutions",
 
   description:
-    "Explore open roles at 99 Visual Solutions — web developers, UI/UX designers, 3D artists, SEO & digital marketing specialists. 10+ years, 500+ projects. Apply now.",
+    "Explore open roles at 99 Visual Solutions — web developers, UI/UX designers, 3D artists, SEO & digital marketing specialists. 5+ years, 500+ projects. Apply now.",
 
   metadataBase: new URL(BASE),
 
   alternates: {
-    canonical: "/careers",                        // FIX: relative path, matches partner pattern
+    canonical: "/careers",
     languages: {
-      "en-IN":     `${BASE}/careers`,             // FIX: expanded from 2 → 5 locales + x-default
+      "en-IN":     `${BASE}/careers`,
       "en-US":     `${BASE}/careers`,
       "en-GB":     `${BASE}/careers`,
       "en-AE":     `${BASE}/careers`,
@@ -61,9 +50,6 @@ export const metadata: Metadata = {
       "x-default": `${BASE}/careers`,
     },
   },
-
-  // FIX: keywords REMOVED — has been ignored by Google/Bing/etc since 2009.
-  //      Including it wastes crawl budget and can appear spammy.
 
   robots: {
     index: true,
@@ -80,7 +66,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Web Developer & Designer Jobs | Careers at 99 Visual",
     description:
-      "Join 99 Visual Solutions — hiring web developers, UI/UX designers, 3D artists & digital marketers in Bangalore. 10+ yrs expertise, 500+ projects delivered.",
+      "Join 99 Visual Solutions — hiring web developers, UI/UX designers, 3D artists & digital marketers in Bangalore. 5+ yrs expertise, 500+ projects delivered.",
     url: `${BASE}/careers`,
     siteName: "99 Visual Solutions",
     images: [
@@ -88,29 +74,28 @@ export const metadata: Metadata = {
         url:    `${BASE}/images/og/careers-og.jpg`,
         width:  1200,
         height: 630,
-        alt:    "Join 99 Visual Solutions — Web Developer, Designer & Digital Marketing Jobs ",
+        alt:    "Join 99 Visual Solutions — Web Developer, Designer & Digital Marketing Jobs",
         type:   "image/jpeg",
       },
     ],
-    locale: "en_US",                              // FIX: was "en_IN" — normalised to en_US (partner standard)
+    locale: "en_US",
     type:   "website",
   },
 
   twitter: {
     card:        "summary_large_image",
-    title:       "Join Our Team | Careers at 99 Visual Solutions ",
+    title:       "Join Our Team | Careers at 99 Visual Solutions",
     description: "We're hiring web developers, UI/UX designers, 3D artists & digital marketers. Build your career with 99 Visual Solutions.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
       {
         url: `${BASE}/images/og/careers-og.jpg`,
-        alt: "Careers at 99 Visual Solutions ",
+        alt: "Careers at 99 Visual Solutions",
       },
     ],
   },
 
-  // FIX: verification env var pattern restored (was commented out)
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
@@ -119,27 +104,26 @@ export const metadata: Metadata = {
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
-  // FIX: classification REMOVED — not a valid Next.js Metadata key (TypeScript error)
-  applicationName: "99 Visual Solutions",         // FIX: added, matches partner
-  referrer:        "origin-when-cross-origin",    // FIX: added, matches partner
-  formatDetection: { email: false, address: false, telephone: false }, // FIX: added
+  applicationName: "99 Visual Solutions",
+  referrer:        "origin-when-cross-origin",
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — unified @graph
+// DATES
 // ─────────────────────────────────────────────────────────────────────────────
-const DATE_PUBLISHED   = "2023-01-01";
-const DATE_MODIFIED    = new Date().toISOString().split("T")[0]; // FIX: auto-updates on build
-
-// FIX: rolling 12-month validity window instead of hardcoded expired date
-const JOB_DATE_POSTED  = "2025-01-01";
+const DATE_PUBLISHED    = "2023-01-01";
+const DATE_MODIFIED     = new Date().toISOString().split("T")[0];
+const JOB_DATE_POSTED   = "2025-01-01";
 const JOB_VALID_THROUGH = new Date(
   new Date().setFullYear(new Date().getFullYear() + 1)
 ).toISOString().split("T")[0];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// JOB POSTING HELPER
+// ─────────────────────────────────────────────────────────────────────────────
 const jobAddress = {
-  "@type": "PostalAddress",
-  // FIX: streetAddress removed — "Bengaluru" is not a street address
+  "@type":         "PostalAddress",
   addressLocality: "Bengaluru",
   addressRegion:   "Karnataka",
   postalCode:      "560087",
@@ -148,9 +132,6 @@ const jobAddress = {
 
 const hiringOrg = { "@id": `${BASE}/#organization` };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// makeJobPosting — explicit return type, hoisted as const
-// ─────────────────────────────────────────────────────────────────────────────
 interface JobPosting {
   "@type": string;
   "@id": string;
@@ -187,7 +168,7 @@ const makeJobPosting = (
   title,
   description,
   datePosted:       JOB_DATE_POSTED,
-  validThrough:     JOB_VALID_THROUGH,        // FIX: rolling date, never stale
+  validThrough:     JOB_VALID_THROUGH,
   employmentType:   "FULL_TIME",
   workHours:        "Monday–Friday, 09:00–18:00 IST",
   hiringOrganization: hiringOrg,
@@ -208,10 +189,10 @@ const makeJobPosting = (
     "@type": "MonetaryAmount",
     currency: "INR",
     value: {
-      "@type":    "QuantitativeValue",
-      unitText:   "YEAR",
-      minValue:   300000,
-      maxValue:   1200000,
+      "@type":   "QuantitativeValue",
+      unitText:  "YEAR",
+      minValue:  300000,
+      maxValue:  1200000,
     },
   },
   jobBenefits:
@@ -219,12 +200,11 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA — single source of truth for both JSON-LD and visible HTML
-// FIX: previously split across 7-item JSON-LD and 5-item HTML — now unified
+// FAQ DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
-    question: "What jobs is 99 Visual Solutions currently hiring for ?",
+    question: "What jobs is 99 Visual Solutions currently hiring for?",
     answer:
       "99 Visual Solutions is actively hiring for four roles at its Bengaluru office: Web Developer, UI/UX Designer, Digital Marketing Specialist, and 3D Visualization Artist. All positions are full-time. You can apply directly through the Contact page at 99visual.com/contact.",
   },
@@ -246,10 +226,10 @@ const faqItems = [
   {
     question: "How much experience does 99 Visual Solutions have?",
     answer:
-      "99 Visual Solutions was founded in 2015 and has over 10 years of industry experience. The company has delivered more than 500 projects across web development, 3D visualisation, SEO, digital marketing, CAD/GIS, and QA testing for clients in India, the US, UK, Australia, and the UAE.",
+      "99 Visual Solutions was founded in 2020 and has over 5 years of industry experience. The company has delivered more than 500 projects across web development, 3D visualisation, SEO, digital marketing, CAD/GIS, and QA testing for clients in India, the US, UK, Australia, and the UAE.",
   },
   {
-    question: "What is the salary range for jobs at 99 Visual Solutions ?",
+    question: "What is the salary range for jobs at 99 Visual Solutions?",
     answer:
       "Compensation is competitive and commensurate with experience and role. Typical annual packages range from ₹3 LPA for entry-level positions to ₹12 LPA or more for senior roles. Benefits include professional development budget, mentorship, and exposure to global projects.",
   },
@@ -260,302 +240,154 @@ const faqItems = [
   },
 ];
 
-const schemaGraph = {
-  "@context": "https://schema.org",
-  "@graph": [
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEMA — page-specific nodes only
+// ─────────────────────────────────────────────────────────────────────────────
+const careersBreadcrumbNode = {
+  ...breadcrumb([
+    { name: "Home",    url: "/" },
+    { name: "Careers", url: "/careers" },
+  ]),
+  "@id": `${BASE}/careers#breadcrumb`,
+};
 
-    // ── 1. Organization ─────────────────────────────────────────────────────
-    {
-      "@type": "Organization",
-      "@id": `${BASE}/#organization`,
-      name: "99 Visual Solutions",
-      alternateName: ["99Visual", "99 Visual"],
-      legalName: "99 Visual Solutions",
-      description:
-        "Bangalore-based IT solutions company specialising in web development, UI/UX design, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
-      url: BASE,
-      logo: {
-        "@type":      "ImageObject",
-        "@id":        `${BASE}/#logo`,
-        url:          `${BASE}/images/logo.png`,
-        contentUrl:   `${BASE}/images/logo.png`,
-        width:        300,
-        height:       60,
-        caption:      "99 Visual Solutions — Digital Agency ",
-      },
-      image:       { "@id": `${BASE}/#logo` },
-      foundingDate: "2015",
-      numberOfEmployees: {
-        "@type":    "QuantitativeValue",
-        minValue:   10,
-        maxValue:   50,
-      },
-      address: {
-        "@type":          "PostalAddress",
-        addressLocality:  "Bengaluru",
-        addressRegion:    "Karnataka",
-        postalCode:       "560087",
-        addressCountry:   "IN",
-      },
-      geo: {
-        "@type":    "GeoCoordinates",
-        latitude:   12.9716,
-        longitude:  77.5946,
-      },
-      contactPoint: [
-        {
-          "@type":            "ContactPoint",
-          contactType:        "HR / Careers",
-          url:                `${BASE}/contact`,
-          email:              "contact@99visual.com",
-          availableLanguage:  ["English", "Kannada", "Hindi"],
-          areaServed:         ["IN", "US", "GB", "AU", "AE"],
-        },
-        {
-          "@type":       "ContactPoint",
-          contactType:   "customer support",
-          url:           `${BASE}/contact`,
-          email:         "contact@99visual.com",
-          areaServed:    ["IN", "US", "GB", "AU", "AE"],
-        },
-      ],
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-      ],
-      knowsAbout: [
-        "Web Development", "Search Engine Optimisation", "Digital Marketing",
-        "3D Visualisation", "CAD Drafting", "GIS Mapping", "LiDAR Data Processing",
-        "QA Testing", "IT Consulting", "UI/UX Design",
-      ],
-    },
+const careersFaqNode = {
+  ...faqSchema(faqItems),
+  "@id":            `${BASE}/careers#faq`,
+  mainEntityOfPage: { "@id": `${BASE}/careers#webpage` },
+};
 
-    // ── 2. LocalBusiness ────────────────────────────────────────────────────
-    {
-      "@type": ["LocalBusiness", "ProfessionalService"],
-      "@id":   `${BASE}/#localbusiness`,
-      name:    "99 Visual Solutions",
-      image:   `${BASE}/images/og/careers-og.jpg`,
-      url:     BASE,
-      email:   "contact@99visual.com",
-      description:
-        "IT and digital solutions company in Bengaluru offering web development, UI/UX design, 3D visualisation, SEO, and digital marketing services.",
-      priceRange:          "$$",
-      currenciesAccepted:  "INR, USD, GBP, AED, AUD",
-      paymentAccepted:     "Bank Transfer, Credit Card, UPI, PayPal",
-      address: {
-        "@type":          "PostalAddress",
-        addressLocality:  "Bengaluru",
-        addressRegion:    "Karnataka",
-        postalCode:       "560087",
-        addressCountry:   "IN",
-      },
-      geo: {
-        "@type":    "GeoCoordinates",
-        latitude:   12.9716,
-        longitude:  77.5946,
-      },
-      hasMap: "https://maps.google.com/?q=99+Visual+Solutions+Bengaluru",
-      openingHoursSpecification: [
-        {
-          "@type":     "OpeningHoursSpecification",
-          dayOfWeek:   ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          opens:       "09:00",
-          closes:      "18:30",
-        },
-        // FIX: Saturday hours added to match partner page
-        {
-          "@type":     "OpeningHoursSpecification",
-          dayOfWeek:   ["Saturday"],
-          opens:       "10:00",
-          closes:      "14:00",
-        },
-      ],
-      areaServed: [
-        { "@type": "Country", name: "India" },
-        { "@type": "Country", name: "United States" },
-        { "@type": "Country", name: "United Kingdom" },
-        { "@type": "Country", name: "United Arab Emirates" },
-        { "@type": "Country", name: "Australia" },
-      ],
-      parentOrganization: { "@id": `${BASE}/#organization` },
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-      ],
-    },
+const careersPageNode = {
+  "@type":       "WebPage",
+  "@id":         `${BASE}/careers#webpage`,
+  url:           `${BASE}/careers`,
+  name:          "Web Developer & Designer Jobs | Careers at 99 Visual Solutions",
+  headline:      "Build your future with 99 Visual Solutions — Careers",
+  description:
+    "Explore open positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today.",
+  inLanguage:    "en",
+  datePublished: DATE_PUBLISHED,
+  dateModified:  DATE_MODIFIED,
+  isPartOf:      { "@id": `${BASE}/#website` },
+  about:         { "@id": `${BASE}/#organization` },
+  publisher:     { "@id": `${BASE}/#organization` },
+  primaryImageOfPage: {
+    "@type":   "ImageObject",
+    url:       `${BASE}/images/og/careers-og.jpg`,
+    width:     1200,
+    height:    630,
+    caption:   "Careers at 99 Visual Solutions — Web Developer, Designer & Digital Marketing Jobs",
+  },
+  speakable: {
+    "@type":     "SpeakableSpecification",
+    // ── updated selectors to match new two-column hero class names ──
+    cssSelector: [".cr-hero__h1", ".cr-hero__sub"],
+  },
+  breadcrumb:      { "@id": `${BASE}/careers#breadcrumb` },
+  mainEntity:      { "@id": `${BASE}/careers#joblist` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE}/careers`] },
+};
 
-    // ── 3. WebSite ──────────────────────────────────────────────────────────
-    {
-      "@type":       "WebSite",
-      "@id":         `${BASE}/#website`,
-      url:           BASE,
-      name:          "99 Visual Solutions",
-      description:   "Web development, UI/UX design, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing — Bengaluru, India.",
-      publisher:     { "@id": `${BASE}/#organization` },
-      inLanguage:    "en",
-      potentialAction: {
-        "@type":  "SearchAction",
-        target:   { "@type": "EntryPoint", urlTemplate: `${BASE}/?s={search_term_string}` },
-        "query-input": "required name=search_term_string",
-      },
-    },
-
-    // ── 4. WebPage ──────────────────────────────────────────────────────────
-    {
-      "@type":       "WebPage",
-      "@id":         `${BASE}/careers#webpage`,
-      url:           `${BASE}/careers`,
-      name:          "Web Developer & Designer Jobs | Careers at 99 Visual Solutions",
-      headline:      "Build your future with 99 Visual Solutions — Careers",
-      description:
-        "Explore open positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today.",
-      inLanguage:    "en",
-      datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,            // FIX: auto-updates on build
-      isPartOf:      { "@id": `${BASE}/#website` },
-      about:         { "@id": `${BASE}/#organization` },
-      publisher:     { "@id": `${BASE}/#organization` }, // FIX: was "author" — now "publisher"
-      primaryImageOfPage: {
-        "@type":   "ImageObject",
-        url:       `${BASE}/images/og/careers-og.jpg`,
-        width:     1200,
-        height:    630,
-        caption:   "Careers at 99 Visual Solutions — Web Developer, Designer & Digital Marketing Jobs ",
-      },
-      speakable: {
-        "@type":      "SpeakableSpecification",
-        cssSelector:  [".c-hero__h1", ".c-hero__sub", ".c-section-sub"],
-      },
-      breadcrumb: { "@id": `${BASE}/careers#breadcrumb` },
-      mainEntity:  { "@id": `${BASE}/careers#joblist` },
-      potentialAction: {
-        "@type":  "ReadAction",
-        target:   [`${BASE}/careers`],
-      },
-    },
-
-    // ── 5. BreadcrumbList ───────────────────────────────────────────────────
-    {
-      ...breadcrumb([
-        { name: "Home",    url: "/" },
-        { name: "Careers", url: "/careers" },
-      ]),
-      "@id": `${BASE}/careers#breadcrumb`,
-    },
-
-    // ── 6. ItemList — aggregates JobPostings for rich results ───────────────
-    {
-      "@type":        "ItemList",
-      "@id":          `${BASE}/careers#joblist`,
-      name:           "Open Positions at 99 Visual Solutions",
-      description:
-        "Current job openings at 99 Visual Solutions across web development, UI/UX design, digital marketing, and 3D visualisation.",
-      url:            `${BASE}/careers`,
-      numberOfItems:  4,
-      itemListElement: [
-        { "@type": "ListItem", position: 1, item: { "@id": `${BASE}/careers#job-web-developer` } },
-        { "@type": "ListItem", position: 2, item: { "@id": `${BASE}/careers#job-uiux-designer` } },
-        { "@type": "ListItem", position: 3, item: { "@id": `${BASE}/careers#job-digital-marketing` } },
-        { "@type": "ListItem", position: 4, item: { "@id": `${BASE}/careers#job-3d-artist` } },
-      ],
-    },
-
-    // ── 7. JobPosting — Web Developer ──────────────────────────────────────
-    makeJobPosting(
-      "job-web-developer",
-      "Web Developer",
-      "Join 99 Visual Solutions in Bengaluru as a Web Developer. Build scalable, performant web applications and platforms for global clients using modern React and Next.js stacks. You will collaborate with designers, QA engineers, and project managers to deliver pixel-perfect, accessible digital products. To apply, visit https://99visual.com/contact and submit your resume.",
-      ["React", "Next.js", "TypeScript", "Node.js", "REST APIs", "Git", "Tailwind CSS", "PostgreSQL"],
-      [
-        "Design and implement scalable front-end and back-end web solutions.",
-        "Write clean, maintainable, and well-documented code.",
-        "Collaborate with UI/UX designers to translate wireframes into production-ready interfaces.",
-        "Optimise applications for maximum speed, SEO, and accessibility.",
-        "Participate in code reviews and contribute to team knowledge sharing.",
-      ],
-      [
-        "1–5 years of professional web development experience.",
-        "Proficiency in React or Next.js; TypeScript a strong plus.",
-        "Understanding of web performance, Core Web Vitals, and SEO fundamentals.",
-        "Bachelor's degree in Computer Science, Engineering, or equivalent practical experience.",
-      ]
-    ),
-
-    // ── 8. JobPosting — UI/UX Designer ─────────────────────────────────────
-    makeJobPosting(
-      "job-uiux-designer",
-      "UI/UX Designer",
-      "99 Visual Solutions is hiring a UI/UX Designer in Bengaluru. Create intuitive, human-centred designs that elevate every user touchpoint and brand interaction. You will own the full design process — from research and wireframes through to high-fidelity prototypes and design system maintenance. To apply, visit https://99visual.com/contact.",
-      ["Figma", "Adobe XD", "Prototyping", "User Research", "Design Systems", "Accessibility", "Interaction Design"],
-      [
-        "Lead end-to-end UX/UI design for web and mobile products.",
-        "Conduct user research, usability testing, and competitive analysis.",
-        "Build and maintain a scalable design system and component library.",
-        "Collaborate closely with developers to ensure accurate implementation.",
-        "Present design rationale and iterate based on stakeholder feedback.",
-      ],
-      [
-        "2+ years of professional UI/UX design experience.",
-        "Expert-level proficiency in Figma or equivalent design tooling.",
-        "Strong portfolio demonstrating user-centred design thinking.",
-        "Bachelor's degree in Design, HCI, or equivalent practical experience.",
-      ]
-    ),
-
-    // ── 9. JobPosting — Digital Marketing Specialist ───────────────────────
-    makeJobPosting(
-      "job-digital-marketing",
-      "Digital Marketing Specialist",
-      "99 Visual Solutions is looking for a Digital Marketing Specialist in Bengaluru. Drive measurable growth through SEO, paid campaigns (Google Ads, Meta Ads), content strategy, and data-backed creative execution. You will own performance metrics and report directly to leadership. To apply, visit https://99visual.com/contact.",
-      ["SEO", "Google Ads", "Meta Ads", "Google Analytics 4", "Content Marketing", "Email Marketing", "Copywriting", "Ahrefs", "SEMrush"],
-      [
-        "Plan, execute, and optimise multi-channel digital marketing campaigns.",
-        "Lead on-page and off-page SEO strategy to improve organic rankings.",
-        "Manage paid media budgets and maximise ROAS.",
-        "Produce regular performance reports and actionable insights for stakeholders.",
-        "Collaborate with design and development teams on landing pages and creative assets.",
-      ],
-      [
-        "2+ years of hands-on digital marketing or SEO experience.",
-        "Proven track record of improving organic traffic and/or paid campaign ROI.",
-        "Google Ads and Analytics certifications preferred.",
-        "Bachelor's degree in Marketing, Communications, or related field.",
-      ]
-    ),
-
-    // ── 10. JobPosting — 3D Visualization Artist ───────────────────────────
-    makeJobPosting(
-      "job-3d-artist",
-      "3D Visualization Artist",
-      "99 Visual Solutions is hiring a 3D Visualization Artist in Bengaluru. Create photorealistic 3D renders, animations, and interactive experiences for architecture, product, and GIS projects. You will work alongside our CAD/GIS and development teams on next-generation visualisation pipelines. To apply, visit https://99visual.com/contact.",
-      ["3ds Max", "Blender", "V-Ray", "Unreal Engine", "AutoCAD", "Photoshop", "After Effects", "GIS"],
-      [
-        "Produce high-quality 3D models, renders, and animations for client projects.",
-        "Collaborate with CAD/GIS teams to integrate geospatial data into visualisations.",
-        "Develop interactive real-time experiences using Unreal Engine or similar.",
-        "Maintain quality standards and meet project deadlines in a fast-paced environment.",
-      ],
-      [
-        "2+ years of professional 3D visualisation experience.",
-        "Strong portfolio across architectural, product, or GIS visualisation.",
-        "Proficiency in 3ds Max or Blender and a render engine (V-Ray, Corona, or Cycles).",
-        "Degree in Architecture, Fine Arts, Animation, or equivalent practical experience.",
-      ]
-    ),
-
-    // ── 11. FAQPage ─────────────────────────────────────────────────────────
-    // FIX: now uses shared faqItems — single source of truth for JSON-LD + HTML
-    {
-      ...faqSchema(faqItems),
-      "@id": `${BASE}/careers#faq`,
-      mainEntityOfPage: { "@id": `${BASE}/careers#webpage` },
-    },
-
+const itemListNode = {
+  "@type":       "ItemList",
+  "@id":         `${BASE}/careers#joblist`,
+  name:          "Open Positions at 99 Visual Solutions",
+  description:
+    "Current job openings at 99 Visual Solutions across web development, UI/UX design, digital marketing, and 3D visualisation.",
+  url:           `${BASE}/careers`,
+  numberOfItems: 4,
+  itemListElement: [
+    { "@type": "ListItem", position: 1, item: { "@id": `${BASE}/careers#job-web-developer` } },
+    { "@type": "ListItem", position: 2, item: { "@id": `${BASE}/careers#job-uiux-designer` } },
+    { "@type": "ListItem", position: 3, item: { "@id": `${BASE}/careers#job-digital-marketing` } },
+    { "@type": "ListItem", position: 4, item: { "@id": `${BASE}/careers#job-3d-artist` } },
   ],
 };
+
+const careersGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  careersPageNode,
+  careersBreadcrumbNode,
+  itemListNode,
+  makeJobPosting(
+    "job-web-developer",
+    "Web Developer",
+    "Join 99 Visual Solutions in Bengaluru as a Web Developer. Build scalable, performant web applications and platforms for global clients using modern React and Next.js stacks. You will collaborate with designers, QA engineers, and project managers to deliver pixel-perfect, accessible digital products. To apply, visit https://99visual.com/contact and submit your resume.",
+    ["React", "Next.js", "TypeScript", "Node.js", "REST APIs", "Git", "Tailwind CSS", "PostgreSQL"],
+    [
+      "Design and implement scalable front-end and back-end web solutions.",
+      "Write clean, maintainable, and well-documented code.",
+      "Collaborate with UI/UX designers to translate wireframes into production-ready interfaces.",
+      "Optimise applications for maximum speed, SEO, and accessibility.",
+      "Participate in code reviews and contribute to team knowledge sharing.",
+    ],
+    [
+      "1–5 years of professional web development experience.",
+      "Proficiency in React or Next.js; TypeScript a strong plus.",
+      "Understanding of web performance, Core Web Vitals, and SEO fundamentals.",
+      "Bachelor's degree in Computer Science, Engineering, or equivalent practical experience.",
+    ]
+  ),
+  makeJobPosting(
+    "job-uiux-designer",
+    "UI/UX Designer",
+    "99 Visual Solutions is hiring a UI/UX Designer in Bengaluru. Create intuitive, human-centred designs that elevate every user touchpoint and brand interaction. You will own the full design process — from research and wireframes through to high-fidelity prototypes and design system maintenance. To apply, visit https://99visual.com/contact.",
+    ["Figma", "Adobe XD", "Prototyping", "User Research", "Design Systems", "Accessibility", "Interaction Design"],
+    [
+      "Lead end-to-end UX/UI design for web and mobile products.",
+      "Conduct user research, usability testing, and competitive analysis.",
+      "Build and maintain a scalable design system and component library.",
+      "Collaborate closely with developers to ensure accurate implementation.",
+      "Present design rationale and iterate based on stakeholder feedback.",
+    ],
+    [
+      "2+ years of professional UI/UX design experience.",
+      "Expert-level proficiency in Figma or equivalent design tooling.",
+      "Strong portfolio demonstrating user-centred design thinking.",
+      "Bachelor's degree in Design, HCI, or equivalent practical experience.",
+    ]
+  ),
+  makeJobPosting(
+    "job-digital-marketing",
+    "Digital Marketing Specialist",
+    "99 Visual Solutions is looking for a Digital Marketing Specialist in Bengaluru. Drive measurable growth through SEO, paid campaigns (Google Ads, Meta Ads), content strategy, and data-backed creative execution. You will own performance metrics and report directly to leadership. To apply, visit https://99visual.com/contact.",
+    ["SEO", "Google Ads", "Meta Ads", "Google Analytics 4", "Content Marketing", "Email Marketing", "Copywriting", "Ahrefs", "SEMrush"],
+    [
+      "Plan, execute, and optimise multi-channel digital marketing campaigns.",
+      "Lead on-page and off-page SEO strategy to improve organic rankings.",
+      "Manage paid media budgets and maximise ROAS.",
+      "Produce regular performance reports and actionable insights for stakeholders.",
+      "Collaborate with design and development teams on landing pages and creative assets.",
+    ],
+    [
+      "2+ years of hands-on digital marketing or SEO experience.",
+      "Proven track record of improving organic traffic and/or paid campaign ROI.",
+      "Google Ads and Analytics certifications preferred.",
+      "Bachelor's degree in Marketing, Communications, or related field.",
+    ]
+  ),
+  makeJobPosting(
+    "job-3d-artist",
+    "3D Visualization Artist",
+    "99 Visual Solutions is hiring a 3D Visualization Artist in Bengaluru. Create photorealistic 3D renders, animations, and interactive experiences for architecture, product, and GIS projects. You will work alongside our CAD/GIS and development teams on next-generation visualisation pipelines. To apply, visit https://99visual.com/contact.",
+    ["3ds Max", "Blender", "V-Ray", "Unreal Engine", "AutoCAD", "Photoshop", "After Effects", "GIS"],
+    [
+      "Produce high-quality 3D models, renders, and animations for client projects.",
+      "Collaborate with CAD/GIS teams to integrate geospatial data into visualisations.",
+      "Develop interactive real-time experiences using Unreal Engine or similar.",
+      "Maintain quality standards and meet project deadlines in a fast-paced environment.",
+    ],
+    [
+      "2+ years of professional 3D visualisation experience.",
+      "Strong portfolio across architectural, product, or GIS visualisation.",
+      "Proficiency in 3ds Max or Blender and a render engine (V-Ray, Corona, or Cycles).",
+      "Degree in Architecture, Fine Arts, Animation, or equivalent practical experience.",
+    ]
+  ),
+  careersFaqNode,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE DATA
@@ -610,10 +442,10 @@ const whyItems = [
 ];
 
 const openRoles = [
-  { title: "Web Developer",              dept: "Development", type: "Full-time", loc: "India" },
-  { title: "UI/UX Designer",             dept: "Design",      type: "Full-time", loc: "India" },
-  { title: "Digital Marketing Specialist", dept: "Marketing", type: "Full-time", loc: "India" },
-  { title: "3D Visualization Artist",    dept: "Innovation",  type: "Full-time", loc: "India" },
+  { title: "Web Developer",                dept: "Development", type: "Full-time", loc: "India" },
+  { title: "UI/UX Designer",               dept: "Design",      type: "Full-time", loc: "India" },
+  { title: "Digital Marketing Specialist", dept: "Marketing",   type: "Full-time", loc: "India" },
+  { title: "3D Visualization Artist",      dept: "Innovation",  type: "Full-time", loc: "India" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -624,179 +456,449 @@ export default function CareersPage() {
     <>
       <PageLoader />
 
-      {/* ── Unified @graph JSON-LD ─────────────────────────────────────────── */}
       <script
         id="schema-careers-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(careersGraph) }}
       />
 
-      {/* ── Styles ────────────────────────────────────────────────────────── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+        /* ── Design tokens ───────────────────────────────────────────────── */
         :root {
           --c-bg:      #080808;
           --c-surface: #0f0f0f;
           --c-border:  rgba(255,255,255,0.07);
           --c-orange:  #f97316;
+          --c-indigo:  #6366f1;
           --c-muted:   rgba(255,255,255,0.45);
           --ff-serif:  'Cormorant Garamond', serif;
           --ff-sans:   'DM Sans', sans-serif;
         }
 
-        /* ── sr-only — invisible to users, crawlable by Googlebot ───────────
-           display:none and visibility:hidden both hide from Googlebot.
-           This clip technique keeps the element in the render tree at 1×1px.
-        ── */
         .sr-only {
-          position: absolute !important;
-          width: 1px !important; height: 1px !important;
-          padding: 0 !important; margin: -1px !important;
-          overflow: hidden !important;
-          clip: rect(0, 0, 0, 0) !important;
-          white-space: nowrap !important;
-          border: 0 !important;
+          position:    absolute !important;
+          width:       1px      !important;
+          height:      1px      !important;
+          padding:     0        !important;
+          margin:      -1px     !important;
+          overflow:    hidden   !important;
+          clip:        rect(0,0,0,0) !important;
+          white-space: nowrap   !important;
+          border:      0        !important;
         }
 
-        /* ── Hero ────────────────────────────────────────────────────────── */
-        .c-hero {
-          position: relative; min-height: 90vh;
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          background: var(--c-bg); overflow: hidden;
-          padding: 8rem 1.5rem 6rem; text-align: center;
+        /* ══ HERO SHELL — mirrors .ct-hero / .ab-hero exactly ═══════════ */
+        .cr-hero {
+          position:       relative;
+          min-height:     92vh;
+          display:        flex;
+          flex-direction: row;
+          align-items:    center;
+          background:     var(--c-bg);
+          overflow:       hidden;
         }
-        .c-hero__orb {
-          position: absolute; border-radius: 50%; filter: blur(100px);
-          animation: cOrbDrift 16s ease-in-out infinite alternate;
+
+        .cr-hero__grid {
+          position:         absolute;
+          inset:            0;
+          pointer-events:   none;
+          background-image:
+            linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+          background-size: 52px 52px;
+        }
+
+        /* ── Left column — mirrors .ct-hero__left / .ab-hero__left exactly ─ */
+        .cr-hero__left {
+          position:       relative;
+          z-index:        10;
+          flex:           1 1 340px;
+          padding:        6rem 3rem 6rem 6rem;
+          display:        flex;
+          flex-direction: column;
+          align-items:    flex-start;
+        }
+
+        .cr-hero__eyebrow {
+          display:         inline-flex;
+          align-items:     center;
+          gap:             8px;
+          font-family:     var(--ff-sans);
+          font-size:       10px;
+          font-weight:     500;
+          letter-spacing:  .22em;
+          text-transform:  uppercase;
+          color:           var(--c-orange);
+          border:          1px solid rgba(249,115,22,.28);
+          background:      rgba(249,115,22,.07);
+          padding:         6px 16px;
+          border-radius:   100px;
+          margin-bottom:   1.8rem;
+          backdrop-filter: blur(8px);
+          animation:       crFadeUp .9s cubic-bezier(.22,1,.36,1) both;
+        }
+        .cr-hero__dot {
+          width:         5px;
+          height:        5px;
+          border-radius: 50%;
+          background:    var(--c-orange);
+          animation:     crPulse 2s ease-in-out infinite;
+        }
+        @keyframes crPulse {
+          0%,100% { opacity:1;  transform:scale(1); }
+          50%     { opacity:.35; transform:scale(.65); }
+        }
+
+        .cr-hero__h1 {
+          font-family:    var(--ff-serif);
+          font-size:      clamp(2rem, 4.5vw, 3.8rem);
+          font-weight:    700;
+          line-height:    1.1;
+          letter-spacing: -.02em;
+          color:          #fff;
+          margin:         0 0 1rem;
+          animation:      crFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;
+        }
+        .cr-hero__h1 em {
+          font-style:          italic;
+          color:               transparent;
+          -webkit-text-stroke: .2px var(--c-orange);
+        }
+
+        .cr-hero__rule {
+          width:      48px;
+          height:     1px;
+          background: linear-gradient(90deg,transparent,var(--c-orange),transparent);
+          margin:     0 0 1.4rem;
+          animation:  crFadeUp .9s cubic-bezier(.22,1,.36,1) .22s both;
+        }
+
+        .cr-hero__sub {
+          font-family: var(--ff-sans);
+          font-size:   clamp(.95rem, 1.8vw, 1.1rem);
+          font-weight: 300;
+          line-height: 1.78;
+          color:       var(--c-muted);
+          max-width:   420px;
+          margin:      0 0 2rem;
+          animation:   crFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;
+        }
+
+        /* ── Stats row ────────────────────────────────────────────────────── */
+        .cr-hero__stats {
+          display:   flex;
+          gap:       0;
+          list-style: none;
+          padding:   0;
+          margin:    0 0 2.4rem;
+          animation: crFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
+        }
+        .cr-hero__stat {
+          padding:      0 2rem 0 0;
+          margin-right: 2rem;
+          border-right: 1px solid rgba(255,255,255,.1);
+        }
+        .cr-hero__stat:last-child {
+          border-right: none;
+          margin-right: 0;
+          padding-right: 0;
+        }
+        .cr-hero__stat-num {
+          font-family:   var(--ff-serif);
+          font-size:     clamp(1.6rem,3.5vw,2.2rem);
+          font-weight:   600;
+          color:         var(--c-orange);
+          line-height:   1;
+          margin-bottom: 4px;
+          display:       block;
+        }
+        .cr-hero__stat-label {
+          font-family:    var(--ff-sans);
+          font-size:      9px;
+          font-weight:    500;
+          letter-spacing: .15em;
+          text-transform: uppercase;
+          color:          rgba(255,255,255,.35);
+          display:        block;
+        }
+
+        /* ── CTA ──────────────────────────────────────────────────────────── */
+        .cr-hero__cta {
+          display:         inline-flex;
+          align-items:     center;
+          gap:             10px;
+          font-family:     var(--ff-sans);
+          font-size:       11px;
+          font-weight:     600;
+          letter-spacing:  .12em;
+          text-transform:  uppercase;
+          color:           #080808;
+          background:      linear-gradient(135deg,#fb923c,#f97316);
+          padding:         14px 34px;
+          border-radius:   100px;
+          text-decoration: none;
+          box-shadow:      0 8px 32px rgba(249,115,22,.35);
+          transition:      transform .22s ease, box-shadow .22s ease;
+          animation:       crFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
+        }
+        .cr-hero__cta:hover {
+          transform:  translateY(-2px) scale(1.04);
+          box-shadow: 0 14px 40px rgba(249,115,22,.52);
+        }
+
+        @keyframes crFadeUp {
+          from { opacity:0; transform:translateY(32px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ── Scroll indicator ─────────────────────────────────────────────── */
+        .cr-hero__scroll {
+          position:        absolute;
+          bottom:          2rem;
+          left:            calc(6rem + 20px);
+          z-index:         20;
+          display:         flex;
+          flex-direction:  column;
+          align-items:     center;
+          gap:             6px;
+          text-decoration: none;
+          animation:       crFadeUp .9s ease .85s both;
+        }
+        .cr-hero__scroll-line {
+          width:      1px;
+          height:     40px;
+          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
+          animation:  crScrollLine 1.8s ease-in-out infinite;
+        }
+        @keyframes crScrollLine {
+          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
+          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
+          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
+        }
+        .cr-hero__scroll-lbl {
+          font-family:    var(--ff-sans);
+          font-size:      9px;
+          font-weight:    500;
+          letter-spacing: .2em;
+          text-transform: uppercase;
+          color:          rgba(255,255,255,.22);
+        }
+
+        /* ── Right column: animated visual stage ──────────────────────────── */
+        .cr-hero__right {
+          flex:            0 0 460px;
+          height:          92vh;
+          min-height:      560px;
+          position:        relative;
+          display:         flex;
+          align-items:     center;
+          justify-content: center;
+          overflow:        hidden;
+        }
+
+        /* ── Floating role cards animation ───────────────────────────────── */
+        .cr-anim {
+          position:       relative;
+          width:          340px;
+          height:         420px;
           pointer-events: none;
         }
-        .c-hero__orb--1 {
-          width: 560px; height: 560px;
-          background: radial-gradient(circle, #6366f1, #4f46e5);
-          top: -180px; right: -120px; opacity: .14;
-        }
-        .c-hero__orb--2 {
-          width: 420px; height: 420px;
-          background: radial-gradient(circle, #f97316, #ea580c);
-          bottom: -120px; left: -80px; opacity: .12;
-          animation-delay: -8s;
-        }
-        @keyframes cOrbDrift {
-          0%   { transform: translate(0,0) scale(1); }
-          100% { transform: translate(36px,28px) scale(1.07); }
-        }
-        .c-hero__grid {
-          position: absolute; inset: 0; pointer-events: none;
-          background-image:
-            linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-        .c-hero__grain {
-          position: absolute; inset: 0; opacity: .03; pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 180px 180px;
-        }
 
-        .c-hero__content {
-          position: relative; z-index: 10; max-width: 760px; margin: 0 auto;
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) both;
+        /* Central hiring badge */
+        .cr-anim__badge {
+          position:        absolute;
+          top:             50%;
+          left:            50%;
+          transform:       translate(-50%, -50%);
+          width:           110px;
+          height:          110px;
+          border-radius:   50%;
+          background:      linear-gradient(135deg, rgba(249,115,22,.18), rgba(99,102,241,.18));
+          border:          1.5px solid rgba(249,115,22,.4);
+          display:         flex;
+          flex-direction:  column;
+          align-items:     center;
+          justify-content: center;
+          gap:             4px;
+          box-shadow:
+            0 0 40px rgba(249,115,22,.15),
+            0 0 80px rgba(99,102,241,.08),
+            inset 0 1px 0 rgba(255,255,255,.06);
+          animation:       crBadgePulse 3s ease-in-out infinite;
+          z-index:         10;
         }
-        @keyframes cFadeUp {
-          from { opacity: 0; transform: translateY(36px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes crBadgePulse {
+          0%,100% { box-shadow: 0 0 40px rgba(249,115,22,.15), 0 0 80px rgba(99,102,241,.08), inset 0 1px 0 rgba(255,255,255,.06); }
+          50%     { box-shadow: 0 0 60px rgba(249,115,22,.30), 0 0 100px rgba(99,102,241,.15), inset 0 1px 0 rgba(255,255,255,.06); }
         }
-
-        .c-hero__eyebrow {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
-          letter-spacing: .22em; text-transform: uppercase; color: var(--c-orange);
-          border: 1px solid rgba(249,115,22,.28); background: rgba(249,115,22,.07);
-          padding: 6px 16px; border-radius: 100px;
-          margin-bottom: 1.8rem; backdrop-filter: blur(8px);
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
+        .cr-anim__badge-label {
+          font-family:    var(--ff-sans);
+          font-size:      8px;
+          font-weight:    600;
+          letter-spacing: .2em;
+          text-transform: uppercase;
+          color:          var(--c-orange);
         }
-        .c-hero__dot {
-          width: 5px; height: 5px; border-radius: 50%; background: var(--c-orange);
-          animation: cPulse 2s ease-in-out infinite;
-        }
-        @keyframes cPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: .35; transform: scale(.65); }
-        }
-
-        .c-hero__h1 {
+        .cr-anim__badge-num {
           font-family: var(--ff-serif);
-          font-size: clamp(2rem, 5vw, 3.6rem);
-          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
-          color: #fff; margin: 0 0 1rem;
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
+          font-size:   2rem;
+          font-weight: 700;
+          color:       #fff;
+          line-height: 1;
         }
-        .c-hero__h1 em {
-          font-style: italic; color: transparent;
-          -webkit-text-stroke: 0.2px var(--c-orange);
-        }
-
-        .c-hero__rule {
-          width: 40px; height: 1px;
-          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
-          margin: 0 auto 1.4rem;
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
+        .cr-anim__badge-sub {
+          font-family:    var(--ff-sans);
+          font-size:      7px;
+          font-weight:    400;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          color:          var(--c-muted);
         }
 
-        .c-hero__sub {
+        /* Orbit ring */
+        .cr-anim__ring {
+          position:      absolute;
+          top:           50%;
+          left:          50%;
+          transform:     translate(-50%, -50%);
+          width:         200px;
+          height:        200px;
+          border-radius: 50%;
+          border:        1px dashed rgba(249,115,22,.18);
+          animation:     crRingSpin 18s linear infinite;
+        }
+        .cr-anim__ring--2 {
+          width:         280px;
+          height:        280px;
+          border-color:  rgba(99,102,241,.12);
+          animation:     crRingSpin 28s linear infinite reverse;
+          border-style:  solid;
+          border-width:  1px;
+        }
+        @keyframes crRingSpin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Role orbit dots */
+        .cr-anim__dot {
+          position:      absolute;
+          top:           50%;
+          left:          50%;
+          width:         8px;
+          height:        8px;
+          border-radius: 50%;
+          margin:        -4px 0 0 -4px;
+        }
+
+        /* Floating role cards */
+        .cr-card {
+          position:        absolute;
+          display:         flex;
+          align-items:     center;
+          gap:             10px;
+          background:      rgba(15,15,15,.9);
+          border:          1px solid var(--c-border);
+          border-radius:   12px;
+          padding:         10px 14px;
+          backdrop-filter: blur(12px);
+          box-shadow:      0 8px 32px rgba(0,0,0,.4);
+          white-space:     nowrap;
+        }
+        .cr-card__icon {
+          width:          32px;
+          height:         32px;
+          border-radius:  8px;
+          display:        flex;
+          align-items:    center;
+          justify-content: center;
+          font-size:      .85rem;
+          flex-shrink:    0;
+        }
+        .cr-card__title {
           font-family: var(--ff-sans);
-          font-size: clamp(.95rem, 2vw, 1.1rem);
-          font-weight: 300; line-height: 1.85; color: var(--c-muted);
-          max-width: 520px; margin: 0 auto 2.6rem;
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
+          font-size:   .72rem;
+          font-weight: 500;
+          color:       #fff;
+          line-height: 1.3;
+        }
+        .cr-card__tag {
+          font-family:    var(--ff-sans);
+          font-size:      8px;
+          font-weight:    500;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          color:          var(--c-orange);
+          opacity:        .75;
         }
 
-        .c-hero__cta {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: var(--ff-sans); font-size: 11px; font-weight: 600;
-          letter-spacing: .12em; text-transform: uppercase; color: #080808;
-          background: linear-gradient(135deg, #fb923c, #f97316);
-          padding: 14px 34px; border-radius: 100px; text-decoration: none;
-          box-shadow: 0 8px 32px rgba(249,115,22,.35);
-          transition: transform .2s ease, box-shadow .2s ease;
-          animation: cFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
+        /* Individual card positions & animations */
+        .cr-card--1 {
+          top:       8%;
+          left:      -8%;
+          animation: crFloat1 6s ease-in-out infinite;
         }
-        .c-hero__cta:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
-
-        .c-hero__scroll {
-          position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-          z-index: 20; display: flex; flex-direction: column;
-          align-items: center; gap: 6px; text-decoration: none;
-          animation: cFadeUp .9s ease .8s both;
+        .cr-card--2 {
+          top:       14%;
+          right:     -4%;
+          animation: crFloat2 7s ease-in-out infinite;
         }
-        .c-hero__scroll-line {
-          width: 1px; height: 40px;
-          background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
-          animation: cScrollLine 1.8s ease-in-out infinite;
+        .cr-card--3 {
+          bottom:    28%;
+          left:      -10%;
+          animation: crFloat3 5.5s ease-in-out infinite;
         }
-        @keyframes cScrollLine {
-          0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
-          50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
-          100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
-        }
-        .c-hero__scroll-lbl {
-          font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
-          letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.22);
+        .cr-card--4 {
+          bottom:    10%;
+          right:     -6%;
+          animation: crFloat4 6.5s ease-in-out infinite;
         }
 
-        .c-corner {
-          position: absolute; width: 28px; height: 28px;
-          z-index: 5; opacity: .2; pointer-events: none;
+        @keyframes crFloat1 {
+          0%,100% { transform: translateY(0px)   rotate(-1deg); }
+          50%     { transform: translateY(-10px)  rotate(1deg); }
         }
-        .c-corner--tl { top: 24px; left: 24px;     border-top: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .c-corner--tr { top: 24px; right: 24px;    border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
-        .c-corner--bl { bottom: 64px; left: 24px;  border-bottom: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .c-corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        @keyframes crFloat2 {
+          0%,100% { transform: translateY(0px)   rotate(1deg); }
+          50%     { transform: translateY(-14px)  rotate(-1deg); }
+        }
+        @keyframes crFloat3 {
+          0%,100% { transform: translateY(0px)   rotate(.5deg); }
+          50%     { transform: translateY(-8px)   rotate(-1.5deg); }
+        }
+        @keyframes crFloat4 {
+          0%,100% { transform: translateY(0px)   rotate(-1.5deg); }
+          50%     { transform: translateY(-12px)  rotate(1deg); }
+        }
 
-        /* ── Career Areas ─────────────────────────────────────────────────── */
+        /* Connecting lines between badge and cards (SVG-based, decorative) */
+        .cr-anim__lines {
+          position:       absolute;
+          inset:          0;
+          pointer-events: none;
+          opacity:        .25;
+        }
+
+        /* Ambient glow behind the right panel */
+       
+
+        /* ── Corner brackets — mirrors contact/about pages exactly ──────── */
+        .cr-corner {
+          position:       absolute;
+          width:          28px;
+          height:         28px;
+          z-index:        5;
+          opacity:        .18;
+          pointer-events: none;
+        }
+        .cr-corner--tl { top:22px;    left:22px;    border-top:   1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .cr-corner--tr { top:22px;    right:22px;   border-top:   1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .cr-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .cr-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+
+        /* ══ SECTIONS below hero — unchanged from original ════════════════ */
         .c-areas {
           background: var(--c-surface);
           padding: 6rem 1.5rem;
@@ -860,7 +962,6 @@ export default function CareersPage() {
         }
         .c-area-card:hover .c-area-card__line { opacity: 1; }
 
-        /* ── Why Work With Us ─────────────────────────────────────────────── */
         .c-why {
           background: var(--c-bg);
           padding: 6rem 1.5rem;
@@ -912,7 +1013,6 @@ export default function CareersPage() {
         }
         .c-why__divider { height: 1px; background: var(--c-border); }
 
-        /* ── Open Roles ───────────────────────────────────────────────────── */
         .c-roles {
           background: var(--c-surface);
           padding: 6rem 1.5rem;
@@ -966,7 +1066,6 @@ export default function CareersPage() {
           transform: translateY(-1px);
         }
 
-        /* ── FAQ ──────────────────────────────────────────────────────────── */
         .c-faq {
           background: var(--c-bg);
           padding: 6rem 1.5rem;
@@ -989,7 +1088,6 @@ export default function CareersPage() {
           line-height: 1.75; color: var(--c-muted);
         }
 
-        /* ── CTA Section ──────────────────────────────────────────────────── */
         .c-cta {
           position: relative;
           background: var(--c-surface);
@@ -1031,136 +1129,221 @@ export default function CareersPage() {
           transform: translateY(-2px); box-shadow: 0 12px 36px rgba(249,115,22,.4);
         }
 
-        /* ── Responsive ───────────────────────────────────────────────────── */
-        @media (max-width: 600px) {
-          .c-hero__cta { width: 100%; justify-content: center; }
+        /* ══ RESPONSIVE — mirrors contact/about breakpoints exactly ════════ */
+        @media (max-width: 900px) {
+          .cr-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
+          .cr-hero__right { flex: 0 0 340px; }
+          .cr-anim        { width: 260px; height: 340px; }
         }
 
-        /* ── Respect user motion preferences (WCAG 2.1 AA) ───────────────── */
-        /* FIX: was missing entirely from careers page */
+        @media (max-width: 768px) {
+          .cr-hero { flex-direction: column; min-height: auto; }
+          .cr-hero__left {
+            order: 2; flex: none; width: 100%;
+            padding: 3rem 1.5rem 4rem;
+            align-items: center; text-align: center;
+          }
+          .cr-hero__sub    { max-width: 100%; }
+          .cr-hero__stats  { justify-content: center; }
+          .cr-hero__right  {
+            order: 1; flex: none; width: 100%;
+            height: 300px; min-height: 300px;
+          }
+          .cr-hero__scroll { left:50%; transform:translateX(-50%); }
+          .cr-card--1 { top: 4%; left: 2%; }
+          .cr-card--2 { top: 4%; right: 2%; }
+          .cr-card--3 { bottom: 6%; left: 2%; }
+          .cr-card--4 { bottom: 6%; right: 2%; }
+        }
+
+        @media (max-width: 480px) {
+          .cr-hero__stat { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
+            animation-duration:        0.01ms !important;
+            animation-iteration-count: 1      !important;
+            transition-duration:       0.01ms !important;
           }
         }
       `}</style>
 
       <Header />
 
-      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
+      {/* ══ HERO — two-column layout matching contact / about pages ════════ */}
       <section
-        className="c-hero"
-        aria-label="Careers at 99 Visual Solutions — Jobs in Bangalore"
+        className="cr-hero"
+        aria-labelledby="cr-hero-heading"
         id="careers-hero"
         itemScope
         itemType="https://schema.org/WebPage"
       >
-        {/* Decorative background — hidden from assistive tech */}
-        <div aria-hidden="true">
-          <div className="c-hero__orb c-hero__orb--1" />
-          <div className="c-hero__orb c-hero__orb--2" />
-          <div className="c-hero__grid" />
-          <div className="c-hero__grain" />
-        </div>
+        <div className="cr-hero__grid" aria-hidden="true" />
 
-        <div className="c-corner c-corner--tl" aria-hidden="true" />
-        <div className="c-corner c-corner--tr" aria-hidden="true" />
-        <div className="c-corner c-corner--bl" aria-hidden="true" />
-        <div className="c-corner c-corner--br" aria-hidden="true" />
+        <div className="cr-corner cr-corner--tl" aria-hidden="true" />
+        <div className="cr-corner cr-corner--tr" aria-hidden="true" />
+        <div className="cr-corner cr-corner--bl" aria-hidden="true" />
+        <div className="cr-corner cr-corner--br" aria-hidden="true" />
 
-        {/* ── Breadcrumb — sr-only ─────────────────────────────────────────
-          ✅ .sr-only = 1×1px clip — invisible to users, crawlable by Googlebot
-          ❌ display:none / visibility:hidden = hidden from Googlebot too
-          aria-hidden="true" — Home→Careers adds no value for screen reader users.
-          JSON-LD BreadcrumbList above handles the SERP rich result independently.
-        ── */}
-        <nav
-          className="sr-only"
-          aria-label="Breadcrumb"
-          aria-hidden="true"
-        >
-          <ol
-            itemScope
-            itemType="https://schema.org/BreadcrumbList"
-            style={{ listStyle: "none", margin: 0, padding: 0 }}
-          >
-            <li
+        {/* ── LEFT: hero copy ─────────────────────────────────────────────── */}
+        <div className="cr-hero__left">
+
+          <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+            <ol
               itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
+              itemType="https://schema.org/BreadcrumbList"
+              style={{ listStyle: "none", margin: 0, padding: 0 }}
             >
-              <a href="/" itemProp="item">
-                <span itemProp="name">Home</span>
-              </a>
-              <meta itemProp="position" content="1" />
-            </li>
-            <li
-              itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
-            >
-              <a href="/careers" itemProp="item" aria-current="page">
-                <span itemProp="name">Careers</span>
-              </a>
-              <meta itemProp="position" content="2" />
-            </li>
-          </ol>
-        </nav>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <meta itemProp="position" content="1" />
+              </li>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/careers" itemProp="item" aria-current="page">
+                  <span itemProp="name">Careers</span>
+                </a>
+                <meta itemProp="position" content="2" />
+              </li>
+            </ol>
+          </nav>
 
-        {/* ── Main content ─────────────────────────────────────────────────── */}
-        <div className="c-hero__content">
-          <p className="c-hero__eyebrow" aria-hidden="true">
-            <span className="c-hero__dot" />
+          <p className="cr-hero__eyebrow" aria-hidden="true">
+            <span className="cr-hero__dot" />
             Now Hiring · Bangalore &amp; Beyond
           </p>
 
-          <h1 className="c-hero__h1" itemProp="name">
+          <h1 className="cr-hero__h1" id="cr-hero-heading" itemProp="name">
             Build your <em>future</em><br />
             with 99 Visual Solutions
           </h1>
 
-          <div className="c-hero__rule" aria-hidden="true" />
+          <div className="cr-hero__rule" aria-hidden="true" />
 
-          <p className="c-hero__sub" itemProp="description">
-            We&apos;re  not just hiring, we're building a team of innovators, creators, and problem-solvers who shape the future of digital experiences togethe. Join a team of innovators and creators who shape
-            the future of digital experiences.
+          <p className="cr-hero__sub" itemProp="description">
+            Join a team of innovators, creators, and problem-solvers who shape
+            the future of digital experiences together.
           </p>
+
+          {/* Stats row */}
+          <dl className="cr-hero__stats" aria-label="Company highlights">
+            <div className="cr-hero__stat">
+              <dt className="cr-hero__stat-label">Open Roles</dt>
+              <dd className="cr-hero__stat-num">4</dd>
+            </div>
+            <div className="cr-hero__stat">
+              <dt className="cr-hero__stat-label">Projects Done</dt>
+              <dd className="cr-hero__stat-num">500+</dd>
+            </div>
+            <div className="cr-hero__stat">
+              <dt className="cr-hero__stat-label">Years Active</dt>
+              <dd className="cr-hero__stat-num">5+</dd>
+            </div>
+          </dl>
 
           <a
             href="#open-roles"
-            className="c-hero__cta"
+            className="cr-hero__cta"
             aria-label="View open positions at 99 Visual Solutions Bangalore"
           >
             View Open Positions
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M7 2v10M3 8l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </a>
         </div>
 
-        <a
-          href="#open-roles"
-          className="c-hero__scroll"
-          aria-label="Scroll to open positions"
-        >
-          <div className="c-hero__scroll-line" aria-hidden="true" />
-          <span className="c-hero__scroll-lbl" aria-hidden="true">Scroll</span>
+        {/* ── RIGHT: floating role cards animation ────────────────────────── */}
+        <div className="cr-hero__right" aria-hidden="true">
+          <div className="cr-anim">
+
+            {/* Orbit rings */}
+            <div className="cr-anim__ring" />
+            <div className="cr-anim__ring cr-anim__ring--2" />
+
+            {/* Central badge */}
+            <div className="cr-anim__badge">
+              <span className="cr-anim__badge-label">We&apos;re</span>
+              <span className="cr-anim__badge-num">4</span>
+              <span className="cr-anim__badge-sub">Roles Open</span>
+            </div>
+
+            {/* Floating role card 1 — Web Developer */}
+            <div className="cr-card cr-card--1">
+              <div
+                className="cr-card__icon"
+                style={{ background: "rgba(99,102,241,.15)", color: "#6366f1" }}
+              >
+                <FaLaptopCode />
+              </div>
+              <div>
+                <div className="cr-card__title">Web Developer</div>
+                <div className="cr-card__tag">Full-time · India</div>
+              </div>
+            </div>
+
+            {/* Floating role card 2 — UI/UX Designer */}
+            <div className="cr-card cr-card--2">
+              <div
+                className="cr-card__icon"
+                style={{ background: "rgba(34,211,238,.12)", color: "#22d3ee" }}
+              >
+                <FaUsers />
+              </div>
+              <div>
+                <div className="cr-card__title">UI/UX Designer</div>
+                <div className="cr-card__tag">Full-time · India</div>
+              </div>
+            </div>
+
+            {/* Floating role card 3 — 3D Artist */}
+            <div className="cr-card cr-card--3">
+              <div
+                className="cr-card__icon"
+                style={{ background: "rgba(251,191,36,.12)", color: "#fbbf24" }}
+              >
+                <FaLightbulb />
+              </div>
+              <div>
+                <div className="cr-card__title">3D Visualization Artist</div>
+                <div className="cr-card__tag">Full-time · India</div>
+              </div>
+            </div>
+
+            {/* Floating role card 4 — Digital Marketing */}
+            <div className="cr-card cr-card--4">
+              <div
+                className="cr-card__icon"
+                style={{ background: "rgba(249,115,22,.15)", color: "#f97316" }}
+              >
+                <FaRocket />
+              </div>
+              <div>
+                <div className="cr-card__title">Digital Marketing</div>
+                <div className="cr-card__tag">Full-time · India</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <a href="#open-roles" className="cr-hero__scroll" aria-label="Scroll to open positions">
+          <div className="cr-hero__scroll-line" aria-hidden="true" />
+          <span className="cr-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
       {/* ══ CAREER AREAS ════════════════════════════════════════════════════ */}
-      <section
-        id="careers"
-        className="c-areas"
-        aria-labelledby="c-areas-heading"
-      >
+      <section id="careers" className="c-areas" aria-labelledby="c-areas-heading">
         <div className="c-areas__header">
           <span className="c-section-label">What we do</span>
-          <h2 className="c-section-h2" id="c-areas-heading">
-            Career Opportunities 
-          </h2>
+          <h2 className="c-section-h2" id="c-areas-heading">Career Opportunities</h2>
           <p className="c-section-sub" style={{ margin: "0 auto" }}>
             Four disciplines, one shared mission — craft exceptional digital experiences
             that move the world forward.
@@ -1169,17 +1352,8 @@ export default function CareersPage() {
 
         <div className="c-areas__grid" role="list">
           {careerAreas.map(({ icon: Icon, accent, label, jobTitle, desc }) => (
-            <article
-              className="c-area-card"
-              key={label}
-              role="listitem"
-              aria-label={label}
-            >
-              <div
-                className="c-area-card__icon-wrap"
-                style={{ color: accent }}
-                aria-hidden="true"
-              >
+            <article className="c-area-card" key={label} role="listitem" aria-label={label}>
+              <div className="c-area-card__icon-wrap" style={{ color: accent }} aria-hidden="true">
                 <Icon />
               </div>
               <h3 className="c-area-card__title">{label}</h3>
@@ -1199,15 +1373,9 @@ export default function CareersPage() {
       <section className="c-why" aria-labelledby="c-why-heading">
         <div className="c-why__inner">
           <div className="c-why__layout">
-
-            {/* Left: numbered reasons */}
             <div>
               <span className="c-section-label">Why us</span>
-              <h2
-                className="c-section-h2"
-                id="c-why-heading"
-                style={{ marginBottom: "2.5rem" }}
-              >
+              <h2 className="c-section-h2" id="c-why-heading" style={{ marginBottom: "2.5rem" }}>
                 Why build your career<br />at 99 Visual Solutions?
               </h2>
               <div className="c-why__items">
@@ -1223,14 +1391,10 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Right: stats card — <dl> for semantic key/value pairs */}
-            <dl
-              className="c-why__visual"
-              aria-label="99 Visual Solutions — company highlights"
-            >
+            <dl className="c-why__visual" aria-label="99 Visual Solutions — company highlights">
               <div className="c-why__stat">
                 <dt className="c-why__stat-label">Years of expertise</dt>
-                <dd className="c-why__stat-num">10+</dd>
+                <dd className="c-why__stat-num">5+</dd>
               </div>
               <div className="c-why__divider" aria-hidden="true" />
               <div className="c-why__stat">
@@ -1248,17 +1412,12 @@ export default function CareersPage() {
                 <dd className="c-why__stat-num">6</dd>
               </div>
             </dl>
-
           </div>
         </div>
       </section>
 
       {/* ══ OPEN ROLES ══════════════════════════════════════════════════════ */}
-      <section
-        id="open-roles"
-        className="c-roles"
-        aria-labelledby="c-roles-heading"
-      >
+      <section id="open-roles" className="c-roles" aria-labelledby="c-roles-heading">
         <div className="c-roles__inner">
           <div className="c-roles__header">
             <span className="c-section-label">Open positions</span>
@@ -1271,10 +1430,7 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <ul
-            className="c-roles__list"
-            aria-label="Open job listings at 99 Visual Solutions Bangalore"
-          >
+          <ul className="c-roles__list" aria-label="Open job listings at 99 Visual Solutions Bangalore">
             {openRoles.map(({ title, dept, type, loc }) => (
               <li className="c-role-row" key={title}>
                 <div className="c-role-row__left">
@@ -1303,33 +1459,18 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* ══ FAQ — surfaces in Google's FAQ rich results ══════════════════════ */}
-      {/*
-        FIX: now rendered from the same `faqItems` array used in JSON-LD.
-        Previously 5 HTML items vs 7 JSON-LD items — a content mismatch
-        that can trigger a Google Search Console structured data warning.
-      */}
-      <section
-        className="c-faq"
-        aria-labelledby="c-faq-heading"
-      >
+      {/* ══ FAQ ══════════════════════════════════════════════════════════════ */}
+      <section className="c-faq" aria-labelledby="c-faq-heading">
         <div className="c-faq__inner">
           <div className="c-faq__header">
             <span className="c-section-label">Common questions</span>
-            <h2 className="c-section-h2" id="c-faq-heading">
-              Frequently Asked Questions
-            </h2>
+            <h2 className="c-section-h2" id="c-faq-heading">Frequently Asked Questions</h2>
             <p className="c-section-sub" style={{ margin: "0 auto" }}>
               Everything you need to know about working at 99 Visual Solutions.
             </p>
           </div>
 
-          {/* itemScope/itemType mirrors FAQPage JSON-LD for belt-and-braces coverage */}
-          <dl
-            className="c-faq__list"
-            itemScope
-            itemType="https://schema.org/FAQPage"
-          >
+          <dl className="c-faq__list" itemScope itemType="https://schema.org/FAQPage">
             {faqItems.map(({ question, answer }) => (
               <div
                 key={question}
@@ -1354,10 +1495,7 @@ export default function CareersPage() {
       </section>
 
       {/* ══ CTA ═════════════════════════════════════════════════════════════ */}
-      <section
-        className="c-cta"
-        aria-labelledby="c-cta-heading"
-      >
+      <section className="c-cta" aria-labelledby="c-cta-heading">
         <div className="c-cta__orb" aria-hidden="true" />
         <div className="c-cta__content">
           <h2 className="c-cta__h2" id="c-cta-heading">

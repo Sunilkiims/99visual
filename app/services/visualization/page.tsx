@@ -2,39 +2,37 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade 3D Visualization service page — 99 Visual Solutions
 //
-// Fixes applied (aligned with partner/page.tsx reference):
-//   ✅ keywords array REMOVED — ignored by all search engines since 2009
-//   ✅ canonical changed to relative path "/services/visualization"
-//   ✅ hreflang added: en-IN / en-US / en-GB / en-AE / en-AU + x-default
-//   ✅ verification env var pattern added
-//   ✅ creator / publisher / applicationName / referrer / formatDetection added
-//   ✅ Twitter images: bare object → typed array with alt text
-//   ✅ Three separate JSON-LD <script> blocks → single unified @graph block
-//   ✅ Organization / LocalBusiness / WebSite nodes added to graph
-//   ✅ dateModified auto-updates on every build (was missing entirely)
-//   ✅ WebPage: publisher added, potentialAction ReadAction added
-//   ✅ LocalBusiness: Saturday hours, paymentAccepted, areaServed as Country objects
-//   ✅ FAQPage mainEntityOfPage cross-reference added
-//   ✅ Breadcrumb: display:none nav REMOVED → sr-only hidden microdata nav
-//   ✅ .viz-hero__breadcrumb CSS block removed (no longer needed)
-//   ✅ .sr-only CSS class added
-//   ✅ prefers-reduced-motion guard added (WCAG 2.1 AA — was missing)
-//   ✅ :root CSS variables adopted throughout (was raw hex strings)
-//   ✅ aria-labelledby wired to h1 id (was bare aria-label on section)
-//   ✅ aria-hidden on all decorative elements verified
+// FIXES APPLIED:
+//   ✅ Removed inline schemaGraph with its own "@context" — uses buildGraph()
+//   ✅ Removed duplicate Organization, LocalBusiness, WebSite node definitions
+//      that diverged from lib/schema.ts (foundingDate "2015" vs "2020",
+//      different descriptions, different logo refs)
+//   ✅ Page-specific nodes (WebPage, BreadcrumbList, Service, FAQPage) kept inline
+//   ✅ Script tag moved to after <Header /> to prevent UI displacement
+//   ✅ All other SEO, a11y, and structured data intact
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
-import Header      from "@/app/components/header";
-import Seriously   from "@/app/components/seriously";
-import Footer      from "@/app/components/footer";
-import Services    from "@/app/components/services";
-import ContactCTA  from "@/app/components/Contactcta";
-import ScrollDown  from "@/app/components/scrolldown";
-import Chatbot     from "@/app/components/chatbot";
+import Header         from "@/app/components/header";
+import Seriously      from "@/app/components/seriously";
+import Footer         from "@/app/components/footer";
+import Services       from "@/app/components/services";
+import ContactCTA     from "@/app/components/Contactcta";
+import ScrollDown     from "@/app/components/scrolldown";
+import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader  from "@/app/components/PageLoader";
-import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
+import PageLoader     from "@/app/components/PageLoader";
+
+import {
+  BASE,
+  buildGraph,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  breadcrumb,
+  faqSchema,
+  serviceSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
@@ -48,8 +46,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE),
 
   alternates: {
-    canonical: "/services/visualization",           // FIX: relative path
-    languages: {                                    // FIX: hreflang was missing entirely
+    canonical: "/services/visualization",
+    languages: {
       "en-IN":     `${BASE}/services/visualization`,
       "en-US":     `${BASE}/services/visualization`,
       "en-GB":     `${BASE}/services/visualization`,
@@ -58,8 +56,6 @@ export const metadata: Metadata = {
       "x-default": `${BASE}/services/visualization`,
     },
   },
-
-  // FIX: keywords REMOVED — ignored by Google/Bing/etc since 2009
 
   robots: {
     index: true,
@@ -97,7 +93,7 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     title:       "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
     description: "Photorealistic architectural renders, CAD modeling, product visualization & 3D walkthroughs — crafted for architects, developers & designers worldwide.",
-    images: [                                       // FIX: was bare object → typed array
+    images: [
       {
         url: `${BASE}/images/services/visualization-og.jpg`,
         alt: "3D architectural rendering and visualization services by 99 Visual Solutions",
@@ -105,7 +101,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  // FIX: all missing from original
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
@@ -119,238 +114,111 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — unified @graph
-// FIX: was three separate <script> blocks with only breadcrumb/webPage/faq nodes.
-//      Missing: Organization, LocalBusiness, WebSite — all added below.
+// SCHEMA — page-specific nodes only
+// Organization, LocalBusiness, WebSite come from lib/schema.ts (single source
+// of truth). Only WebPage, BreadcrumbList, Service, and FAQPage are defined
+// here since they are unique to this route.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0]; // auto-updates on build
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const schemaGraph = {
-  "@context": "https://schema.org",
-  "@graph": [
-
-    // ── 1. Organization ─────────────────────────────────────────────────────
-    {
-      "@type": "Organization",
-      "@id":   `${BASE}/#organization`,
-      name:    "99 Visual Solutions",
-      alternateName: ["99Visual", "99VS"],
-      description:
-        "Bangalore-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
-      url: BASE,
-      logo: {
-        "@type":    "ImageObject",
-        "@id":      `${BASE}/#logo`,
-        url:        `${BASE}/images/logo.png`,
-        contentUrl: `${BASE}/images/logo.png`,
-        width:      300,
-        height:     60,
-        caption:    "99 Visual Solutions Logo",
-      },
-      image:        { "@id": `${BASE}/#logo` },
-      foundingDate: "2015",
-      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
-      address: {
-        "@type":         "PostalAddress",
-        addressLocality: "Bengaluru",
-        addressRegion:   "Karnataka",
-        postalCode:      "560087",
-        addressCountry:  "IN",
-      },
-      areaServed: [
-        { "@type": "Country", name: "India" },
-        { "@type": "Country", name: "United States" },
-        { "@type": "Country", name: "United Kingdom" },
-        { "@type": "Country", name: "United Arab Emirates" },
-        { "@type": "Country", name: "Australia" },
-      ],
-      contactPoint: [
-        {
-          "@type":           "ContactPoint",
-          contactType:       "Sales",
-          url:               `${BASE}/contact`,
-          email:             "contact@99visual.com",
-          availableLanguage: ["English", "Kannada", "Hindi"],
-          areaServed:        ["IN", "US", "GB", "AU", "AE"],
-        },
-      ],
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-      ],
-      knowsAbout: [
-        "Web Development", "Search Engine Optimisation", "Digital Marketing",
-        "3D Visualisation", "CAD Drafting", "GIS Mapping", "LiDAR Data Processing",
-        "QA Testing", "IT Consulting",
-      ],
-    },
-
-    // ── 2. LocalBusiness ────────────────────────────────────────────────────
-    {
-      "@type": ["LocalBusiness", "ProfessionalService"],
-      "@id":   `${BASE}/#localbusiness`,
-      name:    "99 Visual Solutions",
-      image:   `${BASE}/images/services/visualization-og.jpg`,
-      url:     BASE,
-      email:   "contact@99visual.com",
-      description:
-        "Full-service 3D visualization studio and digital agency in Bengaluru offering architectural rendering, CAD modeling, product visualization, and walkthrough animations.",
-      priceRange:         "$$",
-      currenciesAccepted: "INR, USD, GBP, AED, AUD",
-      paymentAccepted:    "Bank Transfer, Credit Card, UPI, PayPal",
-      address: {
-        "@type":         "PostalAddress",
-        addressLocality: "Bengaluru",
-        addressRegion:   "Karnataka",
-        postalCode:      "560087",
-        addressCountry:  "IN",
-      },
-      geo: {
-        "@type":    "GeoCoordinates",
-        latitude:   12.9716,
-        longitude:  77.5946,
-      },
-      hasMap: "https://maps.google.com/?q=99+Visual+Solutions+Bengaluru",
-      openingHoursSpecification: [
-        {
-          "@type":   "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          opens:     "09:00",
-          closes:    "18:30",
-        },
-        {
-          "@type":   "OpeningHoursSpecification",
-          dayOfWeek: ["Saturday"],
-          opens:     "10:00",
-          closes:    "14:00",
-        },
-      ],
-      areaServed: [
-        { "@type": "Country", name: "India" },
-        { "@type": "Country", name: "United States" },
-        { "@type": "Country", name: "United Kingdom" },
-        { "@type": "Country", name: "United Arab Emirates" },
-        { "@type": "Country", name: "Australia" },
-      ],
-      parentOrganization: { "@id": `${BASE}/#organization` },
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-      ],
-    },
-
-    // ── 3. WebSite ──────────────────────────────────────────────────────────
-    {
-      "@type":     "WebSite",
-      "@id":       `${BASE}/#website`,
-      url:         BASE,
-      name:        "99 Visual Solutions",
-      description: "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
-      publisher:   { "@id": `${BASE}/#organization` },
-      inLanguage:  "en",
-      potentialAction: {
-        "@type": "SearchAction",
-        target:  { "@type": "EntryPoint", urlTemplate: `${BASE}/?s={search_term_string}` },
-        "query-input": "required name=search_term_string",
-      },
-    },
-
-    // ── 4. WebPage ──────────────────────────────────────────────────────────
-    {
-      "@type":       "WebPage",
-      "@id":         `${BASE}/services/visualization#webpage`,
-      url:           `${BASE}/services/visualization`,
-      name:          "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
-      description:   "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions.",
-      inLanguage:    "en",
-      datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,               // FIX: was missing entirely
-      isPartOf:      { "@id": `${BASE}/#website` },
-      about:         { "@id": `${BASE}/#organization` },
-      publisher:     { "@id": `${BASE}/#organization` }, // FIX: was missing
-      primaryImageOfPage: {
-        "@type":   "ImageObject",
-        url:       `${BASE}/images/services/visualization-og.jpg`,
-        width:     1200,
-        height:    630,
-        caption:   "3D architectural rendering and visualization services by 99 Visual Solutions",
-      },
-      speakable: {
-        "@type":     "SpeakableSpecification",
-        cssSelector: [".viz-hero__h1", ".viz-hero__sub"],
-      },
-      breadcrumb:      { "@id": `${BASE}/services/visualization#breadcrumb` },
-      potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/visualization`] },
-    },
-
-    // ── 5. BreadcrumbList ───────────────────────────────────────────────────
-    {
-      ...breadcrumb([
-        { name: "Home",             url: "/" },
-        { name: "Services",         url: "/services" },
-        { name: "3D Visualization", url: "/services/visualization" },
-      ]),
-      "@id": `${BASE}/services/visualization#breadcrumb`,
-    },
-
-    // ── 6. Service ──────────────────────────────────────────────────────────
-    {
-      "@type":       "Service",
-      "@id":         `${BASE}/services/visualization#service`,
-      name:          "3D Visualization & Architectural Rendering",
-      description:   "Photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing.",
-      provider:      { "@id": `${BASE}/#organization` },
-      areaServed:    ["IN", "US", "GB", "AU", "AE"],
-      url:           `${BASE}/services/visualization`,
-      serviceType:   "3D Visualization",
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name:    "3D Visualization Services",
-        itemListElement: [
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Architectural Exterior Rendering" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Architectural Interior Rendering" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "3D Walkthrough Animation" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Product Visualization" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "CAD Drafting & Modeling" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "BIM Modeling" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "LiDAR Data Processing" } },
-        ],
-      },
-    },
-
-    // ── 7. FAQPage ──────────────────────────────────────────────────────────
-    {
-      ...faqSchema([
-        {
-          question: "What types of 3D visualization services do you offer?",
-          answer:
-            "We offer photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing.",
-        },
-        {
-          question: "How long does a typical 3D rendering project take?",
-          answer:
-            "Turnaround depends on complexity. Single still renders are usually delivered within 3–5 business days; full walkthrough animations typically take 2–4 weeks.",
-        },
-        {
-          question: "Can you work from hand sketches or rough floor plans?",
-          answer:
-            "Yes. We work from architectural drawings, CAD files, PDF plans, sketches, or even reference photos to produce high-quality renders.",
-        },
-        {
-          question: "Do you serve international clients?",
-          answer:
-            "Absolutely. We serve architects, real estate developers, and product designers across India, USA, UK, UAE, and Australia.",
-        },
-      ]),
-      "@id":            `${BASE}/services/visualization#faq`,
-      mainEntityOfPage: { "@id": `${BASE}/services/visualization#webpage` },
-    },
-
-  ],
+const vizBreadcrumbNode = {
+  ...breadcrumb([
+    { name: "Home",             url: "/" },
+    { name: "Services",         url: "/services" },
+    { name: "3D Visualization", url: "/services/visualization" },
+  ]),
+  "@id": `${BASE}/services/visualization#breadcrumb`,
 };
+
+const vizServiceNode = {
+  ...serviceSchema({
+    name:        "3D Visualization & Architectural Rendering",
+    description:
+      "Photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing.",
+    url:   "/services/visualization",
+    image: `${BASE}/images/services/visualization-og.jpg`,
+  }),
+  "@id": `${BASE}/services/visualization#service`,
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name:    "3D Visualization Services",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Architectural Exterior Rendering" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Architectural Interior Rendering" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "3D Walkthrough Animation" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Product Visualization" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "CAD Drafting & Modeling" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "BIM Modeling" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "LiDAR Data Processing" } },
+    ],
+  },
+};
+
+const vizFaqNode = {
+  ...faqSchema([
+    {
+      question: "What types of 3D visualization services do you offer?",
+      answer:
+        "We offer photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing.",
+    },
+    {
+      question: "How long does a typical 3D rendering project take?",
+      answer:
+        "Turnaround depends on complexity. Single still renders are usually delivered within 3–5 business days; full walkthrough animations typically take 2–4 weeks.",
+    },
+    {
+      question: "Can you work from hand sketches or rough floor plans?",
+      answer:
+        "Yes. We work from architectural drawings, CAD files, PDF plans, sketches, or even reference photos to produce high-quality renders.",
+    },
+    {
+      question: "Do you serve international clients?",
+      answer:
+        "Absolutely. We serve architects, real estate developers, and product designers across India, USA, UK, UAE, and Australia.",
+    },
+  ]),
+  "@id":            `${BASE}/services/visualization#faq`,
+  mainEntityOfPage: { "@id": `${BASE}/services/visualization#webpage` },
+};
+
+const vizPageNode = {
+  "@type":       "WebPage",
+  "@id":         `${BASE}/services/visualization#webpage`,
+  url:           `${BASE}/services/visualization`,
+  name:          "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
+  description:   "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions.",
+  inLanguage:    "en",
+  datePublished: DATE_PUBLISHED,
+  dateModified:  DATE_MODIFIED,
+  isPartOf:      { "@id": `${BASE}/#website` },
+  about:         { "@id": `${BASE}/#organization` },
+  publisher:     { "@id": `${BASE}/#organization` },
+  primaryImageOfPage: {
+    "@type":   "ImageObject",
+    url:       `${BASE}/images/services/visualization-og.jpg`,
+    width:     1200,
+    height:    630,
+    caption:   "3D architectural rendering and visualization services by 99 Visual Solutions",
+  },
+  speakable: {
+    "@type":     "SpeakableSpecification",
+    cssSelector: [".viz-hero__h1", ".viz-hero__sub"],
+  },
+  breadcrumb:      { "@id": `${BASE}/services/visualization#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/visualization`] },
+};
+
+// Single @graph — one @context via buildGraph, zero duplicated node definitions.
+const vizGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  vizPageNode,
+  vizBreadcrumbNode,
+  vizServiceNode,
+  vizFaqNode,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HERO SECTION
@@ -362,7 +230,6 @@ function HeroSection() {
       aria-labelledby="viz-hero-heading"
       id="viz-hero"
     >
-      {/* Background — decorative, hidden from assistive tech */}
       <div aria-hidden="true">
         <div className="viz-hero__orb viz-hero__orb--1" />
         <div className="viz-hero__orb viz-hero__orb--2" />
@@ -371,22 +238,13 @@ function HeroSection() {
         <div className="viz-hero__grain" />
       </div>
 
-      {/* Corner marks */}
       <div className="viz-corner viz-corner--tl" aria-hidden="true" />
       <div className="viz-corner viz-corner--tr" aria-hidden="true" />
       <div className="viz-corner viz-corner--bl" aria-hidden="true" />
       <div className="viz-corner viz-corner--br" aria-hidden="true" />
 
-      {/* ── Breadcrumb — sr-only ──────────────────────────────────────────
-        ✅ .sr-only = 1×1px clip — invisible to users, crawlable by Googlebot
-        ❌ display:none (old code) = hidden from Googlebot too
-        JSON-LD BreadcrumbList in @graph handles SERP rich result independently.
-      ── */}
-      <nav
-        className="sr-only"
-        aria-label="Breadcrumb"
-        aria-hidden="true"
-      >
+      {/* sr-only breadcrumb — invisible to users, crawlable by Googlebot */}
+      <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
         <ol
           itemScope
           itemType="https://schema.org/BreadcrumbList"
@@ -409,7 +267,6 @@ function HeroSection() {
         </ol>
       </nav>
 
-      {/* Main content */}
       <div className="viz-hero__content">
         <p className="viz-hero__eyebrow" aria-hidden="true">
           <span className="viz-hero__dot" />
@@ -467,14 +324,6 @@ export default function VisualizationPage() {
     <>
       <PageLoader />
 
-      {/* ── Unified @graph JSON-LD ─────────────────────────────────────────── */}
-      {/* FIX: was 3 separate <script> blocks → single consolidated @graph */}
-      <script
-        id="schema-visualization-graph"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
-      />
-
       {/* ── Styles ────────────────────────────────────────────────────────── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -489,10 +338,6 @@ export default function VisualizationPage() {
           --ff-sans:   'DM Sans', sans-serif;
         }
 
-        /* ── sr-only — invisible to users, crawlable by Googlebot ───────────
-           display:none and visibility:hidden both hide from Googlebot.
-           This clip technique keeps the element in the render tree at 1×1px.
-        ── */
         .sr-only {
           position: absolute !important;
           width: 1px !important; height: 1px !important;
@@ -503,7 +348,6 @@ export default function VisualizationPage() {
           border: 0 !important;
         }
 
-        /* ── Hero ────────────────────────────────────────────────────────── */
         .viz-hero {
           position: relative;
           min-height: 90vh;
@@ -552,8 +396,6 @@ export default function VisualizationPage() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
-
-        /* FIX: .viz-hero__breadcrumb block REMOVED — replaced by sr-only pattern */
 
         .viz-corner {
           position: absolute; width: 28px; height: 28px;
@@ -661,8 +503,6 @@ export default function VisualizationPage() {
           color: rgba(255,255,255,.22);
         }
 
-        /* ── Respect user motion preferences (WCAG 2.1 AA) ───────────────── */
-        /* FIX: was missing entirely */
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
             animation-duration: 0.01ms !important;
@@ -672,10 +512,18 @@ export default function VisualizationPage() {
         }
       `}</style>
 
+      {/* Header first — prevents UI displacement */}
       <Header />
+
+      {/* Single JSON-LD script — one @context via buildGraph */}
+      <script
+        id="schema-visualization-graph"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(vizGraph) }}
+      />
+
       <HeroSection />
 
-      {/* id used by hero scroll-indicator and Services component anchor */}
       <div id="services">
         <Services />
       </div>

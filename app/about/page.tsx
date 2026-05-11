@@ -1,50 +1,29 @@
 // app/about/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Production-grade About page — 99 Visual Solutions
-//
-// SEO checklist:
-//   ✅ Title exactly 60 chars, description exactly 155 chars
-//   ✅ Canonical set to /about (not BASE + /about — avoids double-slash risk)
-//   ✅ hreflang for IN / US / GB / AE / AU + x-default
-//   ✅ OG title ≤ 60 chars (LinkedIn/Facebook truncation safe)
-//   ✅ OG image typed (width/height/type/alt)
-//   ✅ Twitter image typed with alt
-//   ✅ keywords array REMOVED (ignored by all search engines since 2009)
-//   ✅ Unified @graph schema — single script tag, cross-referenced @id nodes
-//   ✅ AboutPage schema with speakable, primaryImageOfPage, breadcrumb ref
-//   ✅ ProfilePage schema (new Google signal for About pages)
-//   ✅ BreadcrumbList with @id for cross-referencing
-//   ✅ FAQPage with 40–300 word answers (rich result eligibility)
-//   ✅ datePublished + dateModified on WebPage node
-//   ✅ Breadcrumb HTML: sr-only (invisible to user, crawlable by Googlebot)
-//   ✅ Single H1, logical H2/H3 hierarchy
-//   ✅ aria-hidden on all decorative elements
-//   ✅ aria-label on all landmark sections
-//   ✅ aria-current="page" on active breadcrumb
-//   ✅ prefers-reduced-motion guard
-//   ✅ Stats wrapped in <dl> (semantic description list — accessible + crawlable)
-//   ✅ Crawlable CTA links to /contact and /services
-//   ✅ verification env var pattern (no hardcoded tokens)
-// ─────────────────────────────────────────────────────────────────────────────
-
 import type { Metadata } from "next";
-import Header        from "../components/header";
-import Footer        from "../components/footer";
-import ScrollDown    from "../components/scrolldown";
-import Chatbot       from "../components/chatbot";
+import Header         from "../components/header";
+import Footer         from "../components/footer";
+import ScrollDown     from "../components/scrolldown";
+import Chatbot        from "../components/chatbot";
 import Whatsappbutton from "../components/wahtsappbutton";
-import PageLoader    from "../components/PageLoader";
-import TabAbout      from "../components/tabstory";
-import WhyChooseUs   from "../components/whychooseus";
-import DataPrivacy   from "../components/dataprivacy";
-import ContactCTA    from "@/app/components/Contactcta";
+import PageLoader     from "../components/PageLoader";
+import TabAbout       from "../components/tabstory";
+import WhyChooseUs    from "../components/whychooseus";
+import DataPrivacy    from "../components/dataprivacy";
+import ContactCTA     from "@/app/components/Contactcta";
+import { FaCode, FaCubes, FaSearchLocation, FaLaptopCode } from "react-icons/fa";
 
-import { BASE, breadcrumb, faqSchema } from "@/lib/schema";
+import {
+  BASE,
+  buildGraph,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  breadcrumb,
+  faqSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
-// Title: 59 chars — within 60-char SERP limit
-// Description: 155 chars — within 150–160 char ideal range
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "About 99 Visual Solutions | IT & 3D Visualization Company Bangalore",
@@ -54,21 +33,18 @@ export const metadata: Metadata = {
 
   metadataBase: new URL(BASE),
 
-  // ── Canonical — must be the exact URL Google should index ──
-  // Use a relative path here; Next.js resolves it against metadataBase.
   alternates: {
     canonical: "/about",
     languages: {
-      "en-IN":    `${BASE}/about`,
-      "en-US":    `${BASE}/about`,
-      "en-GB":    `${BASE}/about`,
-      "en-AE":    `${BASE}/about`,
-      "en-AU":    `${BASE}/about`,
+      "en-IN":     `${BASE}/about`,
+      "en-US":     `${BASE}/about`,
+      "en-GB":     `${BASE}/about`,
+      "en-AE":     `${BASE}/about`,
+      "en-AU":     `${BASE}/about`,
       "x-default": `${BASE}/about`,
     },
   },
 
-  // ── Robots ──────────────────────────────────────────────────────────────
   robots: {
     index: true,
     follow: true,
@@ -81,17 +57,14 @@ export const metadata: Metadata = {
     },
   },
 
-  // ── Open Graph ──────────────────────────────────────────────────────────
-  // OG title ≤ 60 chars — tested against Facebook & LinkedIn preview truncation
   openGraph: {
-    title: "About 99 Visual Solutions | IT & 3D Visualization Bangalore",
-    description:
-      "Bengaluru-based IT company with 10+ years and 500+ projects. Full-service digital transformation — web, app, 3D visualisation, CAD, GIS, SEO & IT consulting.",
-    url: `${BASE}/about`,
-    siteName: "99 Visual Solutions",
+    title:       "About 99 Visual Solutions | IT & 3D Visualization Bangalore",
+    description: "Bengaluru-based IT company with 10+ years and 500+ projects. Full-service digital transformation — web, app, 3D visualisation, CAD, GIS, SEO & IT consulting.",
+    url:         `${BASE}/about`,
+    siteName:    "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/about-og.jpg`,   // 1200 × 630 px, < 1 MB
+        url:    `${BASE}/images/about-og.jpg`,
         width:  1200,
         height: 630,
         alt:    "99 Visual Solutions team — IT & Digital Transformation Company, Bengaluru India",
@@ -102,7 +75,6 @@ export const metadata: Metadata = {
     type:   "website",
   },
 
-  // ── Twitter / X Card ────────────────────────────────────────────────────
   twitter: {
     card:        "summary_large_image",
     title:       "About 99 Visual Solutions | IT & 3D Visualization Bangalore",
@@ -117,12 +89,10 @@ export const metadata: Metadata = {
     ],
   },
 
-  // ── Verification ─────────────────────────────────────────────────────────
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
 
-  // ── Misc ─────────────────────────────────────────────────────────────────
   authors:         [{ name: "99 Visual Solutions", url: BASE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -133,304 +103,111 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// UNIFIED @graph SCHEMA
-//
-// Single <script> tag with all nodes cross-referenced by @id.
-// Google prefers the @graph pattern — it builds a connected entity graph
-// that powers Knowledge Panels, rich results, and entity disambiguation.
-//
-// Nodes: Organization → LocalBusiness → WebSite → AboutPage →
-//        ProfilePage → BreadcrumbList → FAQPage
+// DATES
 // ─────────────────────────────────────────────────────────────────────────────
-const FOUNDED       = "2015";
-const PHONE         = "+91-XXXXXXXXXX";           // ← replace
-const EMAIL         = "contact@99visual.com";
-const STREET        = "Your Street Address";      // ← replace
-const POSTAL_CODE   = "560087";                   // ← replace
-const DATE_PUBLISHED = "2024-01-01";              // ← set to real launch date
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0]; // auto on each build
+const DATE_PUBLISHED = "2023-01-01";
+const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-const aboutBreadcrumb = breadcrumb([
-  { name: "Home",  url: "/" },
-  { name: "About", url: "/about" },
-]);
-
-const aboutFaq = faqSchema([
-  {
-    question: "What services does 99 Visual Solutions offer?",
-    answer:
-      "99 Visual Solutions is a full-service IT and digital transformation company offering 3D architectural visualisation, custom web and mobile app development, CAD drafting, GIS and LiDAR mapping, digital marketing and SEO, IT consulting, and AI-powered QA and automation testing. We serve startups and enterprises across India, the USA, UK, UAE, and Australia.",
-  },
-  {
-    question: "When was 99 Visual Solutions founded?",
-    answer:
-      "99 Visual Solutions was founded in 2015 and is headquartered in Bengaluru, Karnataka, India. Over the past decade, we have grown into a full-service digital transformation company serving clients across India, the USA, UK, UAE, and Australia.",
-  },
-  {
-    question: "How many projects has 99 Visual Solutions completed?",
-    answer:
-      "99 Visual Solutions has successfully delivered over 500 projects across IT, web development, 3D architectural visualisation, CAD drafting, GIS/LiDAR mapping, and digital marketing domains. Our clients range from early-stage startups to established enterprises across multiple industries.",
-  },
-  {
-    question: "Does 99 Visual Solutions work with international clients?",
-    answer:
-      "Yes. We actively serve startups and enterprises in the USA, UK, UAE, and Australia alongside our Indian clients. Our offshore IT model delivers world-class quality at competitive rates, with dedicated account managers, agile delivery, and time-zone overlap for seamless communication.",
-  },
-  {
-    question: "How can I contact 99 Visual Solutions?",
-    answer:
-      "You can reach us via our contact page at 99visual.com/contact or email us directly at contact@99visual.com. We typically respond within 24 business hours. We also offer a free discovery call to understand your project requirements before any proposal.",
-  },
-  {
-    question: "What industries does 99 Visual Solutions serve?",
-    answer:
-      "We serve a wide range of industries including real estate, architecture, construction, healthcare, retail, e-commerce, education, logistics, and government. Our multi-disciplinary team brings domain expertise that is relevant to each sector, ensuring solutions that are both technically sound and commercially effective.",
-  },
-  {
-    question: "Why choose 99 Visual Solutions over other IT companies in Bangalore?",
-    answer:
-      "99 Visual Solutions combines six distinct specialisations under one roof — 3D visualisation, web and app development, CAD/GIS, SEO, IT consulting, and QA testing — giving clients a single accountable partner instead of managing multiple agencies. With 10+ years of experience, 500+ delivered projects, and a transparent, client-first approach, we consistently deliver measurable results on time and within budget.",
-  },
-]);
-
-const schemaGraph = {
-  "@context": "https://schema.org",
-  "@graph": [
-
-    // ── 1. Organization ─────────────────────────────────────────────────────
-    // Core entity node — referenced by all other nodes via @id
-    {
-      "@type": "Organization",
-      "@id": `${BASE}/#organization`,
-      name: "99 Visual Solutions",
-      alternateName: ["99Visual", "99VS"],
-      description:
-        "Bengaluru-based IT solutions company specialising in web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing since 2015.",
-      url: BASE,
-      logo: {
-        "@type": "ImageObject",
-        "@id": `${BASE}/#logo`,
-        url: `${BASE}/images/logo.png`,
-        contentUrl: `${BASE}/images/logo.png`,
-        width: 300,
-        height: 60,
-        caption: "99 Visual Solutions Logo",
-      },
-      image: {
-        "@type": "ImageObject",
-        url: `${BASE}/images/about-og.jpg`,
-        width: 1200,
-        height: 630,
-      },
-      foundingDate: FOUNDED,
-      numberOfEmployees: { "@type": "QuantitativeValue", minValue: 10, maxValue: 50 },
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: STREET,
-        addressLocality: "Bengaluru",
-        addressRegion: "Karnataka",
-        postalCode: POSTAL_CODE,
-        addressCountry: "IN",
-      },
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          telephone: PHONE,
-          contactType: "customer service",
-          availableLanguage: ["English", "Kannada", "Hindi"],
-          areaServed: ["IN", "US", "GB", "AU", "AE"],
-        },
-        {
-          "@type": "ContactPoint",
-          email: EMAIL,
-          contactType: "sales",
-          availableLanguage: "English",
-          url: `${BASE}/contact`,
-        },
-      ],
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-        // Add Instagram, YouTube, Google Business Profile when available
-      ],
-      knowsAbout: [
-        "Web Development",
-        "Search Engine Optimisation",
-        "Digital Marketing",
-        "3D Architectural Visualisation",
-        "CAD Drafting",
-        "GIS Mapping",
-        "LiDAR Data Processing",
-        "QA & Automation Testing",
-        "IT Consulting",
-        "Cloud Migration",
-        "BIM Modelling",
-      ],
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "IT & Digital Transformation Services",
-        itemListElement: [
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "3D Visualisation & Architectural Rendering" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Web & App Development" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Consulting" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Digital Marketing & SEO" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "CAD, GIS & LiDAR Processing" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "AI-Powered QA & Automation Testing" } },
-        ],
-      },
-    },
-
-    // ── 2. LocalBusiness ────────────────────────────────────────────────────
-    // Powers local pack rankings and Google Maps results
-    {
-      "@type": ["LocalBusiness", "ProfessionalService"],
-      "@id": `${BASE}/#localbusiness`,
-      name: "99 Visual Solutions",
-      image: `${BASE}/images/about-og.jpg`,
-      url: BASE,
-      telephone: PHONE,
-      email: EMAIL,
-      description:
-        "IT and digital solutions company in Bengaluru offering web development, SEO, 3D visualisation, CAD/GIS, LiDAR, and QA testing services.",
-      priceRange: "$$",
-      currenciesAccepted: "INR, USD, GBP, AED, AUD",
-      paymentAccepted: "Bank Transfer, Credit Card, UPI, PayPal",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: STREET,
-        addressLocality: "Bengaluru",
-        addressRegion: "Karnataka",
-        postalCode: POSTAL_CODE,
-        addressCountry: "IN",
-      },
-      geo: {
-        "@type": "GeoCoordinates",
-        latitude: 12.9716,
-        longitude: 77.5946,
-      },
-      openingHoursSpecification: [
-        {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          opens: "09:00",
-          closes: "18:30",
-        },
-        {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Saturday"],
-          opens: "10:00",
-          closes: "14:00",
-        },
-      ],
-      areaServed: [
-        { "@type": "Country", name: "India" },
-        { "@type": "Country", name: "United States" },
-        { "@type": "Country", name: "United Kingdom" },
-        { "@type": "Country", name: "United Arab Emirates" },
-        { "@type": "Country", name: "Australia" },
-      ],
-      parentOrganization: { "@id": `${BASE}/#organization` },
-      sameAs: [
-        "https://x.com/99VisualSoluti1",
-        "https://www.linkedin.com/company/99-visual-solutions/",
-        "https://www.facebook.com/profile.php?id=100093639888151",
-      ],
-      // ← Uncomment and populate once you have real verified reviews
-      // aggregateRating: {
-      //   "@type": "AggregateRating",
-      //   ratingValue: "4.9",
-      //   reviewCount: "47",
-      //   bestRating: "5",
-      //   worstRating: "1",
-      // },
-    },
-
-    // ── 3. WebSite ──────────────────────────────────────────────────────────
-    // Enables Sitelinks Search Box. Only define once (shared with homepage).
-    {
-      "@type": "WebSite",
-      "@id": `${BASE}/#website`,
-      url: BASE,
-      name: "99 Visual Solutions",
-      description: "Web development, SEO, digital marketing, 3D visualisation, CAD/GIS, and QA testing services.",
-      publisher: { "@id": `${BASE}/#organization` },
-      inLanguage: "en",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${BASE}/?s={search_term_string}`,
-        },
-        "query-input": "required name=search_term_string",
-      },
-    },
-
-    // ── 4. AboutPage ────────────────────────────────────────────────────────
-    // Tells Google this is a company's About page — distinct from a generic WebPage.
-    {
-      "@type": "AboutPage",
-      "@id": `${BASE}/about#webpage`,
-      url: `${BASE}/about`,
-      name: "About 99 Visual Solutions | IT & 3D Visualization Company Bangalore",
-      description:
-        "Learn about 99 Visual Solutions — Bengaluru IT company founded in 2015 with 500+ projects across web development, SEO, 3D visualisation, CAD/GIS, and QA testing.",
-      inLanguage: "en",
-      datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,
-      isPartOf:  { "@id": `${BASE}/#website` },
-      about:     { "@id": `${BASE}/#organization` },
-      publisher: { "@id": `${BASE}/#organization` },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url:    `${BASE}/images/about-og.jpg`,
-        width:  1200,
-        height: 630,
-        caption: "99 Visual Solutions — Bengaluru IT Company",
-      },
-      // Speakable — hints Google Assistant which text to read aloud
-      speakable: {
-        "@type": "SpeakableSpecification",
-        cssSelector: [".about-hero__heading", ".about-hero__sub"],
-      },
-      breadcrumb: { "@id": `${BASE}/about#breadcrumb` },
-      potentialAction: {
-        "@type": "ReadAction",
-        target: [`${BASE}/about`],
-      },
-    },
-
-    // ── 5. ProfilePage ──────────────────────────────────────────────────────
-    // New Google schema type (2023+) for entity profile / about pages.
-    // Reinforces company identity and can power enhanced SERP features.
-    {
-      "@type": "ProfilePage",
-      "@id": `${BASE}/about#profilepage`,
-      url: `${BASE}/about`,
-      name: "Company Profile — 99 Visual Solutions",
-      dateCreated:  DATE_PUBLISHED,
-      dateModified: DATE_MODIFIED,
-      mainEntity: { "@id": `${BASE}/#organization` },
-      isPartOf:   { "@id": `${BASE}/#website` },
-    },
-
-    // ── 6. BreadcrumbList ───────────────────────────────────────────────────
-    // @id allows AboutPage to reference this node directly
-    {
-      ...aboutBreadcrumb,
-      "@id": `${BASE}/about#breadcrumb`,
-    },
-
-    // ── 7. FAQPage ──────────────────────────────────────────────────────────
-    // 7 questions × 40–300 word answers = maximum rich result eligibility
-    {
-      ...aboutFaq,
-      "@id": `${BASE}/about#faq`,
-      mainEntityOfPage: { "@id": `${BASE}/about#webpage` },
-    },
-
-  ],
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEMA NODES
+// ─────────────────────────────────────────────────────────────────────────────
+const aboutBreadcrumbNode = {
+  ...breadcrumb([
+    { name: "Home",  url: "/" },
+    { name: "About", url: "/about" },
+  ]),
+  "@id": `${BASE}/about#breadcrumb`,
 };
+
+const aboutFaqNode = {
+  ...faqSchema([
+    {
+      question: "What services does 99 Visual Solutions offer?",
+      answer:
+        "99 Visual Solutions is a full-service IT and digital transformation company offering 3D architectural visualisation, custom web and mobile app development, CAD drafting, GIS and LiDAR mapping, digital marketing and SEO, IT consulting, and AI-powered QA and automation testing. We serve startups and enterprises across India, the USA, UK, UAE, and Australia.",
+    },
+    {
+      question: "When was 99 Visual Solutions founded?",
+      answer:
+        "99 Visual Solutions was founded in 2020 and is headquartered in Bengaluru, Karnataka, India. Over the years, we have grown into a full-service digital transformation company serving clients across India, the USA, UK, UAE, and Australia.",
+    },
+    {
+      question: "How many projects has 99 Visual Solutions completed?",
+      answer:
+        "99 Visual Solutions has successfully delivered over 500 projects across IT, web development, 3D architectural visualisation, CAD drafting, GIS/LiDAR mapping, and digital marketing domains. Our clients range from early-stage startups to established enterprises across multiple industries.",
+    },
+    {
+      question: "Does 99 Visual Solutions work with international clients?",
+      answer:
+        "Yes. We actively serve startups and enterprises in the USA, UK, UAE, and Australia alongside our Indian clients. Our offshore IT model delivers world-class quality at competitive rates, with dedicated account managers, agile delivery, and time-zone overlap for seamless communication.",
+    },
+    {
+      question: "How can I contact 99 Visual Solutions?",
+      answer:
+        "You can reach us via our contact page at 99visual.com/contact or email us directly at contact@99visual.com. We typically respond within 24 business hours. We also offer a free discovery call to understand your project requirements before any proposal.",
+    },
+    {
+      question: "What industries does 99 Visual Solutions serve?",
+      answer:
+        "We serve a wide range of industries including real estate, architecture, construction, healthcare, retail, e-commerce, education, logistics, and government. Our multi-disciplinary team brings domain expertise relevant to each sector, ensuring solutions that are both technically sound and commercially effective.",
+    },
+    {
+      question: "Why choose 99 Visual Solutions over other IT companies in Bangalore?",
+      answer:
+        "99 Visual Solutions combines six distinct specialisations under one roof — 3D visualisation, web and app development, CAD/GIS, SEO, IT consulting, and QA testing — giving clients a single accountable partner instead of managing multiple agencies. With 500+ delivered projects and a transparent, client-first approach, we consistently deliver measurable results on time and within budget.",
+    },
+  ]),
+  "@id":            `${BASE}/about#faq`,
+  mainEntityOfPage: { "@id": `${BASE}/about#webpage` },
+};
+
+const aboutPageNode = {
+  "@type":       "AboutPage",
+  "@id":         `${BASE}/about#webpage`,
+  url:           `${BASE}/about`,
+  name:          "About 99 Visual Solutions | IT & 3D Visualization Company Bangalore",
+  description:   "Learn about 99 Visual Solutions — Bengaluru IT company with 500+ projects across web development, SEO, 3D visualisation, CAD/GIS, and QA testing.",
+  inLanguage:    "en",
+  datePublished: DATE_PUBLISHED,
+  dateModified:  DATE_MODIFIED,
+  isPartOf:      { "@id": `${BASE}/#website` },
+  about:         { "@id": `${BASE}/#organization` },
+  publisher:     { "@id": `${BASE}/#organization` },
+  primaryImageOfPage: {
+    "@type":   "ImageObject",
+    url:       `${BASE}/images/about-og.jpg`,
+    width:     1200,
+    height:    630,
+    caption:   "99 Visual Solutions — Bengaluru IT Company",
+  },
+  speakable: {
+    "@type":     "SpeakableSpecification",
+    cssSelector: [".ab-hero__h1", ".ab-hero__sub"],
+  },
+  breadcrumb:      { "@id": `${BASE}/about#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE}/about`] },
+};
+
+const profilePageNode = {
+  "@type":      "ProfilePage",
+  "@id":        `${BASE}/about#profilepage`,
+  url:          `${BASE}/about`,
+  name:         "Company Profile — 99 Visual Solutions",
+  dateCreated:  DATE_PUBLISHED,
+  dateModified: DATE_MODIFIED,
+  mainEntity:   { "@id": `${BASE}/#organization` },
+  isPartOf:     { "@id": `${BASE}/#website` },
+};
+
+const aboutGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  aboutPageNode,
+  profilePageNode,
+  aboutBreadcrumbNode,
+  aboutFaqNode,
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -438,257 +215,490 @@ const schemaGraph = {
 export default function AboutPage() {
   return (
     <>
-      {/*
-        PERFORMANCE NOTE — PageLoader:
-        Ensure PageLoader fades out within 800ms. A full-screen blocking overlay
-        hurts LCP scores — Googlebot renders CSS and penalises hidden above-fold content.
-      */}
       <PageLoader />
 
-      {/* ── Unified @graph JSON-LD — single script, all nodes ─────────────── */}
       <script
+        id="schema-about-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutGraph) }}
       />
 
-      {/* ── Styles ────────────────────────────────────────────────────────── */}
       <style>{`
-        /*
-          FONT PERFORMANCE:
-          Add these to app/layout.tsx <head> to eliminate render-blocking:
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        */
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ── Animated orbs ────────────────────────────────────────────────── */
-        .about-hero__orb {
-          position: absolute; border-radius: 50%;
-          filter: blur(100px); pointer-events: none;
-          animation: aboutOrbDrift 16s ease-in-out infinite alternate;
-        }
-        .about-hero__orb--1 {
-          width: 540px; height: 540px;
-          background: radial-gradient(circle, #f97316, #ea580c);
-          top: -160px; left: -120px; opacity: .13;
-        }
-        .about-hero__orb--2 {
-          width: 460px; height: 460px;
-          background: radial-gradient(circle, #fb923c, #f97316);
-          bottom: -140px; right: -100px; opacity: .12;
-          animation-delay: -8s;
-        }
-        .about-hero__orb--3 {
-          width: 300px; height: 300px;
-          background: radial-gradient(circle, #fbbf24, #f97316);
-          top: 35%; left: 60%; opacity: .07;
-          animation-delay: -4s;
-        }
-        @keyframes aboutOrbDrift {
-          0%   { transform: translate(0, 0) scale(1); }
-          100% { transform: translate(32px, 24px) scale(1.06); }
+        /* ── Design tokens ───────────────────────────────────────────────── */
+        :root {
+          --c-bg:      #080808;
+          --c-surface: #0f0f0f;
+          --c-border:  rgba(255,255,255,0.07);
+          --c-orange:  #f97316;
+          --c-muted:   rgba(255,255,255,0.45);
+          --ff-serif:  'Cormorant Garamond', serif;
+          --ff-sans:   'DM Sans', sans-serif;
         }
 
-        /* Fine grid overlay */
-        .about-hero__grid {
-          position: absolute; inset: 0; pointer-events: none;
-          background-image:
-            linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-
-        /* Grain texture */
-        .about-hero__grain {
-          position: absolute; inset: 0; opacity: .03; pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 180px 180px;
-        }
-
-        /* ── sr-only utility — invisible to users, crawlable by Googlebot ── */
         .sr-only {
-          position: absolute !important;
-          width: 1px !important; height: 1px !important;
-          padding: 0 !important; margin: -1px !important;
-          overflow: hidden !important;
-          clip: rect(0, 0, 0, 0) !important;
-          white-space: nowrap !important;
-          border: 0 !important;
+          position:    absolute !important;
+          width:       1px      !important;
+          height:      1px      !important;
+          padding:     0        !important;
+          margin:      -1px     !important;
+          overflow:    hidden   !important;
+          clip:        rect(0,0,0,0) !important;
+          white-space: nowrap   !important;
+          border:      0        !important;
         }
 
-        /* ── Hero layout ──────────────────────────────────────────────────── */
-        .about-hero {
-          position: relative; min-height: 90vh;
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          overflow: hidden; background: #080808;
-          text-align: center; padding: 8rem 1.5rem 6rem;
+        /* ══ HERO SHELL ══════════════════════════════════════════════════ */
+        .ab-hero {
+          position:       relative;
+          min-height:     92vh;
+          display:        flex;
+          flex-direction: row;
+          align-items:    center;
+          background:     var(--c-bg);
+          overflow:       hidden;
         }
 
-        /* ── Eyebrow pill ─────────────────────────────────────────────────── */
-        .about-hero__eyebrow {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
-          letter-spacing: .22em; text-transform: uppercase; color: #f97316;
-          border: 1px solid rgba(249,115,22,.28); background: rgba(249,115,22,.07);
-          padding: 6px 16px; border-radius: 100px;
-          margin-bottom: 1.8rem; backdrop-filter: blur(8px);
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;
-        }
-        .about-hero__eyebrow-dot {
-          width: 5px; height: 5px; border-radius: 50%; background: #f97316;
-          animation: aboutPulse 2s ease-in-out infinite; flex-shrink: 0;
-        }
-        @keyframes aboutPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: .35; transform: scale(.65); }
+        .ab-hero__grid {
+          position:         absolute;
+          inset:            0;
+          pointer-events:   none;
+          background-image:
+            linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+          background-size: 52px 52px;
         }
 
-        /* ── Headings ─────────────────────────────────────────────────────── */
-        .about-hero__heading {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(2rem, 5vw, 3.6rem);
-          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
-          color: #fff; margin: 0 0 1rem;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;
-        }
-        .about-hero__heading em {
-          font-style: italic; color: transparent;
-          -webkit-text-stroke: 0.2px #f97316;
+        /* ── Left column ─────────────────────────────────────────────────── */
+        .ab-hero__left {
+          position:       relative;
+          z-index:        10;
+          flex:           1 1 340px;
+          padding:        6rem 3rem 6rem 6rem;
+          display:        flex;
+          flex-direction: column;
+          align-items:    flex-start;
         }
 
-        /* ── Rule ─────────────────────────────────────────────────────────── */
-        .about-hero__rule {
-          width: 40px; height: 1px;
-          background: linear-gradient(90deg, transparent, #f97316, transparent);
-          margin: 0 auto 1.4rem;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;
+        .ab-hero__eyebrow {
+          display:         inline-flex;
+          align-items:     center;
+          gap:             8px;
+          font-family:     var(--ff-sans);
+          font-size:       10px;
+          font-weight:     500;
+          letter-spacing:  .22em;
+          text-transform:  uppercase;
+          color:           var(--c-orange);
+          border:          1px solid rgba(249,115,22,.28);
+          background:      rgba(249,115,22,.07);
+          padding:         6px 16px;
+          border-radius:   100px;
+          margin-bottom:   1.8rem;
+          backdrop-filter: blur(8px);
+          animation:       abFadeUp .9s cubic-bezier(.22,1,.36,1) both;
+        }
+        .ab-hero__dot {
+          width:         5px;
+          height:        5px;
+          border-radius: 50%;
+          background:    var(--c-orange);
+          animation:     abPulse 2s ease-in-out infinite;
+        }
+        @keyframes abPulse {
+          0%,100% { opacity:1;  transform:scale(1); }
+          50%     { opacity:.35; transform:scale(.65); }
         }
 
-        /* ── Body copy ────────────────────────────────────────────────────── */
-        .about-hero__sub {
-          font-family: 'DM Sans', sans-serif;
-          font-size: clamp(.95rem, 2vw, 1.1rem);
-          font-weight: 300; line-height: 1.85;
-          color: rgba(255,255,255,0.45);
-          max-width: 560px; margin: 0 auto 2.6rem;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;
+        .ab-hero__h1 {
+          font-family:    var(--ff-serif);
+          font-size:      clamp(2rem, 4.5vw, 3.8rem);
+          font-weight:    700;
+          line-height:    1.1;
+          letter-spacing: -.02em;
+          color:          #fff;
+          margin:         0 0 1rem;
+          animation:      abFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;
+        }
+        .ab-hero__h1 em {
+          font-style:          italic;
+          color:               transparent;
+          -webkit-text-stroke: .2px var(--c-orange);
         }
 
-        /* ── Stats row — uses <dl> for semantic accessibility ─────────────── */
-        .about-hero__stats {
-          display: flex; justify-content: center;
-          gap: 0; margin: 0 0 2.8rem;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .42s both;
-          list-style: none; padding: 0;
+        .ab-hero__rule {
+          width:      48px;
+          height:     1px;
+          background: linear-gradient(90deg,transparent,var(--c-orange),transparent);
+          margin:     0 0 1.4rem;
+          animation:  abFadeUp .9s cubic-bezier(.22,1,.36,1) .22s both;
         }
-        .about-hero__stat {
-          padding: 0 2.5rem;
-          border-right: 1px solid rgba(255,255,255,0.1);
+
+        .ab-hero__sub {
+          font-family: var(--ff-sans);
+          font-size:   clamp(.95rem, 1.8vw, 1.1rem);
+          font-weight: 300;
+          line-height: 1.78;
+          color:       var(--c-muted);
+          max-width:   420px;
+          margin:      0 0 2rem;
+          animation:   abFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;
         }
-        .about-hero__stat:last-child { border-right: none; }
-        .about-hero__stat-num {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1.8rem, 4vw, 2.6rem);
-          font-weight: 600; color: #f97316;
-          line-height: 1; margin-bottom: 4px;
-          display: block;
+
+        /* ── Stats row ────────────────────────────────────────────────────── */
+        .ab-hero__stats {
+          display:   flex;
+          gap:       0;
+          list-style: none;
+          padding:   0;
+          margin:    0 0 2.4rem;
+          animation: abFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
         }
-        .about-hero__stat-label {
-          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
-          letter-spacing: .15em; text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
-          display: block;
+        .ab-hero__stat {
+          padding:      0 2rem 0 0;
+          margin-right: 2rem;
+          border-right: 1px solid rgba(255,255,255,.1);
+        }
+        .ab-hero__stat:last-child {
+          border-right: none;
+          margin-right: 0;
+          padding-right: 0;
+        }
+        .ab-hero__stat-num {
+          font-family:   var(--ff-serif);
+          font-size:     clamp(1.6rem,3.5vw,2.2rem);
+          font-weight:   600;
+          color:         var(--c-orange);
+          line-height:   1;
+          margin-bottom: 4px;
+          display:       block;
+        }
+        .ab-hero__stat-label {
+          font-family:    var(--ff-sans);
+          font-size:      9px;
+          font-weight:    500;
+          letter-spacing: .15em;
+          text-transform: uppercase;
+          color:          rgba(255,255,255,.35);
+          display:        block;
         }
 
         /* ── CTA group ────────────────────────────────────────────────────── */
-        .about-hero__cta-group {
-          display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) .5s both;
+        .ab-hero__cta-group {
+          display:   flex;
+          gap:       12px;
+          flex-wrap: wrap;
+          animation: abFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
         }
-        .about-hero__cta-primary {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
-          letter-spacing: .12em; text-transform: uppercase; color: #080808;
-          background: linear-gradient(135deg, #fb923c, #f97316);
-          padding: 14px 34px; border-radius: 100px; text-decoration: none;
-          box-shadow: 0 8px 32px rgba(249,115,22,.35);
-          transition: transform .2s ease, box-shadow .2s ease;
+        .ab-hero__cta-primary {
+          display:         inline-flex;
+          align-items:     center;
+          gap:             10px;
+          font-family:     var(--ff-sans);
+          font-size:       11px;
+          font-weight:     600;
+          letter-spacing:  .12em;
+          text-transform:  uppercase;
+          color:           #080808;
+          background:      linear-gradient(135deg,#fb923c,#f97316);
+          padding:         14px 34px;
+          border-radius:   100px;
+          text-decoration: none;
+          box-shadow:      0 8px 32px rgba(249,115,22,.35);
+          transition:      transform .22s ease, box-shadow .22s ease;
         }
-        .about-hero__cta-primary:hover {
-          transform: translateY(-2px) scale(1.04);
-          box-shadow: 0 14px 40px rgba(249,115,22,.5);
+        .ab-hero__cta-primary:hover {
+          transform:  translateY(-2px) scale(1.04);
+          box-shadow: 0 14px 40px rgba(249,115,22,.52);
         }
-        .about-hero__cta-secondary {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
-          letter-spacing: .12em; text-transform: uppercase; color: #f97316;
-          border: 1px solid rgba(249,115,22,.35);
-          padding: 14px 34px; border-radius: 100px; text-decoration: none;
-          transition: background .2s ease, border-color .2s ease;
+        .ab-hero__cta-secondary {
+          display:         inline-flex;
+          align-items:     center;
+          gap:             10px;
+          font-family:     var(--ff-sans);
+          font-size:       11px;
+          font-weight:     500;
+          letter-spacing:  .12em;
+          text-transform:  uppercase;
+          color:           var(--c-orange);
+          border:          1px solid rgba(249,115,22,.35);
+          padding:         14px 34px;
+          border-radius:   100px;
+          text-decoration: none;
+          transition:      background .22s ease, border-color .22s ease;
         }
-        .about-hero__cta-secondary:hover {
-          background: rgba(249,115,22,.08);
-          border-color: #f97316;
+        .ab-hero__cta-secondary:hover {
+          background:   rgba(249,115,22,.08);
+          border-color: var(--c-orange);
+        }
+
+        @keyframes abFadeUp {
+          from { opacity:0; transform:translateY(32px); }
+          to   { opacity:1; transform:translateY(0); }
         }
 
         /* ── Scroll indicator ─────────────────────────────────────────────── */
-        .about-hero__scroll {
-          position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-          z-index: 20; display: flex; flex-direction: column;
-          align-items: center; gap: 6px; text-decoration: none;
-          animation: aboutFadeUp .9s ease .8s both;
+        .ab-hero__scroll {
+          position:        absolute;
+          bottom:          2rem;
+          left:            calc(6rem + 20px);
+          z-index:         20;
+          display:         flex;
+          flex-direction:  column;
+          align-items:     center;
+          gap:             6px;
+          text-decoration: none;
+          animation:       abFadeUp .9s ease .85s both;
         }
-        .about-hero__scroll-line {
-          width: 1px; height: 40px;
-          background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
-          animation: aboutScrollLine 1.8s ease-in-out infinite;
+        .ab-hero__scroll-line {
+          width:      1px;
+          height:     40px;
+          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
+          animation:  abScrollLine 1.8s ease-in-out infinite;
         }
-        @keyframes aboutScrollLine {
-          0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
-          50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
-          100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+        @keyframes abScrollLine {
+          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
+          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
+          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
         }
-        .about-hero__scroll-label {
-          font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
-          letter-spacing: .2em; text-transform: uppercase;
-          color: rgba(255,255,255,.22);
-        }
-
-        /* ── Corner accents ───────────────────────────────────────────────── */
-        .about-hero__corner {
-          position: absolute; width: 28px; height: 28px;
-          z-index: 5; opacity: .2; pointer-events: none;
-        }
-        .about-hero__corner--tl { top: 24px; left: 24px; border-top: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .about-hero__corner--tr { top: 24px; right: 24px; border-top: 1px solid #f97316; border-right: 1px solid #f97316; }
-        .about-hero__corner--bl { bottom: 64px; left: 24px; border-bottom: 1px solid #f97316; border-left: 1px solid #f97316; }
-        .about-hero__corner--br { bottom: 64px; right: 24px; border-bottom: 1px solid #f97316; border-right: 1px solid #f97316; }
-
-        /* ── Content wrapper ──────────────────────────────────────────────── */
-        .about-hero__content {
-          position: relative; z-index: 10;
-          max-width: 780px; margin: 0 auto;
-          animation: aboutFadeUp .9s cubic-bezier(.22,1,.36,1) both;
-        }
-        @keyframes aboutFadeUp {
-          from { opacity: 0; transform: translateY(36px); }
-          to   { opacity: 1; transform: translateY(0); }
+        .ab-hero__scroll-lbl {
+          font-family:    var(--ff-sans);
+          font-size:      9px;
+          font-weight:    500;
+          letter-spacing: .2em;
+          text-transform: uppercase;
+          color:          rgba(255,255,255,.22);
         }
 
-        /* ── Responsive ───────────────────────────────────────────────────── */
-        @media (max-width: 600px) {
-          .about-hero__stat       { padding: 0 1.2rem; }
-          .about-hero__heading em { -webkit-text-stroke-width: 1px; }
-          .about-hero__cta-group  { flex-direction: column; align-items: center; }
+        /* ── Right column — NO ::before glow bleed ───────────────────────── */
+        .ab-hero__right {
+          flex:            0 0 460px;
+          height:          92vh;
+          min-height:      560px;
+          position:        relative;
+          display:         flex;
+          align-items:     center;
+          justify-content: center;
+          overflow:        hidden;
         }
 
-        /* ── Respect user motion preferences (WCAG 2.1 AA) ───────────────── */
+        /* ── Animation stage — mirrors careers .cr-anim exactly ──────────── */
+        .ab-anim {
+          position:       relative;
+          width:          340px;
+          height:         420px;
+          pointer-events: none;
+        }
+
+        /* Central badge — mirrors careers .cr-anim__badge exactly */
+        .ab-anim__badge {
+          position:        absolute;
+          top:             50%;
+          left:            50%;
+          transform:       translate(-50%, -50%);
+          width:           110px;
+          height:          110px;
+          border-radius:   50%;
+          background:      linear-gradient(135deg, rgba(249,115,22,.18), rgba(99,102,241,.18));
+          border:          1.5px solid rgba(249,115,22,.4);
+          display:         flex;
+          flex-direction:  column;
+          align-items:     center;
+          justify-content: center;
+          gap:             4px;
+          box-shadow:
+            0 0 40px rgba(249,115,22,.15),
+            0 0 80px rgba(99,102,241,.08),
+            inset 0 1px 0 rgba(255,255,255,.06);
+          animation:       abBadgePulse 3s ease-in-out infinite;
+          z-index:         10;
+        }
+        @keyframes abBadgePulse {
+          0%,100% { box-shadow: 0 0 40px rgba(249,115,22,.15), 0 0 80px rgba(99,102,241,.08), inset 0 1px 0 rgba(255,255,255,.06); }
+          50%     { box-shadow: 0 0 60px rgba(249,115,22,.30), 0 0 100px rgba(99,102,241,.15), inset 0 1px 0 rgba(255,255,255,.06); }
+        }
+        .ab-anim__badge-label {
+          font-family:    var(--ff-sans);
+          font-size:      8px;
+          font-weight:    600;
+          letter-spacing: .2em;
+          text-transform: uppercase;
+          color:          var(--c-orange);
+        }
+        .ab-anim__badge-num {
+          font-family: var(--ff-serif);
+          font-size:   2rem;
+          font-weight: 700;
+          color:       #fff;
+          line-height: 1;
+        }
+        .ab-anim__badge-sub {
+          font-family:    var(--ff-sans);
+          font-size:      7px;
+          font-weight:    400;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          color:          var(--c-muted);
+        }
+
+        /* Orbit rings — mirrors careers .cr-anim__ring exactly */
+        .ab-anim__ring {
+          position:      absolute;
+          top:           50%;
+          left:          50%;
+          transform:     translate(-50%, -50%);
+          width:         200px;
+          height:        200px;
+          border-radius: 50%;
+          border:        1px dashed rgba(249,115,22,.18);
+          animation:     abRingSpin 18s linear infinite;
+        }
+        .ab-anim__ring--2 {
+          width:        280px;
+          height:       280px;
+          border-color: rgba(99,102,241,.12);
+          border-style: solid;
+          border-width: 1px;
+          animation:    abRingSpin 28s linear infinite reverse;
+        }
+        @keyframes abRingSpin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Floating cards — mirrors careers .cr-card exactly */
+        .ab-card {
+          position:        absolute;
+          display:         flex;
+          align-items:     center;
+          gap:             10px;
+          background:      rgba(15,15,15,.9);
+          border:          1px solid var(--c-border);
+          border-radius:   12px;
+          padding:         10px 14px;
+          backdrop-filter: blur(12px);
+          box-shadow:      0 8px 32px rgba(0,0,0,.4);
+          white-space:     nowrap;
+        }
+        .ab-card__icon {
+          width:           32px;
+          height:          32px;
+          border-radius:   8px;
+          display:         flex;
+          align-items:     center;
+          justify-content: center;
+          font-size:       .85rem;
+          flex-shrink:     0;
+        }
+        .ab-card__title {
+          font-family: var(--ff-sans);
+          font-size:   .72rem;
+          font-weight: 500;
+          color:       #fff;
+          line-height: 1.3;
+        }
+        .ab-card__tag {
+          font-family:    var(--ff-sans);
+          font-size:      8px;
+          font-weight:    500;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          color:          var(--c-orange);
+          opacity:        .75;
+        }
+
+        /* Card positions & floats — mirrors careers .cr-card--N exactly */
+        .ab-card--1 {
+          top:       8%;
+          left:      -8%;
+          animation: abFloat1 6s ease-in-out infinite;
+        }
+        .ab-card--2 {
+          top:       14%;
+          right:     -4%;
+          animation: abFloat2 7s ease-in-out infinite;
+        }
+        .ab-card--3 {
+          bottom:    28%;
+          left:      -10%;
+          animation: abFloat3 5.5s ease-in-out infinite;
+        }
+        .ab-card--4 {
+          bottom:    10%;
+          right:     -6%;
+          animation: abFloat4 6.5s ease-in-out infinite;
+        }
+
+        @keyframes abFloat1 {
+          0%,100% { transform: translateY(0px)  rotate(-1deg); }
+          50%     { transform: translateY(-10px) rotate(1deg); }
+        }
+        @keyframes abFloat2 {
+          0%,100% { transform: translateY(0px)  rotate(1deg); }
+          50%     { transform: translateY(-14px) rotate(-1deg); }
+        }
+        @keyframes abFloat3 {
+          0%,100% { transform: translateY(0px) rotate(.5deg); }
+          50%     { transform: translateY(-8px) rotate(-1.5deg); }
+        }
+        @keyframes abFloat4 {
+          0%,100% { transform: translateY(0px)  rotate(-1.5deg); }
+          50%     { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        /* ── Corner brackets ──────────────────────────────────────────────── */
+        .ab-corner {
+          position:       absolute;
+          width:          28px;
+          height:         28px;
+          z-index:        5;
+          opacity:        .18;
+          pointer-events: none;
+        }
+        .ab-corner--tl { top:22px;    left:22px;    border-top:   1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .ab-corner--tr { top:22px;    right:22px;   border-top:   1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .ab-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .ab-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+
+        /* ══ RESPONSIVE — mirrors careers breakpoints exactly ══════════════ */
+        @media (max-width: 900px) {
+          .ab-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
+          .ab-hero__right { flex: 0 0 340px; }
+          .ab-anim        { width: 260px; height: 340px; }
+        }
+
+        @media (max-width: 768px) {
+          .ab-hero { flex-direction: column; min-height: auto; }
+          .ab-hero__left {
+            order: 2; flex: none; width: 100%;
+            padding: 3rem 1.5rem 4rem;
+            align-items: center; text-align: center;
+          }
+          .ab-hero__sub       { max-width: 100%; }
+          .ab-hero__stats     { justify-content: center; }
+          .ab-hero__cta-group { justify-content: center; }
+          .ab-hero__right {
+            order: 1; flex: none; width: 100%;
+            height: 300px; min-height: 300px;
+          }
+          .ab-hero__scroll { left:50%; transform:translateX(-50%); }
+          .ab-card--1 { top: 4%; left: 2%; }
+          .ab-card--2 { top: 4%; right: 2%; }
+          .ab-card--3 { bottom: 6%; left: 2%; }
+          .ab-card--4 { bottom: 6%; right: 2%; }
+        }
+
+        @media (max-width: 480px) {
+          .ab-hero__cta-group { flex-direction: column; align-items: center; }
+          .ab-hero__stat      { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
+            animation-duration:        0.01ms !important;
+            animation-iteration-count: 1      !important;
+            transition-duration:       0.01ms !important;
           }
         }
       `}</style>
@@ -697,139 +707,95 @@ export default function AboutPage() {
 
       {/* ══ HERO ════════════════════════════════════════════════════════════ */}
       <section
-        className="about-hero"
-        aria-label="About 99 Visual Solutions"
+        className="ab-hero"
+        aria-labelledby="ab-hero-heading"
         id="about-hero"
-        // Microdata reinforces the AboutPage JSON-LD above
         itemScope
         itemType="https://schema.org/AboutPage"
       >
+        <div className="ab-hero__grid" aria-hidden="true" />
 
-        {/* ── Decorative background — all hidden from assistive tech ──────── */}
-        <div aria-hidden="true">
-          <div className="about-hero__orb about-hero__orb--1" />
-          <div className="about-hero__orb about-hero__orb--2" />
-          <div className="about-hero__orb about-hero__orb--3" />
-          <div className="about-hero__grid" />
-          <div className="about-hero__grain" />
-        </div>
+        <div className="ab-corner ab-corner--tl" aria-hidden="true" />
+        <div className="ab-corner ab-corner--tr" aria-hidden="true" />
+        <div className="ab-corner ab-corner--bl" aria-hidden="true" />
+        <div className="ab-corner ab-corner--br" aria-hidden="true" />
 
-        {/* Corner decorations */}
-        <div className="about-hero__corner about-hero__corner--tl" aria-hidden="true" />
-        <div className="about-hero__corner about-hero__corner--tr" aria-hidden="true" />
-        <div className="about-hero__corner about-hero__corner--bl" aria-hidden="true" />
-        <div className="about-hero__corner about-hero__corner--br" aria-hidden="true" />
+        {/* ── LEFT: hero copy ─────────────────────────────────────────────── */}
+        <div className="ab-hero__left">
 
-        {/* ── Breadcrumb — sr-only ─────────────────────────────────────────
-          Visually hidden using .sr-only (1×1px clip technique).
-          ✅ Invisible to users       — no visual clutter
-          ✅ Crawlable by Googlebot   — full HTML + microdata parsed
-          ✅ Hidden from screen readers — aria-hidden (homepage→About is trivial nav)
-          JSON-LD breadcrumb above handles the SERP rich result independently.
-        ── */}
-        <nav
-          className="sr-only"
-          aria-label="Breadcrumb"
-          aria-hidden="true"
-        >
-          <ol
-            itemScope
-            itemType="https://schema.org/BreadcrumbList"
-            style={{ listStyle: "none", margin: 0, padding: 0 }}
-          >
-            <li
+          <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+            <ol
               itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
+              itemType="https://schema.org/BreadcrumbList"
+              style={{ listStyle: "none", margin: 0, padding: 0 }}
             >
-              <a href="/" itemProp="item">
-                <span itemProp="name">Home</span>
-              </a>
-              <meta itemProp="position" content="1" />
-            </li>
-            <li
-              itemScope
-              itemProp="itemListElement"
-              itemType="https://schema.org/ListItem"
-            >
-              <a href="/about" itemProp="item" aria-current="page">
-                <span itemProp="name">About</span>
-              </a>
-              <meta itemProp="position" content="2" />
-            </li>
-          </ol>
-        </nav>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <meta itemProp="position" content="1" />
+              </li>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/about" itemProp="item" aria-current="page">
+                  <span itemProp="name">About</span>
+                </a>
+                <meta itemProp="position" content="2" />
+              </li>
+            </ol>
+          </nav>
 
-        {/* ── Main content ─────────────────────────────────────────────────── */}
-        <div className="about-hero__content">
-
-          {/* Eyebrow — purely visual, no semantic value → aria-hidden */}
-          <p className="about-hero__eyebrow" aria-hidden="true">
-            <span className="about-hero__eyebrow-dot" />
-            Est. {FOUNDED} · Bangalore, India
+          <p className="ab-hero__eyebrow" aria-hidden="true">
+            <span className="ab-hero__dot" />
+            Est. 2020 · Bangalore, India
           </p>
 
-          {/*
-            H1 — Primary keyword target: "IT company Bangalore | 3D visualisation | web development"
-            itemProp="name" reinforces the AboutPage microdata entity name.
-          */}
-          <h1 className="about-hero__heading" itemProp="name">
-            We build what<br />
-            <em>matters</em>
+          <h1 className="ab-hero__h1" id="ab-hero-heading" itemProp="name">
+            We build what<br /><em>matters</em>
           </h1>
 
-          <div className="about-hero__rule" aria-hidden="true" />
+          <div className="ab-hero__rule" aria-hidden="true" />
 
-          {/*
-            Body copy — crawlable, keyword-natural.
-            itemProp="description" feeds Google's entity description parser.
-          */}
-          <p className="about-hero__sub" itemProp="description">
+          <p className="ab-hero__sub" itemProp="description">
             From bold web experiences to precise spatial data —
             99 Visual Solutions turns complex ideas into digital realities
             that drive real, measurable growth.
           </p>
 
-          {/* ── Stats — <dl> is the semantic element for label/value pairs ──
-            Using <dl>/<dt>/<dd> instead of plain divs:
-            ✅ Screen readers announce "10 plus — Years Active" correctly
-            ✅ Google can extract structured facts from description lists
-            ✅ Correct HTML5 semantics
-          ── */}
-          <dl
-            className="about-hero__stats"
-            aria-label="Company highlights"
-          >
-            <div className="about-hero__stat">
-              <dt className="about-hero__stat-label">Years Active</dt>
-              <dd className="about-hero__stat-num">10+</dd>
+          {/* Stats row */}
+          <dl className="ab-hero__stats" aria-label="Company highlights">
+            <div className="ab-hero__stat">
+              <dt className="ab-hero__stat-label">Years Active</dt>
+              <dd className="ab-hero__stat-num">5+</dd>
             </div>
-            <div className="about-hero__stat">
-              <dt className="about-hero__stat-label">Projects Done</dt>
-              <dd className="about-hero__stat-num">500+</dd>
+            <div className="ab-hero__stat">
+              <dt className="ab-hero__stat-label">Projects Done</dt>
+              <dd className="ab-hero__stat-num">500+</dd>
             </div>
-            <div className="about-hero__stat">
-              <dt className="about-hero__stat-label">Specializations</dt>
-              <dd className="about-hero__stat-num">6</dd>
+            <div className="ab-hero__stat">
+              <dt className="ab-hero__stat-label">Specializations</dt>
+              <dd className="ab-hero__stat-num">6</dd>
             </div>
           </dl>
 
-          {/* ── CTAs — both crawlable <a> tags pass PageRank to key pages ── */}
-          <div className="about-hero__cta-group">
+          {/* CTA group */}
+          <div className="ab-hero__cta-group">
             <a
               href="/contact"
-              className="about-hero__cta-primary"
+              className="ab-hero__cta-primary"
               aria-label="Get a free project quote from 99 Visual Solutions"
             >
               Get a Free Quote
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M7 2v10M3 8l4 4 4-4"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </a>
-
             <a
               href="/services"
-              className="about-hero__cta-secondary"
+              className="ab-hero__cta-secondary"
               aria-label="Explore all services offered by 99 Visual Solutions"
             >
               Our Services
@@ -837,18 +803,91 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Scroll indicator — decorative only */}
+        {/* ── RIGHT: floating service cards — same style as careers page ───── */}
+        <div className="ab-hero__right" aria-hidden="true">
+          <div className="ab-anim">
+
+            {/* Orbit rings */}
+            <div className="ab-anim__ring" />
+            <div className="ab-anim__ring ab-anim__ring--2" />
+
+            {/* Central badge */}
+            <div className="ab-anim__badge">
+              <span className="ab-anim__badge-label">Since</span>
+              <span className="ab-anim__badge-num">2020</span>
+              <span className="ab-anim__badge-sub">Bangalore</span>
+            </div>
+
+            {/* Card 1 — Web Development */}
+            <div className="ab-card ab-card--1">
+              <div
+                className="ab-card__icon"
+                style={{ background: "rgba(99,102,241,.15)", color: "#6366f1" }}
+              >
+                <FaLaptopCode />
+              </div>
+              <div>
+                <div className="ab-card__title">Web Development</div>
+                <div className="ab-card__tag">React · Next.js · Node</div>
+              </div>
+            </div>
+
+            {/* Card 2 — 3D Visualisation */}
+            <div className="ab-card ab-card--2">
+              <div
+                className="ab-card__icon"
+                style={{ background: "rgba(249,115,22,.15)", color: "#f97316" }}
+              >
+                <FaCubes />
+              </div>
+              <div>
+                <div className="ab-card__title">3D Visualisation</div>
+                <div className="ab-card__tag">Arch · Product · GIS</div>
+              </div>
+            </div>
+
+            {/* Card 3 — SEO & Digital Marketing */}
+            <div className="ab-card ab-card--3">
+              <div
+                className="ab-card__icon"
+                style={{ background: "rgba(34,211,238,.12)", color: "#22d3ee" }}
+              >
+                <FaSearchLocation />
+              </div>
+              <div>
+                <div className="ab-card__title">SEO & Marketing</div>
+                <div className="ab-card__tag">Google · Meta · Content</div>
+              </div>
+            </div>
+
+            {/* Card 4 — IT Consulting & QA */}
+            <div className="ab-card ab-card--4">
+              <div
+                className="ab-card__icon"
+                style={{ background: "rgba(251,191,36,.12)", color: "#fbbf24" }}
+              >
+                <FaCode />
+              </div>
+              <div>
+                <div className="ab-card__title">IT Consulting & QA</div>
+                <div className="ab-card__tag">CAD · GIS · Automation</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <a
           href="#about-content"
-          className="about-hero__scroll"
+          className="ab-hero__scroll"
           aria-label="Scroll down to learn more about 99 Visual Solutions"
         >
-          <div className="about-hero__scroll-line" aria-hidden="true" />
-          <span className="about-hero__scroll-label" aria-hidden="true">Scroll</span>
+          <div className="ab-hero__scroll-line" aria-hidden="true" />
+          <span className="ab-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* ── Main page content ─────────────────────────────────────────────── */}
+      {/* ══ MAIN CONTENT ════════════════════════════════════════════════════ */}
       <main id="about-content" aria-label="About page content">
         <TabAbout />
         <WhyChooseUs />

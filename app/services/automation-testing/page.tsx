@@ -17,23 +17,26 @@ import {
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
-
-// FIX: import orgSchema, localBusinessSchema, websiteSchema for unified @graph
-import { BASE, breadcrumb, faqSchema, orgSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
+import {
+  BASE,
+  breadcrumb,
+  faqSchema,
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+} from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD - 99 Visual Solutions",
+  title:
+    "AI-Powered QA & Automation Testing Services | Agentic AI Testing, Performance & CI/CD - 99 Visual Solutions",
   description:
     "99 Visual Solutions delivers next-generation QA and automation testing powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance & load testing, API testing, security testing, and CI/CD pipeline integration. Ship intelligent, bug-free software faster.",
 
-  // FIX: keywords[] REMOVED — ignored by all engines since 2009
-
   metadataBase: new URL(BASE),
 
-  // FIX: canonical changed to relative path; hreflang added (was missing entirely)
   alternates: {
     canonical: "/services/testing-development",
     languages: {
@@ -59,7 +62,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "AI-Powered QA & Automation Testing | Agentic AI, Self-Healing Tests & Bug-Free Delivery - 99 Visual Solutions",
+    title:
+      "AI-Powered QA & Automation Testing | Agentic AI, Self-Healing Tests & Bug-Free Delivery - 99 Visual Solutions",
     description:
       "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, load & performance testing, security testing, and CI/CD integration. Trusted by startups and enterprises worldwide.",
     url: `${BASE}/services/testing-development`,
@@ -77,11 +81,11 @@ export const metadata: Metadata = {
     type: "website",
   },
 
-  // FIX: Twitter images changed from bare string to typed array with alt
   twitter: {
     card:        "summary_large_image",
     title:       "AI-Powered QA & Automation Testing | 99 Visual Solutions",
-    description: "Ship reliable software with 99 Visual Solutions' Agentic AI QA services — autonomous test agents, self-healing automation, performance testing, security testing & CI/CD integration.",
+    description:
+      "Ship reliable software with 99 Visual Solutions' Agentic AI QA services — autonomous test agents, self-healing automation, performance testing, security testing & CI/CD integration.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
@@ -92,7 +96,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  // FIX: verification, publisher, referrer, formatDetection were missing
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
@@ -107,27 +110,42 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STRUCTURED DATA — unified @graph
-// FIX: was 3 separate <script> blocks with only breadcrumb/webPage/faq.
-//      Missing: Organization, LocalBusiness, WebSite — all added.
-//      dateModified auto-updates on every build (was missing entirely).
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
+// FAQ_ITEMS — single source of truth for schema AND visible HTML
+// (prevents FAQPage manual action risk: schema must match visible DOM)
+const FAQ_ITEMS = [
+  {
+    question: "What AI-powered QA services does 99 Visual Solutions provide?",
+    answer:
+      "We offer Agentic AI test automation, self-healing test scripts, LLM-driven exploratory testing, AI-augmented manual testing, and autonomous CI/CD quality gate integration.",
+  },
+  {
+    question: "Does 99 Visual Solutions support self-healing test automation?",
+    answer:
+      "Yes. Our AI-powered frameworks use self-healing scripts that automatically adapt to UI changes and DOM shifts, reducing maintenance overhead and keeping pipelines green.",
+  },
+  {
+    question: "What performance and load testing services are available?",
+    answer:
+      "We provide AI-guided load, stress, spike, and endurance testing with ML-assisted bottleneck detection, predictive root cause analysis, and observability integrations with Datadog and Grafana.",
+  },
+  {
+    question: "Does 99 Visual Solutions offer security testing?",
+    answer:
+      "Yes. We provide LLM-assisted threat modeling, OWASP-aligned penetration testing, AI-specific security testing for prompt injection and adversarial inputs, and compliance validation with remediation roadmaps.",
+  },
+];
+
 const schemaGraph = {
   "@context": "https://schema.org",
   "@graph": [
-
-    // 1. Organization (entity anchor)
     orgSchema,
-
-    // 2. LocalBusiness
     localBusinessSchema,
-
-    // 3. WebSite
     websiteSchema,
 
-    // 4. WebPage
     {
       "@type":       "WebPage",
       "@id":         `${BASE}/services/testing-development#webpage`,
@@ -136,7 +154,7 @@ const schemaGraph = {
       description:   "Next-generation software QA and automation testing powered by Agentic AI — including autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
       inLanguage:    "en",
       datePublished: DATE_PUBLISHED,
-      dateModified:  DATE_MODIFIED,           // FIX: was missing entirely
+      dateModified:  DATE_MODIFIED,
       isPartOf:      { "@id": `${BASE}/#website` },
       about:         { "@id": `${BASE}/#organization` },
       publisher:     { "@id": `${BASE}/#organization` },
@@ -155,26 +173,24 @@ const schemaGraph = {
       potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/testing-development`] },
     },
 
-    // 5. BreadcrumbList
     {
       ...breadcrumb([
-        { name: "Home",                      url: "/" },
-        { name: "Services",                  url: "/services" },
-        { name: "QA & Automation Testing",   url: "/services/testing-development" },
+        { name: "Home",                    url: "/" },
+        { name: "Services",                url: "/services" },
+        { name: "QA & Automation Testing", url: "/services/testing-development" },
       ]),
       "@id": `${BASE}/services/testing-development#breadcrumb`,
     },
 
-    // 6. Service node
     {
-      "@type":       "Service",
-      "@id":         `${BASE}/services/testing-development#service`,
-      name:          "AI-Powered QA & Automation Testing",
-      description:   "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
-      provider:      { "@id": `${BASE}/#organization` },
-      areaServed:    ["IN", "US", "GB", "AU", "AE"],
-      url:           `${BASE}/services/testing-development`,
-      serviceType:   "QA & Software Testing",
+      "@type":     "Service",
+      "@id":       `${BASE}/services/testing-development#service`,
+      name:        "AI-Powered QA & Automation Testing",
+      description: "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
+      provider:    { "@id": `${BASE}/#organization` },
+      areaServed:  ["IN", "US", "GB", "AU", "AE"],
+      url:         `${BASE}/services/testing-development`,
+      serviceType: "QA & Software Testing",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name:    "QA & Automation Testing Services",
@@ -189,30 +205,9 @@ const schemaGraph = {
       },
     },
 
-    // 7. FAQPage
+    // FAQPage @id anchors to visible #wd-faq section in the DOM
     {
-      ...faqSchema([
-        {
-          question: "What AI-powered QA services does 99 Visual Solutions provide?",
-          answer:
-            "We offer Agentic AI test automation, self-healing test scripts, LLM-driven exploratory testing, AI-augmented manual testing, and autonomous CI/CD quality gate integration.",
-        },
-        {
-          question: "Does 99 Visual Solutions support self-healing test automation?",
-          answer:
-            "Yes. Our AI-powered frameworks use self-healing scripts that automatically adapt to UI changes and DOM shifts, reducing maintenance overhead and keeping pipelines green.",
-        },
-        {
-          question: "What performance and load testing services are available?",
-          answer:
-            "We provide AI-guided load, stress, spike, and endurance testing with ML-assisted bottleneck detection, predictive root cause analysis, and observability integrations with Datadog and Grafana.",
-        },
-        {
-          question: "Does 99 Visual Solutions offer security testing?",
-          answer:
-            "Yes. We provide LLM-assisted threat modeling, OWASP-aligned penetration testing, AI-specific security testing for prompt injection and adversarial inputs, and compliance validation with remediation roadmaps.",
-        },
-      ]),
+      ...faqSchema(FAQ_ITEMS),
       "@id":            `${BASE}/services/testing-development#faq`,
       mainEntityOfPage: { "@id": `${BASE}/services/testing-development#webpage` },
     },
@@ -368,22 +363,22 @@ export default function TestingDevelopment() {
     <>
       <PageLoader />
 
-      {/* FIX: unified @graph replaces 3 separate script blocks */}
       <script
         id="schema-testing-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
       />
 
-      {/* ─── Styles ─── */}
+      {/* ─── Styles ───────────────────────────────────────────────────────────
+        ALL classes use "wd-" prefix (Web Dev/QA Testing).
+        FIX: .sr-only renamed to .wd-sr-only to prevent collision with Tailwind
+        or any other page whose inline <style> Next.js merges in production.
+      ─────────────────────────────────────────────────────────────────────── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ── sr-only — invisible to users, crawlable by Googlebot ─────────
-           FIX: display:none hides from Googlebot too.
-           This clip technique keeps the element in the render tree at 1×1px.
-        ── */
-        .sr-only {
+        /* sr-only — invisible to users, crawlable by Googlebot */
+        .wd-sr-only {
           position: absolute !important;
           width: 1px !important; height: 1px !important;
           padding: 0 !important; margin: -1px !important;
@@ -705,6 +700,70 @@ export default function TestingDevelopment() {
           font-weight: 300; line-height: 1.75; color: rgba(255,255,255,0.45);
         }
 
+        /* ── FAQ ── */
+        .wd-faq {
+          background: #080808; padding: 6rem 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .wd-faq__inner { max-width: 800px; margin: 0 auto; }
+        .wd-faq__header { text-align: center; margin-bottom: 3.5rem; }
+        .wd-faq__label {
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: #f97316; margin-bottom: 1rem; display: block;
+        }
+        .wd-faq__h2 {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.8rem, 4vw, 3rem);
+          font-weight: 700; line-height: 1.15; letter-spacing: -.015em;
+          color: #fff; margin: 0 0 1rem;
+        }
+        .wd-faq__list {
+          display: flex; flex-direction: column; gap: 0;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 16px; overflow: hidden;
+        }
+        /* <details>/<summary> — native accordion, no JS, no "use client" */
+        .wd-faq__item {
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          background: #0f0f0f;
+          transition: background .2s ease;
+        }
+        .wd-faq__item:last-child { border-bottom: none; }
+        .wd-faq__item[open] { background: #141414; }
+        .wd-faq__q {
+          list-style: none;
+          display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+          padding: 1.5rem 1.75rem; cursor: pointer; user-select: none;
+        }
+        .wd-faq__q::-webkit-details-marker { display: none; }
+        .wd-faq__q::marker { display: none; }
+        .wd-faq__q-text {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.15rem; font-weight: 600;
+          color: rgba(255,255,255,.85); line-height: 1.35; flex: 1;
+          transition: color .2s ease;
+        }
+        .wd-faq__item[open] .wd-faq__q-text,
+        .wd-faq__q:hover .wd-faq__q-text { color: #fff; }
+        .wd-faq__chevron {
+          flex-shrink: 0; color: #f97316; opacity: .7;
+          transition: transform .3s cubic-bezier(.22,1,.36,1), opacity .2s ease;
+        }
+        .wd-faq__item[open] .wd-faq__chevron { transform: rotate(180deg); opacity: 1; }
+        .wd-faq__a {
+          padding: 0 1.75rem 1.5rem;
+          animation: wdFaqOpen .3s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes wdFaqOpen {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .wd-faq__a p {
+          font-family: 'DM Sans', sans-serif; font-size: .92rem;
+          font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.45); margin: 0;
+        }
+
         /* ── CTA STRIP ── */
         .wd-cta {
           background: #080808; border-top: 1px solid rgba(255,255,255,0.07);
@@ -751,7 +810,13 @@ export default function TestingDevelopment() {
         }
         .wd-cta__btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 14px 40px rgba(249,115,22,.5); }
 
-        /* FIX: prefers-reduced-motion guard — WCAG 2.1 AA (was missing entirely) */
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+          .wd-faq__q { padding: 1.25rem; }
+          .wd-faq__a { padding: 0 1.25rem 1.25rem; }
+        }
+
+        /* WCAG 2.1 AA — prefers-reduced-motion */
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
             animation-duration: 0.01ms !important;
@@ -763,7 +828,7 @@ export default function TestingDevelopment() {
 
       <Header />
 
-      {/* ══ HERO ══════════════════════════════════════════════ */}
+      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="wd-hero" aria-labelledby="wd-hero-heading">
         <div aria-hidden="true">
           <div className="wd-hero__orb wd-hero__orb--1" />
@@ -778,12 +843,7 @@ export default function TestingDevelopment() {
         <div className="wd-corner wd-corner--bl" aria-hidden="true" />
         <div className="wd-corner wd-corner--br" aria-hidden="true" />
 
-        {/*
-          FIX: breadcrumb changed from display:none → sr-only.
-          display:none hides from Googlebot. sr-only (1×1px clip) keeps it in
-          the render tree so bots can crawl it. JSON-LD handles rich results.
-        */}
-        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+        <nav className="wd-sr-only" aria-label="Breadcrumb" aria-hidden="true">
           <ol
             itemScope
             itemType="https://schema.org/BreadcrumbList"
@@ -819,10 +879,6 @@ export default function TestingDevelopment() {
 
           <div className="wd-hero__rule" aria-hidden="true" />
 
-          {/*
-            FIX: "LiDAR-assisted security testing" corrected to "LLM-assisted security testing"
-            — LiDAR is a spatial mapping technology, not a security testing tool.
-          */}
           <p className="wd-hero__sub">
             From AI-augmented manual testing and autonomous agent-driven automation to
             LLM-assisted security testing and predictive performance engineering — we deliver
@@ -830,7 +886,7 @@ export default function TestingDevelopment() {
           </p>
 
           <a
-            href="#services"
+            href="#wd-services"
             className="wd-hero__cta"
             aria-label="Explore AI-powered QA and automation testing services"
           >
@@ -841,13 +897,13 @@ export default function TestingDevelopment() {
           </a>
         </div>
 
-        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to QA and automation testing services">
+        <a href="#wd-services" className="wd-hero__scroll" aria-label="Scroll to QA and automation testing services">
           <div className="wd-hero__scroll-line" aria-hidden="true" />
           <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
         </a>
       </section>
 
-      {/* ══ INTRO ══════════════════════════════════════════════ */}
+      {/* ══ INTRO ════════════════════════════════════════════════════════ */}
       <section className="wd-intro" aria-labelledby="wd-intro-heading">
         <div className="wd-intro__inner">
           <span className="wd-intro__label">Our Approach</span>
@@ -872,8 +928,8 @@ export default function TestingDevelopment() {
         </div>
       </section>
 
-      {/* ══ SERVICE SECTIONS ══════════════════════════════════ */}
-      <div id="services" className="wd-services">
+      {/* ══ SERVICE SECTIONS ═════════════════════════════════════════════ */}
+      <div id="wd-services" className="wd-services">
         {services.map((svc, idx) => (
           <section
             key={svc.id}
@@ -905,7 +961,6 @@ export default function TestingDevelopment() {
                 <span className="wd-svc__eyebrow">
                   Service {String(idx + 1).padStart(2, "0")}
                 </span>
-                {/* h3 was already correct in the original — preserved */}
                 <h3
                   className="wd-svc__heading"
                   id={`wd-svc-heading-${svc.id}`}
@@ -926,7 +981,7 @@ export default function TestingDevelopment() {
         ))}
       </div>
 
-      {/* ══ BENEFITS ══════════════════════════════════════════ */}
+      {/* ══ BENEFITS ════════════════════════════════════════════════════ */}
       <section className="wd-benefits" aria-labelledby="wd-benefits-heading">
         <div className="wd-benefits__inner">
           <div className="wd-benefits__head">
@@ -954,7 +1009,58 @@ export default function TestingDevelopment() {
         </div>
       </section>
 
-      {/* ══ CTA STRIP ═════════════════════════════════════════ */}
+      {/* ══ FAQ ═════════════════════════════════════════════════════════
+        Visible FAQ matching FAQPage schema — prevents manual action risk.
+        Schema @id="${BASE}/services/testing-development#faq" resolves to id="wd-faq".
+        <details>/<summary> = pure HTML, no JS, Server Component safe.
+      ══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="wd-faq"
+        className="wd-faq"
+        aria-labelledby="wd-faq-heading"
+        itemScope
+        itemType="https://schema.org/FAQPage"
+      >
+        <div className="wd-faq__inner">
+          <div className="wd-faq__header">
+            <span className="wd-faq__label">Got Questions?</span>
+            <h2 className="wd-faq__h2" id="wd-faq-heading">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <dl className="wd-faq__list">
+            {FAQ_ITEMS.map(({ question, answer }, i) => (
+              <details
+                key={i}
+                className="wd-faq__item"
+                itemScope
+                itemProp="mainEntity"
+                itemType="https://schema.org/Question"
+              >
+                <summary className="wd-faq__q" itemProp="name">
+                  <span className="wd-faq__q-text">{question}</span>
+                  <span className="wd-faq__chevron" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </summary>
+                <div
+                  className="wd-faq__a"
+                  itemScope
+                  itemProp="acceptedAnswer"
+                  itemType="https://schema.org/Answer"
+                >
+                  <p itemProp="text">{answer}</p>
+                </div>
+              </details>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* ══ CTA STRIP ═══════════════════════════════════════════════════ */}
       <section className="wd-cta" aria-labelledby="wd-cta-heading">
         <div className="wd-cta__orb" aria-hidden="true" />
         <div className="wd-cta__inner">
