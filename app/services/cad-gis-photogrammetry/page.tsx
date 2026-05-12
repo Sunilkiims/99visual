@@ -898,10 +898,7 @@ export default function CADGISPhotogrammetry() {
           </a>
         </div>
 
-        <a href="#cg-services" className="cg-hero__scroll" aria-label="Scroll to CAD, GIS and photogrammetry services">
-          <div className="cg-hero__scroll-line" aria-hidden="true" />
-          <span className="cg-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+       
       </section>
 
       {/* ══ INTRO ════════════════════════════════════════════════════════ */}

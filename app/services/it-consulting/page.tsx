@@ -559,10 +559,7 @@ export default function ITConsulting() {
           </a>
         </div>
 
-        <a href="#services" className="itc-hero__scroll" aria-label="Scroll to IT consulting services">
-          <div className="itc-hero__scroll-line" aria-hidden="true" />
-          <span className="itc-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ INTRO ══════════════════════════════════════════════ */}

@@ -1,28 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 
 type Phase = 'loading' | 'done' | 'gone';
 
+const STATUSES = [
+  'Initializing…',
+  'Loading assets…',
+  'Preparing workspace…',
+  '',
+  '',
+];
+
 export default function PageLoader() {
-  const [progress, setProgress] = useState<number>(0);
+  const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>('loading');
+  const [statusIdx, setStatusIdx] = useState(0);
 
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
-      current += Math.random() * 18 + 4;
+      current += Math.random() * 16 + 3;
       if (current >= 100) {
         current = 100;
         clearInterval(interval);
         setProgress(100);
+        setStatusIdx(4);
         setTimeout(() => setPhase('done'), 300);
-        setTimeout(() => setPhase('gone'), 1100);
+        setTimeout(() => setPhase('gone'), 1200);
       } else {
-        setProgress(Math.floor(current));
+        const floored = Math.floor(current);
+        setProgress(floored);
+        setStatusIdx(Math.min(Math.floor(current / 25), 3));
       }
-    }, 90);
-
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
@@ -31,222 +43,266 @@ export default function PageLoader() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
-        .loader-root {
+        .ldr-root {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          background: #0a0a0a;
+          background: #080810;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          transition: opacity 0.7s cubic-bezier(0.76, 0, 0.24, 1),
-                      transform 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+          transition: opacity 0.75s cubic-bezier(0.76, 0, 0.24, 1),
+                      transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
         }
-
-        .loader-root.exiting {
+        .ldr-root.exiting {
           opacity: 0;
-          transform: translateY(-24px);
+          transform: translateY(-20px);
           pointer-events: none;
         }
 
-        .loader-grid {
+        /* Grid overlay */
+        .ldr-grid {
           position: absolute;
           inset: 0;
           pointer-events: none;
           background-image:
-            linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-          background-size: 60px 60px;
+            linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+          background-size: 48px 48px;
         }
 
-        .loader-orb {
+        /* Ambient orbs */
+        .ldr-orb {
           position: absolute;
           border-radius: 50%;
           pointer-events: none;
-          filter: blur(100px);
+          filter: blur(90px);
         }
-        .loader-orb-1 {
+        .ldr-orb-1 {
           width: 500px; height: 500px;
-          background: radial-gradient(circle, #f97316, transparent 70%);
-          top: -200px; right: -120px;
-          opacity: 0.07;
-          animation: orbFloat1 6s ease-in-out infinite;
+          background: #4B3BC7;
+          top: -200px; left: -120px;
+          opacity: 0.08;
+          animation: orbDrift1 7s ease-in-out infinite;
         }
-        .loader-orb-2 {
-          width: 350px; height: 350px;
-          background: radial-gradient(circle, #6366f1, transparent 70%);
-          bottom: -140px; left: -80px;
+        .ldr-orb-2 {
+          width: 400px; height: 400px;
+          background: #E97B20;
+          bottom: -180px; right: -100px;
+          opacity: 0.08;
+          animation: orbDrift2 9s ease-in-out infinite;
+        }
+        .ldr-orb-3 {
+          width: 280px; height: 280px;
+          background: #1DA975;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
           opacity: 0.05;
-          animation: orbFloat2 8s ease-in-out infinite;
+          animation: orbPulse 5s ease-in-out infinite;
+        }
+        @keyframes orbDrift1 {
+          0%, 100% { transform: translate(0, 0); }
+          50%       { transform: translate(-24px, 18px); }
+        }
+        @keyframes orbDrift2 {
+          0%, 100% { transform: translate(0, 0); }
+          50%       { transform: translate(18px, -24px); }
+        }
+        @keyframes orbPulse {
+          0%, 100% { opacity: 0.05; }
+          50%       { opacity: 0.09; }
         }
 
-        @keyframes orbFloat1 {
-          0%, 100% { transform: translate(0,0); }
-          50%       { transform: translate(-30px, 20px); }
-        }
-        @keyframes orbFloat2 {
-          0%, 100% { transform: translate(0,0); }
-          50%       { transform: translate(20px, -30px); }
-        }
-
-        .loader-content {
+        /* Logo stage */
+        .ldr-stage {
           position: relative;
-          z-index: 10;
+          width: 148px;
+          height: 148px;
           display: flex;
-          flex-direction: column;
           align-items: center;
+          justify-content: center;
+          margin-bottom: 10px;
         }
 
-        .loader-logo-wrap {
-          position: relative;
-          width: 80px;
-          height: 80px;
-          margin-bottom: 28px;
-        }
-
-        .loader-ring {
+        .ldr-ring {
           position: absolute;
           border-radius: 50%;
-          border: 1px solid transparent;
+          border: 1.5px solid transparent;
         }
-        .loader-ring-outer {
+        .ldr-ring-r1 {
           inset: 0;
-          border-color: rgba(249,115,22,0.2);
-          animation: ringSpinSlow 4s linear infinite;
+          border-color: rgba(75,59,199,0.2);
+          animation: spinCW 9s linear infinite;
         }
-        .loader-ring-mid {
-          inset: 10px;
-          border-top-color: #f97316;
-          border-right-color: rgba(249,115,22,0.3);
-          border-bottom-color: transparent;
-          border-left-color: transparent;
-          animation: ringSpinFast 1.4s linear infinite;
+        .ldr-ring-r2 {
+          inset: 9px;
+          border-top-color: #4B3BC7;
+          border-right-color: rgba(75,59,199,0.12);
+          animation: spinCW 2.2s cubic-bezier(0.4,0,0.6,1) infinite;
         }
-        .loader-ring-inner {
-          inset: 22px;
-          border-bottom-color: #f97316;
-          border-top-color: transparent;
-          border-left-color: transparent;
-          border-right-color: transparent;
-          animation: ringSpinFast 1.4s linear infinite reverse;
+        .ldr-ring-r3 {
+          inset: 20px;
+          border-top-color: #E97B20;
+          border-left-color: rgba(233,123,32,0.15);
+          animation: spinCCW 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
         }
-        .loader-ring-dot {
+        .ldr-ring-r4 {
+          inset: 31px;
+          border-bottom-color: #1DA975;
+          border-right-color: rgba(29,169,117,0.12);
+          animation: spinCW 3.2s linear infinite;
+        }
+
+        @keyframes spinCW  { to { transform: rotate(360deg);  } }
+        @keyframes spinCCW { to { transform: rotate(-360deg); } }
+
+        .ldr-dots {
           position: absolute;
-          inset: 32px;
-          border-radius: 50%;
-          background: #f97316;
-          animation: dotPulse 1.4s ease-in-out infinite;
+          inset: 4px;
+          animation: spinCW 6s linear infinite;
         }
 
-        @keyframes ringSpinSlow { to { transform: rotate(360deg); } }
-        @keyframes ringSpinFast  { to { transform: rotate(360deg); } }
-        @keyframes dotPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: 0.4; transform: scale(0.6); }
+        .ldr-logo {
+          width: 76px;
+          height: 76px;
+          object-fit: contain;
+          position: relative;
+          z-index: 2;
+          animation: logoEntrance 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
+          filter: drop-shadow(0 0 20px rgba(233,123,32,0.4));
+        }
+        @keyframes logoEntrance {
+          from { transform: scale(0.5); opacity: 0; }
+          to   { transform: scale(1);   opacity: 1; }
         }
 
-        .loader-brand {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 700;
-          font-size: clamp(1.6rem, 5vw, 2.2rem);
-          color: #fff;
-          letter-spacing: -0.02em;
-          margin-bottom: 4px;
-        }
-        .loader-brand em {
-          font-style: italic;
-          color: #f97316;
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
-        .loader-tagline {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 10px;
-          font-weight: 500;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
-          margin-bottom: 40px;
-        }
-
-        .loader-bar-wrap {
-          width: clamp(200px, 40vw, 320px);
+        /* Progress */
+        .ldr-progress-wrap {
           display: flex;
           flex-direction: column;
-          gap: 10px;
           align-items: center;
+          gap: 10px;
+          width: 288px;
+          margin-top: 28px;
+          animation: slideUp 0.7s ease 1s both;
         }
 
-        .loader-bar-track {
+        .ldr-status {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 11px;
+          font-weight: 400;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.28);
+          height: 14px;
+          transition: opacity 0.3s ease;
+        }
+
+        .ldr-track {
           width: 100%;
-          height: 1px;
-          background: rgba(255,255,255,0.08);
+          height: 2px;
+          background: rgba(255,255,255,0.07);
+          border-radius: 2px;
           position: relative;
-          overflow: hidden;
         }
-        .loader-bar-fill {
-          position: absolute;
-          top: 0; bottom: 0; left: 0;
-          background: linear-gradient(90deg, #f97316, #fb923c);
-          transition: width 0.12s ease;
-          box-shadow: 0 0 12px rgba(249,115,22,0.6);
+
+        .ldr-fill {
+          height: 100%;
+          border-radius: 2px;
+          background: linear-gradient(
+            90deg,
+            #4B3BC7 0%,
+            #1DA975 40%,
+            #E97B20 75%,
+            #EAB308 100%
+          );
+          background-size: 288px 100%;
+          transition: width 0.11s ease;
+          position: relative;
         }
-        .loader-bar-fill::after {
+        .ldr-fill::after {
           content: '';
           position: absolute;
-          right: 0; top: -3px;
-          width: 4px; height: 7px;
+          right: -1px; top: -3px;
+          width: 8px; height: 8px;
           background: #fff;
-          border-radius: 2px;
-          opacity: 0.9;
+          border-radius: 50%;
+          box-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 18px rgba(233,123,32,0.6);
         }
 
-        .loader-pct {
+        .ldr-pct {
           font-family: 'DM Sans', sans-serif;
           font-size: 11px;
           font-weight: 300;
-          color: rgba(255,255,255,0.3);
           letter-spacing: 0.1em;
+          color: rgba(255,255,255,0.25);
         }
-        .loader-pct span {
-          color: #f97316;
+        .ldr-pct strong {
+          color: rgba(255,255,255,0.65);
           font-weight: 500;
         }
+
       `}</style>
 
-      <div className={`loader-root${phase === 'done' ? ' exiting' : ''}`}>
-        <div className="loader-grid" aria-hidden />
-        <div className="loader-orb loader-orb-1" aria-hidden />
-        <div className="loader-orb loader-orb-2" aria-hidden />
+      <div className={`ldr-root${phase === 'done' ? ' exiting' : ''}`} role="status" aria-label="Loading">
+        <div className="ldr-grid" aria-hidden />
+        <div className="ldr-orb ldr-orb-1" aria-hidden />
+        <div className="ldr-orb ldr-orb-2" aria-hidden />
+        <div className="ldr-orb ldr-orb-3" aria-hidden />
 
-        <div className="loader-content">
-          <div className="loader-logo-wrap" aria-hidden>
-            <div className="loader-ring loader-ring-outer" />
-            <div className="loader-ring loader-ring-mid" />
-            <div className="loader-ring loader-ring-inner" />
-            <div className="loader-ring-dot" />
+        {/* Logo with rings */}
+        <div className="ldr-stage">
+          <div className="ldr-ring ldr-ring-r1" />
+          <div className="ldr-ring ldr-ring-r2" />
+          <div className="ldr-ring ldr-ring-r3" />
+          <div className="ldr-ring ldr-ring-r4" />
+
+          <svg className="ldr-dots" viewBox="0 0 140 140" aria-hidden>
+            {Array.from({ length: 12 }, (_, i) => {
+              const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
+              const r = 64;
+              const x = 70 + r * Math.cos(angle);
+              const y = 70 + r * Math.sin(angle);
+              const colors = ['#4B3BC7','#E97B20','#1DA975','#EAB308','#5DCAA5','#AFA9EC'];
+              return (
+                <circle
+                  key={i}
+                  cx={x} cy={y}
+                  r={i % 3 === 0 ? 2.8 : 1.5}
+                  fill={colors[i % colors.length]}
+                  opacity={0.65}
+                />
+              );
+            })}
+          </svg>
+
+          <img
+            src="/logo.png"
+            alt="99 Visual Solutions"
+            className="ldr-logo"
+          />
+        </div>
+
+
+        <div className="ldr-progress-wrap" aria-live="polite">
+          <div className="ldr-status">{STATUSES[statusIdx]}</div>
+          <div className="ldr-track">
+            <div className="ldr-fill" style={{ width: `${progress}%` }} />
           </div>
-
-          <div className="loader-brand">
-            99 <em>Visual</em>
-          </div>
-          <div className="loader-tagline">Solutions</div>
-
-          <div className="loader-bar-wrap">
-            <div className="loader-bar-track">
-              <div
-                className="loader-bar-fill"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <div className="loader-pct">
-              <span>{progress}</span>%
-            </div>
+          <div className="ldr-pct">
+            <strong>{progress}</strong>%
           </div>
         </div>
+
       </div>
     </>
   );

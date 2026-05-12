@@ -897,10 +897,7 @@ export default function TestingDevelopment() {
           </a>
         </div>
 
-        <a href="#wd-services" className="wd-hero__scroll" aria-label="Scroll to QA and automation testing services">
-          <div className="wd-hero__scroll-line" aria-hidden="true" />
-          <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ INTRO ════════════════════════════════════════════════════════ */}

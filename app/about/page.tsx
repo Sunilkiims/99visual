@@ -438,38 +438,7 @@ export default function AboutPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-        /* ── Scroll indicator ─────────────────────────────────────────────── */
-        .ab-hero__scroll {
-          position:        absolute;
-          bottom:          2rem;
-          left:            calc(6rem + 20px);
-          z-index:         20;
-          display:         flex;
-          flex-direction:  column;
-          align-items:     center;
-          gap:             6px;
-          text-decoration: none;
-          animation:       abFadeUp .9s ease .85s both;
-        }
-        .ab-hero__scroll-line {
-          width:      1px;
-          height:     40px;
-          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-          animation:  abScrollLine 1.8s ease-in-out infinite;
-        }
-        @keyframes abScrollLine {
-          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
-          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
-          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
-        }
-        .ab-hero__scroll-lbl {
-          font-family:    var(--ff-sans);
-          font-size:      9px;
-          font-weight:    500;
-          letter-spacing: .2em;
-          text-transform: uppercase;
-          color:          rgba(255,255,255,.22);
-        }
+       
 
         /* ── Right column — NO ::before glow bleed ───────────────────────── */
         .ab-hero__right {
@@ -682,12 +651,7 @@ export default function AboutPage() {
             order: 1; flex: none; width: 100%;
             height: 300px; min-height: 300px;
           }
-          .ab-hero__scroll { left:50%; transform:translateX(-50%); }
-          .ab-card--1 { top: 4%; left: 2%; }
-          .ab-card--2 { top: 4%; right: 2%; }
-          .ab-card--3 { bottom: 6%; left: 2%; }
-          .ab-card--4 { bottom: 6%; right: 2%; }
-        }
+         
 
         @media (max-width: 480px) {
           .ab-hero__cta-group { flex-direction: column; align-items: center; }
@@ -877,14 +841,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <a
-          href="#about-content"
-          className="ab-hero__scroll"
-          aria-label="Scroll down to learn more about 99 Visual Solutions"
-        >
-          <div className="ab-hero__scroll-line" aria-hidden="true" />
-          <span className="ab-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ MAIN CONTENT ════════════════════════════════════════════════════ */}

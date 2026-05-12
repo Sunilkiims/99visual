@@ -471,38 +471,7 @@ export default function PartnersPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-        /* ── Scroll indicator ─────────────────────────────────────────────── */
-        .pt-hero__scroll {
-          position:        absolute;
-          bottom:          2rem;
-          left:            calc(6rem + 20px);
-          z-index:         20;
-          display:         flex;
-          flex-direction:  column;
-          align-items:     center;
-          gap:             6px;
-          text-decoration: none;
-          animation:       ptFadeUp .9s ease .85s both;
-        }
-        .pt-hero__scroll-line {
-          width:      1px;
-          height:     40px;
-          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-          animation:  ptScrollLine 1.8s ease-in-out infinite;
-        }
-        @keyframes ptScrollLine {
-          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
-          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
-          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
-        }
-        .pt-hero__scroll-lbl {
-          font-family:    var(--ff-sans);
-          font-size:      9px;
-          font-weight:    500;
-          letter-spacing: .2em;
-          text-transform: uppercase;
-          color:          rgba(255,255,255,.22);
-        }
+       
 
         /* ── Right column: partnership visual ────────────────────────────── */
         .pt-hero__right {
@@ -919,14 +888,7 @@ export default function PartnersPage() {
             order: 1; flex: none; width: 100%;
             height: 300px; min-height: 300px;
           }
-          .pt-hero__scroll    { left:50%; transform:translateX(-50%); }
-          .pt-pill--1 { top: 4%; left: 4%; }
-          .pt-pill--2 { top: 4%; right: 4%; }
-          .pt-pill--3 { bottom: 4%; left: 4%; }
-          .pt-pill--4 { bottom: 4%; right: 4%; }
-          .p-faq__q   { padding: 1.25rem; }
-          .p-faq__a   { padding: 0 1.25rem 1.25rem; }
-        }
+         
 
         @media (max-width: 480px) {
           .pt-hero__cta-group { flex-direction: column; align-items: center; }
@@ -1112,10 +1074,7 @@ export default function PartnersPage() {
           </div>
         </div>
 
-        <a href="#partner-types" className="pt-hero__scroll" aria-label="Scroll to partner types">
-          <div className="pt-hero__scroll-line" aria-hidden="true" />
-          <span className="pt-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ PARTNER TYPES ═══════════════════════════════════════════════════ */}

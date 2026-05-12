@@ -5,7 +5,11 @@
 // CHANGES IN THIS VERSION:
 //   ✅ Hero restructured to two-column layout matching contact/about pages
 //      (text left, animated visual right) — replaces centred single-column
-//   ✅ All schema, SEO, a11y, and section content below the hero unchanged
+//   ✅ FAQ microdata removed — JSON-LD via careersFaqNode in buildGraph() is
+//      the single source of truth for FAQPage structured data
+//   ✅ Dual-format FAQ schema (JSON-LD + microdata) eliminated — prevents
+//      Google Search Console structured data conflict / rich result suppression
+//   ✅ All other schema, SEO, a11y, and section content unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -200,7 +204,9 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA
+// FAQ DATA — single source of truth for schema AND visible HTML
+// JSON-LD via careersFaqNode handles all structured data.
+// No microdata attributes in the DOM — eliminates dual-format conflict.
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
@@ -280,7 +286,6 @@ const careersPageNode = {
   },
   speakable: {
     "@type":     "SpeakableSpecification",
-    // ── updated selectors to match new two-column hero class names ──
     cssSelector: [".cr-hero__h1", ".cr-hero__sub"],
   },
   breadcrumb:      { "@id": `${BASE}/careers#breadcrumb` },
@@ -465,8 +470,18 @@ export default function CareersPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ── Design tokens ───────────────────────────────────────────────── */
-        :root {
+        /* ── Design tokens — scoped to page sections, NOT :root ─────────────
+           Avoids CSS variable collision when Next.js merges inline <style>
+           tags from multiple pages into a shared bundle in production.
+           Using :root here would let a token change on one page silently
+           override the same token on every other page that shares the name.
+        ────────────────────────────────────────────────────────────────── */
+        .cr-hero,
+        .c-areas,
+        .c-why,
+        .c-roles,
+        .c-faq,
+        .c-cta {
           --c-bg:      #080808;
           --c-surface: #0f0f0f;
           --c-border:  rgba(255,255,255,0.07);
@@ -489,7 +504,7 @@ export default function CareersPage() {
           border:      0        !important;
         }
 
-        /* ══ HERO SHELL — mirrors .ct-hero / .ab-hero exactly ═══════════ */
+        /* ══ HERO SHELL ══════════════════════════════════════════════════ */
         .cr-hero {
           position:       relative;
           min-height:     92vh;
@@ -510,7 +525,6 @@ export default function CareersPage() {
           background-size: 52px 52px;
         }
 
-        /* ── Left column — mirrors .ct-hero__left / .ab-hero__left exactly ─ */
         .cr-hero__left {
           position:       relative;
           z-index:        10;
@@ -586,7 +600,6 @@ export default function CareersPage() {
           animation:   crFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;
         }
 
-        /* ── Stats row ────────────────────────────────────────────────────── */
         .cr-hero__stats {
           display:   flex;
           gap:       0;
@@ -624,7 +637,6 @@ export default function CareersPage() {
           display:        block;
         }
 
-        /* ── CTA ──────────────────────────────────────────────────────────── */
         .cr-hero__cta {
           display:         inline-flex;
           align-items:     center;
@@ -653,40 +665,11 @@ export default function CareersPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-        /* ── Scroll indicator ─────────────────────────────────────────────── */
-        .cr-hero__scroll {
-          position:        absolute;
-          bottom:          2rem;
-          left:            calc(6rem + 20px);
-          z-index:         20;
-          display:         flex;
-          flex-direction:  column;
-          align-items:     center;
-          gap:             6px;
-          text-decoration: none;
-          animation:       crFadeUp .9s ease .85s both;
-        }
-        .cr-hero__scroll-line {
-          width:      1px;
-          height:     40px;
-          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-          animation:  crScrollLine 1.8s ease-in-out infinite;
-        }
-        @keyframes crScrollLine {
-          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
-          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
-          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
-        }
-        .cr-hero__scroll-lbl {
-          font-family:    var(--ff-sans);
-          font-size:      9px;
-          font-weight:    500;
-          letter-spacing: .2em;
-          text-transform: uppercase;
-          color:          rgba(255,255,255,.22);
-        }
+      
 
-        /* ── Right column: animated visual stage ──────────────────────────── */
+       
+
+
         .cr-hero__right {
           flex:            0 0 460px;
           height:          92vh;
@@ -698,7 +681,6 @@ export default function CareersPage() {
           overflow:        hidden;
         }
 
-        /* ── Floating role cards animation ───────────────────────────────── */
         .cr-anim {
           position:       relative;
           width:          340px;
@@ -706,7 +688,6 @@ export default function CareersPage() {
           pointer-events: none;
         }
 
-        /* Central hiring badge */
         .cr-anim__badge {
           position:        absolute;
           top:             50%;
@@ -757,7 +738,6 @@ export default function CareersPage() {
           color:          var(--c-muted);
         }
 
-        /* Orbit ring */
         .cr-anim__ring {
           position:      absolute;
           top:           50%;
@@ -782,18 +762,6 @@ export default function CareersPage() {
           to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Role orbit dots */
-        .cr-anim__dot {
-          position:      absolute;
-          top:           50%;
-          left:          50%;
-          width:         8px;
-          height:        8px;
-          border-radius: 50%;
-          margin:        -4px 0 0 -4px;
-        }
-
-        /* Floating role cards */
         .cr-card {
           position:        absolute;
           display:         flex;
@@ -834,57 +802,16 @@ export default function CareersPage() {
           opacity:        .75;
         }
 
-        /* Individual card positions & animations */
-        .cr-card--1 {
-          top:       8%;
-          left:      -8%;
-          animation: crFloat1 6s ease-in-out infinite;
-        }
-        .cr-card--2 {
-          top:       14%;
-          right:     -4%;
-          animation: crFloat2 7s ease-in-out infinite;
-        }
-        .cr-card--3 {
-          bottom:    28%;
-          left:      -10%;
-          animation: crFloat3 5.5s ease-in-out infinite;
-        }
-        .cr-card--4 {
-          bottom:    10%;
-          right:     -6%;
-          animation: crFloat4 6.5s ease-in-out infinite;
-        }
+        .cr-card--1 { top: 8%;  left: -8%;  animation: crFloat1 6s ease-in-out infinite; }
+        .cr-card--2 { top: 14%; right: -4%; animation: crFloat2 7s ease-in-out infinite; }
+        .cr-card--3 { bottom: 28%; left: -10%; animation: crFloat3 5.5s ease-in-out infinite; }
+        .cr-card--4 { bottom: 10%; right: -6%; animation: crFloat4 6.5s ease-in-out infinite; }
 
-        @keyframes crFloat1 {
-          0%,100% { transform: translateY(0px)   rotate(-1deg); }
-          50%     { transform: translateY(-10px)  rotate(1deg); }
-        }
-        @keyframes crFloat2 {
-          0%,100% { transform: translateY(0px)   rotate(1deg); }
-          50%     { transform: translateY(-14px)  rotate(-1deg); }
-        }
-        @keyframes crFloat3 {
-          0%,100% { transform: translateY(0px)   rotate(.5deg); }
-          50%     { transform: translateY(-8px)   rotate(-1.5deg); }
-        }
-        @keyframes crFloat4 {
-          0%,100% { transform: translateY(0px)   rotate(-1.5deg); }
-          50%     { transform: translateY(-12px)  rotate(1deg); }
-        }
+        @keyframes crFloat1 { 0%,100%{transform:translateY(0px) rotate(-1deg)} 50%{transform:translateY(-10px) rotate(1deg)} }
+        @keyframes crFloat2 { 0%,100%{transform:translateY(0px) rotate(1deg)}  50%{transform:translateY(-14px) rotate(-1deg)} }
+        @keyframes crFloat3 { 0%,100%{transform:translateY(0px) rotate(.5deg)} 50%{transform:translateY(-8px) rotate(-1.5deg)} }
+        @keyframes crFloat4 { 0%,100%{transform:translateY(0px) rotate(-1.5deg)} 50%{transform:translateY(-12px) rotate(1deg)} }
 
-        /* Connecting lines between badge and cards (SVG-based, decorative) */
-        .cr-anim__lines {
-          position:       absolute;
-          inset:          0;
-          pointer-events: none;
-          opacity:        .25;
-        }
-
-        /* Ambient glow behind the right panel */
-       
-
-        /* ── Corner brackets — mirrors contact/about pages exactly ──────── */
         .cr-corner {
           position:       absolute;
           width:          28px;
@@ -898,7 +825,7 @@ export default function CareersPage() {
         .cr-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
         .cr-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
-        /* ══ SECTIONS below hero — unchanged from original ════════════════ */
+        /* ══ SECTIONS ════════════════════════════════════════════════════ */
         .c-areas {
           background: var(--c-surface);
           padding: 6rem 1.5rem;
@@ -1066,6 +993,11 @@ export default function CareersPage() {
           transform: translateY(-1px);
         }
 
+        /* ══ FAQ — JSON-LD only, zero microdata in DOM ═══════════════════
+           careersFaqNode in buildGraph() is the sole FAQPage schema source.
+           Keeping microdata here alongside JSON-LD would create a dual-format
+           conflict that Google may flag or use to suppress the rich result.
+        ═══════════════════════════════════════════════════════════════════ */
         .c-faq {
           background: var(--c-bg);
           padding: 6rem 1.5rem;
@@ -1129,7 +1061,7 @@ export default function CareersPage() {
           transform: translateY(-2px); box-shadow: 0 12px 36px rgba(249,115,22,.4);
         }
 
-        /* ══ RESPONSIVE — mirrors contact/about breakpoints exactly ════════ */
+        /* ══ RESPONSIVE ══════════════════════════════════════════════════ */
         @media (max-width: 900px) {
           .cr-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
           .cr-hero__right { flex: 0 0 340px; }
@@ -1149,12 +1081,7 @@ export default function CareersPage() {
             order: 1; flex: none; width: 100%;
             height: 300px; min-height: 300px;
           }
-          .cr-hero__scroll { left:50%; transform:translateX(-50%); }
-          .cr-card--1 { top: 4%; left: 2%; }
-          .cr-card--2 { top: 4%; right: 2%; }
-          .cr-card--3 { bottom: 6%; left: 2%; }
-          .cr-card--4 { bottom: 6%; right: 2%; }
-        }
+          
 
         @media (max-width: 480px) {
           .cr-hero__stat { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
@@ -1171,13 +1098,11 @@ export default function CareersPage() {
 
       <Header />
 
-      {/* ══ HERO — two-column layout matching contact / about pages ════════ */}
+      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
       <section
         className="cr-hero"
         aria-labelledby="cr-hero-heading"
         id="careers-hero"
-        itemScope
-        itemType="https://schema.org/WebPage"
       >
         <div className="cr-hero__grid" aria-hidden="true" />
 
@@ -1213,19 +1138,18 @@ export default function CareersPage() {
             Now Hiring · Bangalore &amp; Beyond
           </p>
 
-          <h1 className="cr-hero__h1" id="cr-hero-heading" itemProp="name">
+          <h1 className="cr-hero__h1" id="cr-hero-heading">
             Build your <em>future</em><br />
             with 99 Visual Solutions
           </h1>
 
           <div className="cr-hero__rule" aria-hidden="true" />
 
-          <p className="cr-hero__sub" itemProp="description">
+          <p className="cr-hero__sub">
             Join a team of innovators, creators, and problem-solvers who shape
             the future of digital experiences together.
           </p>
 
-          {/* Stats row */}
           <dl className="cr-hero__stats" aria-label="Company highlights">
             <div className="cr-hero__stat">
               <dt className="cr-hero__stat-label">Open Roles</dt>
@@ -1263,18 +1187,15 @@ export default function CareersPage() {
         <div className="cr-hero__right" aria-hidden="true">
           <div className="cr-anim">
 
-            {/* Orbit rings */}
             <div className="cr-anim__ring" />
             <div className="cr-anim__ring cr-anim__ring--2" />
 
-            {/* Central badge */}
             <div className="cr-anim__badge">
               <span className="cr-anim__badge-label">We&apos;re</span>
               <span className="cr-anim__badge-num">4</span>
               <span className="cr-anim__badge-sub">Roles Open</span>
             </div>
 
-            {/* Floating role card 1 — Web Developer */}
             <div className="cr-card cr-card--1">
               <div
                 className="cr-card__icon"
@@ -1288,7 +1209,6 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Floating role card 2 — UI/UX Designer */}
             <div className="cr-card cr-card--2">
               <div
                 className="cr-card__icon"
@@ -1302,7 +1222,6 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Floating role card 3 — 3D Artist */}
             <div className="cr-card cr-card--3">
               <div
                 className="cr-card__icon"
@@ -1316,7 +1235,6 @@ export default function CareersPage() {
               </div>
             </div>
 
-            {/* Floating role card 4 — Digital Marketing */}
             <div className="cr-card cr-card--4">
               <div
                 className="cr-card__icon"
@@ -1333,10 +1251,7 @@ export default function CareersPage() {
           </div>
         </div>
 
-        <a href="#open-roles" className="cr-hero__scroll" aria-label="Scroll to open positions">
-          <div className="cr-hero__scroll-line" aria-hidden="true" />
-          <span className="cr-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ CAREER AREAS ════════════════════════════════════════════════════ */}
@@ -1459,7 +1374,11 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* ══ FAQ ══════════════════════════════════════════════════════════════ */}
+      {/* ══ FAQ ══════════════════════════════════════════════════════════════
+        Schema handled entirely by careersFaqNode in buildGraph() above.
+        No microdata (itemScope / itemType / itemProp) in this section.
+        Dual-format FAQ schema (JSON-LD + microdata) suppresses rich results.
+      ════════════════════════════════════════════════════════════════════ */}
       <section className="c-faq" aria-labelledby="c-faq-heading">
         <div className="c-faq__inner">
           <div className="c-faq__header">
@@ -1470,24 +1389,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <dl className="c-faq__list" itemScope itemType="https://schema.org/FAQPage">
+          <dl className="c-faq__list">
             {faqItems.map(({ question, answer }) => (
-              <div
-                key={question}
-                className="c-faq__item"
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
-              >
-                <dt className="c-faq__q" itemProp="name">{question}</dt>
-                <dd
-                  className="c-faq__a"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <span itemProp="text">{answer}</span>
-                </dd>
+              <div key={question} className="c-faq__item">
+                <dt className="c-faq__q">{question}</dt>
+                <dd className="c-faq__a">{answer}</dd>
               </div>
             ))}
           </dl>

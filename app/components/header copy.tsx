@@ -17,7 +17,9 @@ const Header = () => {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -31,10 +33,7 @@ const Header = () => {
   }, [mobileMenuOpen]);
 
   const isActive = (href: string) => pathname === href;
-
-  // ── Correct slugs matching actual page routes ──────────────────────────────
   const serviceRoutes = [
-    '/services',
     '/services/visualization',
     '/services/website-development',
     '/services/it-consulting',
@@ -42,9 +41,7 @@ const Header = () => {
     '/services/cad-gis-photogrammetry',
     '/services/automation-testing',
   ];
-  const isServiceActive = serviceRoutes.some(
-    (r) => pathname === r || pathname.startsWith(r + '/')
-  );
+  const isServiceActive = serviceRoutes.includes(pathname);
 
   const navLinkClass = (href: string) =>
     clsx(
@@ -53,65 +50,37 @@ const Header = () => {
       isActive(href) && 'text-orange-500 after:w-full'
     );
 
-  const dropdownLinkClass = (active: boolean) =>
-    clsx(
-      'group/link flex items-center gap-2 px-4 py-2 text-gray-800 transition-all duration-300 hover:bg-yellow-100 hover:pl-6',
-      active && 'bg-yellow-100 pl-6'
-    );
+  const dropdownLinkClass = () =>
+    'group/link flex items-center gap-2 px-4 py-2 text-gray-800 transition-all duration-300 hover:bg-yellow-100 hover:pl-6';
 
   const ArrowIcon = () => (
-    <span className="w-4 h-4 flex-shrink-0 text-orange-500 transform transition-transform duration-300 group-hover/link:translate-x-1">
+    <span className="w-4 h-4 text-orange-500 transform transition-transform duration-300 group-hover/link:translate-x-1">
       <svg fill="currentColor" viewBox="0 0 20 20" className="w-full h-full">
         <path d="M10 2l-1.41 1.41L15.17 10l-6.58 6.59L10 18l8-8z" />
       </svg>
     </span>
   );
 
-  // ── Service link data ──────────────────────────────────────────────────────
-  // hub: true  → "End-to-End Solutions" — always solid orange, no exceptions
-  // hub: false → individual service pages
-  const desktopServiceLinks = [
-    { href: '/services',                        label: 'End-to-End Solutions',      hub: true  },
-    { href: '/services/visualization',          label: 'Visualization',             hub: false },
-    { href: '/services/website-development',    label: 'Website Development',       hub: false },
-    { href: '/services/it-consulting',          label: 'IT Consulting',             hub: false },
-    { href: '/services/digital-marketing-seo',  label: 'Digital Marketing & SEO',   hub: false },
-    { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry', hub: false },
-    { href: '/services/automation-testing',    label: 'QA & Automation Testing',   hub: false },
-  ];
-
-  const mobileServiceLinks = [
-    { href: '/services',                        label: 'End-to-End Solutions'       },
-    { href: '/services/visualization',          label: 'Visualization'              },
-    { href: '/services/website-development',        label: 'Website Development'        },
-    { href: '/services/it-consulting',          label: 'IT Consulting'              },
-    { href: '/services/digital-marketing-seo',  label: 'Digital Marketing & SEO'    },
-    { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry'  },
-    { href: '/services/automation-testing',    label: 'QA & Automation Testing'    },
-  ];
-
   return (
     <>
-      {/* ── HEADER ──────────────────────────────────────────────────────────── */}
+      {/* HEADER */}
       <header className={clsx(
         'fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md',
         scrolled ? 'bg-white/80 shadow-md' : 'bg-transparent'
       )}>
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-
           <div className="flex items-center space-x-8 lg:space-x-12">
-            {/* Logo */}
             <Link href="/">
               <Image
                 src={scrolled ? '/logo-dark.png' : '/logo.png'}
-                alt="99 Visual Solutions"
+                alt="Logo"
                 width={120}
                 height={40}
                 priority
               />
             </Link>
 
-            {/* ── Desktop Nav ──────────────────────────────────────────────── */}
+            {/* Desktop Nav */}
             <nav className={clsx(
               'hidden md:flex items-center gap-6 lg:gap-8 font-medium transition-colors duration-300',
               scrolled ? 'text-gray-800' : 'text-white'
@@ -119,61 +88,33 @@ const Header = () => {
               <Link href="/" className={navLinkClass('/')}>Home</Link>
               <Link href="/about" className={navLinkClass('/about')}>About</Link>
 
-              {/* Services dropdown */}
+              {/* Services Dropdown */}
               <div className="relative group">
-                {/* Trigger */}
                 <span className={clsx(
-                  'relative text-[15px] font-medium cursor-default select-none',
-                  'transition-transform duration-200 hover:scale-105 hover:text-orange-500',
-                  'after:content-[""] after:absolute after:left-0 after:-bottom-1',
-                  'after:h-[2px] after:bg-orange-500 after:transition-all after:duration-300',
-                  isServiceActive ? 'text-orange-500 after:w-full' : 'after:w-0 hover:after:w-full'
+                  navLinkClass(''),
+                  isServiceActive && 'text-orange-500 after:w-full'
                 )}>
                   Services
                 </span>
-
-                {/* Dropdown panel */}
-                <div className={clsx(
-                  'absolute left-0 top-full mt-2 bg-white shadow-xl rounded-xl overflow-hidden z-40 origin-top min-w-[250px]',
-                  'max-h-0 opacity-0 scale-y-95 pointer-events-none',
-                  'transition-all duration-300 ease-in-out',
-                  'group-hover:max-h-[520px] group-hover:opacity-100 group-hover:scale-y-100 group-hover:pointer-events-auto'
-                )}>
-                  {desktopServiceLinks.map(({ href, label, hub }) =>
-                    hub ? (
-                      // ── "End-to-End Solutions" — ALWAYS solid orange, no exceptions ──
-                      <div key={href}>
-                        <Link
-                          href={href}
-                          className={clsx(
-                            'flex items-center gap-2 px-4 py-3 font-semibold text-white',
-                            'transition-colors duration-200',
-                            // Base is orange-500; deepens to orange-600 when on /services
-                            pathname === href
-                              ? 'bg-orange-600'
-                              : 'bg-orange-500 hover:bg-orange-600'
-                          )}
-                        >
-                          <span className="w-4 h-4 flex-shrink-0">
-                            <svg fill="white" viewBox="0 0 20 20" className="w-full h-full">
-                              <path d="M10 2l-1.41 1.41L15.17 10l-6.58 6.59L10 18l8-8z" />
-                            </svg>
-                          </span>
-                          {label}
-                        </Link>
-                        <div className="border-t border-gray-100" />
-                      </div>
-                    ) : (
-                      // ── Individual service links ──
-                      <Link
-                        key={href}
-                        href={href}
-                        className={dropdownLinkClass(pathname === href)}
-                      >
-                        <ArrowIcon /> {label}
-                      </Link>
-                    )
-                  )}
+                <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow rounded overflow-hidden max-h-0 opacity-0 transition-all duration-500 ease-in-out transform scale-y-90 group-hover:max-h-[600px] group-hover:opacity-100 group-hover:scale-y-100 z-40">
+                  <Link href="/services/visualization" className={dropdownLinkClass()}>
+                    <ArrowIcon /> Visualization
+                  </Link>
+                  <Link href="/services/website-development" className={dropdownLinkClass()}>
+                    <ArrowIcon /> Website Development
+                  </Link>
+                  <Link href="/services/it-consulting" className={dropdownLinkClass()}>
+                    <ArrowIcon /> IT Consulting
+                  </Link>
+                  <Link href="/services/digital-marketing-seo" className={dropdownLinkClass()}>
+                    <ArrowIcon /> Digital Marketing & SEO
+                  </Link>
+                  <Link href="/services/cad-gis-photogrammetry" className={dropdownLinkClass()}>
+                    <ArrowIcon /> CAD, GIS & Photogrammetry
+                  </Link>
+                  <Link href="/services/automation-testing" className={dropdownLinkClass()}>
+                    <ArrowIcon /> Automation & Testing
+                  </Link>
                 </div>
               </div>
 
@@ -183,7 +124,7 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* ── Desktop Social Icons ─────────────────────────────────────── */}
+          {/* Desktop Social Icons */}
           <div className={clsx(
             'hidden md:flex items-center space-x-4',
             scrolled ? 'text-gray-700' : 'text-white'
@@ -202,22 +143,20 @@ const Header = () => {
             </a>
           </div>
 
-          {/* ── Mobile toggle ────────────────────────────────────────────── */}
+          {/* Mobile menu toggle */}
           <div className="md:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            >
-              {mobileMenuOpen
-                ? <X className="text-orange-500 w-7 h-7" />
-                : <Menu className="text-orange-500 w-7 h-7" />
-              }
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? (
+                <X className="text-orange-500 w-7 h-7" />
+              ) : (
+                <Menu className="text-orange-500 w-7 h-7" />
+              )}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── MOBILE MENU (PORTAL) ─────────────────────────────────────────────── */}
+      {/* MOBILE MENU (PORTAL) */}
       {mounted && createPortal(
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -240,14 +179,19 @@ const Header = () => {
                 transition={{ type: 'tween', duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
                 className="fixed top-0 right-0 h-full w-[85%] max-w-sm z-[9999] bg-[#0f1c2e] text-white flex flex-col shadow-2xl"
               >
-                {/* Drawer header */}
+                {/* Header bar */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
                   <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                    <Image src="/logo.png" alt="99 Visual Solutions" width={110} height={36} priority />
+                    <Image
+                      src="/logo.png"
+                      alt="Logo"
+                      width={110}
+                      height={36}
+                      priority
+                    />
                   </Link>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
-                    aria-label="Close menu"
                     className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 hover:border-orange-500 hover:text-orange-500 transition-all duration-200"
                   >
                     <X className="w-4 h-4" />
@@ -256,10 +200,9 @@ const Header = () => {
 
                 {/* Nav links */}
                 <nav className="flex-1 overflow-y-auto px-6 py-6 space-y-1">
-
                   {/* Home & About */}
                   {[
-                    { href: '/',      label: 'Home'  },
+                    { href: '/', label: 'Home' },
                     { href: '/about', label: 'About' },
                   ].map((item, i) => (
                     <motion.div
@@ -293,8 +236,7 @@ const Header = () => {
                     <button
                       onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
                       className={clsx(
-                        'w-full flex items-center justify-between py-3 px-4 rounded-lg',
-                        'text-[15px] font-medium tracking-wide transition-all duration-200',
+                        'w-full flex items-center justify-between py-3 px-4 rounded-lg text-[15px] font-medium tracking-wide transition-all duration-200',
                         'hover:bg-white/5 hover:text-orange-400',
                         isServiceActive
                           ? 'text-orange-400 bg-white/5 border-l-2 border-orange-500 pl-6'
@@ -302,10 +244,12 @@ const Header = () => {
                       )}
                     >
                       Services
-                      <ChevronDown className={clsx(
-                        'w-4 h-4 transition-transform duration-300',
-                        mobileServicesOpen ? 'rotate-180 text-orange-400' : 'text-gray-500'
-                      )} />
+                      <ChevronDown
+                        className={clsx(
+                          'w-4 h-4 transition-transform duration-300',
+                          mobileServicesOpen ? 'rotate-180 text-orange-400' : 'text-gray-500'
+                        )}
+                      />
                     </button>
 
                     <AnimatePresence>
@@ -317,43 +261,30 @@ const Header = () => {
                           transition={{ duration: 0.3, ease: 'easeInOut' }}
                           className="overflow-hidden"
                         >
-                          <div className="ml-4 mt-1 border-l border-white/10 pl-3 space-y-1 pb-2">
-                            {mobileServiceLinks.map((service, i) =>
-                              i === 0 ? (
-                                // ── "End-to-End Solutions" — ALWAYS solid orange pill ──
-                                <Link
-                                  key={service.href}
-                                  href={service.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className={clsx(
-                                    'flex items-center gap-1.5 py-2 px-3 rounded-md',
-                                    'text-[13px] font-semibold text-white tracking-wide',
-                                    'transition-colors duration-200',
-                                    pathname === service.href
-                                      ? 'bg-orange-600'
-                                      : 'bg-orange-500 hover:bg-orange-600'
-                                  )}
-                                >
-                                  <span>→</span> {service.label}
-                                </Link>
-                              ) : (
-                                // ── Individual service links ──
-                                <Link
-                                  key={service.href}
-                                  href={service.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className={clsx(
-                                    'block py-2 px-3 rounded text-[13px] tracking-wide',
-                                    'transition-all duration-200 hover:text-orange-400 hover:bg-white/5',
-                                    pathname === service.href
-                                      ? 'text-orange-400'
-                                      : 'text-gray-400'
-                                  )}
-                                >
-                                  {service.label}
-                                </Link>
-                              )
-                            )}
+                          <div className="ml-4 mt-1 border-l border-white/10 pl-4 space-y-1 pb-2">
+                            {[
+                              { href: '/services/visualization', label: 'Visualization' },
+                              { href: '/services/website-development', label: 'Website Development' },
+                              { href: '/services/it-consulting', label: 'IT Consulting' },
+                              { href: '/services/digital-marketing-seo', label: 'Digital Marketing & SEO' },
+                              { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry' },
+                              { href: '/services/automation-testing', label: 'Automation & Testing' },
+                            ].map((service) => (
+                              <Link
+                                key={service.href}
+                                href={service.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className={clsx(
+                                  'block py-2 px-3 rounded text-[13px] tracking-wide transition-all duration-200',
+                                  'hover:text-orange-400 hover:bg-white/5',
+                                  pathname === service.href
+                                    ? 'text-orange-400'
+                                    : 'text-gray-400'
+                                )}
+                              >
+                                {service.label}
+                              </Link>
+                            ))}
                           </div>
                         </motion.div>
                       )}
@@ -363,7 +294,7 @@ const Header = () => {
                   {/* Partner, Career, Contact */}
                   {[
                     { href: '/partner', label: 'Partner' },
-                    { href: '/careers', label: 'Career'  },
+                    { href: '/careers', label: 'Career' },
                     { href: '/contact', label: 'Contact' },
                   ].map((item, i) => (
                     <motion.div
@@ -389,17 +320,17 @@ const Header = () => {
                   ))}
                 </nav>
 
-                {/* Social icons footer */}
+                {/* Footer: Social icons */}
                 <div className="px-6 py-5 border-t border-white/10">
                   <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3">
                     Follow Us
                   </p>
                   <div className="flex gap-3">
                     {[
-                      { href: 'https://www.facebook.com/profile.php?id=100093639888151', icon: <FaFacebookF />,  label: 'Facebook'  },
-                      { href: 'https://x.com/99VisualSoluti1',                           icon: <FaXTwitter />,   label: 'Twitter'   },
-                      { href: 'https://www.linkedin.com/company/99-visual-solutions/',   icon: <FaLinkedinIn />, label: 'LinkedIn'  },
-                      { href: 'https://www.instagram.com/99visualsolutions/',            icon: <FaInstagram />,  label: 'Instagram' },
+                      { href: 'https://www.facebook.com/profile.php?id=100093639888151', icon: <FaFacebookF />, label: 'Facebook' },
+                      { href: 'https://x.com/99VisualSoluti1', icon: <FaXTwitter />, label: 'Twitter' },
+                      { href: 'https://www.linkedin.com/company/99-visual-solutions/', icon: <FaLinkedinIn />, label: 'LinkedIn' },
+                      { href: 'https://www.instagram.com/99visualsolutions/', icon: <FaInstagram />, label: 'Instagram' },
                     ].map((s) => (
                       <a
                         key={s.label}

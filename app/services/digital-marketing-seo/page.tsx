@@ -398,10 +398,7 @@ export default function DigitalMarketing() {
           </a>
         </div>
 
-        <a href="#services" className="dm-hero__scroll" aria-label="Scroll to digital marketing services">
-          <div className="dm-hero__scroll-line" aria-hidden="true" />
-          <span className="dm-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+       
       </section>
 
       {/* ══ INTRO ══════════════════════════════════════════════ */}

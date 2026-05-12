@@ -359,37 +359,7 @@ export default function ContactPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-        .ct-hero__scroll {
-          position:       absolute;
-          bottom:         2rem;
-          left:           calc(6rem + 20px);
-          z-index:        20;
-          display:        flex;
-          flex-direction: column;
-          align-items:    center;
-          gap:            6px;
-          text-decoration: none;
-          animation:      ctFadeUp .9s ease .85s both;
-        }
-        .ct-hero__scroll-line {
-          width:      1px;
-          height:     40px;
-          background: linear-gradient(to bottom,rgba(255,255,255,.3),transparent);
-          animation:  ctScrollLine 1.8s ease-in-out infinite;
-        }
-        @keyframes ctScrollLine {
-          0%   { transform:scaleY(0);  transform-origin:top;    opacity:1; }
-          50%  { transform:scaleY(1);  transform-origin:top;    opacity:1; }
-          100% { transform:scaleY(1);  transform-origin:bottom; opacity:0; }
-        }
-        .ct-hero__scroll-lbl {
-          font-family:    var(--ff-sans);
-          font-size:      9px;
-          font-weight:    500;
-          letter-spacing: .2em;
-          text-transform: uppercase;
-          color:          rgba(255,255,255,.22);
-        }
+       
 
         /* ── Right column: animation stage ──────────────────────────────── */
         .ct-hero__right {
@@ -766,10 +736,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <a href="#contact-form" className="ct-hero__scroll" aria-label="Scroll to contact form">
-          <div className="ct-hero__scroll-line" aria-hidden="true" />
-          <span className="ct-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+       
       </section>
 
       {/* ══ CONTACT US BANNER ═══════════════════════════════════════════════ */}

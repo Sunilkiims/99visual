@@ -655,10 +655,7 @@ export default function WebsiteDevelopment() {
           </a>
         </div>
 
-        <a href="#services" className="wd-hero__scroll" aria-label="Scroll to web development services">
-          <div className="wd-hero__scroll-line" aria-hidden="true" />
-          <span className="wd-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-        </a>
+        
       </section>
 
       {/* ══ INTRO ══════════════════════════════════════════════ */}

@@ -292,26 +292,11 @@ function HeroSection() {
           aria-label="Get a free quote for 3D visualization services from 99 Visual Solutions"
         >
           Get a Free Quote
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path
-              d="M7 2v10M3 8l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+         
         </a>
       </div>
 
-      <a
-        href="#services"
-        className="viz-hero__scroll"
-        aria-label="Scroll to 3D visualization services"
-      >
-        <div className="viz-hero__scroll-line" aria-hidden="true" />
-        <span className="viz-hero__scroll-lbl" aria-hidden="true">Scroll</span>
-      </a>
+      
     </section>
   );
 }
