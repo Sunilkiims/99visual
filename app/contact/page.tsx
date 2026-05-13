@@ -2,13 +2,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Contact page — 99 Visual Solutions
 //
-// FIXES APPLIED:
-//   ✅ Removed inline schemaGraph with its own "@context" — uses buildGraph()
-//   ✅ Removed duplicate Organization, LocalBusiness, WebSite node definitions
-//      that diverged from lib/schema.ts (foundingDate "2015" vs "2020",
-//      different descriptions, different logo refs)
-//   ✅ Page-specific nodes (ContactPage, BreadcrumbList, FAQPage) kept inline
-//   ✅ All animation, styling, and layout unchanged
+// MOBILE ANIMATION FIXES:
+//   ✅ opacity: 1 on .ct-hero__right mobile (was 0.45 — hid entire animation)
+//   ✅ overflow: visible on mobile right panel (was hidden — clipped indigo glow)
+//   ✅ height: 420px on mobile right panel (was 320px — mailbox was cut off)
+//   ✅ Separate named @keyframes per breakpoint (avoids WebKit @keyframes-in-@media bug)
+//   ✅ Trail dot origins recalculated for 240×340 and 200×295 mobile stages
+//   ✅ Extra-small <400px breakpoint added with its own keyframe sets
+//   ✅ All schema, metadata, and JSX layout unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -55,9 +56,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     googleBot: {
-      index: true,
-      follow: true,
-      "max-snippet": -1,
+      index:               true,
+      follow:              true,
+      "max-snippet":       -1,
       "max-image-preview": "large",
       "max-video-preview": -1,
     },
@@ -109,8 +110,7 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA — page-specific nodes only
-// Organization, LocalBusiness, WebSite come from lib/schema.ts.
-// Only ContactPage, BreadcrumbList, and FAQPage are defined here.
+// Organization, LocalBusiness, WebSite come from lib/schema.ts
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
@@ -182,7 +182,6 @@ const contactPageNode = {
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/contact`] },
 };
 
-// Single @graph — one @context, zero duplicated node definitions.
 const contactGraph = buildGraph(
   orgSchema,
   localBusinessSchema,
@@ -200,7 +199,6 @@ export default function ContactPage() {
     <>
       <PageLoader />
 
-      {/* Single JSON-LD script — one @context via buildGraph */}
       <script
         id="schema-contact-graph"
         type="application/ld+json"
@@ -236,13 +234,13 @@ export default function ContactPage() {
 
         /* ══ HERO SHELL ═══════════════════════════════════════════════════ */
         .ct-hero {
-          position:        relative;
-          min-height:      92vh;
-          display:         flex;
-          flex-direction:  row;
-          align-items:     center;
-          background:      var(--c-bg);
-          overflow:        hidden;
+          position:       relative;
+          min-height:     92vh;
+          display:        flex;
+          flex-direction: row;
+          align-items:    center;
+          background:     var(--c-bg);
+          overflow:       hidden;
         }
 
         .ct-hero__grid {
@@ -285,14 +283,14 @@ export default function ContactPage() {
           animation:       ctFadeUp .9s cubic-bezier(.22,1,.36,1) both;
         }
         .ct-hero__dot {
-          width:        5px;
-          height:       5px;
+          width:         5px;
+          height:        5px;
           border-radius: 50%;
-          background:   var(--c-orange);
-          animation:    ctPulse 2s ease-in-out infinite;
+          background:    var(--c-orange);
+          animation:     ctPulse 2s ease-in-out infinite;
         }
         @keyframes ctPulse {
-          0%,100% { opacity:1;  transform:scale(1); }
+          0%,100% { opacity:1;   transform:scale(1); }
           50%     { opacity:.35; transform:scale(.65); }
         }
 
@@ -359,8 +357,6 @@ export default function ContactPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-       
-
         /* ── Right column: animation stage ──────────────────────────────── */
         .ct-hero__right {
           flex:            0 0 460px;
@@ -372,7 +368,6 @@ export default function ContactPage() {
           justify-content: center;
           overflow:        visible;
         }
-        
 
         /* ── Animation stage ─────────────────────────────────────────────── */
         .ct-anim {
@@ -382,23 +377,23 @@ export default function ContactPage() {
           pointer-events: none;
         }
 
-        /* ─── Letter ─────────────────────────────────────────────────────── */
+        /* ─── Letter (desktop) ───────────────────────────────────────────── */
         .ct-letter {
-          position:        absolute;
-          top:             30px;
-          left:            40px;
-          width:           72px;
-          height:          55px;
+          position:         absolute;
+          top:              30px;
+          left:             40px;
+          width:            72px;
+          height:           55px;
           transform-origin: center center;
-          animation:       ctLetterFly 3.2s cubic-bezier(.45,0,.2,1) infinite;
+          animation:        ctLetterFly 3.2s cubic-bezier(.45,0,.2,1) infinite;
         }
         @keyframes ctLetterFly {
           0%   { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity:0; }
           6%   { opacity: 1; }
           32%  { transform: translate(220px, -50px)  rotate(14deg)  scale(1.08); opacity:1; }
-          64%  { transform: translate(136px, 220px)  rotate(-5deg)  scale(.94); opacity:1; }
-          76%  { transform: translate(112px, 262px)  rotate(-1deg)  scale(.52); opacity:.8; }
-          86%  { transform: translate(112px, 282px)  rotate(0deg)   scale(.18); opacity:0; }
+          64%  { transform: translate(136px, 220px)  rotate(-5deg)  scale(.94);  opacity:1; }
+          76%  { transform: translate(112px, 262px)  rotate(-1deg)  scale(.52);  opacity:.8; }
+          86%  { transform: translate(112px, 282px)  rotate(0deg)   scale(.18);  opacity:0; }
           87%  { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity:0; }
           100% { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity:0; }
         }
@@ -413,7 +408,7 @@ export default function ContactPage() {
           76%     { filter: drop-shadow(0 0 13px rgba(99,102,241,.9)) drop-shadow(0 0 32px rgba(99,102,241,.5)); }
         }
 
-        /* ─── Trail dots ─────────────────────────────────────────────────── */
+        /* ─── Trail dots (desktop) ───────────────────────────────────────── */
         .ct-trail {
           position:       absolute;
           top:            56px;
@@ -422,10 +417,10 @@ export default function ContactPage() {
           background:     var(--c-orange);
           pointer-events: none;
         }
-        .ct-trail-1 { width:4px; height:4px; animation: ctTr1 3.2s ease-in-out infinite; opacity:0; }
-        .ct-trail-2 { width:3px; height:3px; animation: ctTr2 3.2s ease-in-out infinite; opacity:0; animation-delay:.06s; }
-        .ct-trail-3 { width:2px; height:2px; animation: ctTr3 3.2s ease-in-out infinite; opacity:0; animation-delay:.12s; }
-        .ct-trail-4 { width:2px; height:2px; animation: ctTr4 3.2s ease-in-out infinite; opacity:0; animation-delay:.18s; background:rgba(249,115,22,.5); }
+        .ct-trail-1 { width:4px; height:4px; animation:ctTr1 3.2s ease-in-out infinite; opacity:0; }
+        .ct-trail-2 { width:3px; height:3px; animation:ctTr2 3.2s ease-in-out infinite; opacity:0; animation-delay:.06s; }
+        .ct-trail-3 { width:2px; height:2px; animation:ctTr3 3.2s ease-in-out infinite; opacity:0; animation-delay:.12s; }
+        .ct-trail-4 { width:2px; height:2px; animation:ctTr4 3.2s ease-in-out infinite; opacity:0; animation-delay:.18s; background:rgba(249,115,22,.5); }
 
         @keyframes ctTr1 {
           0%,6%  { transform:translate(0,0);         opacity:0; }
@@ -458,13 +453,13 @@ export default function ContactPage() {
 
         /* ─── Mailbox ────────────────────────────────────────────────────── */
         .ct-mailbox {
-          position:        absolute;
-          bottom:          28px;
-          left:            50%;
-          transform:       translateX(-50%);
-          display:         flex;
-          flex-direction:  column;
-          align-items:     center;
+          position:       absolute;
+          bottom:         28px;
+          left:           50%;
+          transform:      translateX(-50%);
+          display:        flex;
+          flex-direction: column;
+          align-items:    center;
         }
         .ct-mailbox__glow {
           position:       absolute;
@@ -478,10 +473,10 @@ export default function ContactPage() {
           animation:      ctMbGlow 3.2s ease-in-out infinite;
         }
         @keyframes ctMbGlow {
-          0%,64%  { border-color:transparent; box-shadow:none; }
-          80%     { border-color:rgba(99,102,241,.72);
-                    box-shadow:0 0 36px rgba(99,102,241,.38), 0 0 72px rgba(99,102,241,.16); }
-          100%    { border-color:transparent; box-shadow:none; }
+          0%,64% { border-color:transparent; box-shadow:none; }
+          80%    { border-color:rgba(99,102,241,.72);
+                   box-shadow:0 0 36px rgba(99,102,241,.38),0 0 72px rgba(99,102,241,.16); }
+          100%   { border-color:transparent; box-shadow:none; }
         }
         .ct-mailbox__roof {
           width:  0;
@@ -498,9 +493,7 @@ export default function ContactPage() {
           border:        1.5px solid rgba(99,102,241,.58);
           border-radius: 10px 10px 6px 6px;
           position:      relative;
-          box-shadow:
-            0 0 32px rgba(99,102,241,.2),
-            inset 0 1px 0 rgba(255,255,255,.06);
+          box-shadow:    0 0 32px rgba(99,102,241,.2),inset 0 1px 0 rgba(255,255,255,.06);
         }
         .ct-mailbox__slot {
           position:      absolute;
@@ -553,12 +546,12 @@ export default function ContactPage() {
         .ct-spark-5 { width:2px; height:2px; background:#fbbf24; animation:ctSp5 3.2s ease-out infinite; }
         .ct-spark-6 { width:2px; height:2px; background:#f97316; animation:ctSp6 3.2s ease-out infinite; }
 
-        @keyframes ctSp1 { 0%,72%{opacity:0;transform:translate(0,0) scale(1)} 78%{opacity:1;transform:translate(-24px,-20px) scale(1.5)} 96%{opacity:0;transform:translate(-36px,-7px) scale(.3)} 100%{opacity:0} }
-        @keyframes ctSp2 { 0%,73%{opacity:0;transform:translate(0,0) scale(1)} 79%{opacity:1;transform:translate( 22px,-24px) scale(1.5)} 96%{opacity:0;transform:translate( 34px,-8px) scale(.3)} 100%{opacity:0} }
-        @keyframes ctSp3 { 0%,71%{opacity:0;transform:translate(0,0) scale(1)} 77%{opacity:1;transform:translate(-10px,-30px) scale(1.4)} 96%{opacity:0;transform:translate(-16px,-9px) scale(.3)} 100%{opacity:0} }
-        @keyframes ctSp4 { 0%,74%{opacity:0;transform:translate(0,0)}          80%{opacity:1;transform:translate( 16px,-16px)}               96%{opacity:0;transform:translate( 24px, 2px)}              100%{opacity:0} }
-        @keyframes ctSp5 { 0%,75%{opacity:0;transform:translate(0,0)}          81%{opacity:1;transform:translate(-18px,-12px)}               96%{opacity:0;transform:translate(-28px, 4px)}             100%{opacity:0} }
-        @keyframes ctSp6 { 0%,76%{opacity:0;transform:translate(0,0)}          82%{opacity:1;transform:translate(  8px,-26px)}               96%{opacity:0;transform:translate( 12px,-8px)}             100%{opacity:0} }
+        @keyframes ctSp1 { 0%,72%{opacity:0;transform:translate(0,0) scale(1)}   78%{opacity:1;transform:translate(-24px,-20px) scale(1.5)} 96%{opacity:0;transform:translate(-36px,-7px) scale(.3)}  100%{opacity:0} }
+        @keyframes ctSp2 { 0%,73%{opacity:0;transform:translate(0,0) scale(1)}   79%{opacity:1;transform:translate( 22px,-24px) scale(1.5)} 96%{opacity:0;transform:translate( 34px,-8px) scale(.3)}  100%{opacity:0} }
+        @keyframes ctSp3 { 0%,71%{opacity:0;transform:translate(0,0) scale(1)}   77%{opacity:1;transform:translate(-10px,-30px) scale(1.4)} 96%{opacity:0;transform:translate(-16px,-9px) scale(.3)}  100%{opacity:0} }
+        @keyframes ctSp4 { 0%,74%{opacity:0;transform:translate(0,0)}            80%{opacity:1;transform:translate( 16px,-16px)}            96%{opacity:0;transform:translate( 24px, 2px)}             100%{opacity:0} }
+        @keyframes ctSp5 { 0%,75%{opacity:0;transform:translate(0,0)}            81%{opacity:1;transform:translate(-18px,-12px)}            96%{opacity:0;transform:translate(-28px, 4px)}            100%{opacity:0} }
+        @keyframes ctSp6 { 0%,76%{opacity:0;transform:translate(0,0)}            82%{opacity:1;transform:translate(  8px,-26px)}            96%{opacity:0;transform:translate( 12px,-8px)}             100%{opacity:0} }
 
         /* ─── Corner brackets ────────────────────────────────────────────── */
         .ct-corner {
@@ -569,45 +562,195 @@ export default function ContactPage() {
           opacity:        .18;
           pointer-events: none;
         }
-        .ct-corner--tl { top:22px;    left:22px;    border-top:   1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
-        .ct-corner--tr { top:22px;    right:22px;   border-top:   1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
-        .ct-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
-        .ct-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .ct-corner--tl { top:22px;    left:22px;    border-top:    1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .ct-corner--tr { top:22px;    right:22px;   border-top:    1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .ct-corner--bl { bottom:22px; left:22px;    border-bottom: 1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
+        .ct-corner--br { bottom:22px; right:22px;   border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
-        /* ══ RESPONSIVE ════════════════════════════════════════════════════ */
+        /* ══ RESPONSIVE — 900px ════════════════════════════════════════════ */
         @media (max-width: 900px) {
           .ct-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
           .ct-hero__right { flex: 0 0 340px; }
-          .ct-anim        { width:280px; height:360px; }
+          .ct-anim        { width: 280px; height: 360px; }
         }
 
+        /* ══ RESPONSIVE — 768px (mobile) ═══════════════════════════════════
+           FIX 1: opacity: 1        — was 0.45, animation was invisible
+           FIX 2: overflow: visible — was hidden, indigo glow on mailbox clipped
+           FIX 3: height: 420px     — was 320px, mailbox bottom was cut off
+           FIX 4: Named keyframes   — @keyframes inside @media is unreliable
+                                       in older WebKit; use animation-name swap
+        ═══════════════════════════════════════════════════════════════════ */
         @media (max-width: 768px) {
-          .ct-hero { flex-direction: column; min-height: auto; }
-          .ct-hero__left {
-            order: 2; flex: none; width: 100%;
-            padding: 3rem 1.5rem 4rem;
-            align-items: center; text-align: center;
+
+          .ct-hero {
+            flex-direction: column;
+            min-height:     auto;
           }
-          .ct-hero__sub  { max-width: 100%; }
+
+          /* Animation panel — rendered first, fully visible */
           .ct-hero__right {
-            order: 1; flex: none; width: 100%;
-            height: 320px; min-height: 320px; opacity: .45;
+            order:           1;
+            flex:            none;
+            width:           100%;
+            height:          420px;     /* ← was 320px */
+            min-height:      420px;
+            opacity:         1;         /* ← was 0.45  */
+            overflow:        visible;   /* ← was hidden */
+            display:         flex;
+            align-items:     center;
+            justify-content: center;
           }
-          .ct-anim { width:220px; height:280px; }
-          .ct-letter { width:54px; height:42px; }
-          @keyframes ctLetterFly {
-            0%   { transform:translate(0px,0px)    rotate(-18deg) scale(.88); opacity:0; }
-            6%   { opacity:1; }
-            32%  { transform:translate(160px,-36px) rotate(14deg) scale(1.06); opacity:1; }
-            64%  { transform:translate(98px,162px)  rotate(-5deg) scale(.93); opacity:1; }
-            76%  { transform:translate(80px,196px)  rotate(-1deg) scale(.5);  opacity:.8; }
-            86%  { transform:translate(80px,212px)  rotate(0deg)  scale(.16); opacity:0; }
-            87%  { transform:translate(0px,0px)    rotate(-18deg) scale(.88); opacity:0; }
-            100% { transform:translate(0px,0px)    rotate(-18deg) scale(.88); opacity:0; }
+
+          /* Scaled stage — 240×340 fits within 420px panel with padding */
+          .ct-anim {
+            width:  240px;
+            height: 340px;
           }
-          .ct-hero__scroll { left:50%; transform:translateX(-50%); }
+
+          /* Letter — smaller, new origin, swap to mobile keyframe set */
+          .ct-letter {
+            top:            22px;
+            left:           24px;
+            width:          56px;
+            height:         43px;
+            animation-name: ctLetterFlyMd;   /* ← named mobile keyframe */
+          }
+
+          /* Trail dots — origin = letter top + half-height, left + half-width */
+          .ct-trail {
+            top:  42px;   /* 22 + 43/2 ≈ 43 → 42 */
+            left: 52px;   /* 24 + 56/2 = 52       */
+          }
+          .ct-trail-1 { animation-name: ctTr1Md; }
+          .ct-trail-2 { animation-name: ctTr2Md; }
+          .ct-trail-3 { animation-name: ctTr3Md; }
+          .ct-trail-4 { animation-name: ctTr4Md; }
+
+          /* Copy panel — rendered below animation */
+          .ct-hero__left {
+            order:       2;
+            flex:        none;
+            width:       100%;
+            padding:     3rem 1.5rem 4rem;
+            align-items: center;
+            text-align:  center;
+          }
+          .ct-hero__sub { max-width: 100%; }
         }
 
+        /* ── MD letter keyframes — 240px-wide stage ──────────────────────── */
+        @keyframes ctLetterFlyMd {
+          0%   { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity: 0; }
+          6%   { opacity: 1; }
+          32%  { transform: translate(152px, -38px)  rotate(14deg)  scale(1.07); opacity: 1; }
+          64%  { transform: translate(94px,  202px)  rotate(-5deg)  scale(.94);  opacity: 1; }
+          76%  { transform: translate(76px,  240px)  rotate(-1deg)  scale(.50);  opacity: .8; }
+          86%  { transform: translate(76px,  258px)  rotate(0deg)   scale(.16);  opacity: 0; }
+          87%  { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity: 0; }
+          100% { transform: translate(0px,   0px)   rotate(-18deg) scale(.88); opacity: 0; }
+        }
+
+        /* ── MD trail keyframes — proportional to 240px stage ────────────── */
+        @keyframes ctTr1Md {
+          0%,6% { transform:translate(0,0);          opacity:0; }
+          28%   { transform:translate(120px,-40px);   opacity:.85; }
+          60%   { transform:translate(66px, 170px);   opacity:.4; }
+          74%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr2Md {
+          0%,6% { transform:translate(0,0);          opacity:0; }
+          28%   { transform:translate(97px, -32px);   opacity:.65; }
+          60%   { transform:translate(52px, 154px);   opacity:.28; }
+          72%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr3Md {
+          0%,6% { transform:translate(0,0);          opacity:0; }
+          28%   { transform:translate(73px, -22px);   opacity:.45; }
+          60%   { transform:translate(38px, 134px);   opacity:.18; }
+          70%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr4Md {
+          0%,6% { transform:translate(0,0);          opacity:0; }
+          28%   { transform:translate(49px, -12px);   opacity:.3; }
+          60%   { transform:translate(24px, 112px);   opacity:.1; }
+          68%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+
+        /* ══ RESPONSIVE — 400px (extra-small phones) ═══════════════════════ */
+        @media (max-width: 400px) {
+          .ct-hero__right {
+            height:     360px;
+            min-height: 360px;
+          }
+          .ct-anim {
+            width:  200px;
+            height: 295px;
+          }
+          .ct-letter {
+            top:            18px;
+            left:           20px;
+            width:          48px;
+            height:         37px;
+            animation-name: ctLetterFlySm;  /* ← named XS keyframe */
+          }
+          .ct-trail {
+            top:  36px;   /* 18 + 37/2 ≈ 36 */
+            left: 44px;   /* 20 + 48/2 = 44  */
+          }
+          .ct-trail-1 { animation-name: ctTr1Sm; }
+          .ct-trail-2 { animation-name: ctTr2Sm; }
+          .ct-trail-3 { animation-name: ctTr3Sm; }
+          .ct-trail-4 { animation-name: ctTr4Sm; }
+        }
+
+        /* ── SM letter keyframes — 200px-wide stage ──────────────────────── */
+        @keyframes ctLetterFlySm {
+          0%   { transform: translate(0px,  0px)   rotate(-18deg) scale(.88); opacity: 0; }
+          6%   { opacity: 1; }
+          32%  { transform: translate(124px,-30px)  rotate(14deg)  scale(1.05); opacity: 1; }
+          64%  { transform: translate(77px, 168px)  rotate(-5deg)  scale(.93);  opacity: 1; }
+          76%  { transform: translate(62px, 200px)  rotate(-1deg)  scale(.48);  opacity: .8; }
+          86%  { transform: translate(62px, 215px)  rotate(0deg)   scale(.14);  opacity: 0; }
+          87%  { transform: translate(0px,  0px)   rotate(-18deg) scale(.88); opacity: 0; }
+          100% { transform: translate(0px,  0px)   rotate(-18deg) scale(.88); opacity: 0; }
+        }
+
+        /* ── SM trail keyframes — proportional to 200px stage ────────────── */
+        @keyframes ctTr1Sm {
+          0%,6% { transform:translate(0,0);         opacity:0; }
+          28%   { transform:translate(98px,-32px);   opacity:.85; }
+          60%   { transform:translate(54px,138px);   opacity:.4; }
+          74%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr2Sm {
+          0%,6% { transform:translate(0,0);         opacity:0; }
+          28%   { transform:translate(79px,-26px);   opacity:.65; }
+          60%   { transform:translate(43px,124px);   opacity:.28; }
+          72%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr3Sm {
+          0%,6% { transform:translate(0,0);         opacity:0; }
+          28%   { transform:translate(59px,-18px);   opacity:.45; }
+          60%   { transform:translate(30px,108px);   opacity:.18; }
+          70%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+        @keyframes ctTr4Sm {
+          0%,6% { transform:translate(0,0);         opacity:0; }
+          28%   { transform:translate(39px,-10px);   opacity:.3; }
+          60%   { transform:translate(19px,90px);    opacity:.1; }
+          68%   { opacity:0; }
+          100%  { opacity:0; }
+        }
+
+        /* ══ Reduced motion ════════════════════════════════════════════════ */
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
             animation-duration:        0.01ms !important;
@@ -736,7 +879,6 @@ export default function ContactPage() {
           </div>
         </div>
 
-       
       </section>
 
       {/* ══ CONTACT US BANNER ═══════════════════════════════════════════════ */}

@@ -2,14 +2,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Careers page — 99 Visual Solutions
 //
-// CHANGES IN THIS VERSION:
-//   ✅ Hero restructured to two-column layout matching contact/about pages
-//      (text left, animated visual right) — replaces centred single-column
-//   ✅ FAQ microdata removed — JSON-LD via careersFaqNode in buildGraph() is
-//      the single source of truth for FAQPage structured data
-//   ✅ Dual-format FAQ schema (JSON-LD + microdata) eliminated — prevents
-//      Google Search Console structured data conflict / rich result suppression
-//   ✅ All other schema, SEO, a11y, and section content unchanged
+// MOBILE FIX (same 3 bugs as about/page.tsx and partner/page.tsx):
+//   ✅ FIX 1 — Missing closing } on @media (max-width: 768px) block
+//   ✅ FIX 2 — overflow:visible on .cr-hero__right so cards aren't clipped
+//   ✅ FIX 3 — Card positions recalibrated for smaller mobile stage
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -204,9 +200,7 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA — single source of truth for schema AND visible HTML
-// JSON-LD via careersFaqNode handles all structured data.
-// No microdata attributes in the DOM — eliminates dual-format conflict.
+// FAQ DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
@@ -247,7 +241,7 @@ const faqItems = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — page-specific nodes only
+// SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
 const careersBreadcrumbNode = {
   ...breadcrumb([
@@ -470,12 +464,6 @@ export default function CareersPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ── Design tokens — scoped to page sections, NOT :root ─────────────
-           Avoids CSS variable collision when Next.js merges inline <style>
-           tags from multiple pages into a shared bundle in production.
-           Using :root here would let a token change on one page silently
-           override the same token on every other page that shares the name.
-        ────────────────────────────────────────────────────────────────── */
         .cr-hero,
         .c-areas,
         .c-why,
@@ -525,6 +513,7 @@ export default function CareersPage() {
           background-size: 52px 52px;
         }
 
+        /* ── Left column ─────────────────────────────────────────────────── */
         .cr-hero__left {
           position:       relative;
           z-index:        10;
@@ -600,13 +589,14 @@ export default function CareersPage() {
           animation:   crFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;
         }
 
+        /* ── Stats row ────────────────────────────────────────────────────── */
         .cr-hero__stats {
-          display:   flex;
-          gap:       0;
+          display:    flex;
+          gap:        0;
           list-style: none;
-          padding:   0;
-          margin:    0 0 2.4rem;
-          animation: crFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
+          padding:    0;
+          margin:     0 0 2.4rem;
+          animation:  crFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
         }
         .cr-hero__stat {
           padding:      0 2rem 0 0;
@@ -614,8 +604,8 @@ export default function CareersPage() {
           border-right: 1px solid rgba(255,255,255,.1);
         }
         .cr-hero__stat:last-child {
-          border-right: none;
-          margin-right: 0;
+          border-right:  none;
+          margin-right:  0;
           padding-right: 0;
         }
         .cr-hero__stat-num {
@@ -665,11 +655,7 @@ export default function CareersPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-      
-
-       
-
-
+        /* ── Right column ────────────────────────────────────────────────── */
         .cr-hero__right {
           flex:            0 0 460px;
           height:          92vh;
@@ -681,6 +667,7 @@ export default function CareersPage() {
           overflow:        hidden;
         }
 
+        /* ── Animation stage ──────────────────────────────────────────────── */
         .cr-anim {
           position:       relative;
           width:          340px;
@@ -688,6 +675,7 @@ export default function CareersPage() {
           pointer-events: none;
         }
 
+        /* Central badge */
         .cr-anim__badge {
           position:        absolute;
           top:             50%;
@@ -738,6 +726,7 @@ export default function CareersPage() {
           color:          var(--c-muted);
         }
 
+        /* Orbit rings */
         .cr-anim__ring {
           position:      absolute;
           top:           50%;
@@ -750,18 +739,19 @@ export default function CareersPage() {
           animation:     crRingSpin 18s linear infinite;
         }
         .cr-anim__ring--2 {
-          width:         280px;
-          height:        280px;
-          border-color:  rgba(99,102,241,.12);
-          animation:     crRingSpin 28s linear infinite reverse;
-          border-style:  solid;
-          border-width:  1px;
+          width:        280px;
+          height:       280px;
+          border-color: rgba(99,102,241,.12);
+          animation:    crRingSpin 28s linear infinite reverse;
+          border-style: solid;
+          border-width: 1px;
         }
         @keyframes crRingSpin {
           from { transform: translate(-50%, -50%) rotate(0deg); }
           to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
+        /* Floating cards */
         .cr-card {
           position:        absolute;
           display:         flex;
@@ -776,14 +766,14 @@ export default function CareersPage() {
           white-space:     nowrap;
         }
         .cr-card__icon {
-          width:          32px;
-          height:         32px;
-          border-radius:  8px;
-          display:        flex;
-          align-items:    center;
+          width:           32px;
+          height:          32px;
+          border-radius:   8px;
+          display:         flex;
+          align-items:     center;
           justify-content: center;
-          font-size:      .85rem;
-          flex-shrink:    0;
+          font-size:       .85rem;
+          flex-shrink:     0;
         }
         .cr-card__title {
           font-family: var(--ff-sans);
@@ -802,16 +792,18 @@ export default function CareersPage() {
           opacity:        .75;
         }
 
-        .cr-card--1 { top: 8%;  left: -8%;  animation: crFloat1 6s ease-in-out infinite; }
-        .cr-card--2 { top: 14%; right: -4%; animation: crFloat2 7s ease-in-out infinite; }
+        /* Desktop card positions */
+        .cr-card--1 { top: 8%;    left: -8%;  animation: crFloat1 6s ease-in-out infinite; }
+        .cr-card--2 { top: 14%;   right: -4%; animation: crFloat2 7s ease-in-out infinite; }
         .cr-card--3 { bottom: 28%; left: -10%; animation: crFloat3 5.5s ease-in-out infinite; }
         .cr-card--4 { bottom: 10%; right: -6%; animation: crFloat4 6.5s ease-in-out infinite; }
 
-        @keyframes crFloat1 { 0%,100%{transform:translateY(0px) rotate(-1deg)} 50%{transform:translateY(-10px) rotate(1deg)} }
-        @keyframes crFloat2 { 0%,100%{transform:translateY(0px) rotate(1deg)}  50%{transform:translateY(-14px) rotate(-1deg)} }
-        @keyframes crFloat3 { 0%,100%{transform:translateY(0px) rotate(.5deg)} 50%{transform:translateY(-8px) rotate(-1.5deg)} }
+        @keyframes crFloat1 { 0%,100%{transform:translateY(0px) rotate(-1deg)}  50%{transform:translateY(-10px) rotate(1deg)} }
+        @keyframes crFloat2 { 0%,100%{transform:translateY(0px) rotate(1deg)}   50%{transform:translateY(-14px) rotate(-1deg)} }
+        @keyframes crFloat3 { 0%,100%{transform:translateY(0px) rotate(.5deg)}  50%{transform:translateY(-8px) rotate(-1.5deg)} }
         @keyframes crFloat4 { 0%,100%{transform:translateY(0px) rotate(-1.5deg)} 50%{transform:translateY(-12px) rotate(1deg)} }
 
+        /* Corner brackets */
         .cr-corner {
           position:       absolute;
           width:          28px;
@@ -827,241 +819,365 @@ export default function CareersPage() {
 
         /* ══ SECTIONS ════════════════════════════════════════════════════ */
         .c-areas {
-          background: var(--c-surface);
-          padding: 6rem 1.5rem;
-          border-top: 1px solid var(--c-border);
+          background:  var(--c-surface);
+          padding:     6rem 1.5rem;
+          border-top:  1px solid var(--c-border);
         }
         .c-section-label {
-          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
-          letter-spacing: .22em; text-transform: uppercase;
-          color: var(--c-orange); margin-bottom: .8rem; display: block;
+          font-family:    var(--ff-sans);
+          font-size:      10px;
+          font-weight:    500;
+          letter-spacing: .22em;
+          text-transform: uppercase;
+          color:          var(--c-orange);
+          margin-bottom:  .8rem;
+          display:        block;
         }
         .c-section-h2 {
-          font-family: var(--ff-serif);
-          font-size: clamp(2rem, 4vw, 3.2rem);
-          font-weight: 700; line-height: 1.1; letter-spacing: -.015em;
-          color: #fff; margin-bottom: 1rem;
+          font-family:    var(--ff-serif);
+          font-size:      clamp(2rem, 4vw, 3.2rem);
+          font-weight:    700;
+          line-height:    1.1;
+          letter-spacing: -.015em;
+          color:          #fff;
+          margin-bottom:  1rem;
         }
         .c-section-sub {
-          font-family: var(--ff-sans); font-size: .95rem; font-weight: 300;
-          line-height: 1.7; color: var(--c-muted); max-width: 480px;
+          font-family: var(--ff-sans);
+          font-size:   .95rem;
+          font-weight: 300;
+          line-height: 1.7;
+          color:       var(--c-muted);
+          max-width:   480px;
         }
         .c-areas__header { text-align: center; margin: 0 auto 4rem; }
         .c-areas__grid {
-          display: grid; gap: 1.5px;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          max-width: 1100px; margin: 0 auto;
-          border: 1.5px solid var(--c-border);
-          border-radius: 20px; overflow: hidden;
+          display:                  grid;
+          gap:                      1.5px;
+          grid-template-columns:    repeat(auto-fit, minmax(240px, 1fr));
+          max-width:                1100px;
+          margin:                   0 auto;
+          border:                   1.5px solid var(--c-border);
+          border-radius:            20px;
+          overflow:                 hidden;
         }
         .c-area-card {
-          position: relative;
+          position:   relative;
           background: var(--c-bg);
-          padding: 2.4rem 2rem;
+          padding:    2.4rem 2rem;
           transition: background .25s ease;
         }
         .c-area-card:hover { background: #111; }
         .c-area-card__icon-wrap {
-          width: 48px; height: 48px; border-radius: 12px;
-          display: flex; align-items: center; justify-content: center;
-          margin-bottom: 1.4rem; font-size: 1.2rem;
-          background: rgba(255,255,255,.04);
-          border: 1px solid var(--c-border);
-          transition: transform .2s ease;
+          width:         48px;
+          height:        48px;
+          border-radius: 12px;
+          display:       flex;
+          align-items:   center;
+          justify-content: center;
+          margin-bottom: 1.4rem;
+          font-size:     1.2rem;
+          background:    rgba(255,255,255,.04);
+          border:        1px solid var(--c-border);
+          transition:    transform .2s ease;
         }
         .c-area-card:hover .c-area-card__icon-wrap { transform: scale(1.1); }
         .c-area-card__title {
-          font-family: var(--ff-serif); font-size: 1.35rem; font-weight: 600;
-          color: #fff; margin-bottom: .4rem; letter-spacing: -.01em;
+          font-family:    var(--ff-serif);
+          font-size:      1.35rem;
+          font-weight:    600;
+          color:          #fff;
+          margin-bottom:  .4rem;
+          letter-spacing: -.01em;
         }
         .c-area-card__job {
-          font-family: var(--ff-sans); font-size: .75rem; font-weight: 500;
-          color: var(--c-orange); letter-spacing: .08em; text-transform: uppercase;
-          margin-bottom: .6rem; opacity: .7;
+          font-family:    var(--ff-sans);
+          font-size:      .75rem;
+          font-weight:    500;
+          color:          var(--c-orange);
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          margin-bottom:  .6rem;
+          opacity:        .7;
         }
         .c-area-card__desc {
-          font-family: var(--ff-sans); font-size: .88rem; font-weight: 300;
-          line-height: 1.7; color: var(--c-muted);
+          font-family: var(--ff-sans);
+          font-size:   .88rem;
+          font-weight: 300;
+          line-height: 1.7;
+          color:       var(--c-muted);
         }
         .c-area-card__line {
-          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-          opacity: 0; transition: opacity .25s ease;
+          position:   absolute;
+          bottom:     0;
+          left:       0;
+          right:      0;
+          height:     2px;
+          opacity:    0;
+          transition: opacity .25s ease;
         }
         .c-area-card:hover .c-area-card__line { opacity: 1; }
 
         .c-why {
           background: var(--c-bg);
-          padding: 6rem 1.5rem;
+          padding:    6rem 1.5rem;
           border-top: 1px solid var(--c-border);
         }
-        .c-why__inner { max-width: 1100px; margin: 0 auto; }
+        .c-why__inner  { max-width: 1100px; margin: 0 auto; }
         .c-why__layout {
-          display: grid; gap: 4rem;
-          grid-template-columns: 1fr 1fr; align-items: start;
+          display:               grid;
+          gap:                   4rem;
+          grid-template-columns: 1fr 1fr;
+          align-items:           start;
         }
         @media (max-width: 768px) { .c-why__layout { grid-template-columns: 1fr; } }
         .c-why__items { display: flex; flex-direction: column; gap: 0; }
         .c-why__item {
-          padding: 2rem 0;
+          padding:     2rem 0;
           border-bottom: 1px solid var(--c-border);
-          display: flex; gap: 1.5rem; align-items: flex-start;
+          display:     flex;
+          gap:         1.5rem;
+          align-items: flex-start;
         }
         .c-why__item:first-child { border-top: 1px solid var(--c-border); }
         .c-why__num {
-          font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 600;
-          color: var(--c-orange); opacity: .6; flex-shrink: 0; padding-top: 2px;
+          font-family: var(--ff-serif);
+          font-size:   1.1rem;
+          font-weight: 600;
+          color:       var(--c-orange);
+          opacity:     .6;
+          flex-shrink: 0;
+          padding-top: 2px;
         }
         .c-why__item-title {
-          font-family: var(--ff-serif); font-size: 1.25rem; font-weight: 600;
-          color: #fff; margin-bottom: .4rem;
+          font-family:   var(--ff-serif);
+          font-size:     1.25rem;
+          font-weight:   600;
+          color:         #fff;
+          margin-bottom: .4rem;
         }
         .c-why__item-desc {
-          font-family: var(--ff-sans); font-size: .88rem; font-weight: 300;
-          line-height: 1.7; color: var(--c-muted);
+          font-family: var(--ff-sans);
+          font-size:   .88rem;
+          font-weight: 300;
+          line-height: 1.7;
+          color:       var(--c-muted);
         }
         .c-why__visual {
-          position: relative;
+          position:   relative;
           background: linear-gradient(135deg, rgba(249,115,22,.08), rgba(249,115,22,.02));
-          border: 1px solid rgba(249,115,22,.15);
-          border-radius: 20px; padding: 2.5rem;
-          display: flex; flex-direction: column; gap: 1.2rem;
+          border:     1px solid rgba(249,115,22,.15);
+          border-radius: 20px;
+          padding:    2.5rem;
+          display:    flex;
+          flex-direction: column;
+          gap:        1.2rem;
         }
         .c-why__stat { display: flex; flex-direction: column; }
         .c-why__stat-num {
-          font-family: var(--ff-serif);
-          font-size: clamp(2.2rem, 4vw, 3rem);
-          font-weight: 700; color: var(--c-orange); line-height: 1; margin-bottom: 4px;
-          display: block;
+          font-family:   var(--ff-serif);
+          font-size:     clamp(2.2rem, 4vw, 3rem);
+          font-weight:   700;
+          color:         var(--c-orange);
+          line-height:   1;
+          margin-bottom: 4px;
+          display:       block;
         }
         .c-why__stat-label {
-          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
-          letter-spacing: .15em; text-transform: uppercase; color: var(--c-muted);
-          display: block;
+          font-family:    var(--ff-sans);
+          font-size:      10px;
+          font-weight:    500;
+          letter-spacing: .15em;
+          text-transform: uppercase;
+          color:          var(--c-muted);
+          display:        block;
         }
         .c-why__divider { height: 1px; background: var(--c-border); }
 
         .c-roles {
           background: var(--c-surface);
-          padding: 6rem 1.5rem;
+          padding:    6rem 1.5rem;
           border-top: 1px solid var(--c-border);
         }
-        .c-roles__inner { max-width: 1100px; margin: 0 auto; }
+        .c-roles__inner  { max-width: 1100px; margin: 0 auto; }
         .c-roles__header { text-align: center; margin-bottom: 4rem; }
         .c-roles__list {
-          display: flex; flex-direction: column; gap: 1px;
-          border: 1.5px solid var(--c-border);
-          border-radius: 20px; overflow: hidden;
-          list-style: none; margin: 0; padding: 0;
+          display:        flex;
+          flex-direction: column;
+          gap:            1px;
+          border:         1.5px solid var(--c-border);
+          border-radius:  20px;
+          overflow:       hidden;
+          list-style:     none;
+          margin:         0;
+          padding:        0;
         }
         .c-role-row {
           background: var(--c-bg);
-          padding: 1.8rem 2.4rem;
-          display: flex; align-items: center; justify-content: space-between;
-          gap: 2rem; transition: background .2s ease; flex-wrap: wrap;
+          padding:    1.8rem 2.4rem;
+          display:    flex;
+          align-items: center;
+          justify-content: space-between;
+          gap:        2rem;
+          transition: background .2s ease;
+          flex-wrap:  wrap;
         }
         .c-role-row:hover { background: #111; }
         .c-role-row__left { display: flex; flex-direction: column; gap: .35rem; }
         .c-role-row__title {
-          font-family: var(--ff-serif); font-size: 1.3rem; font-weight: 600;
-          color: #fff; letter-spacing: -.01em;
+          font-family:    var(--ff-serif);
+          font-size:      1.3rem;
+          font-weight:    600;
+          color:          #fff;
+          letter-spacing: -.01em;
         }
-        .c-role-row__meta { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .c-role-row__meta {
+          display:     flex;
+          gap:         1rem;
+          align-items: center;
+          flex-wrap:   wrap;
+        }
         .c-role-row__tag {
-          font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
-          letter-spacing: .18em; text-transform: uppercase;
-          padding: 4px 10px; border-radius: 100px;
-          border: 1px solid var(--c-border); color: var(--c-muted);
+          font-family:    var(--ff-sans);
+          font-size:      9px;
+          font-weight:    500;
+          letter-spacing: .18em;
+          text-transform: uppercase;
+          padding:        4px 10px;
+          border-radius:  100px;
+          border:         1px solid var(--c-border);
+          color:          var(--c-muted);
         }
         .c-role-row__tag--open {
-          background: rgba(249,115,22,.1);
+          background:   rgba(249,115,22,.1);
           border-color: rgba(249,115,22,.3);
-          color: var(--c-orange);
+          color:        var(--c-orange);
         }
         .c-role-row__apply {
-          display: inline-flex; align-items: center; gap: 8px;
-          font-family: var(--ff-sans); font-size: 10px; font-weight: 600;
-          letter-spacing: .14em; text-transform: uppercase; color: #fff;
-          border: 1px solid rgba(249,115,22,.3);
-          background: rgba(249,115,22,.07);
+          display:         inline-flex;
+          align-items:     center;
+          gap:             8px;
+          font-family:     var(--ff-sans);
+          font-size:       10px;
+          font-weight:     600;
+          letter-spacing:  .14em;
+          text-transform:  uppercase;
+          color:           #fff;
+          border:          1px solid rgba(249,115,22,.3);
+          background:      rgba(249,115,22,.07);
           backdrop-filter: blur(8px);
-          padding: 10px 22px; border-radius: 100px; text-decoration: none;
-          white-space: nowrap; flex-shrink: 0;
-          transition: all .2s ease;
+          padding:         10px 22px;
+          border-radius:   100px;
+          text-decoration: none;
+          white-space:     nowrap;
+          flex-shrink:     0;
+          transition:      all .2s ease;
         }
         .c-role-row__apply:hover {
-          background: var(--c-orange); color: #080808; border-color: var(--c-orange);
-          transform: translateY(-1px);
+          background:   var(--c-orange);
+          color:        #080808;
+          border-color: var(--c-orange);
+          transform:    translateY(-1px);
         }
 
-        /* ══ FAQ — JSON-LD only, zero microdata in DOM ═══════════════════
-           careersFaqNode in buildGraph() is the sole FAQPage schema source.
-           Keeping microdata here alongside JSON-LD would create a dual-format
-           conflict that Google may flag or use to suppress the rich result.
-        ═══════════════════════════════════════════════════════════════════ */
         .c-faq {
           background: var(--c-bg);
-          padding: 6rem 1.5rem;
+          padding:    6rem 1.5rem;
           border-top: 1px solid var(--c-border);
         }
-        .c-faq__inner { max-width: 800px; margin: 0 auto; }
+        .c-faq__inner  { max-width: 800px; margin: 0 auto; }
         .c-faq__header { text-align: center; margin-bottom: 3.5rem; }
-        .c-faq__list { display: flex; flex-direction: column; gap: 0; }
+        .c-faq__list   { display: flex; flex-direction: column; gap: 0; }
         .c-faq__item {
           border-bottom: 1px solid var(--c-border);
-          padding: 1.8rem 0;
+          padding:       1.8rem 0;
         }
         .c-faq__item:first-child { border-top: 1px solid var(--c-border); }
         .c-faq__q {
-          font-family: var(--ff-serif); font-size: 1.15rem; font-weight: 600;
-          color: #fff; margin-bottom: .6rem; line-height: 1.4;
+          font-family:   var(--ff-serif);
+          font-size:     1.15rem;
+          font-weight:   600;
+          color:         #fff;
+          margin-bottom: .6rem;
+          line-height:   1.4;
         }
         .c-faq__a {
-          font-family: var(--ff-sans); font-size: .88rem; font-weight: 300;
-          line-height: 1.75; color: var(--c-muted);
+          font-family: var(--ff-sans);
+          font-size:   .88rem;
+          font-weight: 300;
+          line-height: 1.75;
+          color:       var(--c-muted);
         }
 
         .c-cta {
-          position: relative;
+          position:   relative;
           background: var(--c-surface);
-          padding: 7rem 1.5rem;
-          text-align: center; overflow: hidden;
+          padding:    7rem 1.5rem;
+          text-align: center;
+          overflow:   hidden;
           border-top: 1px solid var(--c-border);
         }
         .c-cta__orb {
-          position: absolute; width: 600px; height: 600px;
-          border-radius: 50%; filter: blur(110px); opacity: .12;
-          background: radial-gradient(circle, #f97316, transparent);
-          top: 50%; left: 50%; transform: translate(-50%,-50%);
+          position:      absolute;
+          width:         600px;
+          height:        600px;
+          border-radius: 50%;
+          filter:        blur(110px);
+          opacity:       .12;
+          background:    radial-gradient(circle, #f97316, transparent);
+          top:           50%;
+          left:          50%;
+          transform:     translate(-50%,-50%);
           pointer-events: none;
         }
         .c-cta__content { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; }
         .c-cta__h2 {
-          font-family: var(--ff-serif);
-          font-size: clamp(2.2rem, 5vw, 4rem);
-          font-weight: 700; line-height: 1.05; letter-spacing: -.02em;
-          color: #fff; margin-bottom: 1.2rem;
+          font-family:    var(--ff-serif);
+          font-size:      clamp(2.2rem, 5vw, 4rem);
+          font-weight:    700;
+          line-height:    1.05;
+          letter-spacing: -.02em;
+          color:          #fff;
+          margin-bottom:  1.2rem;
         }
-        .c-cta__h2 em { font-style: italic; color: var(--c-orange); }
+        .c-cta__h2 em  { font-style: italic; color: var(--c-orange); }
         .c-cta__sub {
-          font-family: var(--ff-sans); font-size: .95rem; font-weight: 300;
-          line-height: 1.7; color: var(--c-muted); margin-bottom: 2.4rem;
+          font-family:   var(--ff-sans);
+          font-size:     .95rem;
+          font-weight:   300;
+          line-height:   1.7;
+          color:         var(--c-muted);
+          margin-bottom: 2.4rem;
         }
         .c-cta__btn {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: var(--ff-sans); font-size: 11px; font-weight: 600;
-          letter-spacing: .12em; text-transform: uppercase; color: #fff;
-          border: 1px solid rgba(249,115,22,.4);
-          background: rgba(249,115,22,.1);
+          display:         inline-flex;
+          align-items:     center;
+          gap:             10px;
+          font-family:     var(--ff-sans);
+          font-size:       11px;
+          font-weight:     600;
+          letter-spacing:  .12em;
+          text-transform:  uppercase;
+          color:           #fff;
+          border:          1px solid rgba(249,115,22,.4);
+          background:      rgba(249,115,22,.1);
           backdrop-filter: blur(12px);
-          padding: 14px 34px; border-radius: 100px; text-decoration: none;
-          transition: all .2s ease;
+          padding:         14px 34px;
+          border-radius:   100px;
+          text-decoration: none;
+          transition:      all .2s ease;
         }
         .c-cta__btn:hover {
-          background: var(--c-orange); color: #080808; border-color: var(--c-orange);
-          transform: translateY(-2px); box-shadow: 0 12px 36px rgba(249,115,22,.4);
+          background:   var(--c-orange);
+          color:        #080808;
+          border-color: var(--c-orange);
+          transform:    translateY(-2px);
+          box-shadow:   0 12px 36px rgba(249,115,22,.4);
         }
 
-        /* ══ RESPONSIVE ══════════════════════════════════════════════════ */
+
+        /* ══ RESPONSIVE ═══════════════════════════════════════════════════ */
+
         @media (max-width: 900px) {
           .cr-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
           .cr-hero__right { flex: 0 0 340px; }
@@ -1069,22 +1185,103 @@ export default function CareersPage() {
         }
 
         @media (max-width: 768px) {
-          .cr-hero { flex-direction: column; min-height: auto; }
+          .cr-hero {
+            flex-direction: column;
+            min-height:     auto;
+          }
+
+          /* ── Left column ── */
           .cr-hero__left {
-            order: 2; flex: none; width: 100%;
-            padding: 3rem 1.5rem 4rem;
-            align-items: center; text-align: center;
+            order:       2;
+            flex:        none;
+            width:       100%;
+            padding:     2rem 1.5rem 3rem;
+            align-items: center;
+            text-align:  center;
           }
-          .cr-hero__sub    { max-width: 100%; }
-          .cr-hero__stats  { justify-content: center; }
-          .cr-hero__right  {
-            order: 1; flex: none; width: 100%;
-            height: 300px; min-height: 300px;
+          .cr-hero__sub   { max-width: 100%; }
+          .cr-hero__stats { justify-content: center; }
+
+          /* ── Right column ──
+             FIX 1: overflow:visible so floating cards (negative offsets)
+             are not clipped. The original overflow:hidden cut all four
+             cards off entirely on mobile.
+          ── */
+          .cr-hero__right {
+            order:      1;
+            flex:       none;
+            width:      100%;
+            height:     300px;
+            min-height: 300px;
+            overflow:   visible;   /* was hidden → cards clipped */
+            padding:    0 24px;
           }
-          
+
+          /* ── Animation stage ──
+             FIX 2: Flatten stage for mobile slot.
+          ── */
+          .cr-anim {
+            width:  240px;
+            height: 220px;
+          }
+
+          /* Scale rings down with the smaller stage */
+          .cr-anim__ring    { width: 150px; height: 150px; }
+          .cr-anim__ring--2 { width: 210px; height: 210px; }
+
+          /* Shrink central badge */
+          .cr-anim__badge {
+            width:  86px;
+            height: 86px;
+          }
+          .cr-anim__badge-num   { font-size: 1.55rem; }
+          .cr-anim__badge-label { font-size: 7px; }
+          .cr-anim__badge-sub   { font-size: 6px; }
+
+          /* ── Card positions ──
+             FIX 3: Recalibrate all four cards for the 240×220 mobile stage.
+             Negative pixel offsets hang cards outside the stage box —
+             overflow:visible (above) keeps them shown.
+          ── */
+          .cr-card--1 { top: -20px;  left:  -70px; }
+          .cr-card--2 { top: -20px;  right: -70px; }
+          .cr-card--3 { bottom: 8px; left:  -66px; }
+          .cr-card--4 { bottom: 8px; right: -66px; }
+
+          /* Compact card padding on mobile */
+          .cr-card {
+            padding:       8px 12px;
+            border-radius: 10px;
+            gap:           8px;
+          }
+          .cr-card__icon  { width: 28px; height: 28px; font-size: .78rem; }
+          .cr-card__title { font-size: .68rem; }
+          .cr-card__tag   { font-size: 7px; }
+
+          /* CTA full-width on mobile */
+          .cr-hero__cta {
+            width:           100%;
+            max-width:       280px;
+            justify-content: center;
+          }
+        }
 
         @media (max-width: 480px) {
-          .cr-hero__stat { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
+          .cr-hero__right {
+            height:     280px;
+            min-height: 280px;
+          }
+
+          /* Pull cards in slightly on very small phones */
+          .cr-card--1 { top: -18px;  left:  -58px; }
+          .cr-card--2 { top: -18px;  right: -58px; }
+          .cr-card--3 { bottom: 6px; left:  -54px; }
+          .cr-card--4 { bottom: 6px; right: -54px; }
+
+          .cr-hero__stat {
+            padding:      0 1.2rem 0 0;
+            margin-right: 1.2rem;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1251,7 +1448,6 @@ export default function CareersPage() {
           </div>
         </div>
 
-        
       </section>
 
       {/* ══ CAREER AREAS ════════════════════════════════════════════════════ */}
@@ -1376,8 +1572,7 @@ export default function CareersPage() {
 
       {/* ══ FAQ ══════════════════════════════════════════════════════════════
         Schema handled entirely by careersFaqNode in buildGraph() above.
-        No microdata (itemScope / itemType / itemProp) in this section.
-        Dual-format FAQ schema (JSON-LD + microdata) suppresses rich results.
+        No microdata in this section — dual-format FAQ schema suppresses rich results.
       ════════════════════════════════════════════════════════════════════ */}
       <section className="c-faq" aria-labelledby="c-faq-heading">
         <div className="c-faq__inner">

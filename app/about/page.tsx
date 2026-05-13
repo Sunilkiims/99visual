@@ -438,9 +438,7 @@ export default function AboutPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-       
-
-        /* ── Right column — NO ::before glow bleed ───────────────────────── */
+        /* ── Right column ────────────────────────────────────────────────── */
         .ab-hero__right {
           flex:            0 0 460px;
           height:          92vh;
@@ -452,7 +450,7 @@ export default function AboutPage() {
           overflow:        hidden;
         }
 
-        /* ── Animation stage — mirrors careers .cr-anim exactly ──────────── */
+        /* ── Animation stage ──────────────────────────────────────────────── */
         .ab-anim {
           position:       relative;
           width:          340px;
@@ -460,7 +458,7 @@ export default function AboutPage() {
           pointer-events: none;
         }
 
-        /* Central badge — mirrors careers .cr-anim__badge exactly */
+        /* Central badge */
         .ab-anim__badge {
           position:        absolute;
           top:             50%;
@@ -511,7 +509,7 @@ export default function AboutPage() {
           color:          var(--c-muted);
         }
 
-        /* Orbit rings — mirrors careers .cr-anim__ring exactly */
+        /* Orbit rings */
         .ab-anim__ring {
           position:      absolute;
           top:           50%;
@@ -536,7 +534,7 @@ export default function AboutPage() {
           to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* Floating cards — mirrors careers .cr-card exactly */
+        /* Floating cards */
         .ab-card {
           position:        absolute;
           display:         flex;
@@ -577,7 +575,7 @@ export default function AboutPage() {
           opacity:        .75;
         }
 
-        /* Card positions & floats — mirrors careers .cr-card--N exactly */
+        /* Card positions & float animations — desktop */
         .ab-card--1 {
           top:       8%;
           left:      -8%;
@@ -630,7 +628,9 @@ export default function AboutPage() {
         .ab-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
         .ab-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
-        /* ══ RESPONSIVE — mirrors careers breakpoints exactly ══════════════ */
+
+        /* ══ RESPONSIVE ═══════════════════════════════════════════════════ */
+
         @media (max-width: 900px) {
           .ab-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
           .ab-hero__right { flex: 0 0 340px; }
@@ -638,24 +638,109 @@ export default function AboutPage() {
         }
 
         @media (max-width: 768px) {
-          .ab-hero { flex-direction: column; min-height: auto; }
+          .ab-hero {
+            flex-direction: column;
+            min-height:     auto;
+          }
+
+          /* ── Left column ── */
           .ab-hero__left {
-            order: 2; flex: none; width: 100%;
-            padding: 3rem 1.5rem 4rem;
-            align-items: center; text-align: center;
+            order:       2;
+            flex:        none;
+            width:       100%;
+            padding:     2rem 1.5rem 3rem;
+            align-items: center;
+            text-align:  center;
           }
           .ab-hero__sub       { max-width: 100%; }
           .ab-hero__stats     { justify-content: center; }
           .ab-hero__cta-group { justify-content: center; }
+
+          /* ── Right column ──
+             FIX 1: overflow must be visible so floating cards (which use
+             negative offsets) are not clipped. The original overflow:hidden
+             was cutting all four cards off entirely on mobile.
+          ── */
           .ab-hero__right {
-            order: 1; flex: none; width: 100%;
-            height: 300px; min-height: 300px;
+            order:      1;
+            flex:       none;
+            width:      100%;
+            height:     300px;
+            min-height: 300px;
+            overflow:   visible;   /* was hidden → cards clipped */
+            padding:    0 24px;    /* horizontal breathing room */
           }
-         
+
+          /* ── Animation stage ──
+             FIX 2: Flatten the stage for a landscape-ish mobile slot.
+             Cards will be repositioned relative to this smaller box.
+          ── */
+          .ab-anim {
+            width:  240px;
+            height: 220px;
+          }
+
+          /* Shrink orbit rings to match smaller stage */
+          .ab-anim__ring   { width: 150px; height: 150px; }
+          .ab-anim__ring--2 { width: 210px; height: 210px; }
+
+          /* Shrink central badge */
+          .ab-anim__badge {
+            width:  86px;
+            height: 86px;
+          }
+          .ab-anim__badge-num   { font-size: 1.55rem; }
+          .ab-anim__badge-label { font-size: 7px; }
+          .ab-anim__badge-sub   { font-size: 6px; }
+
+          /* ── Card positions ──
+             FIX 3: Recalibrate all four cards for the 240×220 mobile stage.
+             Negative pixel offsets intentionally hang cards outside the
+             stage box — overflow:visible (above) keeps them visible.
+          ── */
+          .ab-card--1 { top: -20px;  left:  -70px; }
+          .ab-card--2 { top: -20px;  right: -70px; }
+          .ab-card--3 { bottom: 8px; left:  -66px; }
+          .ab-card--4 { bottom: 8px; right: -66px; }
+
+          /* Slightly compact card padding */
+          .ab-card {
+            padding:       8px 12px;
+            border-radius: 10px;
+            gap:           8px;
+          }
+          .ab-card__icon  { width: 28px; height: 28px; font-size: .78rem; }
+          .ab-card__title { font-size: .68rem; }
+          .ab-card__tag   { font-size: 7px; }
+        }
 
         @media (max-width: 480px) {
-          .ab-hero__cta-group { flex-direction: column; align-items: center; }
-          .ab-hero__stat      { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
+          .ab-hero__right {
+            height:     280px;
+            min-height: 280px;
+          }
+
+          /* Narrower viewport — pull cards in slightly so they don't
+             risk overlapping the screen edge on very small phones       */
+          .ab-card--1 { top: -18px;  left:  -58px; }
+          .ab-card--2 { top: -18px;  right: -58px; }
+          .ab-card--3 { bottom: 6px; left:  -54px; }
+          .ab-card--4 { bottom: 6px; right: -54px; }
+
+          .ab-hero__cta-group {
+            flex-direction: column;
+            align-items:    center;
+          }
+          .ab-hero__cta-primary,
+          .ab-hero__cta-secondary {
+            width:           100%;
+            max-width:       280px;
+            justify-content: center;
+          }
+          .ab-hero__stat {
+            padding:      0 1.2rem 0 0;
+            margin-right: 1.2rem;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -767,7 +852,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* ── RIGHT: floating service cards — same style as careers page ───── */}
+        {/* ── RIGHT: floating service cards ───────────────────────────────── */}
         <div className="ab-hero__right" aria-hidden="true">
           <div className="ab-anim">
 
@@ -841,7 +926,6 @@ export default function AboutPage() {
           </div>
         </div>
 
-        
       </section>
 
       {/* ══ MAIN CONTENT ════════════════════════════════════════════════════ */}

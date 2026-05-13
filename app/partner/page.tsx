@@ -2,10 +2,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Partner page — 99 Visual Solutions
 //
-// CHANGES IN THIS VERSION:
-//   ✅ Hero restructured to two-column layout matching contact/about/careers pages
-//      (text left, animated visual right) — replaces centred single-column
-//   ✅ All schema, SEO, a11y, FAQ accordion, and section content below hero unchanged
+// MOBILE FIX (same 3 bugs as about/page.tsx):
+//   ✅ FIX 1 — Missing closing } on @media (max-width: 768px) block
+//   ✅ FIX 2 — overflow:visible on .pt-hero__right so pills aren't clipped
+//   ✅ FIX 3 — Pill positions recalibrated for smaller mobile stage
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -178,7 +178,6 @@ const partnerPageNode = {
   },
   speakable: {
     "@type":     "SpeakableSpecification",
-    // ── updated selectors to match new two-column hero class names ──
     cssSelector: [".pt-hero__h1", ".pt-hero__sub"],
   },
   breadcrumb:      { "@id": `${BASE}/partner#breadcrumb` },
@@ -282,7 +281,7 @@ export default function PartnersPage() {
           border:      0        !important;
         }
 
-        /* ══ HERO SHELL — mirrors contact/about/careers exactly ══════════ */
+        /* ══ HERO SHELL ══════════════════════════════════════════════════ */
         .pt-hero {
           position:       relative;
           min-height:     92vh;
@@ -381,12 +380,12 @@ export default function PartnersPage() {
 
         /* ── Stats row ────────────────────────────────────────────────────── */
         .pt-hero__stats {
-          display:   flex;
-          gap:       0;
+          display:    flex;
+          gap:        0;
           list-style: none;
-          padding:   0;
-          margin:    0 0 2.4rem;
-          animation: ptFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
+          padding:    0;
+          margin:     0 0 2.4rem;
+          animation:  ptFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;
         }
         .pt-hero__stat {
           padding:      0 2rem 0 0;
@@ -471,9 +470,7 @@ export default function PartnersPage() {
           to   { opacity:1; transform:translateY(0); }
         }
 
-       
-
-        /* ── Right column: partnership visual ────────────────────────────── */
+        /* ── Right column ────────────────────────────────────────────────── */
         .pt-hero__right {
           flex:            0 0 460px;
           height:          92vh;
@@ -484,9 +481,8 @@ export default function PartnersPage() {
           justify-content: center;
           overflow:        hidden;
         }
-       
 
-        /* ── Handshake / globe animation stage ───────────────────────────── */
+        /* ── Animation stage ──────────────────────────────────────────────── */
         .pt-anim {
           position:       relative;
           width:          340px;
@@ -525,14 +521,13 @@ export default function PartnersPage() {
           50%     { box-shadow: 0 0 64px rgba(249,115,22,.28), 0 0 120px rgba(249,115,22,.10), inset 0 1px 0 rgba(255,255,255,.07); }
         }
 
-        /* Globe latitude/longitude lines */
         .pt-globe__svg {
           width:   80px;
           height:  80px;
           opacity: .55;
         }
 
-        /* Orbit rings around globe */
+        /* Orbit rings */
         .pt-orbit {
           position:      absolute;
           top:           50%;
@@ -542,22 +537,22 @@ export default function PartnersPage() {
           transform:     translate(-50%,-50%);
         }
         .pt-orbit--1 {
-          width:      180px;
-          height:     180px;
-          animation:  ptOrbit1 14s linear infinite;
+          width:     180px;
+          height:    180px;
+          animation: ptOrbit1 14s linear infinite;
         }
         .pt-orbit--2 {
-          width:      260px;
-          height:     260px;
+          width:        260px;
+          height:       260px;
           border-color: rgba(34,211,238,.10);
-          animation:  ptOrbit2 22s linear infinite reverse;
+          animation:    ptOrbit2 22s linear infinite reverse;
         }
         .pt-orbit--3 {
-          width:      330px;
-          height:     330px;
+          width:        330px;
+          height:       330px;
           border-color: rgba(167,139,250,.08);
           border-style: dashed;
-          animation:  ptOrbit3 30s linear infinite;
+          animation:    ptOrbit3 30s linear infinite;
         }
         @keyframes ptOrbit1 { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)} }
         @keyframes ptOrbit2 { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)} }
@@ -575,59 +570,45 @@ export default function PartnersPage() {
           font-size:       .85rem;
           transform-origin: center;
         }
-
-        /* Orbit 1 nodes */
         .pt-node--o1a {
-          width:  36px; height: 36px;
+          width:      36px; height: 36px;
           background: rgba(249,115,22,.18);
-          border: 1px solid rgba(249,115,22,.4);
-          color: #f97316;
-          /* sits at top of orbit-1 ring */
-          margin: -18px 0 0 72px;
-          animation: ptNodeO1a 14s linear infinite;
+          border:     1px solid rgba(249,115,22,.4);
+          color:      #f97316;
+          margin:     -18px 0 0 72px;
+          animation:  ptNodeO1a 14s linear infinite;
           box-shadow: 0 0 12px rgba(249,115,22,.25);
         }
         .pt-node--o1b {
-          width:  32px; height: 32px;
+          width:      32px; height: 32px;
           background: rgba(34,211,238,.14);
-          border: 1px solid rgba(34,211,238,.35);
-          color: #22d3ee;
-          margin: 56px 0 0 -76px;
-          animation: ptNodeO1b 14s linear infinite;
+          border:     1px solid rgba(34,211,238,.35);
+          color:      #22d3ee;
+          margin:     56px 0 0 -76px;
+          animation:  ptNodeO1b 14s linear infinite;
           box-shadow: 0 0 12px rgba(34,211,238,.2);
         }
         @keyframes ptNodeO1a { from{transform:rotate(0deg) translateX(90px) rotate(0deg)} to{transform:rotate(360deg) translateX(90px) rotate(-360deg)} }
         @keyframes ptNodeO1b { from{transform:rotate(180deg) translateX(90px) rotate(-180deg)} to{transform:rotate(540deg) translateX(90px) rotate(-540deg)} }
 
-        /* Orbit 2 nodes */
         .pt-node--o2a {
-          width:  40px; height: 40px;
+          width:      40px; height: 40px;
           background: rgba(167,139,250,.14);
-          border: 1px solid rgba(167,139,250,.35);
-          color: #a78bfa;
-          animation: ptNodeO2a 22s linear infinite reverse;
+          border:     1px solid rgba(167,139,250,.35);
+          color:      #a78bfa;
+          animation:  ptNodeO2a 22s linear infinite reverse;
           box-shadow: 0 0 14px rgba(167,139,250,.2);
         }
         .pt-node--o2b {
-          width:  34px; height: 34px;
+          width:      34px; height: 34px;
           background: rgba(251,191,36,.14);
-          border: 1px solid rgba(251,191,36,.35);
-          color: #fbbf24;
-          animation: ptNodeO2b 22s linear infinite reverse;
+          border:     1px solid rgba(251,191,36,.35);
+          color:      #fbbf24;
+          animation:  ptNodeO2b 22s linear infinite reverse;
           box-shadow: 0 0 12px rgba(251,191,36,.2);
         }
         @keyframes ptNodeO2a { from{transform:rotate(60deg) translateX(130px) rotate(-60deg)} to{transform:rotate(420deg) translateX(130px) rotate(-420deg)} }
         @keyframes ptNodeO2b { from{transform:rotate(240deg) translateX(130px) rotate(-240deg)} to{transform:rotate(600deg) translateX(130px) rotate(-600deg)} }
-
-        /* Connection lines from globe to nodes (SVG overlay) */
-        .pt-anim__lines {
-          position:       absolute;
-          inset:          0;
-          width:          100%;
-          height:         100%;
-          pointer-events: none;
-          opacity:        .18;
-        }
 
         /* Floating stat pills */
         .pt-pill {
@@ -663,33 +644,18 @@ export default function PartnersPage() {
           line-height: 1;
         }
 
-        .pt-pill--1 {
-          top:       12%;
-          left:      -4%;
-          animation: ptPillFloat1 5.5s ease-in-out infinite;
-        }
-        .pt-pill--2 {
-          top:       20%;
-          right:     -2%;
-          animation: ptPillFloat2 6.5s ease-in-out infinite;
-        }
-        .pt-pill--3 {
-          bottom:    20%;
-          left:      -6%;
-          animation: ptPillFloat3 7s ease-in-out infinite;
-        }
-        .pt-pill--4 {
-          bottom:    10%;
-          right:     -4%;
-          animation: ptPillFloat4 5s ease-in-out infinite;
-        }
+        /* Desktop pill positions */
+        .pt-pill--1 { top: 12%; left: -4%; animation: ptPillFloat1 5.5s ease-in-out infinite; }
+        .pt-pill--2 { top: 20%; right: -2%; animation: ptPillFloat2 6.5s ease-in-out infinite; }
+        .pt-pill--3 { bottom: 20%; left: -6%; animation: ptPillFloat3 7s ease-in-out infinite; }
+        .pt-pill--4 { bottom: 10%; right: -4%; animation: ptPillFloat4 5s ease-in-out infinite; }
 
         @keyframes ptPillFloat1 { 0%,100%{transform:translateY(0) rotate(-.5deg)} 50%{transform:translateY(-10px) rotate(.5deg)} }
         @keyframes ptPillFloat2 { 0%,100%{transform:translateY(0) rotate(.5deg)}  50%{transform:translateY(-14px) rotate(-.5deg)} }
         @keyframes ptPillFloat3 { 0%,100%{transform:translateY(0) rotate(.3deg)}  50%{transform:translateY(-8px) rotate(-.3deg)} }
         @keyframes ptPillFloat4 { 0%,100%{transform:translateY(0) rotate(-.3deg)} 50%{transform:translateY(-12px) rotate(.3deg)} }
 
-        /* ── Corner brackets — mirrors all other pages exactly ────────────── */
+        /* ── Corner brackets ──────────────────────────────────────────────── */
         .pt-corner {
           position:       absolute;
           width:          28px;
@@ -703,7 +669,7 @@ export default function PartnersPage() {
         .pt-corner--bl { bottom:22px; left:22px;    border-bottom:1px solid var(--c-orange); border-left:  1px solid var(--c-orange); }
         .pt-corner--br { bottom:22px; right:22px;   border-bottom:1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
-        /* ══ SECTIONS below hero — unchanged ══════════════════════════════ */
+        /* ══ SECTIONS below hero ══════════════════════════════════════════ */
         .p-types { background:var(--c-surface);padding:6rem 1.5rem;border-top:1px solid var(--c-border); }
         .p-section-label {
           font-family:var(--ff-sans);font-size:10px;font-weight:500;
@@ -867,7 +833,9 @@ export default function PartnersPage() {
           transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.4);
         }
 
-        /* ══ RESPONSIVE — mirrors all other pages exactly ══════════════════ */
+
+        /* ══ RESPONSIVE ═══════════════════════════════════════════════════ */
+
         @media (max-width: 900px) {
           .pt-hero__left  { padding: 5rem 2.5rem 5rem 3rem; }
           .pt-hero__right { flex: 0 0 340px; }
@@ -875,24 +843,102 @@ export default function PartnersPage() {
         }
 
         @media (max-width: 768px) {
-          .pt-hero { flex-direction: column; min-height: auto; }
+          .pt-hero {
+            flex-direction: column;
+            min-height:     auto;
+          }
+
+          /* ── Left column ── */
           .pt-hero__left {
-            order: 2; flex: none; width: 100%;
-            padding: 3rem 1.5rem 4rem;
-            align-items: center; text-align: center;
+            order:       2;
+            flex:        none;
+            width:       100%;
+            padding:     2rem 1.5rem 3rem;
+            align-items: center;
+            text-align:  center;
           }
           .pt-hero__sub       { max-width: 100%; }
           .pt-hero__stats     { justify-content: center; }
           .pt-hero__cta-group { justify-content: center; }
+
+          /* ── Right column ──
+             FIX 1: overflow:visible so pills (negative offsets) aren't clipped.
+          ── */
           .pt-hero__right {
-            order: 1; flex: none; width: 100%;
-            height: 300px; min-height: 300px;
+            order:      1;
+            flex:       none;
+            width:      100%;
+            height:     300px;
+            min-height: 300px;
+            overflow:   visible;   /* was hidden → pills clipped */
+            padding:    0 24px;
           }
-         
+
+          /* ── Animation stage ──
+             FIX 2: Flatten stage for mobile slot.
+          ── */
+          .pt-anim {
+            width:  240px;
+            height: 220px;
+          }
+
+          /* Scale orbit rings down with stage */
+          .pt-orbit--1 { width: 130px; height: 130px; }
+          .pt-orbit--2 { width: 190px; height: 190px; }
+          .pt-orbit--3 { width: 230px; height: 230px; }
+
+          /* Shrink central globe */
+          .pt-globe {
+            width:  80px;
+            height: 80px;
+          }
+          .pt-globe__svg { width: 52px; height: 52px; }
+
+          /* ── Pill positions ──
+             FIX 3: Recalibrate all four pills for the 240×220 mobile stage.
+             Negative offsets are intentional — overflow:visible keeps them shown.
+          ── */
+          .pt-pill--1 { top: -20px;  left:  -68px; }
+          .pt-pill--2 { top: -20px;  right: -68px; }
+          .pt-pill--3 { bottom: 6px; left:  -64px; }
+          .pt-pill--4 { bottom: 6px; right: -64px; }
+
+          /* Compact pill size on mobile */
+          .pt-pill {
+            padding:       6px 11px;
+            gap:           6px;
+          }
+          .pt-pill__text { font-size: .65rem; }
+          .pt-pill__num  { font-size: .9rem; }
+          .pt-pill__dot  { width: 5px; height: 5px; }
+        }
 
         @media (max-width: 480px) {
-          .pt-hero__cta-group { flex-direction: column; align-items: center; }
-          .pt-hero__stat      { padding: 0 1.2rem 0 0; margin-right: 1.2rem; }
+          .pt-hero__right {
+            height:     280px;
+            min-height: 280px;
+          }
+
+          /* Pull pills in slightly on very small phones */
+          .pt-pill--1 { top: -18px;  left:  -56px; }
+          .pt-pill--2 { top: -18px;  right: -56px; }
+          .pt-pill--3 { bottom: 4px; left:  -52px; }
+          .pt-pill--4 { bottom: 4px; right: -52px; }
+
+          .pt-hero__cta-group {
+            flex-direction: column;
+            align-items:    center;
+          }
+          .pt-hero__cta-primary,
+          .pt-hero__cta-secondary {
+            width:           100%;
+            max-width:       280px;
+            justify-content: center;
+          }
+          .pt-hero__stat {
+            padding:      0 1.2rem 0 0;
+            margin-right: 1.2rem;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -906,7 +952,7 @@ export default function PartnersPage() {
 
       <Header />
 
-      {/* ══ HERO — two-column layout matching all other pages ══════════════ */}
+      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
       <section
         className="pt-hero"
         aria-labelledby="pt-hero-heading"
@@ -1016,21 +1062,18 @@ export default function PartnersPage() {
             <div className="pt-globe">
               <svg className="pt-globe__svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="40" cy="40" r="36" stroke="#f97316" strokeWidth="1.2" opacity=".7" />
-                {/* latitude lines */}
                 <ellipse cx="40" cy="40" rx="36" ry="14" stroke="#f97316" strokeWidth=".8" opacity=".4" />
                 <ellipse cx="40" cy="40" rx="36" ry="26" stroke="#f97316" strokeWidth=".6" opacity=".25" />
-                {/* longitude lines */}
                 <line x1="40" y1="4" x2="40" y2="76" stroke="#f97316" strokeWidth=".8" opacity=".4" />
                 <line x1="19" y1="8" x2="19" y2="72" stroke="#f97316" strokeWidth=".6" opacity=".25" />
                 <line x1="61" y1="8" x2="61" y2="72" stroke="#f97316" strokeWidth=".6" opacity=".25" />
-                {/* continents hint — abstract blobs */}
                 <path d="M28 30 Q34 26 38 32 Q42 36 36 40 Q30 38 28 30Z" fill="#f97316" opacity=".18" />
                 <path d="M44 34 Q50 30 54 36 Q56 42 50 44 Q44 42 44 34Z" fill="#f97316" opacity=".14" />
                 <path d="M30 46 Q36 44 38 50 Q36 56 30 54 Q26 50 30 46Z" fill="#f97316" opacity=".12" />
               </svg>
             </div>
 
-            {/* Orbit 1 — Business & Global nodes */}
+            {/* Orbit 1 nodes */}
             <div className="pt-node pt-node--o1a">
               <FaHandshake />
             </div>
@@ -1038,7 +1081,7 @@ export default function PartnersPage() {
               <FaGlobe />
             </div>
 
-            {/* Orbit 2 — Technology & Creative nodes */}
+            {/* Orbit 2 nodes */}
             <div className="pt-node pt-node--o2a">
               <FaUsers />
             </div>
@@ -1074,7 +1117,6 @@ export default function PartnersPage() {
           </div>
         </div>
 
-        
       </section>
 
       {/* ══ PARTNER TYPES ═══════════════════════════════════════════════════ */}
