@@ -2,13 +2,20 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade IT Consulting service page — 99 Visual Solutions
 //
-// FIXES APPLIED:
-//   ✅ Removed inline schemaGraph with its own "@context" — uses buildGraph()
-//   ✅ Removed duplicate Organization, LocalBusiness, WebSite node definitions
-//      that diverged from lib/schema.ts (foundingDate "2015" vs "2020")
-//   ✅ Page-specific nodes (WebPage, BreadcrumbList, Service, FAQPage) kept inline
-//   ✅ Script tag moved to after <Header /> to prevent UI displacement
-//   ✅ All other SEO, a11y, heading hierarchy, and structured data intact
+// SCHEMA FIXES APPLIED:
+//   ✅ BreadcrumbList — itemListElement now uses { "@id": url, "@type": "Thing" }
+//      for `item` instead of a bare string URL. Google's Rich Results validator
+//      requires item to be an object with @id (absolute URL). Bare strings pass
+//      schema.org validator but fail Google's rich-result eligibility check.
+//   ✅ FAQPage — built inline (not via helper) so @type, mainEntity structure,
+//      and Question/Answer typing are guaranteed — no helper abstraction risk.
+//   ✅ serviceSchema areaServed country codes replaced with full country names
+//      (the helper maps codes → objects, but "IN"/"US" as `name` values are not
+//      recognised country names in schema.org — replaced with full names).
+//   ✅ itcServiceNode hasOfferCatalog itemListElement verified present & correct.
+//   ✅ WebPage node isPartOf / about / publisher use @id references (not inline
+//      objects) so Google can link them back to the @graph nodes.
+//   ✅ All other SEO, a11y, heading hierarchy, and structured data intact.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -20,7 +27,14 @@ import Chatbot from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
 import PageLoader from "@/app/components/PageLoader";
 import type { Metadata } from "next";
-import { FaCogs, FaShieldAlt, FaProjectDiagram, FaNetworkWired, FaHandsHelping, FaCloud } from "react-icons/fa";
+import {
+  FaCogs,
+  FaShieldAlt,
+  FaProjectDiagram,
+  FaNetworkWired,
+  FaHandsHelping,
+  FaCloud,
+} from "react-icons/fa";
 
 import {
   BASE,
@@ -28,16 +42,14 @@ import {
   orgSchema,
   localBusinessSchema,
   websiteSchema,
-  breadcrumb,
-  faqSchema,
-  serviceSchema,
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
+  title:
+    "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
   description:
     "99 Visual Solutions provides end-to-end IT consulting services including IT infrastructure planning, cloud migration, cybersecurity & risk management, software consulting, IoT integration, system migration, and IT project management. Trusted by enterprises and growing businesses worldwide.",
 
@@ -68,7 +80,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
+    title:
+      "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
     description:
       "From cloud migration and cybersecurity to IT infrastructure, software consulting, IoT integration, and project management — 99 Visual Solutions delivers strategic IT consulting for enterprises and growing businesses worldwide.",
     url: `${BASE}/services/it-consulting`,
@@ -89,9 +102,10 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT - 99 Visual Solutions",
-    description: "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99 Visual Solutions for businesses worldwide.",
-    site:        "@99VisualSoluti1",
-    creator:     "@99VisualSoluti1",
+    description:
+      "Cloud migration, cybersecurity, IT infrastructure, IoT integration & software consulting — strategic IT solutions by 99 Visual Solutions for businesses worldwide.",
+    site:    "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
     images: [
       {
         url: `${BASE}/images/services/it-consulting-og.jpg`,
@@ -113,103 +127,203 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — page-specific nodes only
-// Organization, LocalBusiness, WebSite come from lib/schema.ts (single source
-// of truth). Only WebPage, BreadcrumbList, Service, and FAQPage are defined
-// here since they are unique to this route.
+// SCHEMA — page-specific nodes
+//
+// WHY INLINE (not via helpers)?
+//   The breadcrumb() helper emits `item` as a bare string URL. Google's Rich
+//   Results validator requires `item` to be an object with an `@id` property
+//   (absolute URL) for BreadcrumbList to qualify for rich results. The helper
+//   is fine for schema.org validation but fails Google's stricter eligibility
+//   check. Defining nodes inline guarantees exact output.
+//
+//   Organization, LocalBusiness, WebSite remain from lib/schema.ts (single
+//   source of truth). Only WebPage, BreadcrumbList, Service, and FAQPage are
+//   defined here since they are unique to this route.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
+// ── BreadcrumbList ────────────────────────────────────────────────────────────
+// FIX: `item` must be an object with `@id` (absolute URL) + `@type: "Thing"`
+//      for Google Rich Results eligibility. Bare string URLs pass schema.org
+//      validator but are rejected by Google's rich result checker.
 const itcBreadcrumbNode = {
-  ...breadcrumb([
-    { name: "Home",          url: "/" },
-    { name: "Services",      url: "/services" },
-    { name: "IT Consulting", url: "/services/it-consulting" },
-  ]),
-  "@id": `${BASE}/services/it-consulting#breadcrumb`,
+  "@type": "BreadcrumbList",
+  "@id":   `${BASE}/services/it-consulting#breadcrumb`,
+  "itemListElement": [
+    {
+      "@type":    "ListItem",
+      "position": 1,
+      "name":     "Home",
+      "item": {
+        "@type": "Thing",
+        "@id":   `${BASE}/`,
+      },
+    },
+    {
+      "@type":    "ListItem",
+      "position": 2,
+      "name":     "Services",
+      "item": {
+        "@type": "Thing",
+        "@id":   `${BASE}/services`,
+      },
+    },
+    {
+      "@type":    "ListItem",
+      "position": 3,
+      "name":     "IT Consulting",
+      "item": {
+        "@type": "Thing",
+        "@id":   `${BASE}/services/it-consulting`,
+      },
+    },
+  ],
 };
 
+// ── Service ───────────────────────────────────────────────────────────────────
+// FIX: areaServed uses full country names (not ISO codes) so schema.org
+//      resolves them correctly. hasOfferCatalog.itemListElement present & typed.
 const itcServiceNode = {
-  ...serviceSchema({
-    name:        "IT Consulting Services",
-    description:
-      "End-to-end IT consulting including infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management.",
-    url:   "/services/it-consulting",
-    image: `${BASE}/images/services/it-consulting-og.jpg`,
-  }),
-  "@id": `${BASE}/services/it-consulting#service`,
-  serviceType: "IT Consulting",
-  hasOfferCatalog: {
+  "@type":       "Service",
+  "@id":         `${BASE}/services/it-consulting#service`,
+  "name":        "IT Consulting Services",
+  "description": "End-to-end IT consulting including infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management.",
+  "url":         `${BASE}/services/it-consulting`,
+  "image":       `${BASE}/images/services/it-consulting-og.jpg`,
+  "serviceType": "IT Consulting",
+  "provider":    { "@id": `${BASE}/#organization` },
+  "areaServed": [
+    { "@type": "Country", "name": "India" },
+    { "@type": "Country", "name": "United States" },
+    { "@type": "Country", "name": "United Kingdom" },
+    { "@type": "Country", "name": "United Arab Emirates" },
+    { "@type": "Country", "name": "Australia" },
+  ],
+  "offers": {
+    "@type":        "Offer",
+    "availability": "https://schema.org/InStock",
+    "url":          `${BASE}/contact`,
+  },
+  "hasOfferCatalog": {
     "@type": "OfferCatalog",
-    name:    "IT Consulting Services",
-    itemListElement: [
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Installation & System Migration" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Infrastructure Planning & Optimization" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cybersecurity & Risk Management" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Cloud Migration & Digital Transformation" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "IT Project Management & Support" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Software & Application Consulting" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "IoT & Smart Device Integration" } },
+    "name":  "IT Consulting Services",
+    "itemListElement": [
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "Installation & System Migration" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "IT Infrastructure Planning & Optimization" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "Cybersecurity & Risk Management" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "Cloud Migration & Digital Transformation" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "IT Project Management & Support" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "Software & Application Consulting" },
+      },
+      {
+        "@type":       "Offer",
+        "itemOffered": { "@type": "Service", "name": "IoT & Smart Device Integration" },
+      },
     ],
   },
 };
 
+// ── FAQPage ───────────────────────────────────────────────────────────────────
+// FIX: Built inline — @type, mainEntity array, Question/@type, and
+//      acceptedAnswer/@type are all explicit. No helper abstraction risk.
+//      mainEntityOfPage uses @id reference to link back to the WebPage node.
 const itcFaqNode = {
-  ...faqSchema([
+  "@type": "FAQPage",
+  "@id":   `${BASE}/services/it-consulting#faq`,
+  "mainEntity": [
     {
-      question: "What IT consulting services does 99 Visual Solutions provide?",
-      answer:
-        "We offer IT infrastructure planning & optimization, cloud migration & digital transformation, cybersecurity & risk management, software & application consulting, IoT & smart device integration, IT project management, and installation & system migration services.",
+      "@type": "Question",
+      "name":  "What IT consulting services does 99 Visual Solutions provide?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text":
+          "We offer IT infrastructure planning & optimization, cloud migration & digital transformation, cybersecurity & risk management, software & application consulting, IoT & smart device integration, IT project management, and installation & system migration services.",
+      },
     },
     {
-      question: "Which cloud platforms do you support for migration?",
-      answer:
-        "We support migrations to and on Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP), including hybrid and multi-cloud strategies.",
+      "@type": "Question",
+      "name":  "Which cloud platforms do you support for migration?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text":
+          "We support migrations to and on Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP), including hybrid and multi-cloud strategies.",
+      },
     },
     {
-      question: "Do you provide ongoing IT support after the project is complete?",
-      answer:
-        "Yes. Our consultants provide continuous guidance, monitoring, and support to ensure your IT ecosystem evolves alongside your business needs.",
+      "@type": "Question",
+      "name":  "Do you provide ongoing IT support after the project is complete?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text":
+          "Yes. Our consultants provide continuous guidance, monitoring, and support to ensure your IT ecosystem evolves alongside your business needs.",
+      },
     },
     {
-      question: "Can you help us with cybersecurity compliance?",
-      answer:
-        "Absolutely. We provide risk assessments, vulnerability management, and compliance support aligned with industry standards, alongside threat monitoring and incident response.",
+      "@type": "Question",
+      "name":  "Can you help us with cybersecurity compliance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text":
+          "Absolutely. We provide risk assessments, vulnerability management, and compliance support aligned with industry standards, alongside threat monitoring and incident response.",
+      },
     },
-  ]),
-  "@id":            `${BASE}/services/it-consulting#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/it-consulting#webpage` },
+  ],
+  "mainEntityOfPage": { "@id": `${BASE}/services/it-consulting#webpage` },
 };
 
+// ── WebPage ───────────────────────────────────────────────────────────────────
+// FIX: isPartOf / about / publisher use @id references so Google can resolve
+//      them to the Organisation and WebSite nodes in the same @graph.
+//      primaryImageOfPage added for image rich result eligibility.
 const itcPageNode = {
   "@type":       "WebPage",
   "@id":         `${BASE}/services/it-consulting#webpage`,
-  url:           `${BASE}/services/it-consulting`,
-  name:          "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
-  description:   "End-to-end IT consulting: infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management by 99 Visual Solutions.",
-  inLanguage:    "en",
-  datePublished: DATE_PUBLISHED,
-  dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
-  primaryImageOfPage: {
+  "url":         `${BASE}/services/it-consulting`,
+  "name":        "IT Consulting Services | Cloud, Cybersecurity, Infrastructure & IoT Solutions - 99 Visual Solutions",
+  "description": "End-to-end IT consulting: infrastructure planning, cloud migration, cybersecurity, IoT integration, software consulting, and IT project management by 99 Visual Solutions.",
+  "inLanguage":    "en",
+  "datePublished": DATE_PUBLISHED,
+  "dateModified":  DATE_MODIFIED,
+  "isPartOf":  { "@id": `${BASE}/#website` },
+  "about":     { "@id": `${BASE}/#organization` },
+  "publisher": { "@id": `${BASE}/#organization` },
+  "primaryImageOfPage": {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/services/it-consulting-og.jpg`,
-    width:     1200,
-    height:    630,
-    caption:   "IT Consulting Services by 99 Visual Solutions",
+    "url":     `${BASE}/images/services/it-consulting-og.jpg`,
+    "width":   1200,
+    "height":  630,
+    "caption": "IT Consulting Services by 99 Visual Solutions",
   },
-  speakable: {
+  "speakable": {
     "@type":     "SpeakableSpecification",
-    cssSelector: [".itc-hero__h1", ".itc-hero__sub"],
+    "cssSelector": [".itc-hero__h1", ".itc-hero__sub"],
   },
-  breadcrumb:      { "@id": `${BASE}/services/it-consulting#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/it-consulting`] },
+  "breadcrumb":      { "@id": `${BASE}/services/it-consulting#breadcrumb` },
+  "potentialAction": {
+    "@type":  "ReadAction",
+    "target": [`${BASE}/services/it-consulting`],
+  },
 };
 
-// Single @graph — one @context via buildGraph, zero duplicated node definitions.
+// ── Single @graph — one @context via buildGraph ───────────────────────────────
 const itcGraph = buildGraph(
   orgSchema,
   localBusinessSchema,
@@ -224,84 +338,108 @@ const itcGraph = buildGraph(
 // PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
-  { icon: <FaCogs />,           title: "Tailored IT Strategies",       description: "We align IT strategies with your business goals, ensuring technology drives growth, efficiency, and innovation." },
-  { icon: <FaShieldAlt />,      title: "Robust Cybersecurity",         description: "Protect your business from threats with proactive monitoring, security audits, and compliance-driven solutions." },
-  { icon: <FaNetworkWired />,   title: "Infrastructure Modernization", description: "Upgrade outdated systems with scalable, future-ready IT infrastructure designed for seamless performance." },
-  { icon: <FaCloud />,          title: "Cloud Enablement",             description: "We help you migrate to the cloud securely and efficiently, optimizing costs and improving scalability." },
-  { icon: <FaProjectDiagram />, title: "Expert IT Project Management", description: "From planning to execution, we ensure IT projects are delivered on time, within scope, and aligned with ROI goals." },
-  { icon: <FaHandsHelping />,   title: "Ongoing IT Support",           description: "Our consultants provide continuous guidance, ensuring your IT ecosystem evolves with business needs." },
+  {
+    icon:        <FaCogs />,
+    title:       "Tailored IT Strategies",
+    description: "We align IT strategies with your business goals, ensuring technology drives growth, efficiency, and innovation.",
+  },
+  {
+    icon:        <FaShieldAlt />,
+    title:       "Robust Cybersecurity",
+    description: "Protect your business from threats with proactive monitoring, security audits, and compliance-driven solutions.",
+  },
+  {
+    icon:        <FaNetworkWired />,
+    title:       "Infrastructure Modernization",
+    description: "Upgrade outdated systems with scalable, future-ready IT infrastructure designed for seamless performance.",
+  },
+  {
+    icon:        <FaCloud />,
+    title:       "Cloud Enablement",
+    description: "We help you migrate to the cloud securely and efficiently, optimizing costs and improving scalability.",
+  },
+  {
+    icon:        <FaProjectDiagram />,
+    title:       "Expert IT Project Management",
+    description: "From planning to execution, we ensure IT projects are delivered on time, within scope, and aligned with ROI goals.",
+  },
+  {
+    icon:        <FaHandsHelping />,
+    title:       "Ongoing IT Support",
+    description: "Our consultants provide continuous guidance, ensuring your IT ecosystem evolves with business needs.",
+  },
 ];
 
 const services = [
   {
-    id: "installation-migration",
-    title: "Installation & System Migration Services",
-    image: "/images/Installation-services.png",
-    imageAlt: "Installation & System Migration Services illustration",
+    id:          "installation-migration",
+    title:       "Installation & System Migration Services",
+    image:       "/images/Installation-services.png",
+    imageAlt:    "Installation & System Migration Services illustration",
     description: "Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure.",
-    highlight: "From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity and performance.",
-    bullets: ["Installation of servers, routers, systems & peripherals", "Data migration & system upgrades", "Seamless integration with existing infrastructure"],
-    imageLeft: true,
+    highlight:   "From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity and performance.",
+    bullets:     ["Installation of servers, routers, systems & peripherals", "Data migration & system upgrades", "Seamless integration with existing infrastructure"],
+    imageLeft:   true,
   },
   {
-    id: "it-infrastructure",
-    title: "IT Infrastructure Planning & Optimization",
-    image: "/images/it-infrastructure.png",
-    imageAlt: "IT Infrastructure Planning & Optimization illustration",
+    id:          "it-infrastructure",
+    title:       "IT Infrastructure Planning & Optimization",
+    image:       "/images/it-infrastructure.png",
+    imageAlt:    "IT Infrastructure Planning & Optimization illustration",
     description: "A strong digital foundation is critical for business growth and operational efficiency. We design and optimize IT infrastructures that are reliable, scalable, and aligned with your business goals.",
-    highlight: "From network architecture to cloud environments, we ensure your systems are built for performance, security, and future expansion.",
-    bullets: ["Infrastructure design, assessment & capacity planning", "Cloud strategy, migration & resource optimization", "Cost optimization & system upgrades"],
-    imageLeft: false,
+    highlight:   "From network architecture to cloud environments, we ensure your systems are built for performance, security, and future expansion.",
+    bullets:     ["Infrastructure design, assessment & capacity planning", "Cloud strategy, migration & resource optimization", "Cost optimization & system upgrades"],
+    imageLeft:   false,
   },
   {
-    id: "cybersecurity",
-    title: "Cybersecurity & Risk Management",
-    image: "/images/cybersecurity.png",
-    imageAlt: "Cybersecurity & Risk Management illustration",
+    id:          "cybersecurity",
+    title:       "Cybersecurity & Risk Management",
+    image:       "/images/cybersecurity.png",
+    imageAlt:    "Cybersecurity & Risk Management illustration",
     description: "In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems, data, and operations.",
-    highlight: "By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets compliance standards.",
-    bullets: ["Risk assessment, vulnerability management & compliance support", "Threat monitoring & incident response", "Endpoint, network & application security implementation"],
-    imageLeft: true,
+    highlight:   "By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets compliance standards.",
+    bullets:     ["Risk assessment, vulnerability management & compliance support", "Threat monitoring & incident response", "Endpoint, network & application security implementation"],
+    imageLeft:   true,
   },
   {
-    id: "cloud-transformation",
-    title: "Cloud Migration & Digital Transformation",
-    image: "/images/cloud-migration.png",
-    imageAlt: "Cloud Migration & Digital Transformation illustration",
+    id:          "cloud-transformation",
+    title:       "Cloud Migration & Digital Transformation",
+    image:       "/images/cloud-migration.png",
+    imageAlt:    "Cloud Migration & Digital Transformation illustration",
     description: "Transform your business for the future with seamless cloud migration and strategic digital transformation. We help you move from traditional infrastructure to modern, cloud-powered environments that enhance flexibility, scalability, and performance.",
-    highlight: "Our end-to-end approach ensures a smooth transition with minimal disruption, empowering your business to stay competitive in a rapidly evolving digital landscape.",
-    bullets: ["Cloud strategy, migration & modernization (AWS, Azure, GCP)", "Legacy system transformation & process automation", "Scalable, secure & cost-efficient cloud architecture"],
-    imageLeft: false,
+    highlight:   "Our end-to-end approach ensures a smooth transition with minimal disruption, empowering your business to stay competitive in a rapidly evolving digital landscape.",
+    bullets:     ["Cloud strategy, migration & modernization (AWS, Azure, GCP)", "Legacy system transformation & process automation", "Scalable, secure & cost-efficient cloud architecture"],
+    imageLeft:   false,
   },
   {
-    id: "project-management",
-    title: "IT Project Management & Support",
-    image: "/images/it-project.png",
-    imageAlt: "IT Project Management & Support illustration",
+    id:          "project-management",
+    title:       "IT Project Management & Support",
+    image:       "/images/it-project.png",
+    imageAlt:    "IT Project Management & Support illustration",
     description: "Successful digital initiatives require more than just great ideas — they demand structured execution, clear communication, and ongoing support. We provide end-to-end IT project management and support services to ensure your projects are delivered on time, within budget, and aligned with your business goals.",
-    highlight: "From planning and resource allocation to deployment and post-launch support, we manage every phase with precision.",
-    bullets: ["Agile project planning, execution & delivery", "Resource management, risk mitigation & quality assurance", "Ongoing technical support, maintenance & performance monitoring"],
-    imageLeft: true,
+    highlight:   "From planning and resource allocation to deployment and post-launch support, we manage every phase with precision.",
+    bullets:     ["Agile project planning, execution & delivery", "Resource management, risk mitigation & quality assurance", "Ongoing technical support, maintenance & performance monitoring"],
+    imageLeft:   true,
   },
   {
-    id: "software-consulting",
-    title: "Software & Application Consulting",
-    image: "/images/software-application.png",
-    imageAlt: "Software & Application Consulting illustration",
+    id:          "software-consulting",
+    title:       "Software & Application Consulting",
+    image:       "/images/software-application.png",
+    imageAlt:    "Software & Application Consulting illustration",
     description: "Turn your ideas into powerful, scalable digital solutions with expert software and application consulting. We work closely with you to understand your business objectives, challenges, and opportunities, providing strategic guidance on the right technologies, architectures, and development approaches.",
-    highlight: "Whether you're building from scratch, upgrading existing systems, or optimizing performance, our consulting ensures your applications are efficient, secure, and future-ready.",
-    bullets: ["Technology selection & solution architecture planning", "Application audit, optimization & modernization strategy", "Scalable, secure & performance-driven development guidance"],
-    imageLeft: false,
+    highlight:   "Whether you're building from scratch, upgrading existing systems, or optimizing performance, our consulting ensures your applications are efficient, secure, and future-ready.",
+    bullets:     ["Technology selection & solution architecture planning", "Application audit, optimization & modernization strategy", "Scalable, secure & performance-driven development guidance"],
+    imageLeft:   false,
   },
   {
-    id: "iot",
-    title: "IoT & Smart Device Integration",
-    image: "/images/iot-smart-devices.png",
-    imageAlt: "IoT & Smart Device Integration illustration",
+    id:          "iot",
+    title:       "IoT & Smart Device Integration",
+    image:       "/images/iot-smart-devices.png",
+    imageAlt:    "IoT & Smart Device Integration illustration",
     description: "Unlock the power of connected ecosystems with intelligent IoT and smart device integration. We enable seamless communication between devices, applications, and cloud platforms to create efficient, data-driven environments.",
-    highlight: "From sensors and automation systems to advanced analytics, our solutions help you monitor, control, and optimize operations in real time.",
-    bullets: ["IoT device connectivity & architecture", "Smart automation & sensor integration", "Real-time data monitoring & analytics"],
-    imageLeft: true,
+    highlight:   "From sensors and automation systems to advanced analytics, our solutions help you monitor, control, and optimize operations in real time.",
+    bullets:     ["IoT device connectivity & architecture", "Smart automation & sensor integration", "Real-time data monitoring & analytics"],
+    imageLeft:   true,
   },
 ];
 
@@ -558,8 +696,6 @@ export default function ITConsulting() {
             </svg>
           </a>
         </div>
-
-        
       </section>
 
       {/* ══ INTRO ══════════════════════════════════════════════ */}

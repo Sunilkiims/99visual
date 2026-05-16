@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 type Phase = 'loading' | 'done' | 'gone';
@@ -14,11 +14,27 @@ const STATUSES = [
 ];
 
 export default function PageLoader() {
-  const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<Phase>('loading');
+  // ─── mount guard ────────────────────────────────────────────────────────────
+  // Prevents Next.js from rendering ANY loader HTML on the server.
+  // Without this, the server outputs phase="loading"/progress=0 HTML, then the
+  // client immediately starts ticking — the two trees diverge and React throws
+  // the hydration mismatch warning.
+  const [mounted, setMounted] = useState(false);
+
+  const [progress, setProgress]   = useState(0);
+  const [phase, setPhase]         = useState<Phase>('loading');
   const [statusIdx, setStatusIdx] = useState(0);
 
   useEffect(() => {
+    // Signal that we're now on the client — triggers the first render of the
+    // loader only in the browser, so server and client initial HTML match (null).
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Don't start the progress ticker until the component is mounted client-side.
+    if (!mounted) return;
+
     let current = 0;
     const interval = setInterval(() => {
       current += Math.random() * 16 + 3;
@@ -35,10 +51,12 @@ export default function PageLoader() {
         setStatusIdx(Math.min(Math.floor(current / 25), 3));
       }
     }, 100);
-    return () => clearInterval(interval);
-  }, []);
 
-  if (phase === 'gone') return null;
+    return () => clearInterval(interval);
+  }, [mounted]);
+
+  // Server renders null — no HTML to mismatch against.
+  if (!mounted || phase === 'gone') return null;
 
   return (
     <>
@@ -167,8 +185,8 @@ export default function PageLoader() {
         }
 
         .ldr-logo {
-          width: 76px;
-          height: 76px;
+          width: 76px !important;
+          height: 76px !important;
           object-fit: contain;
           position: relative;
           z-index: 2;
@@ -250,10 +268,13 @@ export default function PageLoader() {
           color: rgba(255,255,255,0.65);
           font-weight: 500;
         }
-
       `}</style>
 
-      <div className={`ldr-root${phase === 'done' ? ' exiting' : ''}`} role="status" aria-label="Loading">
+      <div
+        className={`ldr-root${phase === 'done' ? ' exiting' : ''}`}
+        role="status"
+        aria-label="Loading"
+      >
         <div className="ldr-grid" aria-hidden />
         <div className="ldr-orb ldr-orb-1" aria-hidden />
         <div className="ldr-orb ldr-orb-2" aria-hidden />
@@ -268,15 +289,16 @@ export default function PageLoader() {
 
           <svg className="ldr-dots" viewBox="0 0 140 140" aria-hidden>
             {Array.from({ length: 12 }, (_, i) => {
-              const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
-              const r = 64;
-              const x = 70 + r * Math.cos(angle);
-              const y = 70 + r * Math.sin(angle);
+              const angle  = (i / 12) * Math.PI * 2 - Math.PI / 2;
+              const r      = 64;
+              const x      = 70 + r * Math.cos(angle);
+              const y      = 70 + r * Math.sin(angle);
               const colors = ['#4B3BC7','#E97B20','#1DA975','#EAB308','#5DCAA5','#AFA9EC'];
               return (
                 <circle
                   key={i}
-                  cx={x} cy={y}
+                  cx={x}
+                  cy={y}
                   r={i % 3 === 0 ? 2.8 : 1.5}
                   fill={colors[i % colors.length]}
                   opacity={0.65}
@@ -285,24 +307,40 @@ export default function PageLoader() {
             })}
           </svg>
 
-          <img
+          {/* 
+            Using Next.js <Image> instead of <img> to avoid server/client 
+            attribute mismatches caused by Next.js image optimisation 
+            transforming the src at runtime.
+          */}
+          <Image
             src="/logo.png"
             alt="99 Visual Solutions"
+            width={76}
+            height={76}
             className="ldr-logo"
+            priority
           />
         </div>
-
 
         <div className="ldr-progress-wrap" aria-live="polite">
           <div className="ldr-status">{STATUSES[statusIdx]}</div>
           <div className="ldr-track">
-            <div className="ldr-fill" style={{ width: `${progress}%` }} />
+            {/*
+              suppressHydrationWarning on the fill div because its inline
+              `width` style is driven by a client-only progress ticker.
+              Even with the mount guard this is belt-and-suspenders safety
+              for any edge case where React reconciles this node.
+            */}
+            <div
+              className="ldr-fill"
+              style={{ width: `${progress}%` }}
+              suppressHydrationWarning
+            />
           </div>
-          <div className="ldr-pct">
+          <div className="ldr-pct" suppressHydrationWarning>
             <strong>{progress}</strong>%
           </div>
         </div>
-
       </div>
     </>
   );
