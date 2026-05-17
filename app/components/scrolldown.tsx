@@ -7,7 +7,6 @@ export default function ScrollDownButton() {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Fade in after page load
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 800);
     return () => clearTimeout(timer);
@@ -16,11 +15,7 @@ export default function ScrollDownButton() {
   const handleScroll = useCallback(() => {
     const scrollY = window.scrollY;
     const docH = document.documentElement.scrollHeight - window.innerHeight;
-
-    // Hide after 100px scroll
     setScrolled(scrollY >= 100);
-
-    // Track scroll progress for the ring fill (0–1)
     setProgress(docH > 0 ? Math.min(scrollY / docH, 1) : 0);
   }, []);
 
@@ -33,14 +28,12 @@ export default function ScrollDownButton() {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   };
 
-  // SVG ring math
   const SIZE          = 48;
   const STROKE        = 1.5;
   const RADIUS        = (SIZE - STROKE * 2) / 2;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
   const DASH_OFFSET   = CIRCUMFERENCE * (1 - progress);
 
-  // Visible only when mounted AND not scrolled past threshold
   const visible = mounted && !scrolled;
 
   return (
@@ -48,30 +41,39 @@ export default function ScrollDownButton() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
-        .sd-wrap {
+        /*
+         * FIX 1: Separate the centering transform from the show/hide transform.
+         * Using a wrapper for horizontal centering and the animated element
+         * for vertical translation prevents the transform conflict.
+         */
+        .sd-anchor {
           position:       fixed;
           bottom:         0.2rem;
           left:           50%;
           transform:      translateX(-50%);
           z-index:        9999;
-          display:        flex;
-          flex-direction: column;
-          align-items:    center;
-          gap:            6px;
-          opacity:        0;
-          transform:      translateX(-50%) translateY(12px);
-          transition:     opacity .5s ease, transform .5s ease;
-          pointer-events: none;
+          /* FIX 3: pointer-events managed on the animated child, not here */
+        }
+
+        .sd-wrap {
+          display:         flex;
+          flex-direction:  column;
+          align-items:     center;
+          gap:             6px;
+          opacity:         0;
+          transform:       translateY(12px);
+          transition:      opacity 0.5s ease, transform 0.5s ease;
+          pointer-events:  none;
         }
         .sd-wrap--visible {
-          opacity:        1;
-          transform:      translateX(-50%) translateY(0);
-          pointer-events: auto;
+          opacity:         1;
+          transform:       translateY(0);
+          pointer-events:  auto;
         }
         .sd-wrap--hidden {
-          opacity:        0;
-          transform:      translateX(-50%) translateY(12px);
-          pointer-events: none;
+          opacity:         0;
+          transform:       translateY(12px);
+          pointer-events:  none;
         }
 
         .sd-label {
@@ -84,6 +86,12 @@ export default function ScrollDownButton() {
           user-select:    none;
         }
 
+        /*
+         * FIX 2: Enlarged touch target to 64×64px using padding.
+         * The visual size stays 48px but the tappable area meets the
+         * 44px minimum (Apple HIG / Material) — actually exceeds it for comfort.
+         * negative margin compensates so layout doesn't shift.
+         */
         .sd-btn {
           position:        relative;
           width:           48px;
@@ -94,15 +102,20 @@ export default function ScrollDownButton() {
           display:         flex;
           align-items:     center;
           justify-content: center;
-          padding:         0;
+          padding:         8px;           /* expands hit area to 64×64 */
+          margin:          -8px;          /* cancels layout shift from padding */
+          box-sizing:      content-box;
           outline:         none;
           -webkit-tap-highlight-color: transparent;
+          touch-action:    manipulation;  /* FIX 4: prevents 300ms tap delay on mobile */
         }
 
         .sd-ring {
           position: absolute;
-          inset:    0;
+          /* Offset to stay centred inside the visual 48×48 despite padding */
+          inset:    8px;
           overflow: visible;
+          pointer-events: none;
         }
         .sd-ring__track {
           fill:         none;
@@ -132,21 +145,26 @@ export default function ScrollDownButton() {
           justify-content: center;
           transition:      background .22s ease, border-color .22s ease, transform .22s ease;
           backdrop-filter: blur(8px);
+          pointer-events:  none; /* let the parent button handle all events */
         }
-        .sd-btn:hover .sd-inner {
+        .sd-btn:hover .sd-inner,
+        .sd-btn:focus-visible .sd-inner {
           background:   rgba(252, 246, 250, 0.32);
           border-color: rgba(217, 255, 0, 0.6);
           transform:    scale(1.08);
         }
+        /* FIX 5: Explicit :active for touch devices (hover doesn't fire on mobile) */
         .sd-btn:active .sd-inner {
-          transform: scale(.94);
+          background:   rgba(252, 246, 250, 0.18);
+          border-color: rgba(255, 72, 0, 0.7);
+          transform:    scale(0.94);
         }
 
+        /* FIX 6: gap:-2px is invalid. Use negative top margin on children instead. */
         .sd-chevrons {
           display:        flex;
           flex-direction: column;
           align-items:    center;
-          gap:            -2px;
           position:       relative;
           height:         16px;
           width:          14px;
@@ -195,57 +213,59 @@ export default function ScrollDownButton() {
         }
       `}</style>
 
-      <div
-        className={`sd-wrap${visible ? " sd-wrap--visible" : " sd-wrap--hidden"}`}
-        aria-hidden={!visible}
-      >
-        {/* Tick line */}
-        <div className="sd-line" aria-hidden="true" />
+      {/* FIX 1: Centering anchor is static; animated wrapper is separate */}
+      <div className="sd-anchor" aria-hidden={!visible}>
+        <div className={`sd-wrap${visible ? " sd-wrap--visible" : " sd-wrap--hidden"}`}>
 
-        {/* Button */}
-        <button
-          className="sd-btn"
-          onClick={scrollDown}
-          aria-label="Scroll down to explore content"
-          title="Scroll down"
-          tabIndex={visible ? 0 : -1}
-        >
-          {/* Progress ring SVG */}
-          <svg
-            className="sd-ring"
-            width={SIZE}
-            height={SIZE}
-            viewBox={`0 0 ${SIZE} ${SIZE}`}
-            aria-hidden="true"
+          {/* Tick line */}
+          <div className="sd-line" aria-hidden="true" />
+
+          {/* Button — 64×64 touch target, 48×48 visual */}
+          <button
+            className="sd-btn"
+            onClick={scrollDown}
+            aria-label="Scroll down to explore content"
+            title="Scroll down"
+            tabIndex={visible ? 0 : -1}
           >
-            <circle
-              className="sd-ring__track"
-              cx={SIZE / 2}
-              cy={SIZE / 2}
-              r={RADIUS}
-            />
-            <circle
-              className="sd-ring__fill"
-              cx={SIZE / 2}
-              cy={SIZE / 2}
-              r={RADIUS}
-              strokeDasharray={CIRCUMFERENCE}
-              strokeDashoffset={DASH_OFFSET}
-            />
-          </svg>
+            {/* Progress ring SVG — positioned inside the visual 48×48 area */}
+            <svg
+              className="sd-ring"
+              width={SIZE}
+              height={SIZE}
+              viewBox={`0 0 ${SIZE} ${SIZE}`}
+              aria-hidden="true"
+            >
+              <circle
+                className="sd-ring__track"
+                cx={SIZE / 2}
+                cy={SIZE / 2}
+                r={RADIUS}
+              />
+              <circle
+                className="sd-ring__fill"
+                cx={SIZE / 2}
+                cy={SIZE / 2}
+                r={RADIUS}
+                strokeDasharray={CIRCUMFERENCE}
+                strokeDashoffset={DASH_OFFSET}
+              />
+            </svg>
 
-          {/* Inner circle with animated chevrons */}
-          <div className="sd-inner">
-            <div className="sd-chevrons" aria-hidden="true">
-              <svg className="sd-chevron sd-chevron--1" width="10" height="6" viewBox="0 0 10 6" fill="none">
-                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <svg className="sd-chevron sd-chevron--2" width="10" height="6" viewBox="0 0 10 6" fill="none">
-                <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            {/* Inner circle with animated chevrons */}
+            <div className="sd-inner">
+              <div className="sd-chevrons" aria-hidden="true">
+                <svg className="sd-chevron sd-chevron--1" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <svg className="sd-chevron sd-chevron--2" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </div>
-          </div>
-        </button>
+          </button>
+
+        </div>
       </div>
     </>
   );
