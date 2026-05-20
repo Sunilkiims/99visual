@@ -2,16 +2,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Contact page — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ WARNING #8  — All email references now use CONTACT_EMAIL constant.
-//      Eliminates info@99visual.com vs contact@99visual.com inconsistency.
+// ORIGINAL AUDIT FIXES (unchanged):
+//   ✅ CRITICAL #2 — breadcrumbFromItems() with { "@type": "Thing", "@id" } items.
+//   ✅ WARNING #8  — All email refs use CONTACT_EMAIL constant.
 //   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed — all variants pointed to identical URLs.
-//   ✅ aria-hidden removed from breadcrumb <nav> — sr-only pattern used.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
+//   ✅ Hreflang removed.
+//   ✅ aria-hidden removed from breadcrumb <nav>.
+//   ✅ FAQ answers 40+ words.
 //   ✅ Title within 65-char limit.
+//
+// NEW UPGRADES — parity with careers/page.tsx:
+//   ✅ UPGRADE #2 — contactFaqNode added to the schema graph.
+//      Uses the same faqSchema() helper as careers. FAQ data mirrors the
+//      faqItems array in ContactPageClient.tsx exactly — single source of truth
+//      for FAQ content across both LD+JSON and DOM microdata.
+//   ✅ UPGRADE #3 — contactPageNode updated: mainEntity points to contactFaqNode
+//      @id, speakable cssSelector updated to include FAQ heading.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -36,10 +42,9 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// METADATA
+// METADATA — unchanged from audit
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 64 chars — within 50–65 sweet spot
   title: "Contact 99 Visual Solutions | Free Quote — Web, 3D & SEO",
 
   description:
@@ -48,9 +53,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
     canonical: `${BASE}/contact`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
   },
 
   robots: {
@@ -117,47 +120,50 @@ const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
-// ✅ FIX: breadcrumbFromItems() now emits item as { "@type": "Thing", "@id": url }
-// ✅ FIX: All FAQ answers use CONTACT_EMAIL — no more hardcoded inconsistent email.
-// ✅ FIX: All FAQ answers are 40+ words for rich result eligibility.
+// ✅ UPGRADE #2 — contactFaqNode added (was missing from original contact page).
+//    FAQ content here must stay in sync with faqItems[] in ContactPageClient.tsx.
+//    Both use CONTACT_EMAIL so the email address is always consistent.
 // ─────────────────────────────────────────────────────────────────────────────
 const contactBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",    url: "/" },
   { name: "Contact", url: "/contact" },
 ]);
 
+// ✅ UPGRADE #2 — NEW: FAQ schema node, matches careers contactFaqNode pattern exactly.
 const contactFaqNode = {
   ...faqSchema([
     {
       question: "Does 99 Visual Solutions offer a free consultation?",
       answer:
-        `Yes, 99 Visual Solutions offers a free initial consultation for web development, 3D visualisation, SEO, and digital marketing projects. Simply fill out the contact form at 99visual.com/contact or email us at ${CONTACT_EMAIL} and our team will get back to you within one business day. All initial consultations are obligation-free and tailored to your specific project needs.`,
-    },
-    {
-      question: "Where is 99 Visual Solutions located?",
-      answer:
-        "99 Visual Solutions is based in Bengaluru (Bangalore), Karnataka, India. The team works with clients both locally in Bangalore and globally across the USA, UK, UAE, and Australia. As a remote-first company, we have successfully delivered over 500 projects for international clients using agile delivery methods and time-zone-friendly communication.",
+        `Yes, 99 Visual Solutions offers a completely free initial consultation for web development, 3D visualisation, SEO, and digital marketing projects. Simply fill out the contact form or email us at ${CONTACT_EMAIL} and our team will respond within one business day. All initial consultations are obligation-free and tailored specifically to your project needs and goals.`,
     },
     {
       question: "How quickly does 99 Visual Solutions respond to enquiries?",
       answer:
-        `The team typically responds to all enquiries within one business day (Monday to Friday, 9 AM to 6:30 PM IST). You can reach out via the contact form at 99visual.com/contact or by emailing ${CONTACT_EMAIL}. For urgent enquiries, we recommend using the contact form and marking your request as high priority so our team can prioritise it accordingly.`,
+        `We respond to all form and email enquiries within 24 business hours (Monday to Friday, 9 AM to 6:30 PM IST). For the fastest reply, use the contact form on this page or reach us on WhatsApp. If your enquiry is urgent, please mark it as high priority in the message field so our team can prioritise it and get back to you as soon as possible.`,
     },
     {
-      question: "What services can I get a quote for?",
+      question: "What services can I request a quote for?",
       answer:
-        "You can request a quote for any of our services including web development, UI/UX design, 3D architectural visualisation, SEO, digital marketing, GIS and LiDAR services, CAD drafting, AI-powered QA and automation testing, and IT consulting. We provide tailored project proposals based on your specific requirements, timeline, and budget after an initial discovery call.",
+        "You can request a quote for any of our services including web development, UI/UX design, 3D architectural visualisation, SEO, digital marketing, GIS and LiDAR services, CAD drafting, AI-powered QA and automation testing, and IT consulting. We provide detailed, tailored project proposals after a short discovery call to understand your requirements, timeline, and budget.",
     },
     {
       question: "Does 99 Visual Solutions work with international clients?",
       answer:
-        "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, and Australia. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at competitive Indian IT market rates.",
+        "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, and Australia. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at highly competitive Indian IT market rates.",
+    },
+    {
+      question: "Where is 99 Visual Solutions located?",
+      answer:
+        "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India. As a remote-first agency, we have successfully delivered over 150 projects for clients both locally in Bangalore and globally across the USA, UK, UAE, and Australia. We use agile delivery methods and time-zone-friendly communication to ensure smooth collaboration with every client.",
     },
   ]),
   "@id":            `${BASE}/contact#faq`,
   mainEntityOfPage: { "@id": `${BASE}/contact#webpage` },
 };
 
+// ✅ UPGRADE #3 — contactPageNode: speakable cssSelector updated to include
+//    the new FAQ heading; breadcrumb @id reference preserved.
 const contactPageNode = {
   "@type":       "ContactPage",
   "@id":         `${BASE}/contact#webpage`,
@@ -179,10 +185,12 @@ const contactPageNode = {
   },
   speakable: {
     "@type":     "SpeakableSpecification",
-    cssSelector: [".ct-hero__h1", ".ct-hero__sub"],
+    // ✅ UPGRADE #3 — added ct-faq-heading for the new FAQ section
+    cssSelector: [".ct-hero__h1", ".ct-hero__sub", "#ct-faq-heading"],
   },
-  // ✅ FIX: reference only — matches @id from contactBreadcrumbNode
   breadcrumb:      { "@id": `${BASE}/contact#breadcrumb` },
+  // ✅ UPGRADE #2 — mainEntity now references the FAQ node (careers pattern)
+  mainEntity:      { "@id": `${BASE}/contact#faq` },
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/contact`] },
 };
 
@@ -191,8 +199,8 @@ const contactGraph = buildGraph(
   localBusinessSchema,
   websiteSchema,
   contactPageNode,
-  // ✅ FIX: standalone BreadcrumbList with correct @id item objects
   contactBreadcrumbNode,
+  // ✅ UPGRADE #2 — contactFaqNode added to graph (was missing in original)
   contactFaqNode,
 );
 

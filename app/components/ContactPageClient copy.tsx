@@ -1,25 +1,4 @@
 // app/contact/ContactPageClient.tsx  — CLIENT COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-// UPGRADE PARITY WITH careers/page.tsx — ALL CHANGES ANNOTATED:
-//
-//   ✅ UPGRADE #1  — Stats strip: div-based markup → semantic <dl>/<dt>/<dd>
-//                    Matches careers hero stats pattern exactly.
-//   ✅ UPGRADE #2  — FAQ section added (was missing entirely).
-//                    Uses <details>/<summary> accordion matching careers FAQ.
-//                    Includes JSON-LD-ready itemScope/itemProp microdata.
-//                    crFaqOpen keyframe animation + chevron rotate on [open].
-//   ✅ UPGRADE #3  — Bottom CTA section added (c-cta pattern from careers).
-//                    Orb background, serif headline with <em> accent, CTA btn.
-//   ✅ UPGRADE #4  — Proof strip label changed to semantic <dt>/<dd> inside
-//                    a <dl> wrapper so screen-readers announce stat pairs.
-//   ✅ UPGRADE #5  — Section headers upgraded: kicker → <span class="c-section-label">
-//                    pattern, section sub-copy added to FAQ and CTA sections.
-//   ✅ UPGRADE #6  — sr-only breadcrumb already present — unchanged (✅ already correct).
-//   ✅ UPGRADE #7  — @media (prefers-reduced-motion) block standardised with
-//                    careers page (same rule set).
-//   ✅ UPGRADE #8  — CSS variables scoped to each section root (same as careers)
-//                    so sections are portable and self-contained.
-// ─────────────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -59,38 +38,6 @@ const STATS = [
   { value: 8,   suffix: "yrs", label: "Industry experience" },
   { value: 6,   suffix: "+", label: "Countries served" },
   { value: 1,   suffix: "day", label: "Response guarantee" },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ UPGRADE #2 — FAQ DATA (new — was missing from original contact page)
-// Mirrors the careers faqItems pattern; answers are 40+ words for rich results.
-// ─────────────────────────────────────────────────────────────────────────────
-const faqItems = [
-  {
-    question: "Does 99 Visual Solutions offer a free consultation?",
-    answer:
-      "Yes, 99 Visual Solutions offers a completely free initial consultation for web development, 3D visualisation, SEO, and digital marketing projects. Simply fill out the contact form or email us at info@99visual.com and our team will respond within one business day. All initial consultations are obligation-free and tailored specifically to your project needs and goals.",
-  },
-  {
-    question: "How quickly does 99 Visual Solutions respond to enquiries?",
-    answer:
-      "We respond to all form and email enquiries within 24 business hours (Monday to Friday, 9 AM to 6:30 PM IST). For the fastest reply, use the contact form on this page or reach us on WhatsApp. If your enquiry is urgent, please mark it as high priority in the message field so our team can prioritise it accordingly and get back to you sooner.",
-  },
-  {
-    question: "What services can I request a quote for?",
-    answer:
-      "You can request a quote for any of our services including web development, UI/UX design, 3D architectural visualisation, SEO, digital marketing, GIS and LiDAR services, CAD drafting, AI-powered QA and automation testing, and IT consulting. We provide detailed, tailored project proposals after a short discovery call to understand your requirements, timeline, and budget.",
-  },
-  {
-    question: "Does 99 Visual Solutions work with international clients?",
-    answer:
-      "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, and Australia. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at highly competitive Indian IT market rates.",
-  },
-  {
-    question: "Where is 99 Visual Solutions located?",
-    answer:
-      "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India. As a remote-first agency, we have successfully delivered over 150 projects for clients both locally in Bangalore and globally across the USA, UK, UAE, and Australia. We use agile delivery methods and time-zone-friendly communication to ensure smooth collaboration with every client.",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -136,18 +83,15 @@ function useCounter(target: number, duration: number, active: boolean) {
   return count;
 }
 
-// ✅ UPGRADE #1 — StatItem now renders <dd> for the number and <dt> for the
-// label, wrapping both inside a <div> that lives inside a <dl> in the strip.
-// This is identical to the careers hero stats semantic pattern.
 function StatItem({ stat, active }: { stat: typeof STATS[0]; active: boolean }) {
   const count = useCounter(stat.value, 1400, active);
   return (
     <div className="ct-proof__stat">
-      <dd className="ct-proof__num">
+      <div className="ct-proof__num">
         {count}
         <span className="ct-proof__num-accent">{stat.suffix}</span>
-      </dd>
-      <dt className="ct-proof__label">{stat.label}</dt>
+      </div>
+      <div className="ct-proof__label">{stat.label}</div>
     </div>
   );
 }
@@ -156,10 +100,10 @@ function StatItem({ stat, active }: { stat: typeof STATS[0]; active: boolean }) 
 // CLIENT COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ContactPageClient() {
-  const [cur, setCur]                 = useState(0);
+  const [cur, setCur]           = useState(0);
   const [statsActive, setStatsActive] = useState(false);
-  const elapsedRef                    = useRef(0);
-  const proofRef                      = useRef<HTMLElement>(null);
+  const elapsedRef              = useRef(0);
+  const proofRef                = useRef<HTMLElement>(null);
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -189,12 +133,7 @@ export default function ContactPageClient() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-        /* ✅ UPGRADE #8 — CSS variables scoped to section roots (careers pattern) */
-        .ct-hero,
-        .ct-proof,
-        .ct-reach,
-        .ct-faq,
-        .ct-cta {
+        :root {
           --c-bg:       #060608;
           --c-surface:  #0c0c10;
           --c-surface2: #111118;
@@ -222,26 +161,10 @@ export default function ContactPageClient() {
         }
 
         /* ══ HERO ══════════════════════════════════════════════════════════ */
-        /*
-         * FIX: Full-bleed hero background
-         * Previously: max-width + margin:auto on .ct-hero caused the dark
-         *   background to stop at 1440px, leaving a white/light gap at the
-         *   sides when zoomed in or on very wide viewports.
-         * Now: .ct-hero is full-width (no max-width) so background fills 100vw.
-         *   A new .ct-hero__inner div holds the max-width + flex layout so
-         *   content columns still align correctly.
-         * The decorative absolute children (grid, orbs, hairline, corners)
-         *   remain on .ct-hero so they span the full bleed area.
-         */
         .ct-hero {
-          position:relative;min-height:100vh;
-          background:var(--c-bg);overflow:hidden;
-          width:100%;
-        }
-        .ct-hero__inner {
-          display:flex;flex-direction:row;align-items:center;
-          max-width:1440px;margin:0 auto;min-height:100vh;
-          position:relative;z-index:1;
+          position:relative;min-height:100vh;display:flex;flex-direction:row;
+          align-items:center;background:var(--c-bg);overflow:hidden;
+          max-width:1440px;margin:0 auto;
         }
         .ct-hero__grid {
           position:absolute;inset:0;pointer-events:none;
@@ -420,10 +343,7 @@ export default function ContactPageClient() {
         .ct-corner--bl{bottom:22px;left:22px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
         .ct-corner--br{bottom:22px;right:22px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
 
-        /* ══ PROOF STRIP ════════════════════════════════════════════════════
-           ✅ UPGRADE #1 — inner <dl> wraps all stat items; <dt>/<dd> replace
-           generic divs for accessible stat label/value pairs.
-        ════════════════════════════════════════════════════════════════════ */
+        /* ══ PROOF STRIP ════════════════════════════════════════════════════ */
         .ct-proof {
           position:relative;background:var(--c-surface);
           border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);overflow:hidden;
@@ -438,8 +358,7 @@ export default function ContactPageClient() {
           max-width:1180px;margin:0 auto;padding:0 4rem;
           display:grid;grid-template-columns:1fr auto;align-items:center;gap:3rem;
         }
-        /* ✅ UPGRADE #1 — <dl> wraps stat items */
-        .ct-proof__stats {display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:3.5rem 0;margin:0;}
+        .ct-proof__stats {display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:3.5rem 0;}
         .ct-proof__stat {
           padding:2rem 2.4rem;border-right:1px solid var(--c-border);
           position:relative;transition:background .3s ease;cursor:default;
@@ -447,15 +366,11 @@ export default function ContactPageClient() {
         .ct-proof__stat:first-child{padding-left:0;}
         .ct-proof__stat:last-child{border-right:none;}
         .ct-proof__stat:hover{background:rgba(249,115,22,.03);}
-        /* ✅ UPGRADE #1 — <dd> carries the big number */
         .ct-proof__num {
           font-family:var(--ff-serif);font-size:clamp(2rem,3.5vw,3rem);font-weight:700;
           line-height:1;color:#fff;display:flex;align-items:baseline;gap:3px;margin-bottom:.5rem;
-          /* reset browser <dd> margin */
-          margin-left:0;
         }
         .ct-proof__num-accent{font-size:.55em;color:var(--c-orange);font-weight:600;font-family:var(--ff-sans);}
-        /* ✅ UPGRADE #1 — <dt> carries the label */
         .ct-proof__label{font-family:var(--ff-sans);font-size:10.5px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--c-muted2);line-height:1.5;}
         .ct-proof__stat::after {
           content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
@@ -575,128 +490,6 @@ export default function ContactPageClient() {
         .ct-reach__location-text{font-family:var(--ff-sans);font-size:.8rem;color:var(--c-muted2);line-height:1.5;}
         .ct-reach__location-text strong{color:rgba(255,255,255,.7);font-weight:500;}
 
-        /* ══ FAQ SECTION ════════════════════════════════════════════════════
-           ✅ UPGRADE #2 — NEW section (was missing from original contact page).
-           Identical accordion pattern to careers/page.tsx:
-             • <details>/<summary> toggle with [open] state
-             • Chevron SVG rotates 180° on open
-             • ctFaqOpen keyframe for answer slide-in
-             • itemScope/itemProp microdata for FAQ rich results
-             • Scoped with ct-faq__ prefix (no collision with careers cr-faq__)
-        ════════════════════════════════════════════════════════════════════ */
-        .ct-faq {
-          position:relative;background:var(--c-bg);padding:6rem 0;
-          border-top:1px solid var(--c-border);overflow:hidden;
-        }
-        .ct-faq::before {
-          content:'';position:absolute;inset:0;
-          background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-          background-size:60px 60px;pointer-events:none;
-        }
-        .ct-faq__inner{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 4rem;}
-        .ct-faq__header{text-align:center;margin-bottom:3.5rem;}
-
-        /* ✅ UPGRADE #5 — section label matches careers c-section-label pattern */
-        .ct-section-label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);display:block;margin-bottom:.8rem;}
-        .ct-section-h2{font-family:var(--ff-serif);font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-.015em;color:#fff;margin-bottom:.8rem;}
-        .ct-section-sub{font-family:var(--ff-sans);font-size:.93rem;font-weight:300;line-height:1.75;color:var(--c-muted);max-width:480px;margin:0 auto;}
-
-        /* Accordion container card */
-        .ct-faq__list{
-          display:flex;flex-direction:column;gap:0;
-          border:1px solid var(--c-border);border-radius:16px;overflow:hidden;
-          margin:0;padding:0;
-        }
-
-        /* Each <details> item */
-        .ct-faq__item{
-          border-bottom:1px solid var(--c-border);
-          background:var(--c-surface);
-          transition:background .2s ease;
-        }
-        .ct-faq__item:last-child{border-bottom:none;}
-        .ct-faq__item[open]{background:var(--c-surface2);}
-
-        /* <summary> — the clickable question row */
-        .ct-faq__q{
-          list-style:none;
-          display:flex;align-items:center;justify-content:space-between;gap:1rem;
-          padding:1.5rem 1.75rem;cursor:pointer;user-select:none;
-        }
-        .ct-faq__q::-webkit-details-marker{display:none;}
-        .ct-faq__q::marker{display:none;}
-
-        .ct-faq__q-text{
-          font-family:var(--ff-serif);
-          font-size:1.15rem;font-weight:600;
-          color:rgba(255,255,255,.82);
-          line-height:1.35;flex:1;
-          transition:color .2s ease;
-        }
-        .ct-faq__item[open] .ct-faq__q-text,
-        .ct-faq__q:hover .ct-faq__q-text{color:#fff;}
-
-        /* Chevron icon */
-        .ct-faq__chevron{
-          flex-shrink:0;color:var(--c-orange);opacity:.7;
-          transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;
-        }
-        .ct-faq__item[open] .ct-faq__chevron{transform:rotate(180deg);opacity:1;}
-
-        /* Answer body */
-        .ct-faq__a{
-          padding:0 1.75rem 1.5rem;
-          animation:ctFaqOpen .3s cubic-bezier(.22,1,.36,1) both;
-        }
-        @keyframes ctFaqOpen{
-          from{opacity:0;transform:translateY(-6px)}
-          to{opacity:1;transform:translateY(0)}
-        }
-        .ct-faq__a p{
-          font-family:var(--ff-sans);
-          font-size:.92rem;font-weight:300;
-          line-height:1.8;color:var(--c-muted);margin:0;
-        }
-
-        /* ══ CTA SECTION ════════════════════════════════════════════════════
-           ✅ UPGRADE #3 — NEW bottom CTA section (c-cta pattern from careers).
-           Orb glow, serif headline with <em> orange accent, ghost CTA button.
-           Scoped with ct-cta__ prefix.
-        ════════════════════════════════════════════════════════════════════ */
-        .ct-cta{
-          position:relative;background:var(--c-surface);
-          padding:7rem 1.5rem;text-align:center;overflow:hidden;
-          border-top:1px solid var(--c-border);
-        }
-        .ct-cta__orb{
-          position:absolute;width:600px;height:600px;border-radius:50%;
-          filter:blur(110px);opacity:.12;
-          background:radial-gradient(circle,#f97316,transparent);
-          top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
-        }
-        .ct-cta__content{position:relative;z-index:10;max-width:640px;margin:0 auto;}
-        .ct-cta__h2{
-          font-family:var(--ff-serif);font-size:clamp(2.2rem,5vw,4rem);
-          font-weight:700;line-height:1.05;letter-spacing:-.02em;
-          color:#fff;margin-bottom:1.2rem;
-        }
-        .ct-cta__h2 em{font-style:italic;color:var(--c-orange);}
-        .ct-cta__sub{
-          font-family:var(--ff-sans);font-size:.95rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);margin-bottom:2.4rem;
-        }
-        .ct-cta__btn{
-          display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-sans);
-          font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-          color:#fff;border:1px solid rgba(249,115,22,.4);background:rgba(249,115,22,.1);
-          backdrop-filter:blur(12px);padding:14px 34px;border-radius:100px;
-          text-decoration:none;transition:all .2s ease;
-        }
-        .ct-cta__btn:hover{
-          background:var(--c-orange);color:#060608;border-color:var(--c-orange);
-          transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.4);
-        }
-
         /* ══ RESPONSIVE ════════════════════════════════════════════════════ */
         @media (max-width:1000px) {
           .ct-proof__tagline{display:none;}
@@ -712,11 +505,9 @@ export default function ContactPageClient() {
           .ct-proof__stat:nth-last-child(-n+2){border-bottom:none;}
           .ct-reach__layout{grid-template-columns:1fr;}
           .ct-reach__inner{padding:0 2.5rem;}
-          .ct-faq__inner{padding:0 2.5rem;}
         }
         @media (max-width:768px) {
-          /* __inner gets column layout; .ct-hero stays full-bleed */
-          .ct-hero__inner{flex-direction:column;min-height:auto;}
+          .ct-hero{flex-direction:column;min-height:auto;}
           .ct-hero__right{order:1;flex:none;width:100%;height:280px;min-height:280px;overflow:visible;display:flex;align-items:center;justify-content:center;}
           .ct-hero__right::before{display:none;}
           .ct-anim{width:200px;height:260px;}
@@ -738,11 +529,6 @@ export default function ContactPageClient() {
           .ct-testi{padding:32px 24px 28px;min-height:300px;}
           .ct-reach__strip{flex-direction:column;}
           .ct-reach__strip-divider{width:auto;height:1px;}
-          .ct-faq__inner{padding:0 1.5rem;}
-          .ct-faq{padding:4rem 0;}
-          .ct-faq__q{padding:1.25rem;}
-          .ct-faq__a{padding:0 1.25rem 1.25rem;}
-          .ct-cta{padding:5rem 1.5rem;}
         }
         @keyframes ctLetterFlyMd {
           0%  {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}6%{opacity:1;}
@@ -780,14 +566,8 @@ export default function ContactPageClient() {
         @keyframes ctTr2Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(64px,-16px);opacity:.65}60%{transform:translate(34px,116px);opacity:.28}72%{opacity:0}100%{opacity:0}}
         @keyframes ctTr3Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(48px,-11px);opacity:.45}60%{transform:translate(24px,100px);opacity:.18}70%{opacity:0}100%{opacity:0}}
         @keyframes ctTr4Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(32px,-7px);opacity:.3}60%{transform:translate(15px,84px);opacity:.1}68%{opacity:0}100%{opacity:0}}
-
-        /* ✅ UPGRADE #7 — standardised prefers-reduced-motion rule (matches careers) */
         @media (prefers-reduced-motion:reduce) {
-          *,*::before,*::after{
-            animation-duration:.01ms!important;
-            animation-iteration-count:1!important;
-            transition-duration:.01ms!important;
-          }
+          *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
         }
       `}</style>
 
@@ -808,10 +588,7 @@ export default function ContactPageClient() {
         <div className="ct-corner ct-corner--bl" aria-hidden="true" />
         <div className="ct-corner ct-corner--br" aria-hidden="true" />
 
-        {/* ct-hero__inner — max-width constrained flex row; background stays on .ct-hero */}
-        <div className="ct-hero__inner">
         <div className="ct-hero__left">
-          {/* sr-only breadcrumb — already correct in original, preserved */}
           <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
             <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -900,22 +677,16 @@ export default function ContactPageClient() {
             </div>
           </div>
         </div>
-        </div>{/* /.ct-hero__inner */}
       </section>
 
-      {/* ══ PROOF STRIP — animated counters ════════════════════════════════
-          ✅ UPGRADE #1 — outer element changed from <section> to <section> with
-          inner <dl> so the grid div → <div> stat children host <dd>/<dt> pairs.
-          aria-label updated to reflect the semantic <dl> pattern.
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* ══ PROOF STRIP — animated counters ════════════════════════════════ */}
       <section className="ct-proof" aria-label="Company highlights" ref={proofRef}>
         <div className="ct-proof__inner">
-          {/* ✅ UPGRADE #1 — <dl> wraps all stat items for correct screen-reader pairing */}
-          <dl className="ct-proof__stats" aria-label="Key company statistics">
+          <div className="ct-proof__stats">
             {STATS.map((s) => (
               <StatItem key={s.label} stat={s} active={statsActive} />
             ))}
-          </dl>
+          </div>
           <div className="ct-proof__tagline">
             <p className="ct-proof__tagline-text">&ldquo;Results you can measure, design you&apos;ll love.&rdquo;</p>
             <p className="ct-proof__tagline-sub">— 99 Visual Solutions, Bangalore</p>
@@ -936,7 +707,7 @@ export default function ContactPageClient() {
 
           <div className="ct-reach__layout">
 
-            {/* LEFT — Testimonials */}
+            {/* LEFT — Testimonials (unchanged) */}
             <div className="ct-testi" aria-label="Client testimonials">
               <div className="ct-testi__glow" aria-hidden="true" />
               <div className="ct-testi__badge" aria-hidden="true">
@@ -1056,100 +827,6 @@ export default function ContactPageClient() {
             </div>{/* /.ct-reach__right */}
           </div>{/* /.ct-reach__layout */}
         </div>{/* /.ct-reach__inner */}
-      </section>
-
-      {/* ══ FAQ SECTION ═════════════════════════════════════════════════════
-          ✅ UPGRADE #2 — NEW section added to contact page.
-          Identical <details>/<summary> accordion pattern from careers/page.tsx.
-          SEO NOTES:
-            • JSON-LD FAQPage schema should be added to contact/page.tsx using
-              the same faqSchema() helper — see comments in page.tsx below.
-            • itemScope/itemProp microdata is fully preserved here so Google
-              can read FAQ rich results even without the LD+JSON.
-            • All answers are 40+ words for rich result eligibility.
-            • Google reads <details> content regardless of open/closed state.
-      ════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="ct-faq"
-        aria-labelledby="ct-faq-heading"
-        itemScope
-        itemType="https://schema.org/FAQPage"
-      >
-        <div className="ct-faq__inner">
-          <div className="ct-faq__header">
-            {/* ✅ UPGRADE #5 — section label / h2 / sub matching careers pattern */}
-            <span className="ct-section-label">Common questions</span>
-            <h2 className="ct-section-h2" id="ct-faq-heading">
-              Frequently Asked Questions
-            </h2>
-            <p className="ct-section-sub">
-              Everything you need to know about working with 99 Visual Solutions.
-            </p>
-          </div>
-
-          {/* ✅ UPGRADE #2 — <dl> accordion card container (careers cr-faq__list pattern) */}
-          <dl className="ct-faq__list">
-            {faqItems.map(({ question, answer }, i) => (
-              <details
-                key={i}
-                className="ct-faq__item"
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
-              >
-                <summary className="ct-faq__q" itemProp="name">
-                  <span className="ct-faq__q-text">{question}</span>
-                  <span className="ct-faq__chevron" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <path
-                        d="M4.5 6.75L9 11.25L13.5 6.75"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </summary>
-                <div
-                  className="ct-faq__a"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <p itemProp="text">{answer}</p>
-                </div>
-              </details>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* ══ CTA SECTION ═════════════════════════════════════════════════════
-          ✅ UPGRADE #3 — NEW bottom CTA section (careers c-cta pattern).
-          Drives users to the contact form / WhatsApp with a warm close.
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="ct-cta" aria-labelledby="ct-cta-heading">
-        <div className="ct-cta__orb" aria-hidden="true" />
-        <div className="ct-cta__content">
-          <h2 className="ct-cta__h2" id="ct-cta-heading">
-            Ready to start your<br /><em>next project?</em>
-          </h2>
-          <p className="ct-cta__sub">
-            From a quick website refresh to a full digital transformation — our team is
-            ready to listen, plan, and deliver. No fluff, no long contracts, just results.
-          </p>
-          <a
-            href="#contact-form"
-            className="ct-cta__btn"
-            aria-label="Scroll to the contact form to send us a message"
-          >
-            Send Us a Message
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
-        </div>
       </section>
     </>
   );
