@@ -2,29 +2,25 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Careers page — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ WARNING #7  — JOB_DATE_POSTED is now dynamic (today at build time),
-//      not hardcoded "2025-01-01". Keeps job postings fresh for Google Jobs.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed — all variants pointed to identical URLs.
-//   ✅ aria-hidden removed from breadcrumb <nav> — sr-only pattern used.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
-//   ✅ Title within 65-char limit.
-//
-// FAQ STYLE UPDATE:
-//   ✅ FAQ section now uses <details>/<summary> accordion pattern matching
-//      automation-testing/page.tsx — same visual style, chevron animation,
-//      card container. Zero SEO impact:
-//        - Schema JSON-LD (FAQPage) is unchanged — Google reads the LD+JSON,
-//          not the DOM structure.
-//        - All itemProp="mainEntity" / itemType="Question" / "Answer" microdata
-//          preserved on <details> / <summary> / inner <div> exactly as before.
-//        - Answer text still in itemProp="text" — Google can still read it
-//          even when the <details> is closed (it reads the DOM, not render state).
-//        - No content removed or reworded — rich result eligibility unchanged.
+// AUDIT FIXES APPLIED (v2):
+//   ✅ CRITICAL — Removed ALL microdata from FAQ <section> and every child
+//      element (<details itemProp="mainEntity">, <summary itemProp="name">,
+//      <div itemProp="acceptedAnswer">, <p itemProp="text">).
+//      careersFaqNode in the JSON-LD graph is the SOLE FAQPage source.
+//      Duplicate structured-data suppresses Google rich results.
+//   ✅ CRITICAL — Removed ALL microdata from breadcrumb <nav>
+//      (<ol itemScope>, <li itemProp="itemListElement">, etc.).
+//      careersBreadcrumbNode in JSON-LD is the SOLE BreadcrumbList source.
+//   ✅ FIX — <dl> wrapping <details> in FAQ replaced with <div>.
+//      <dl> requires dt/dd children; using it for <details> is invalid HTML.
+//   ✅ FIX — Removed `headline` from careersPageNode. `headline` is an
+//      Article property; WebPage does not use it.
+//   ✅ FIX — Removed `mainEntity` from careersPageNode. The page already
+//      has careersFaqNode pointing back via mainEntityOfPage. Declaring
+//      mainEntity: joblist on the WebPage node creates a conflicting dual
+//      primary-subject relationship. ItemList is discoverable via the @graph.
+//   ✅ FIX — primaryImageOfPage given "@id" for graph node coherence.
+//   ✅ All prior datetime, duplicate-FAQPage, and breadcrumb fixes retained.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -45,14 +41,12 @@ import {
   localBusinessSchema,
   websiteSchema,
   breadcrumbFromItems,
-  faqSchema,
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// METADATA  — untouched
+// METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 61 chars — within 50–65 sweet spot
   title: "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
 
   description:
@@ -61,9 +55,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
     canonical: `${BASE}/careers`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
   },
 
   robots: {
@@ -127,18 +119,15 @@ export const metadata: Metadata = {
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
-const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
-
-// ✅ FIX: JOB_DATE_POSTED is now dynamic — always current build date.
-const JOB_DATE_POSTED = new Date().toISOString().split("T")[0];
-
+const DATE_PUBLISHED    = "2023-01-01T00:00:00+05:30";
+const DATE_MODIFIED     = new Date().toISOString();
+const JOB_DATE_POSTED   = new Date().toISOString();
 const JOB_VALID_THROUGH = new Date(
   new Date().setFullYear(new Date().getFullYear() + 1)
-).toISOString().split("T")[0];
+).toISOString();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// JOB POSTING HELPER  — untouched
+// JOB POSTING HELPER
 // ─────────────────────────────────────────────────────────────────────────────
 const jobAddress = {
   "@type":         "PostalAddress",
@@ -218,7 +207,7 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA — untouched (same content = same SEO signals)
+// FAQ DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
@@ -259,18 +248,29 @@ const faqItems = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — untouched
+// SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
 
+// breadcrumbFromItems() produces @id = "${BASE}/careers#breadcrumb" ✅
 const careersBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",    url: "/" },
   { name: "Careers", url: "/careers" },
 ]);
 
+// ✅ Single FAQPage node constructed manually — no faqSchema() spread.
+// Zero duplicate "@type":"FAQPage" entries in the @graph.
 const careersFaqNode = {
-  ...faqSchema(faqItems),
+  "@type":          "FAQPage",
   "@id":            `${BASE}/careers#faq`,
   mainEntityOfPage: { "@id": `${BASE}/careers#webpage` },
+  mainEntity: faqItems.map(({ question, answer }) => ({
+    "@type":        "Question",
+    name:           question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text:    answer,
+    },
+  })),
 };
 
 const careersPageNode = {
@@ -278,7 +278,7 @@ const careersPageNode = {
   "@id":         `${BASE}/careers#webpage`,
   url:           `${BASE}/careers`,
   name:          "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
-  headline:      "Build your future with 99 Visual Solutions — Careers",
+  // ✅ FIX: `headline` removed — Article property, not valid on WebPage.
   description:
     "Explore open positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today in Bangalore.",
   inLanguage:    "en",
@@ -287,8 +287,10 @@ const careersPageNode = {
   isPartOf:      { "@id": `${BASE}/#website` },
   about:         { "@id": `${BASE}/#organization` },
   publisher:     { "@id": `${BASE}/#organization` },
+  // ✅ FIX: "@id" added for graph node coherence.
   primaryImageOfPage: {
     "@type":   "ImageObject",
+    "@id":     `${BASE}/careers#primaryimage`,
     url:       `${BASE}/images/og/careers-og.jpg`,
     width:     1200,
     height:    630,
@@ -298,8 +300,10 @@ const careersPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".cr-hero__h1", ".cr-hero__sub"],
   },
+  // ✅ Matches @id from careersBreadcrumbNode
   breadcrumb:      { "@id": `${BASE}/careers#breadcrumb` },
-  mainEntity:      { "@id": `${BASE}/careers#joblist` },
+  // ✅ FIX: mainEntity removed — conflicted with careersFaqNode's mainEntityOfPage.
+  // ItemList is in the @graph and discoverable without a WebPage pointer.
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/careers`] },
 };
 
@@ -405,7 +409,7 @@ const careersGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA — untouched
+// PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const careerAreas = [
   {
@@ -496,7 +500,6 @@ export default function CareersPage() {
           --ff-sans:   'DM Sans', sans-serif;
         }
 
-        /* ✅ sr-only — accessible but visually hidden */
         .sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
@@ -621,79 +624,23 @@ export default function CareersPage() {
         .c-role-row__apply{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;border:1px solid rgba(249,115,22,.3);background:rgba(249,115,22,.07);backdrop-filter:blur(8px);padding:10px 22px;border-radius:100px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s ease;}
         .c-role-row__apply:hover{background:var(--c-orange);color:#080808;border-color:var(--c-orange);transform:translateY(-1px);}
 
-        /* ══ FAQ — accordion style matching automation-testing/page.tsx ════
-           WHAT CHANGED vs original careers FAQ:
-             • List gets a unified card border + border-radius (container style)
-             • Items use <details>[open] for toggling instead of static display
-             • Question row is a <summary> with flex layout + chevron icon
-             • Answer slides in with crFaqOpen keyframe animation
-             • Background shifts from #0f0f0f → #141414 when open
-           WHAT DID NOT CHANGE (SEO-safe):
-             • Class names are all new (cr-faq__*) — zero collision risk
-             • itemScope / itemProp / itemType microdata preserved on every element
-             • itemProp="text" still present on the answer paragraph
-             • JSON-LD FAQPage schema in careersGraph is completely untouched
-             • All question and answer text is identical — no rewording
-        ═══════════════════════════════════════════════════════════════════ */
+        /* ══ FAQ — JSON-LD only, no microdata ══════════════════════════════ */
         .c-faq{background:var(--c-bg);padding:6rem 1.5rem;border-top:1px solid var(--c-border);}
         .c-faq__inner{max-width:800px;margin:0 auto;}
         .c-faq__header{text-align:center;margin-bottom:3.5rem;}
-
-        /* Accordion container card */
-        .cr-faq__list{
-          display:flex;flex-direction:column;gap:0;
-          border:1px solid var(--c-border);border-radius:16px;overflow:hidden;
-        }
-
-        /* Each <details> item */
-        .cr-faq__item{
-          border-bottom:1px solid var(--c-border);
-          background:#0f0f0f;
-          transition:background .2s ease;
-        }
+        .cr-faq__list{display:flex;flex-direction:column;gap:0;border:1px solid var(--c-border);border-radius:16px;overflow:hidden;}
+        .cr-faq__item{border-bottom:1px solid var(--c-border);background:#0f0f0f;transition:background .2s ease;}
         .cr-faq__item:last-child{border-bottom:none;}
         .cr-faq__item[open]{background:#141414;}
-
-        /* <summary> — the clickable question row */
-        .cr-faq__q{
-          list-style:none;
-          display:flex;align-items:center;justify-content:space-between;gap:1rem;
-          padding:1.5rem 1.75rem;cursor:pointer;user-select:none;
-        }
-        .cr-faq__q::-webkit-details-marker{display:none;}
-        .cr-faq__q::marker{display:none;}
-
-        .cr-faq__q-text{
-          font-family:'Cormorant Garamond',serif;
-          font-size:1.15rem;font-weight:600;
-          color:rgba(255,255,255,.85);
-          line-height:1.35;flex:1;
-          transition:color .2s ease;
-        }
-        .cr-faq__item[open] .cr-faq__q-text,
-        .cr-faq__q:hover .cr-faq__q-text{color:#fff;}
-
-        /* Chevron icon */
-        .cr-faq__chevron{
-          flex-shrink:0;color:var(--c-orange);opacity:.7;
-          transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;
-        }
+        .cr-faq__q{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.5rem 1.75rem;cursor:pointer;user-select:none;}
+        .cr-faq__q::-webkit-details-marker{display:none;}.cr-faq__q::marker{display:none;}
+        .cr-faq__q-text{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:rgba(255,255,255,.85);line-height:1.35;flex:1;transition:color .2s ease;}
+        .cr-faq__item[open] .cr-faq__q-text,.cr-faq__q:hover .cr-faq__q-text{color:#fff;}
+        .cr-faq__chevron{flex-shrink:0;color:var(--c-orange);opacity:.7;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;}
         .cr-faq__item[open] .cr-faq__chevron{transform:rotate(180deg);opacity:1;}
-
-        /* Answer body */
-        .cr-faq__a{
-          padding:0 1.75rem 1.5rem;
-          animation:crFaqOpen .3s cubic-bezier(.22,1,.36,1) both;
-        }
-        @keyframes crFaqOpen{
-          from{opacity:0;transform:translateY(-6px)}
-          to{opacity:1;transform:translateY(0)}
-        }
-        .cr-faq__a p{
-          font-family:'DM Sans',sans-serif;
-          font-size:.92rem;font-weight:300;
-          line-height:1.8;color:var(--c-muted);margin:0;
-        }
+        .cr-faq__a{padding:0 1.75rem 1.5rem;animation:crFaqOpen .3s cubic-bezier(.22,1,.36,1) both;}
+        @keyframes crFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+        .cr-faq__a p{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--c-muted);margin:0;}
 
         /* ══ CTA ═══════════════════════════════════════════════════════════ */
         .c-cta{position:relative;background:var(--c-surface);padding:7rem 1.5rem;text-align:center;overflow:hidden;border-top:1px solid var(--c-border);}
@@ -719,10 +666,7 @@ export default function CareersPage() {
           .cr-card{padding:8px 12px;border-radius:10px;gap:8px;}.cr-card__icon{width:28px;height:28px;font-size:.78rem;}.cr-card__title{font-size:.68rem;}.cr-card__tag{font-size:7px;}
           .cr-hero__cta{width:100%;max-width:280px;justify-content:center;}
         }
-        @media(max-width:600px){
-          .cr-faq__q{padding:1.25rem;}
-          .cr-faq__a{padding:0 1.25rem 1.25rem;}
-        }
+        @media(max-width:600px){.cr-faq__q{padding:1.25rem;}.cr-faq__a{padding:0 1.25rem 1.25rem;}}
         @media(max-width:480px){
           .cr-hero__right{height:280px;min-height:280px;}
           .cr-card--1{top:-18px;left:-58px;}.cr-card--2{top:-18px;right:-58px;}.cr-card--3{bottom:6px;left:-54px;}.cr-card--4{bottom:6px;right:-54px;}
@@ -742,17 +686,14 @@ export default function CareersPage() {
         <div className="cr-corner cr-corner--br" aria-hidden="true" />
 
         <div className="cr-hero__left">
-          {/* ✅ FIX: aria-hidden removed from <nav> — sr-only used instead */}
+          {/*
+            ✅ FIX: All microdata stripped from breadcrumb nav.
+            careersBreadcrumbNode in JSON-LD is the SOLE BreadcrumbList source.
+          */}
           <nav className="sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
-              </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/careers" itemProp="item" aria-current="page"><span itemProp="name">Careers</span></a>
-                <meta itemProp="position" content="2" />
-              </li>
+            <ol>
+              <li><a href="/">Home</a></li>
+              <li><a href="/careers" aria-current="page">Careers</a></li>
             </ol>
           </nav>
 
@@ -916,22 +857,17 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* ══ FAQ — accordion style matching automation-testing/page.tsx ════
-            SEO NOTES:
-            • JSON-LD FAQPage schema lives in careersGraph above — unchanged.
-              Google's primary signal is the LD+JSON block, not the DOM.
-            • itemScope / itemProp / itemType microdata is fully preserved:
-                <details>   → itemScope itemProp="mainEntity" itemType="…Question"
-                <summary>   → itemProp="name"  (the question text)
-                inner <div> → itemScope itemProp="acceptedAnswer" itemType="…Answer"
-                <p>         → itemProp="text"  (the answer text)
-            • Google can read <details> content regardless of open/closed state
-              because it renders the full DOM, not just the visible painted output.
-            • No content was removed, added, or reworded — rich result
-              eligibility (40+ word answers) is fully preserved.
+      {/* ══ FAQ ══════════════════════════════════════════════════════════════
+        ✅ JSON-LD ONLY — zero microdata on this section or any child element.
+        careersFaqNode in the <script> above is the SOLE FAQPage source.
+        ✅ <section> has no itemScope/itemType.
+        ✅ <details> has no itemProp/itemScope/itemType.
+        ✅ <summary> has no itemProp.
+        ✅ <div> answer wrapper has no itemProp/itemScope/itemType.
+        ✅ <p> text has no itemProp.
+        ✅ Container changed from <dl> to <div> — valid HTML for <details> children.
       ════════════════════════════════════════════════════════════════════ */}
-      <section className="c-faq" aria-labelledby="c-faq-heading"
-        itemScope itemType="https://schema.org/FAQPage">
+      <section className="c-faq" aria-labelledby="c-faq-heading">
         <div className="c-faq__inner">
           <div className="c-faq__header">
             <span className="c-section-label">Common questions</span>
@@ -941,23 +877,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          {/*
-            ── ACCORDION LIST ──────────────────────────────────────────────
-            Outer wrapper uses the new cr-faq__list class (card border style).
-            Each <details> carries the Schema.org Question microdata.
-            <summary> holds the question text (itemProp="name") + chevron.
-            The answer <div> carries the Answer microdata + itemProp="text".
-          */}
-          <dl className="cr-faq__list">
+          {/* ✅ FIX: <div> replaces <dl> — valid HTML container for <details> children */}
+          <div className="cr-faq__list">
             {faqItems.map(({ question, answer }, i) => (
-              <details
-                key={i}
-                className="cr-faq__item"
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
-              >
-                <summary className="cr-faq__q" itemProp="name">
+              <details key={i} className="cr-faq__item">
+                <summary className="cr-faq__q">
                   <span className="cr-faq__q-text">{question}</span>
                   <span className="cr-faq__chevron" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -971,17 +895,12 @@ export default function CareersPage() {
                     </svg>
                   </span>
                 </summary>
-                <div
-                  className="cr-faq__a"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <p itemProp="text">{answer}</p>
+                <div className="cr-faq__a">
+                  <p>{answer}</p>
                 </div>
               </details>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 

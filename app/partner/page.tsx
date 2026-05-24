@@ -2,20 +2,17 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade Partner page — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #4 — Removed ALL microdata (itemScope/itemType/itemProp) from
-//      the visible FAQ <section> and <details> elements. The page was emitting
-//      FAQPage schema TWICE: once via JSON-LD and once via microdata.
-//      Google suppresses rich results when both formats exist for the same
-//      entity on the same page. JSON-LD in <script> is the sole source now.
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed — all variants pointed to identical URLs.
-//   ✅ aria-hidden removed from breadcrumb <nav> — sr-only pattern used.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
-//   ✅ Title within 65-char limit.
+// AUDIT FIXES APPLIED (v2):
+//   ✅ All prior fixes retained from v1.
+//   ✅ FIX: <dl> wrapping <details> replaced with <div> — <dl> requires
+//      <dt>/<dd> children; using it as a container for <details> is invalid
+//      HTML and breaks accessibility tree parsing.
+//   ✅ FIX: breadcrumbFromItems() produces @id = "${BASE}/partner#breadcrumb"
+//      (last item URL + "#breadcrumb") which matches partnerPageNode's
+//      breadcrumb: { "@id": "${BASE}/partner#breadcrumb" } — confirmed correct.
+//   ✅ FIX: primaryImageOfPage given "@id" for graph node coherence.
+//   ✅ NOTE: dateModified is build-time static (module scope) — safe for SSG/ISR.
+//      If this page is SSR, pin to a hardcoded last-edit date instead.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -43,7 +40,6 @@ import {
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 64 chars — within sweet spot
   title: "Partner With 99 Visual | White-Label & Agency Collaboration",
 
   description:
@@ -52,9 +48,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
     canonical: `${BASE}/partner`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
   },
 
   robots: {
@@ -116,7 +110,6 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQ DATA — single source of truth for schema AND visible HTML
-// ✅ FIX: All answers 40+ words. CONTACT_EMAIL used throughout.
 // ─────────────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
@@ -154,22 +147,30 @@ const FAQ_ITEMS = [
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
-const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_PUBLISHED = "2023-01-01T00:00:00+05:30";
+const DATE_MODIFIED  = new Date().toISOString();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ✅ FIX: breadcrumbFromItems() now emits correct @id item objects
+// breadcrumbFromItems() produces:
+//   { "@type": "BreadcrumbList", "@id": "https://www.99visual.com/partner#breadcrumb", ... }
+// The last item URL is "/partner" → abs("/partner") = BASE + "/partner"
+// → "@id" = "${BASE}/partner#breadcrumb" ✅ matches partnerPageNode.breadcrumb below.
 const partnerBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",    url: "/" },
   { name: "Partner", url: "/partner" },
 ]);
 
+// faqSchema() returns { "@type": "FAQPage", mainEntity: [...] } with no "@id".
+// Destructuring "@type" and "@id" before spreading prevents duplicate field errors.
+const { "@type": _faqType, "@id": _faqId, ...faqBase } = faqSchema(FAQ_ITEMS) as Record<string, unknown>;
+
 const partnerFaqNode = {
-  ...faqSchema(FAQ_ITEMS),
+  "@type":          "FAQPage",
   "@id":            `${BASE}/partner#faq`,
+  ...faqBase,
   mainEntityOfPage: { "@id": `${BASE}/partner#webpage` },
 };
 
@@ -185,8 +186,10 @@ const partnerPageNode = {
   isPartOf:      { "@id": `${BASE}/#website` },
   about:         { "@id": `${BASE}/#organization` },
   publisher:     { "@id": `${BASE}/#organization` },
+  // ✅ FIX: "@id" added for graph node coherence
   primaryImageOfPage: {
     "@type":   "ImageObject",
+    "@id":     `${BASE}/partner#primaryimage`,
     url:       `${BASE}/images/og/partner-og.jpg`,
     width:     1200,
     height:    630,
@@ -196,7 +199,7 @@ const partnerPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".pt-hero__h1", ".pt-hero__sub"],
   },
-  // ✅ FIX: reference only — matches @id from partnerBreadcrumbNode
+  // ✅ Matches "@id" produced by breadcrumbFromItems() above
   breadcrumb:      { "@id": `${BASE}/partner#breadcrumb` },
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/partner`] },
 };
@@ -206,7 +209,6 @@ const partnerGraph = buildGraph(
   localBusinessSchema,
   websiteSchema,
   partnerPageNode,
-  // ✅ FIX: standalone BreadcrumbList with correct @id item objects
   partnerBreadcrumbNode,
   partnerFaqNode,
 );
@@ -215,10 +217,10 @@ const partnerGraph = buildGraph(
 // PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const partnerTypes = [
-  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",  desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
-  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",    desc: "Expand your reach with international collaborations and worldwide digital impact." },
+  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",   desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
+  { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",     desc: "Expand your reach with international collaborations and worldwide digital impact." },
   { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners", desc: "Work with innovators to build next-gen digital transformation solutions." },
-  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",  desc: "Partner with agencies and designers to create unforgettable digital experiences." },
+  { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",   desc: "Partner with agencies and designers to create unforgettable digital experiences." },
 ];
 
 const whyItems = [
@@ -250,7 +252,6 @@ export default function PartnersPage() {
           --ff-serif:'Cormorant Garamond',serif;--ff-sans:'DM Sans',sans-serif;
         }
 
-        /* ✅ FIX: sr-only — accessible but visually hidden */
         .sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
@@ -352,7 +353,7 @@ export default function PartnersPage() {
         .p-why__stat-label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--c-muted);display:block;}
         .p-why__divider{height:1px;background:var(--c-border);}
 
-        /* ══ FAQ — NO MICRODATA (JSON-LD only) ══════════════════════════ */
+        /* ══ FAQ — JSON-LD only, no microdata ═══════════════════════════ */
         .p-faq{background:var(--c-surface);padding:6rem 1.5rem;border-top:1px solid var(--c-border);}
         .p-faq__inner{max-width:800px;margin:0 auto;}
         .p-faq__header{text-align:center;margin-bottom:3.5rem;}
@@ -413,17 +414,14 @@ export default function PartnersPage() {
         <div className="pt-corner pt-corner--br" aria-hidden="true" />
 
         <div className="pt-hero__left">
-          {/* ✅ FIX: aria-hidden removed — sr-only used instead */}
+          {/*
+            ✅ Plain semantic nav — no microdata attributes.
+            JSON-LD partnerBreadcrumbNode is the sole BreadcrumbList source.
+          */}
           <nav className="sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
-              </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/partner" itemProp="item" aria-current="page"><span itemProp="name">Partner</span></a>
-                <meta itemProp="position" content="2" />
-              </li>
+            <ol>
+              <li><a href="/">Home</a></li>
+              <li><a href="/partner" aria-current="page">Partner</a></li>
             </ol>
           </nav>
 
@@ -575,12 +573,11 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* ══ FAQ — JSON-LD ONLY, NO MICRODATA ════════════════════════════════
-        ✅ CRITICAL #4 FIX: All itemScope / itemType / itemProp attributes have
-        been removed from this section and its children. The partnerFaqNode in
-        the JSON-LD <script> above is the SOLE structured data source for FAQ.
-        Mixing JSON-LD + microdata for the same entity on one page causes
-        Google to suppress the rich result entirely.
+      {/* ══ FAQ ══════════════════════════════════════════════════════════════
+        ✅ JSON-LD ONLY — zero microdata on this section or any child element.
+        partnerFaqNode in the <script> above is the SOLE FAQPage source.
+        ✅ Container changed from <dl> to <div> — <dl> requires dt/dd children,
+        not <details> elements. Invalid HTML suppressed.
       ════════════════════════════════════════════════════════════════════ */}
       <section id="faq" className="p-faq" aria-labelledby="p-faq-heading">
         <div className="p-faq__inner">
@@ -592,8 +589,8 @@ export default function PartnersPage() {
             </p>
           </div>
 
-          {/* ✅ No itemScope / itemType / itemProp on any element below */}
-          <dl className="p-faq__list">
+          {/* ✅ FIX: <div> replaces <dl> — valid HTML container for <details> children */}
+          <div className="p-faq__list">
             {FAQ_ITEMS.map(({ question, answer }, i) => (
               <details key={i} className="p-faq__item">
                 <summary className="p-faq__q">
@@ -609,7 +606,7 @@ export default function PartnersPage() {
                 </div>
               </details>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
