@@ -106,7 +106,7 @@ const PartnerMarquee = () => {
 
         .pm-title {
           font-family: 'Syne', sans-serif;
-          font-size: clamp(1.5rem, 3vw, 2.2rem);
+          font-size: clamp(0.5rem, 2vw, 2.2rem);
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.1;
@@ -218,7 +218,7 @@ const PartnerMarquee = () => {
             Trusted By
           </div>
           <h2 className="pm-title">
-            Our <em>Partners</em>
+            Our <em>Happy Clients</em>
           </h2>
           <div className="pm-rule" />
         </div>

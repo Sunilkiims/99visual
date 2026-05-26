@@ -115,7 +115,6 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
 </div>`,
   };
 
-  // Retry once on failure with a short delay
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
@@ -129,24 +128,13 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
 // INTENT SCORING ENGINE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Weighted signals. Patterns are deliberately tighter to avoid false positives
- * on casual phrases like "I want to build" from a browsing visitor.
- */
 const INTENT_SIGNALS: { pattern: RegExp; weight: number }[] = [
-  // Ready to commit
   { pattern: /\b(hire you|let'?s start|ready to (start|go|begin)|how (do i|can i) (pay|get started)|sign(ing)? up|onboard|send (me a )?contract|send (me a )?proposal|get (a )?quote)\b/i, weight: 4 },
-  // Pricing intent — must be in context of wanting to buy
   { pattern: /\b(how much (does it|will it|would it) cost|what('?s| is) (the |your )?(price|pricing|rate|cost)|pricing (for|of)|budget (for my|for a|for the))\b/i, weight: 3 },
-  // Explicit project ownership ("my website", "our app") — stronger signal than generic "website"
   { pattern: /\b(my (website|app|project|portal|dashboard|system)|our (website|app|project)|need (you to|someone to|a team to))\b/i, weight: 2 },
-  // Service research (low intent alone)
   { pattern: /\b(seo|digital marketing|3d (render|visualization)|cad|gis|lidar|qa testing|automation testing|it consulting)\b/i, weight: 1 },
-  // Timeline urgency
   { pattern: /\b(urgent|asap|immediately|this week|this month|hard deadline|launch date|go live)\b/i, weight: 2 },
-  // Contact / demo requests
   { pattern: /\b(book (a )?call|schedule (a )?(meeting|demo|call)|talk to (someone|your team|a human)|request (a )?demo)\b/i, weight: 2 },
-  // Comparison shopping (signals research phase)
   { pattern: /\b(compare|vs\.?|alternative to|better than|other (agencies|companies|vendors))\b/i, weight: 1 },
 ];
 
@@ -202,13 +190,11 @@ async function resolveLanguage(
   history: HistoryMessage[],
   previouslyDetected: string
 ): Promise<string> {
-  // Language already locked in — never re-detect. Saves an API call every turn.
   if (previouslyDetected && previouslyDetected !== "en") return previouslyDetected;
 
   const heuristic = detectLanguageHeuristic(currentMessage);
   if (heuristic) return heuristic;
 
-  // Only call the API if message is long enough to have signal
   const allUser = history
     .filter((m) => m.role === "user")
     .map((m) => m.content)
@@ -222,8 +208,7 @@ async function resolveLanguage(
       messages: [
         {
           role: "system",
-          content:
-            'Detect the language of the text. Reply ONLY with the BCP-47 tag (e.g. "en", "hi", "ar"). Nothing else.',
+          content: 'Detect the language of the text. Reply ONLY with the BCP-47 tag (e.g. "en", "hi", "ar"). Nothing else.',
         },
         { role: "user", content: allUser.slice(0, 300) },
       ],
@@ -243,7 +228,6 @@ async function resolveLanguage(
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/;
 const PHONE_RE = /(\+?\d[\d\s\-().]{7,}\d)/;
 
-// Broader set of assistant prompts that precede a requirement answer
 const REQUIREMENT_TRIGGERS = [
   "require", "project", "describe", "briefly", "looking to build",
   "achieve", "working on", "tell me more", "what do you need",
@@ -260,7 +244,6 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
     emitted: false,
   };
 
-  // Check for previously emitted lead block — source of truth
   for (const m of history) {
     if (m.role === "assistant" && /<!--LEAD:[\s\S]*?-->/.test(m.content)) {
       const match = m.content.match(/<!--LEAD:([\s\S]*?)-->/);
@@ -283,7 +266,6 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
 
   if (state.emitted) return state;
 
-  // Scan conversation pairs: assistant question → user answer
   for (let i = 0; i < history.length - 1; i++) {
     const asst = history[i];
     const user = history[i + 1];
@@ -292,38 +274,22 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
     const aLower = asst.content.toLowerCase();
     const uText  = user.content.trim();
 
-    // Email
     if (!state.email && aLower.includes("email")) {
       const match = uText.match(EMAIL_RE);
-      if (match) {
-        state.email = match[0];
-        state.capturedFields.add("email");
-      }
+      if (match) { state.email = match[0]; state.capturedFields.add("email"); }
     }
-
-    // Also scan ALL user messages for a stray email (they might offer it unprompted)
     if (!state.email) {
       const match = uText.match(EMAIL_RE);
-      if (match) {
-        state.email = match[0];
-        state.capturedFields.add("email");
-      }
+      if (match) { state.email = match[0]; state.capturedFields.add("email"); }
     }
-
-    // Name — only after email, looks like a real name, not an email/phone
     if (!state.name && state.email && aLower.includes("name")) {
       const looksLikeName =
         uText.length < 60 &&
         !EMAIL_RE.test(uText) &&
         !PHONE_RE.test(uText) &&
         /^[a-zA-Z\s''\-\.À-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF]+$/.test(uText);
-      if (looksLikeName) {
-        state.name = uText;
-        state.capturedFields.add("name");
-      }
+      if (looksLikeName) { state.name = uText; state.capturedFields.add("name"); }
     }
-
-    // Phone
     if (!state.phone && aLower.includes("phone")) {
       const match = uText.match(PHONE_RE);
       if (match) {
@@ -331,11 +297,9 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
         state.capturedFields.add("phone");
       } else if (/skip|no|later|don'?t|not (now|yet)|prefer not/i.test(uText)) {
         state.phone = "";
-        state.capturedFields.add("phone"); // explicitly skipped
+        state.capturedFields.add("phone");
       }
     }
-
-    // Requirement — broader trigger matching
     if (
       !state.requirement &&
       state.capturedFields.has("phone") &&
@@ -362,7 +326,7 @@ function nextFieldToCapture(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SERVICE ROUTES  (used for suggestedRoute — single best match)
+// SERVICE ROUTES
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const SERVICE_ROUTES = [
@@ -379,33 +343,15 @@ const SERVICE_ROUTES = [
 // NAVIGATION LINK SYSTEM
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/**
- * NavLink — a structured page link returned to the frontend.
- * The chatbot UI renders these as clickable chips/cards below the reply.
- *
- * category:
- *   "service"   — a specific service page
- *   "internal"  — a general site page (About, Contact, Portfolio, etc.)
- *   "breadcrumb"— breadcrumb trail for the current context
- */
 export type NavLink = {
-  label: string;       // Display text shown on the chip
-  url: string;         // Absolute URL
+  label: string;
+  url: string;
   category: "service" | "internal" | "breadcrumb";
-  icon?: string;       // Optional emoji icon for the chip
-  description?: string;// Short subtitle shown under label (optional)
+  icon?: string;
+  description?: string;
 };
 
-/**
- * Full site map — every navigable page with its trigger keywords.
- * Keywords are matched against the FULL conversation (not just the latest message)
- * so context accumulates across turns.
- */
-const SITE_MAP: Array<{
-  keywords: string[];
-  link: NavLink;
-}> = [
-  // ── Services ──────────────────────────────────────────────────────────────
+const SITE_MAP: Array<{ keywords: string[]; link: NavLink }> = [
   {
     keywords: ["website", "web design", "landing page", "wordpress", "web development", "web dev", "redesign"],
     link: { label: "Website Development", url: "https://www.99visual.com/services/website-development", category: "service", icon: "🌐", description: "Custom sites & landing pages" },
@@ -434,8 +380,6 @@ const SITE_MAP: Array<{
     keywords: ["automation", "testing", "qa", "quality assurance", "rpa", "selenium", "playwright", "cypress", "test automation", "bug"],
     link: { label: "Automation & QA Testing", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "🤖", description: "AI-powered QA & automation" },
   },
-
-  // ── Internal pages ────────────────────────────────────────────────────────
   {
     keywords: ["about", "company", "who are you", "team", "founded", "history", "story", "background", "experience"],
     link: { label: "About Us", url: "https://www.99visual.com/about", category: "internal", icon: "🏢", description: "Our story, team & values" },
@@ -462,116 +406,94 @@ const SITE_MAP: Array<{
   },
 ];
 
-/**
- * Breadcrumb trails for major page contexts.
- * Returned when the visitor's query clearly maps to a specific page hierarchy.
- */
-const BREADCRUMB_TRAILS: Array<{
-  keywords: string[];
-  trail: NavLink[];
-}> = [
+const BREADCRUMB_TRAILS: Array<{ keywords: string[]; trail: NavLink[] }> = [
   {
     keywords: ["website", "web design", "landing page", "web development", "web dev", "wordpress"],
     trail: [
-      { label: "Home",                 url: "https://www.99visual.com/",                                  category: "breadcrumb" },
-      { label: "Services",             url: "https://www.99visual.com/services",                          category: "breadcrumb" },
-      { label: "Website Development",  url: "https://www.99visual.com/services/website-development",      category: "breadcrumb" },
+      { label: "Home",                url: "https://www.99visual.com/",                              category: "breadcrumb" },
+      { label: "Services",            url: "https://www.99visual.com/services",                      category: "breadcrumb" },
+      { label: "Website Development", url: "https://www.99visual.com/services/website-development",  category: "breadcrumb" },
     ],
   },
   {
     keywords: ["seo", "digital marketing", "google ranking", "ads", "ppc"],
     trail: [
-      { label: "Home",                    url: "https://www.99visual.com/",                                     category: "breadcrumb" },
-      { label: "Services",                url: "https://www.99visual.com/services",                             category: "breadcrumb" },
-      { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo",       category: "breadcrumb" },
+      { label: "Home",                    url: "https://www.99visual.com/",                                 category: "breadcrumb" },
+      { label: "Services",                url: "https://www.99visual.com/services",                         category: "breadcrumb" },
+      { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo",   category: "breadcrumb" },
     ],
   },
   {
     keywords: ["3d", "visualization", "render", "architectural", "walkthrough"],
     trail: [
-      { label: "Home",             url: "https://www.99visual.com/",                          category: "breadcrumb" },
-      { label: "Services",         url: "https://www.99visual.com/services",                  category: "breadcrumb" },
-      { label: "3D Visualization", url: "https://www.99visual.com/services/visualization",    category: "breadcrumb" },
+      { label: "Home",             url: "https://www.99visual.com/",                       category: "breadcrumb" },
+      { label: "Services",         url: "https://www.99visual.com/services",               category: "breadcrumb" },
+      { label: "3D Visualization", url: "https://www.99visual.com/services/visualization", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"],
     trail: [
-      { label: "Home",              url: "https://www.99visual.com/",                                      category: "breadcrumb" },
-      { label: "Services",          url: "https://www.99visual.com/services",                              category: "breadcrumb" },
-      { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry",      category: "breadcrumb" },
+      { label: "Home",              url: "https://www.99visual.com/",                                 category: "breadcrumb" },
+      { label: "Services",          url: "https://www.99visual.com/services",                         category: "breadcrumb" },
+      { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["consulting", "it strategy", "cloud", "digital transformation"],
     trail: [
-      { label: "Home",          url: "https://www.99visual.com/",                          category: "breadcrumb" },
-      { label: "Services",      url: "https://www.99visual.com/services",                  category: "breadcrumb" },
-      { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting",    category: "breadcrumb" },
+      { label: "Home",          url: "https://www.99visual.com/",                       category: "breadcrumb" },
+      { label: "Services",      url: "https://www.99visual.com/services",               category: "breadcrumb" },
+      { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["automation", "qa", "testing", "quality assurance"],
     trail: [
-      { label: "Home",                  url: "https://www.99visual.com/",                          category: "breadcrumb" },
-      { label: "Services",              url: "https://www.99visual.com/services",                  category: "breadcrumb" },
-      { label: "Automation & Testing",  url: "https://www.99visual.com/services/it-consulting",    category: "breadcrumb" },
+      { label: "Home",                 url: "https://www.99visual.com/",                       category: "breadcrumb" },
+      { label: "Services",             url: "https://www.99visual.com/services",               category: "breadcrumb" },
+      { label: "Automation & Testing", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["portfolio", "work", "projects", "case study", "examples"],
     trail: [
-      { label: "Home",      url: "https://www.99visual.com/",           category: "breadcrumb" },
-      { label: "Portfolio", url: "https://www.99visual.com/portfolio",  category: "breadcrumb" },
+      { label: "Home",      url: "https://www.99visual.com/",          category: "breadcrumb" },
+      { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["about", "company", "team", "founded", "story"],
     trail: [
-      { label: "Home",     url: "https://www.99visual.com/",       category: "breadcrumb" },
-      { label: "About Us", url: "https://www.99visual.com/about",  category: "breadcrumb" },
+      { label: "Home",     url: "https://www.99visual.com/",      category: "breadcrumb" },
+      { label: "About Us", url: "https://www.99visual.com/about", category: "breadcrumb" },
     ],
   },
   {
     keywords: ["contact", "get in touch", "enquiry", "quote", "price", "pricing", "cost", "how much"],
     trail: [
-      { label: "Home",       url: "https://www.99visual.com/",         category: "breadcrumb" },
-      { label: "Contact Us", url: "https://www.99visual.com/contact",  category: "breadcrumb" },
+      { label: "Home",       url: "https://www.99visual.com/",        category: "breadcrumb" },
+      { label: "Contact Us", url: "https://www.99visual.com/contact", category: "breadcrumb" },
     ],
   },
 ];
 
-/**
- * Resolves which nav links and breadcrumb to return for a given conversation.
- *
- * Strategy:
- *  1. Score every SITE_MAP entry against the FULL conversation text (not just latest message)
- *     so context accumulates across turns.
- *  2. Return the top N unique matches, capped at MAX_NAV_LINKS.
- *  3. Pick the breadcrumb trail that matches the highest-scoring topic.
- *  4. Always append a "Contact Us" fallback link if not already present.
- */
 const MAX_NAV_LINKS = 4;
 
 function resolveNavigation(
   history: HistoryMessage[],
   currentMessage: string
 ): { navLinks: NavLink[]; breadcrumb: NavLink[] | null } {
-  // Build a single corpus from the full conversation for better context
   const corpus = [
     ...history.filter((m) => m.role === "user").map((m) => m.content),
     currentMessage,
-  ]
-    .join(" ")
-    .toLowerCase();
+  ].join(" ").toLowerCase();
 
-  // Score each site map entry
   const scored = SITE_MAP.map((entry) => {
     const hits = entry.keywords.filter((kw) => corpus.includes(kw.toLowerCase())).length;
     return { hits, link: entry.link };
   }).filter((e) => e.hits > 0);
 
-  // Sort by hit count descending, deduplicate by URL
   const seen = new Set<string>();
   const navLinks: NavLink[] = [];
 
@@ -583,7 +505,6 @@ function resolveNavigation(
     if (navLinks.length >= MAX_NAV_LINKS) break;
   }
 
-  // Always include Contact Us if we have room and it's not already in the list
   const contactUrl = "https://www.99visual.com/contact";
   if (navLinks.length < MAX_NAV_LINKS && !seen.has(contactUrl)) {
     navLinks.push({
@@ -595,7 +516,6 @@ function resolveNavigation(
     });
   }
 
-  // Pick best-matching breadcrumb trail
   let breadcrumb: NavLink[] | null = null;
   let bestBreadcrumbHits = 0;
 
@@ -622,7 +542,6 @@ export async function POST(req: Request) {
   }: { message: string; history: HistoryMessage[]; detectedLanguage?: string } =
     await req.json();
 
-  // ── 1. Run intelligence layers in parallel ─────────────────────────────────
   const [detectedLanguage, intentScore] = await Promise.all([
     resolveLanguage(message, history, prevLang),
     Promise.resolve(scoreIntent(history, message)),
@@ -632,26 +551,11 @@ export async function POST(req: Request) {
   const leadState      = buildLeadState(history);
   const isFirstMessage = history.length === 0;
   const nextField      = leadState.emitted ? null : nextFieldToCapture(leadState);
-
-  // Only push for lead capture if visitor has shown real intent
   const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
 
   console.log("[99Visual] Lang:", detectedLanguage, "| Intent:", intentScore, intentLevel, "| Next field:", nextField, "| Capture:", shouldCaptureLead);
 
-  // ── 2. Build system prompt ──────────────────────────────────────────────────
-  //
-  // NAME-REPETITION FIX:
-  //   • We never inject the visitor's first name into the prompt as a standalone
-  //     value the model can pattern-match on.
-  //   • We explicitly prohibit the model from repeating the name in responses.
-  //   • The name is only present in the LEAD BLOCK FORMAT section as a placeholder.
-  //   • We count how many times the model has already received the name in context
-  //     and instruct it to treat it as background data, not conversational fuel.
-
-  const visitorFirstName = leadState.name
-    ? leadState.name.split(/\s+/)[0]
-    : null;
-
+  const visitorFirstName = leadState.name ? leadState.name.split(/\s+/)[0] : null;
   const nameUsageCount = history.filter(
     (m) => m.role === "assistant" && visitorFirstName && m.content.includes(visitorFirstName)
   ).length;
@@ -662,10 +566,35 @@ You are Vera — the intelligent AI business assistant for 99 Visual Solutions, 
 Your goal: provide genuine expert value and, when appropriate, convert interested visitors into qualified leads by collecting their contact details naturally.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 STRICT SCOPE — NON-NEGOTIABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You ONLY answer questions directly related to 99 Visual Solutions and its services:
+website development, web applications, digital marketing, SEO, 3D visualization,
+CAD/GIS/LiDAR, IT consulting, and automation/QA testing.
+
+If a visitor asks about ANYTHING outside this scope — including but not limited to:
+restaurants, food, pizza, travel, places, weather, sports, news, general knowledge,
+jokes, math, other companies, personal advice, coding tutorials unrelated to our
+services, or ANY topic not directly about 99 Visual Solutions — you MUST respond
+ONLY with this exact message (translated into their language if needed):
+
+"I'm Vera, 99 Visual's assistant — I'm only able to help with questions about our
+services like web development, digital marketing, 3D visualization, and more.
+Is there something I can help you with on that front? 😊"
+
+CRITICAL RULES:
+- Do NOT attempt to be helpful on off-topic questions under any circumstances.
+- Do NOT answer even partially before redirecting.
+- Do NOT suggest other resources or places to find the answer.
+- Do NOT apologise at length — just redirect warmly and immediately.
+- This rule overrides all other instructions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 LANGUAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Detected visitor language: ${detectedLanguage}
 Always reply in the SAME language as the visitor. Never switch unless they do first.
+When redirecting off-topic questions, translate the redirect message into their language.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚫 CRITICAL: HOW TO USE THE VISITOR'S NAME
@@ -677,7 +606,7 @@ STRICT RULES — violations make the conversation feel robotic and pushy:
 1. Do NOT address the visitor by name in your reply.
 2. Do NOT use their name to open or close a sentence.
 3. Do NOT say things like "Great, ${leadState.name}!" or "Thanks, ${leadState.name}!".
-4. Their name has already been used ${nameUsageCount} time(s) in this conversation. Use it AT MOST once more across the ENTIRE conversation, and only if it flows completely naturally (e.g., a genuine confirmation moment). If in doubt, omit it entirely.
+4. Their name has already been used ${nameUsageCount} time(s) in this conversation. Use it AT MOST once more across the ENTIRE conversation, and only if it flows completely naturally. If in doubt, omit it entirely.
 5. The name exists so the team knows who they're talking to. It is NOT a conversational tool.`
   : "The visitor's name is not yet known. Do not reference it."}
 
@@ -776,7 +705,6 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
 - Make every visitor feel heard and valued
 `;
 
-  // ── 3. Call OpenAI ──────────────────────────────────────────────────────────
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -786,14 +714,10 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
     ],
     temperature: intentLevel === "hot" ? 0.4 : 0.6,
     max_tokens: 650,
-    // Discourage name tokens in output via logit biases would need tokenizer;
-    // the prompt-level prohibition above is the practical approach.
   });
 
   const raw = completion.choices[0].message.content ?? "";
 
-  // ── 4. Parse & clean lead block ─────────────────────────────────────────────
-  // Use a greedy-safe regex that won't accidentally capture content after the block
   const leadMatch = raw.match(/<!--LEAD:(\{[\s\S]*?\})-->/);
   let lead: Lead | null = null;
 
@@ -809,7 +733,6 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
           detectedLanguage,
           messageCount: history.length + 1,
         };
-        // Fire-and-forget with internal retry — errors logged but don't block response
         sendLeadEmail(lead, convState).catch((err) =>
           console.error("[99Visual] Lead email failed after retry:", err)
         );
@@ -819,61 +742,24 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
     }
   }
 
-  // Strip the hidden lead block from the visible reply
-  // Use global replace with the same safe pattern to catch any edge cases
   const reply = raw.replace(/<!--LEAD:\{[\s\S]*?\}-->/g, "").trim();
-
-  // ── 5. Resolve navigation links & breadcrumb ────────────────────────────────
-  //
-  // resolveNavigation scores the full conversation corpus against SITE_MAP and
-  // BREADCRUMB_TRAILS, returning:
-  //   navLinks  — up to 4 contextual page chips for the frontend to render
-  //   breadcrumb — ordered trail showing where this topic lives in the site hierarchy
-  //
-  // The frontend should render navLinks as clickable chips/cards beneath the reply,
-  // and breadcrumb as a "› Home › Services › 3D Visualization" style trail.
-  // Both are optional UI enhancements — the reply is always the primary response.
-  //
-  // Legacy suggestedRoute is kept for backwards compatibility with older frontend
-  // versions that still read it.
 
   const { navLinks, breadcrumb } = resolveNavigation(history, message);
 
-  // Legacy single-route for backwards compatibility
   const lowerMsg = message.toLowerCase();
   const suggestedRoute =
     SERVICE_ROUTES.find(({ keywords }) =>
       keywords.some((kw) => lowerMsg.includes(kw))
     ) ?? null;
 
-  // ── 6. Response ─────────────────────────────────────────────────────────────
   return NextResponse.json({
     reply,
     lead,
     intentScore,
     intentLevel,
     detectedLanguage,
-
-    // ── Navigation (new) ───────────────────────────────────────────
-    // navLinks: NavLink[]        — contextual page chips (max 4)
-    //   Each has: { label, url, category, icon?, description? }
-    //   category: "service" | "internal" | "breadcrumb"
-    //
-    // breadcrumb: NavLink[] | null — site hierarchy trail for current topic
-    //   e.g. [{ label: "Home", url: "/" }, { label: "Services", url: "/services" }, ...]
-    //   Render as: Home › Services › 3D Visualization
-    //
-    // Frontend integration example (React):
-    //   {navLinks.map(link => (
-    //     <a key={link.url} href={link.url} target="_blank">
-    //       {link.icon} {link.label}
-    //       {link.description && <span>{link.description}</span>}
-    //     </a>
-    //   ))}
     navLinks,
     breadcrumb,
-
-    // ── Legacy (kept for backwards compatibility) ──────────────────
     suggestedRoute: suggestedRoute
       ? { label: suggestedRoute.label, url: suggestedRoute.url }
       : null,
