@@ -29,7 +29,7 @@ const PartnerMarquee = () => {
           isolation: isolate;
         }
 
-        /* Background mesh — same palette as BlueScreenBox */
+        /* Background mesh */
         .pm-mesh {
           position: absolute;
           inset: 0;
@@ -106,7 +106,7 @@ const PartnerMarquee = () => {
 
         .pm-title {
           font-family: 'Syne', sans-serif;
-          font-size: clamp(0.5rem, 2vw, 2.2rem);
+          font-size: clamp(1.6rem, 4vw, 2.2rem);
           font-weight: 700;
           letter-spacing: -0.03em;
           line-height: 1.1;
@@ -174,7 +174,7 @@ const PartnerMarquee = () => {
           100% { transform: translateX(-50%); }
         }
 
-        /* Individual logo — no box, just the image */
+        /* Individual logo */
         .pm-item {
           position: relative;
           flex-shrink: 0;
