@@ -20,6 +20,7 @@
 //      mainEntity: joblist on the WebPage node creates a conflicting dual
 //      primary-subject relationship. ItemList is discoverable via the @graph.
 //   ✅ FIX — primaryImageOfPage given "@id" for graph node coherence.
+//   ✅ FIX — streetAddress added to jobAddress (required by JobPosting schema).
 //   ✅ All prior datetime, duplicate-FAQPage, and breadcrumb fixes retained.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -131,6 +132,7 @@ const JOB_VALID_THROUGH = new Date(
 // ─────────────────────────────────────────────────────────────────────────────
 const jobAddress = {
   "@type":         "PostalAddress",
+  streetAddress:   "Varthur",
   addressLocality: "Bengaluru",
   addressRegion:   "Karnataka",
   postalCode:      "560087",
@@ -251,14 +253,11 @@ const faqItems = [
 // SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
 
-// breadcrumbFromItems() produces @id = "${BASE}/careers#breadcrumb" ✅
 const careersBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",    url: "/" },
   { name: "Careers", url: "/careers" },
 ]);
 
-// ✅ Single FAQPage node constructed manually — no faqSchema() spread.
-// Zero duplicate "@type":"FAQPage" entries in the @graph.
 const careersFaqNode = {
   "@type":          "FAQPage",
   "@id":            `${BASE}/careers#faq`,
@@ -278,7 +277,6 @@ const careersPageNode = {
   "@id":         `${BASE}/careers#webpage`,
   url:           `${BASE}/careers`,
   name:          "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
-  // ✅ FIX: `headline` removed — Article property, not valid on WebPage.
   description:
     "Explore open positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today in Bangalore.",
   inLanguage:    "en",
@@ -287,7 +285,6 @@ const careersPageNode = {
   isPartOf:      { "@id": `${BASE}/#website` },
   about:         { "@id": `${BASE}/#organization` },
   publisher:     { "@id": `${BASE}/#organization` },
-  // ✅ FIX: "@id" added for graph node coherence.
   primaryImageOfPage: {
     "@type":   "ImageObject",
     "@id":     `${BASE}/careers#primaryimage`,
@@ -300,10 +297,7 @@ const careersPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".cr-hero__h1", ".cr-hero__sub"],
   },
-  // ✅ Matches @id from careersBreadcrumbNode
   breadcrumb:      { "@id": `${BASE}/careers#breadcrumb` },
-  // ✅ FIX: mainEntity removed — conflicted with careersFaqNode's mainEntityOfPage.
-  // ItemList is in the @graph and discoverable without a WebPage pointer.
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/careers`] },
 };
 
@@ -624,7 +618,7 @@ export default function CareersPage() {
         .c-role-row__apply{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;border:1px solid rgba(249,115,22,.3);background:rgba(249,115,22,.07);backdrop-filter:blur(8px);padding:10px 22px;border-radius:100px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s ease;}
         .c-role-row__apply:hover{background:var(--c-orange);color:#080808;border-color:var(--c-orange);transform:translateY(-1px);}
 
-        /* ══ FAQ — JSON-LD only, no microdata ══════════════════════════════ */
+        /* ══ FAQ ════════════════════════════════════════════════════════════ */
         .c-faq{background:var(--c-bg);padding:6rem 1.5rem;border-top:1px solid var(--c-border);}
         .c-faq__inner{max-width:800px;margin:0 auto;}
         .c-faq__header{text-align:center;margin-bottom:3.5rem;}
@@ -642,7 +636,7 @@ export default function CareersPage() {
         @keyframes crFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         .cr-faq__a p{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--c-muted);margin:0;}
 
-        /* ══ CTA ═══════════════════════════════════════════════════════════ */
+        /* ══ CTA ════════════════════════════════════════════════════════════ */
         .c-cta{position:relative;background:var(--c-surface);padding:7rem 1.5rem;text-align:center;overflow:hidden;border-top:1px solid var(--c-border);}
         .c-cta__orb{position:absolute;width:600px;height:600px;border-radius:50%;filter:blur(110px);opacity:.12;background:radial-gradient(circle,#f97316,transparent);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
         .c-cta__content{position:relative;z-index:10;max-width:640px;margin:0 auto;}
@@ -686,10 +680,6 @@ export default function CareersPage() {
         <div className="cr-corner cr-corner--br" aria-hidden="true" />
 
         <div className="cr-hero__left">
-          {/*
-            ✅ FIX: All microdata stripped from breadcrumb nav.
-            careersBreadcrumbNode in JSON-LD is the SOLE BreadcrumbList source.
-          */}
           <nav className="sr-only" aria-label="Breadcrumb">
             <ol>
               <li><a href="/">Home</a></li>
@@ -877,7 +867,6 @@ export default function CareersPage() {
             </p>
           </div>
 
-          {/* ✅ FIX: <div> replaces <dl> — valid HTML container for <details> children */}
           <div className="cr-faq__list">
             {faqItems.map(({ question, answer }, i) => (
               <details key={i} className="cr-faq__item">
