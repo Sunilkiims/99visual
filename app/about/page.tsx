@@ -123,8 +123,8 @@ export const metadata: Metadata = {
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
-const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_PUBLISHED = "2023-01-01T00:00:00+05:30";
+const DATE_MODIFIED  = new Date().toISOString();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA NODES
