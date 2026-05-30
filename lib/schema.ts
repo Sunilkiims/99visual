@@ -390,8 +390,8 @@ export function webPage(opts: {
     about: { '@id': `${BASE}/#organization` },
     publisher: { '@id': `${BASE}/#organization` },
     // ✅ FIX: datePublished default matches earliest published page (2023-01-01)
-    datePublished: opts.datePublished ?? '2023-01-01',
-    dateModified: opts.dateModified ?? new Date().toISOString().split('T')[0],
+    datePublished: opts.datePublished ?? '2023-01-01T00:00:00+05:30',
+    dateModified: opts.dateModified ?? new Date().toISOString(),
     potentialAction: { '@type': 'ReadAction', target: [`${BASE}${path}`] },
     // ✅ FIX: reference only — standalone breadcrumb node in @graph provides data
     breadcrumb: { '@id': breadcrumbId },
