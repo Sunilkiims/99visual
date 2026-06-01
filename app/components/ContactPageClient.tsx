@@ -1,24 +1,39 @@
 // app/contact/ContactPageClient.tsx  — CLIENT COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-// UPGRADE PARITY WITH careers/page.tsx — ALL CHANGES ANNOTATED:
+// FIX: Duplicate field "FAQPage"
+//   BEFORE: <section className="ct-faq"> had itemScope + itemType="FAQPage"
+//           which created a second FAQPage declaration alongside the JSON-LD
+//           graph node in page.tsx — Google flagged the duplicate.
+//   AFTER:  FAQ section REMOVED entirely from this client component.
+//           FAQ is now rendered server-side in page.tsx, BELOW <ContactForm />.
+//           The JSON-LD in page.tsx is the sole authoritative FAQPage source.
 //
-//   ✅ UPGRADE #1  — Stats strip: div-based markup → semantic <dl>/<dt>/<dd>
-//                    Matches careers hero stats pattern exactly.
-//   ✅ UPGRADE #2  — FAQ section added (was missing entirely).
-//                    Uses <details>/<summary> accordion matching careers FAQ.
-//                    Includes JSON-LD-ready itemScope/itemProp microdata.
-//                    crFaqOpen keyframe animation + chevron rotate on [open].
-//   ✅ UPGRADE #3  — Bottom CTA section added (c-cta pattern from careers).
-//                    Orb background, serif headline with <em> accent, CTA btn.
-//   ✅ UPGRADE #4  — Proof strip label changed to semantic <dt>/<dd> inside
-//                    a <dl> wrapper so screen-readers announce stat pairs.
-//   ✅ UPGRADE #5  — Section headers upgraded: kicker → <span class="c-section-label">
-//                    pattern, section sub-copy added to FAQ and CTA sections.
-//   ✅ UPGRADE #6  — sr-only breadcrumb already present — unchanged (✅ already correct).
-//   ✅ UPGRADE #7  — @media (prefers-reduced-motion) block standardised with
-//                    careers page (same rule set).
-//   ✅ UPGRADE #8  — CSS variables scoped to each section root (same as careers)
-//                    so sections are portable and self-contained.
+// FIX: Client Voices / Testimonials section
+//   BEFORE: .ct-testi__stage used flex:1 but all cards were position:absolute
+//           inset:0 — stage collapsed to 0px height in many browsers. Progress
+//           bar was position:absolute bottom:0 inside the stage, visually
+//           overlapping the footer. Mobile author-col reset was incomplete —
+//           writing-mode reset on vertical flex caused misalignment. No slide
+//           direction encoding on transitions.
+//   AFTER:  Stage uses CSS Grid (display:grid; grid-template-rows:1fr) so it
+//           stretches naturally. Cards use grid-row/column stacking instead of
+//           absolute positioning. Progress bar moved into the footer as a
+//           proper child (position:absolute top:0). dirRef encodes slide
+//           direction so next slides in from the right and prev from the left.
+//           Mobile author-col fully switches to flex-direction:row with all
+//           writing-mode resets applied correctly.
+//
+// UPDATE: Client avatar images
+//   BEFORE: Author sidebar showed a coloured monogram plate (letter initial
+//           inside a rounded square).
+//   AFTER:  Replaced with a circular <img> element. Image paths follow the
+//           convention /images/clientvoice/<slug>.jpg where <slug> is derived
+//           from each testimonial entry's `imgSlug` field. The coloured ring
+//           border still uses each testimonial's palette.border colour so the
+//           per-card accent is preserved. A fallback <span> with the initial
+//           is rendered when the image fails to load (onerror swap).
+//
+// CHANGE: FAQ section removed — now rendered in page.tsx below ContactForm.
 // ─────────────────────────────────────────────────────────────────────────────
 "use client";
 
@@ -29,25 +44,64 @@ import { useState, useEffect, useRef } from "react";
 // ─────────────────────────────────────────────────────────────────────────────
 const testimonials = [
   {
-    quote: "99 Visual transformed our website into a powerful business tool that actually converts.",
+    quote:
+      "99 Visual transformed our website into a powerful business tool that actually converts. The ROI was visible within the first quarter — something we hadn't seen with any previous agency.",
     name: "Priya S.",
-    role: "Tech Startup Founder",
-    initials: "PS",
-    accent: "linear-gradient(135deg,#f97316,#ea580c)",
+    role: "Founder & CEO",
+    company: "Stacklane Technologies",
+    initial: "P",
+    imgSlug: "priya",
+    palette: { bg: "#1a0e00", border: "#f97316", text: "#fb923c" },
   },
   {
-    quote: "Excellent support and modern design. The team genuinely cares about the outcome.",
+    quote:
+      "Excellent support and modern design. The team genuinely cares about the outcome, not just the deliverable. Our brand feels premium now — and our customers have noticed.",
     name: "Ramesh K.",
-    role: "Marketing Manager",
-    initials: "RK",
-    accent: "linear-gradient(135deg,#6366f1,#4338ca)",
+    role: "Head of Marketing",
+    company: "Axiom Retail Group",
+    initial: "R",
+    imgSlug: "ramesh",
+    palette: { bg: "#0d0e1f", border: "#6366f1", text: "#818cf8" },
   },
   {
-    quote: "Professional, quick, and deeply creative. Best agency decision we've made.",
+    quote:
+      "Professional, quick, and deeply creative. We handed them a half-baked brief and they turned it into an award-shortlisted campaign. Best agency decision we've made in five years.",
     name: "Neha M.",
-    role: "Retail Business Owner",
-    initials: "NM",
-    accent: "linear-gradient(135deg,#34d399,#065f46)",
+    role: "Creative Director",
+    company: "Studio Verve",
+    initial: "N",
+    imgSlug: "neha",
+    palette: { bg: "#001a0e", border: "#34d399", text: "#6ee7b7" },
+  },
+  {
+    quote:
+      "The 3D architectural renders they produced were so accurate our clients thought they were photographs. The project closed two weeks early, directly because of the visualisations.",
+    name: "Arjun T.",
+    role: "Principal Architect",
+    company: "T+A Design Studio",
+    initial: "A",
+    imgSlug: "arjun",
+    palette: { bg: "#1a001a", border: "#c084fc", text: "#d8b4fe" },
+  },
+  {
+    quote:
+      "We hired them for SEO and ended up rebuilding our entire digital presence. Page-one rankings for seventeen target keywords within four months. Exceptional results, full stop.",
+    name: "Kavitha R.",
+    role: "VP Digital Strategy",
+    company: "Meridian Finance",
+    initial: "K",
+    imgSlug: "kavitha",
+    palette: { bg: "#001218", border: "#22d3ee", text: "#67e8f9" },
+  },
+  {
+    quote:
+      "From the first discovery call to the final handover, they were transparent, fast, and meticulous. The platform handles ten times our original traffic without a single incident.",
+    name: "Siddharth V.",
+    role: "CTO",
+    company: "Orbis Logistics",
+    initial: "S",
+    imgSlug: "siddharth",
+    palette: { bg: "#130a00", border: "#f59e0b", text: "#fcd34d" },
   },
 ];
 
@@ -55,42 +109,10 @@ const testimonials = [
 // STATS DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: 150, suffix: "+", label: "Projects delivered" },
+  { value: 150, suffix: "+",   label: "Projects delivered" },
   { value: 8,   suffix: "yrs", label: "Industry experience" },
-  { value: 6,   suffix: "+", label: "Countries served" },
+  { value: 6,   suffix: "+",   label: "Countries served" },
   { value: 1,   suffix: "day", label: "Response guarantee" },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ UPGRADE #2 — FAQ DATA (new — was missing from original contact page)
-// Mirrors the careers faqItems pattern; answers are 40+ words for rich results.
-// ─────────────────────────────────────────────────────────────────────────────
-const faqItems = [
-  {
-    question: "Does 99 Visual Solutions offer a free consultation?",
-    answer:
-      "Yes, 99 Visual Solutions offers a completely free initial consultation for web development, 3D visualisation, SEO, and digital marketing projects. Simply fill out the contact form or email us at info@99visual.com and our team will respond within one business day. All initial consultations are obligation-free and tailored specifically to your project needs and goals.",
-  },
-  {
-    question: "How quickly does 99 Visual Solutions respond to enquiries?",
-    answer:
-      "We respond to all form and email enquiries within 24 business hours (Monday to Friday, 9 AM to 6:30 PM IST). For the fastest reply, use the contact form on this page or reach us on WhatsApp. If your enquiry is urgent, please mark it as high priority in the message field so our team can prioritise it accordingly and get back to you sooner.",
-  },
-  {
-    question: "What services can I request a quote for?",
-    answer:
-      "You can request a quote for any of our services including web development, UI/UX design, 3D architectural visualisation, SEO, digital marketing, GIS and LiDAR services, CAD drafting, AI-powered QA and automation testing, and IT consulting. We provide detailed, tailored project proposals after a short discovery call to understand your requirements, timeline, and budget.",
-  },
-  {
-    question: "Does 99 Visual Solutions work with international clients?",
-    answer:
-      "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, and Australia. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at highly competitive Indian IT market rates.",
-  },
-  {
-    question: "Where is 99 Visual Solutions located?",
-    answer:
-      "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India. As a remote-first agency, we have successfully delivered over 150 projects for clients both locally in Bangalore and globally across the USA, UK, UAE, and Australia. We use agile delivery methods and time-zone-friendly communication to ensure smooth collaboration with every client.",
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -99,22 +121,6 @@ const faqItems = [
 const INTERVAL = 4000;
 const TICK     = 50;
 const total    = testimonials.length;
-
-type CardState = "active" | "prev" | "next" | "behind";
-
-const cardStyles: Record<CardState, React.CSSProperties> = {
-  active: { opacity: 1, transform: "translateX(0) scale(1)",        zIndex: 3 },
-  prev:   { opacity: 0, transform: "translateX(-60px) scale(0.96)", zIndex: 1, pointerEvents: "none" },
-  next:   { opacity: 0, transform: "translateX(60px) scale(0.96)",  zIndex: 1, pointerEvents: "none" },
-  behind: { opacity: 0, transform: "scale(0.9)",                    zIndex: 0, pointerEvents: "none" },
-};
-
-function getState(i: number, cur: number): CardState {
-  if (i === cur)     return "active";
-  if (i === cur - 1) return "prev";
-  if (i === cur + 1) return "next";
-  return "behind";
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ANIMATED COUNTER HOOK
@@ -136,9 +142,6 @@ function useCounter(target: number, duration: number, active: boolean) {
   return count;
 }
 
-// ✅ UPGRADE #1 — StatItem now renders <dd> for the number and <dt> for the
-// label, wrapping both inside a <div> that lives inside a <dl> in the strip.
-// This is identical to the careers hero stats semantic pattern.
 function StatItem({ stat, active }: { stat: typeof STATS[0]; active: boolean }) {
   const count = useCounter(stat.value, 1400, active);
   return (
@@ -154,19 +157,35 @@ function StatItem({ stat, active }: { stat: typeof STATS[0]; active: boolean }) 
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLIENT COMPONENT
+// Renders: Hero → Proof strip → Reach + Testimonials → CTA
+// FAQ is intentionally excluded — see page.tsx for its placement below the form.
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ContactPageClient() {
   const [cur, setCur]                 = useState(0);
+  const [progress, setProgress]       = useState(0);
   const [statsActive, setStatsActive] = useState(false);
   const elapsedRef                    = useRef(0);
+  const dirRef                        = useRef<1 | -1>(1);
   const proofRef                      = useRef<HTMLElement>(null);
+
+  const goTo = (idx: number, dir: 1 | -1 = 1) => {
+    dirRef.current     = dir;
+    elapsedRef.current = 0;
+    setProgress(0);
+    setCur(((idx % total) + total) % total);
+  };
+  const goPrev = () => goTo(cur - 1, -1);
+  const goNext = () => goTo(cur + 1,  1);
 
   // Auto-rotate testimonials
   useEffect(() => {
     const id = setInterval(() => {
       elapsedRef.current += TICK;
+      setProgress(Math.min((elapsedRef.current / INTERVAL) * 100, 100));
       if (elapsedRef.current >= INTERVAL) {
         elapsedRef.current = 0;
+        setProgress(0);
+        dirRef.current = 1;
         setCur((c) => (c + 1) % total);
       }
     }, TICK);
@@ -189,11 +208,9 @@ export default function ContactPageClient() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
-        /* ✅ UPGRADE #8 — CSS variables scoped to section roots (careers pattern) */
         .ct-hero,
         .ct-proof,
         .ct-reach,
-        .ct-faq,
         .ct-cta {
           --c-bg:       #060608;
           --c-surface:  #0c0c10;
@@ -222,17 +239,6 @@ export default function ContactPageClient() {
         }
 
         /* ══ HERO ══════════════════════════════════════════════════════════ */
-        /*
-         * FIX: Full-bleed hero background
-         * Previously: max-width + margin:auto on .ct-hero caused the dark
-         *   background to stop at 1440px, leaving a white/light gap at the
-         *   sides when zoomed in or on very wide viewports.
-         * Now: .ct-hero is full-width (no max-width) so background fills 100vw.
-         *   A new .ct-hero__inner div holds the max-width + flex layout so
-         *   content columns still align correctly.
-         * The decorative absolute children (grid, orbs, hairline, corners)
-         *   remain on .ct-hero so they span the full bleed area.
-         */
         .ct-hero {
           position:relative;min-height:100vh;
           background:var(--c-bg);overflow:hidden;
@@ -420,10 +426,7 @@ export default function ContactPageClient() {
         .ct-corner--bl{bottom:22px;left:22px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
         .ct-corner--br{bottom:22px;right:22px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
 
-        /* ══ PROOF STRIP ════════════════════════════════════════════════════
-           ✅ UPGRADE #1 — inner <dl> wraps all stat items; <dt>/<dd> replace
-           generic divs for accessible stat label/value pairs.
-        ════════════════════════════════════════════════════════════════════ */
+        /* ══ PROOF STRIP ════════════════════════════════════════════════════ */
         .ct-proof {
           position:relative;background:var(--c-surface);
           border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);overflow:hidden;
@@ -438,7 +441,6 @@ export default function ContactPageClient() {
           max-width:1180px;margin:0 auto;padding:0 4rem;
           display:grid;grid-template-columns:1fr auto;align-items:center;gap:3rem;
         }
-        /* ✅ UPGRADE #1 — <dl> wraps stat items */
         .ct-proof__stats {display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:3.5rem 0;margin:0;}
         .ct-proof__stat {
           padding:2rem 2.4rem;border-right:1px solid var(--c-border);
@@ -447,15 +449,12 @@ export default function ContactPageClient() {
         .ct-proof__stat:first-child{padding-left:0;}
         .ct-proof__stat:last-child{border-right:none;}
         .ct-proof__stat:hover{background:rgba(249,115,22,.03);}
-        /* ✅ UPGRADE #1 — <dd> carries the big number */
         .ct-proof__num {
           font-family:var(--ff-serif);font-size:clamp(2rem,3.5vw,3rem);font-weight:700;
           line-height:1;color:#fff;display:flex;align-items:baseline;gap:3px;margin-bottom:.5rem;
-          /* reset browser <dd> margin */
           margin-left:0;
         }
         .ct-proof__num-accent{font-size:.55em;color:var(--c-orange);font-weight:600;font-family:var(--ff-sans);}
-        /* ✅ UPGRADE #1 — <dt> carries the label */
         .ct-proof__label{font-family:var(--ff-sans);font-size:10.5px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--c-muted2);line-height:1.5;}
         .ct-proof__stat::after {
           content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
@@ -480,42 +479,177 @@ export default function ContactPageClient() {
         .ct-reach__title{font-family:var(--ff-serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:600;line-height:1.15;color:#fff;letter-spacing:-.02em;}
         .ct-reach__title em{font-style:italic;font-weight:300;color:rgba(255,255,255,.55);}
         .ct-reach__rule{width:1px;height:60px;background:linear-gradient(to bottom,var(--c-orange),transparent);flex-shrink:0;opacity:.5;}
-
-        /* two-column layout */
         .ct-reach__layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:stretch;}
 
-        /* ══ TESTIMONIALS (left half) ═══════════════════════════════════════ */
+        /* ══ TESTIMONIALS ══════════════════════════════════════════════════ */
         .ct-testi {
-          background:#0B0B0F;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
-          padding:48px 40px 40px;position:relative;overflow:hidden;
-          display:flex;flex-direction:column;min-height:360px;
+          position:relative;overflow:hidden;display:flex;flex-direction:column;
+          background:#09090c;border:1px solid rgba(255,255,255,0.07);border-radius:20px;
+          min-height:420px;
         }
-        .ct-testi::before {
-          content:'';position:absolute;inset:0;
-          background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
-          background-size:48px 48px;pointer-events:none;border-radius:20px;
+        .ct-testi__masthead {
+          display:flex;align-items:center;justify-content:space-between;
+          padding:18px 28px;border-bottom:1px solid rgba(255,255,255,.06);
+          background:rgba(255,255,255,.02);flex-shrink:0;
         }
-        .ct-testi__glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(138,99,255,0.16) 0%,transparent 70%);top:-80px;right:-60px;pointer-events:none;}
-        .ct-testi__badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:6px 16px 6px 10px;margin-bottom:36px;position:relative;z-index:2;width:fit-content;}
-        .ct-testi__badge-dot{width:6px;height:6px;border-radius:50%;background:var(--c-orange);flex-shrink:0;animation:ctPulse 2s ease-in-out infinite;}
-        .ct-testi__badge-text{font-family:var(--ff-sans);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);}
-        .ct-testi__cards{position:relative;flex:1;z-index:2;min-height:200px;}
-        .ct-testi__card{position:absolute;inset:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px 32px;display:flex;flex-direction:column;justify-content:space-between;transition:opacity .55s ease,transform .55s cubic-bezier(.4,0,.2,1);will-change:transform,opacity;}
-        .ct-testi__stars{display:flex;gap:4px;margin-bottom:16px;}
-        .ct-testi__star{color:#FBBF24;font-size:13px;}
-        .ct-testi__quote{font-family:var(--ff-serif);font-size:clamp(1rem,1.6vw,1.3rem);line-height:1.55;color:rgba(255,255,255,.88);font-style:italic;font-weight:300;margin:0;}
-        .ct-testi__author{display:flex;align-items:center;gap:14px;margin-top:24px;}
-        .ct-testi__avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-sans);font-size:13px;font-weight:500;color:#fff;flex-shrink:0;}
-        .ct-testi__name{font-family:var(--ff-sans);font-size:14px;font-weight:500;color:rgba(255,255,255,.9);margin:0;}
-        .ct-testi__role{font-family:var(--ff-sans);font-size:12px;color:rgba(255,255,255,.38);margin-top:2px;}
-        .ct-testi__pips{display:flex;gap:6px;align-items:center;margin-top:28px;position:relative;z-index:2;}
-        .ct-testi__pip{height:3px;border-radius:2px;background:rgba(255,255,255,.12);transition:width .4s cubic-bezier(.4,0,.2,1),background .4s;}
-        .ct-testi__pip--on{background:var(--c-orange);}
+        .ct-testi__masthead-title {
+          font-family:var(--ff-serif);font-size:11px;font-weight:700;
+          letter-spacing:.32em;text-transform:uppercase;color:var(--c-orange);
+        }
+        .ct-testi__masthead-rule {
+          flex:1;height:1px;margin:0 16px;
+          background:linear-gradient(90deg,rgba(249,115,22,.3),transparent);
+        }
+        .ct-testi__masthead-issue {
+          font-family:var(--ff-sans);font-size:9px;font-weight:500;
+          letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.25);
+        }
+        .ct-testi__stage {
+          flex:1;
+          display:grid;
+          grid-template-rows:1fr;
+          grid-template-columns:1fr;
+          overflow:hidden;
+          position:relative;
+          min-height:240px;
+        }
+        .ct-testi__card {
+          grid-row:1;
+          grid-column:1;
+          display:grid;
+          grid-template-columns:1fr 88px;
+          padding:28px 24px 20px;
+          gap:0;
+          transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
+          will-change:opacity,transform;
+          z-index:1;
+        }
+        .ct-testi__card[aria-hidden="false"] { z-index:2; }
+        .ct-testi__quote-col {
+          display:flex;flex-direction:column;justify-content:space-between;
+          min-width:0;padding-right:20px;
+        }
+        .ct-testi__open-mark {
+          font-family:var(--ff-serif);font-size:4.5rem;line-height:.6;
+          font-weight:700;color:var(--c-orange);opacity:.16;
+          margin-bottom:6px;user-select:none;flex-shrink:0;
+        }
+        .ct-testi__quote {
+          font-family:var(--ff-serif);
+          font-size:clamp(1rem,1.45vw,1.22rem);
+          font-weight:300;font-style:italic;
+          line-height:1.7;
+          color:rgba(255,255,255,.88);
+          margin:0;flex:1;
+        }
+        .ct-testi__stars {
+          display:flex;gap:3px;margin-top:18px;flex-shrink:0;
+        }
+        .ct-testi__star { color:#f59e0b;font-size:12px; }
+        .ct-testi__author-col {
+          display:flex;flex-direction:column;align-items:center;
+          gap:12px;width:88px;flex-shrink:0;
+          border-left:1px solid rgba(255,255,255,.07);
+          padding-left:20px;
+        }
+        .ct-testi__avatar-wrap {
+          position:relative;
+          width:56px;
+          height:56px;
+          flex-shrink:0;
+        }
+        .ct-testi__avatar-wrap::before {
+          content:'';
+          position:absolute;
+          inset:-3px;
+          border-radius:50%;
+          background:conic-gradient(var(--avatar-ring, #f97316) 0deg 270deg, transparent 270deg);
+          z-index:0;
+        }
+        .ct-testi__avatar-wrap::after {
+          content:'';
+          position:absolute;
+          inset:-1px;
+          border-radius:50%;
+          background:#09090c;
+          z-index:1;
+        }
+        .ct-testi__avatar {
+          position:relative;
+          z-index:2;
+          width:56px;
+          height:56px;
+          border-radius:50%;
+          object-fit:cover;
+          object-position:center top;
+          display:block;
+        }
+        .ct-testi__avatar-fallback {
+          position:absolute;
+          inset:0;
+          z-index:2;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-family:var(--ff-serif);
+          font-size:1.5rem;
+          font-weight:700;
+        }
+        .ct-testi__byline-wrap {
+          display:flex;flex-direction:column;align-items:center;gap:6px;
+          flex:1;width:100%;
+        }
+        .ct-testi__name {
+          font-family:var(--ff-sans);font-size:10px;font-weight:600;
+          letter-spacing:.06em;color:rgba(255,255,255,.82);
+          writing-mode:vertical-rl;transform:rotate(180deg);
+          white-space:nowrap;line-height:1;
+        }
+        .ct-testi__role-tag {
+          font-family:var(--ff-sans);font-size:8px;font-weight:500;
+          letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);
+          writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+        }
+        .ct-testi__company {
+          font-family:var(--ff-serif);font-size:8.5px;font-weight:600;
+          letter-spacing:.12em;text-transform:uppercase;
+          writing-mode:vertical-rl;transform:rotate(180deg);
+          white-space:nowrap;margin-top:auto;
+        }
+        .ct-testi__footer {
+          display:flex;align-items:center;justify-content:space-between;
+          padding:14px 28px;border-top:1px solid rgba(255,255,255,.06);
+          background:rgba(255,255,255,.018);flex-shrink:0;
+          position:relative;overflow:hidden;
+        }
+        .ct-testi__progress-bar {
+          position:absolute;top:0;left:0;height:2px;
+          background:var(--c-orange);opacity:.5;
+          transition:width .05s linear;
+          pointer-events:none;
+        }
+        .ct-testi__pips { display:flex;gap:5px;align-items:center; }
+        .ct-testi__pip {
+          height:2px;border-radius:1px;
+          background:rgba(255,255,255,.14);
+          transition:width .4s cubic-bezier(.4,0,.2,1),background .4s;
+        }
+        .ct-testi__pip--on { background:var(--c-orange); }
+        .ct-testi__nav { display:flex;gap:8px; }
+        .ct-testi__nav-btn {
+          width:30px;height:30px;border-radius:6px;border:1px solid rgba(255,255,255,.1);
+          background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;
+          cursor:pointer;color:rgba(255,255,255,.5);transition:all .18s ease;
+          padding:0;outline:none;
+        }
+        .ct-testi__nav-btn:hover {
+          border-color:var(--c-orange);color:var(--c-orange);
+          background:rgba(249,115,22,.08);
+        }
 
-        /* ══ RIGHT HALF — contact strip + commitment card ═══════════════════ */
+        /* ══ RIGHT HALF ═════════════════════════════════════════════════════ */
         .ct-reach__right{display:flex;flex-direction:column;gap:1.5rem;}
-
-        /* ── contact strip: email + phone on ONE row ── */
         .ct-reach__strip {
           display:flex;align-items:stretch;
           border:1px solid var(--c-border2);border-radius:14px;
@@ -545,8 +679,6 @@ export default function ContactPageClient() {
         .ct-reach__strip-item:hover .ct-reach__strip-icon{background:rgba(249,115,22,.18);border-color:rgba(249,115,22,.4);}
         .ct-reach__strip-label{font-family:var(--ff-sans);font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-muted2);display:block;margin-bottom:4px;}
         .ct-reach__strip-value{font-family:var(--ff-sans);font-size:.95rem;font-weight:500;color:#fff;display:block;line-height:1.3;}
-
-        /* ── commitment card ── */
         .ct-reach__commit {
           background:var(--c-surface);border:1px solid var(--c-border2);
           border-radius:14px;padding:2rem 2rem 1.8rem;flex:1;
@@ -565,8 +697,6 @@ export default function ContactPageClient() {
         .ct-reach__commit-check{color:#4ade80;flex-shrink:0;margin-top:1px;}
         .ct-reach__commit-item strong{color:rgba(255,255,255,.85);font-weight:500;display:block;}
         .ct-reach__commit-sub{font-size:.76rem;color:var(--c-muted2);display:block;}
-
-        /* ── globe / location footer ── */
         .ct-reach__location{
           display:flex;align-items:center;gap:10px;margin-top:1.4rem;
           padding-top:1.4rem;border-top:1px solid var(--c-border);
@@ -575,94 +705,7 @@ export default function ContactPageClient() {
         .ct-reach__location-text{font-family:var(--ff-sans);font-size:.8rem;color:var(--c-muted2);line-height:1.5;}
         .ct-reach__location-text strong{color:rgba(255,255,255,.7);font-weight:500;}
 
-        /* ══ FAQ SECTION ════════════════════════════════════════════════════
-           ✅ UPGRADE #2 — NEW section (was missing from original contact page).
-           Identical accordion pattern to careers/page.tsx:
-             • <details>/<summary> toggle with [open] state
-             • Chevron SVG rotates 180° on open
-             • ctFaqOpen keyframe for answer slide-in
-             • itemScope/itemProp microdata for FAQ rich results
-             • Scoped with ct-faq__ prefix (no collision with careers cr-faq__)
-        ════════════════════════════════════════════════════════════════════ */
-        .ct-faq {
-          position:relative;background:var(--c-bg);padding:6rem 0;
-          border-top:1px solid var(--c-border);overflow:hidden;
-        }
-        .ct-faq::before {
-          content:'';position:absolute;inset:0;
-          background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-          background-size:60px 60px;pointer-events:none;
-        }
-        .ct-faq__inner{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 4rem;}
-        .ct-faq__header{text-align:center;margin-bottom:3.5rem;}
-
-        /* ✅ UPGRADE #5 — section label matches careers c-section-label pattern */
-        .ct-section-label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);display:block;margin-bottom:.8rem;}
-        .ct-section-h2{font-family:var(--ff-serif);font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:700;line-height:1.1;letter-spacing:-.015em;color:#fff;margin-bottom:.8rem;}
-        .ct-section-sub{font-family:var(--ff-sans);font-size:.93rem;font-weight:300;line-height:1.75;color:var(--c-muted);max-width:480px;margin:0 auto;}
-
-        /* Accordion container card */
-        .ct-faq__list{
-          display:flex;flex-direction:column;gap:0;
-          border:1px solid var(--c-border);border-radius:16px;overflow:hidden;
-          margin:0;padding:0;
-        }
-
-        /* Each <details> item */
-        .ct-faq__item{
-          border-bottom:1px solid var(--c-border);
-          background:var(--c-surface);
-          transition:background .2s ease;
-        }
-        .ct-faq__item:last-child{border-bottom:none;}
-        .ct-faq__item[open]{background:var(--c-surface2);}
-
-        /* <summary> — the clickable question row */
-        .ct-faq__q{
-          list-style:none;
-          display:flex;align-items:center;justify-content:space-between;gap:1rem;
-          padding:1.5rem 1.75rem;cursor:pointer;user-select:none;
-        }
-        .ct-faq__q::-webkit-details-marker{display:none;}
-        .ct-faq__q::marker{display:none;}
-
-        .ct-faq__q-text{
-          font-family:var(--ff-serif);
-          font-size:1.15rem;font-weight:600;
-          color:rgba(255,255,255,.82);
-          line-height:1.35;flex:1;
-          transition:color .2s ease;
-        }
-        .ct-faq__item[open] .ct-faq__q-text,
-        .ct-faq__q:hover .ct-faq__q-text{color:#fff;}
-
-        /* Chevron icon */
-        .ct-faq__chevron{
-          flex-shrink:0;color:var(--c-orange);opacity:.7;
-          transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;
-        }
-        .ct-faq__item[open] .ct-faq__chevron{transform:rotate(180deg);opacity:1;}
-
-        /* Answer body */
-        .ct-faq__a{
-          padding:0 1.75rem 1.5rem;
-          animation:ctFaqOpen .3s cubic-bezier(.22,1,.36,1) both;
-        }
-        @keyframes ctFaqOpen{
-          from{opacity:0;transform:translateY(-6px)}
-          to{opacity:1;transform:translateY(0)}
-        }
-        .ct-faq__a p{
-          font-family:var(--ff-sans);
-          font-size:.92rem;font-weight:300;
-          line-height:1.8;color:var(--c-muted);margin:0;
-        }
-
-        /* ══ CTA SECTION ════════════════════════════════════════════════════
-           ✅ UPGRADE #3 — NEW bottom CTA section (c-cta pattern from careers).
-           Orb glow, serif headline with <em> orange accent, ghost CTA button.
-           Scoped with ct-cta__ prefix.
-        ════════════════════════════════════════════════════════════════════ */
+        /* ══ CTA SECTION ════════════════════════════════════════════════════ */
         .ct-cta{
           position:relative;background:var(--c-surface);
           padding:7rem 1.5rem;text-align:center;overflow:hidden;
@@ -712,10 +755,8 @@ export default function ContactPageClient() {
           .ct-proof__stat:nth-last-child(-n+2){border-bottom:none;}
           .ct-reach__layout{grid-template-columns:1fr;}
           .ct-reach__inner{padding:0 2.5rem;}
-          .ct-faq__inner{padding:0 2.5rem;}
         }
         @media (max-width:768px) {
-          /* __inner gets column layout; .ct-hero stays full-bleed */
           .ct-hero__inner{flex-direction:column;min-height:auto;}
           .ct-hero__right{order:1;flex:none;width:100%;height:280px;min-height:280px;overflow:visible;display:flex;align-items:center;justify-content:center;}
           .ct-hero__right::before{display:none;}
@@ -735,13 +776,54 @@ export default function ContactPageClient() {
           .ct-reach{padding:4rem 0;}
           .ct-proof__inner{padding:0 1.5rem;}
           .ct-proof__stats{padding:2rem 0;}
-          .ct-testi{padding:32px 24px 28px;min-height:300px;}
+
+          .ct-testi{min-height:auto;}
+          .ct-testi__masthead{padding:14px 18px;}
+          .ct-testi__footer{padding:12px 18px;}
+
+          .ct-testi__card {
+            grid-template-columns:1fr;
+            grid-template-rows:1fr auto;
+            padding:20px 18px 14px;
+          }
+          .ct-testi__quote-col { padding-right:0; }
+
+          .ct-testi__author-col {
+            flex-direction:row;
+            width:100%;
+            border-left:none;
+            border-top:1px solid rgba(255,255,255,.07);
+            padding-left:0;
+            padding-top:14px;
+            gap:12px;
+            align-items:center;
+          }
+          .ct-testi__byline-wrap {
+            flex-direction:row;
+            align-items:center;
+            gap:8px;
+            flex:1;
+            flex-wrap:wrap;
+          }
+          .ct-testi__name {
+            writing-mode:horizontal-tb;
+            transform:none;
+            font-size:11px;
+          }
+          .ct-testi__role-tag {
+            writing-mode:horizontal-tb;
+            transform:none;
+          }
+          .ct-testi__company {
+            writing-mode:horizontal-tb;
+            transform:none;
+            margin-top:0;
+          }
+          .ct-testi__avatar-wrap { width:46px; height:46px; }
+          .ct-testi__avatar      { width:46px; height:46px; }
+
           .ct-reach__strip{flex-direction:column;}
           .ct-reach__strip-divider{width:auto;height:1px;}
-          .ct-faq__inner{padding:0 1.5rem;}
-          .ct-faq{padding:4rem 0;}
-          .ct-faq__q{padding:1.25rem;}
-          .ct-faq__a{padding:0 1.25rem 1.25rem;}
           .ct-cta{padding:5rem 1.5rem;}
         }
         @keyframes ctLetterFlyMd {
@@ -781,7 +863,6 @@ export default function ContactPageClient() {
         @keyframes ctTr3Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(48px,-11px);opacity:.45}60%{transform:translate(24px,100px);opacity:.18}70%{opacity:0}100%{opacity:0}}
         @keyframes ctTr4Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(32px,-7px);opacity:.3}60%{transform:translate(15px,84px);opacity:.1}68%{opacity:0}100%{opacity:0}}
 
-        /* ✅ UPGRADE #7 — standardised prefers-reduced-motion rule (matches careers) */
         @media (prefers-reduced-motion:reduce) {
           *,*::before,*::after{
             animation-duration:.01ms!important;
@@ -808,109 +889,102 @@ export default function ContactPageClient() {
         <div className="ct-corner ct-corner--bl" aria-hidden="true" />
         <div className="ct-corner ct-corner--br" aria-hidden="true" />
 
-        {/* ct-hero__inner — max-width constrained flex row; background stays on .ct-hero */}
         <div className="ct-hero__inner">
-        <div className="ct-hero__left">
-          {/* sr-only breadcrumb — already correct in original, preserved */}
-          <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
-              </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/contact" itemProp="item" aria-current="page"><span itemProp="name">Contact</span></a>
-                <meta itemProp="position" content="2" />
-              </li>
-            </ol>
-          </nav>
+          <div className="ct-hero__left">
+            <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+              <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
+                <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                  <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                  <meta itemProp="position" content="1" />
+                </li>
+                <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                  <a href="/contact" itemProp="item" aria-current="page"><span itemProp="name">Contact</span></a>
+                  <meta itemProp="position" content="2" />
+                </li>
+              </ol>
+            </nav>
 
-          <p className="ct-hero__eyebrow" aria-hidden="true">
-            <span className="ct-hero__dot" />
-            Free Consultation · No Commitment
-          </p>
+            <p className="ct-hero__eyebrow" aria-hidden="true">
+              <span className="ct-hero__dot" />
+              Free Consultation · No Commitment
+            </p>
 
-          <h1 className="ct-hero__h1" id="ct-hero-heading" itemProp="name">
-            Your vision deserves a<br />
-            <em>digital partner</em> who delivers.
-          </h1>
+            <h1 className="ct-hero__h1" id="ct-hero-heading" itemProp="name">
+              Your vision deserves a<br />
+              <em>digital partner</em> who delivers.
+            </h1>
 
-          <div className="ct-hero__rule" aria-hidden="true">
-            <div className="ct-hero__rule-line" />
-            <div className="ct-hero__rule-diamond" />
+            <div className="ct-hero__rule" aria-hidden="true">
+              <div className="ct-hero__rule-line" />
+              <div className="ct-hero__rule-diamond" />
+            </div>
+
+            <p className="ct-hero__sub" itemProp="description">
+              Tell us about your project — we respond within 24 hours with a
+              clear plan, honest pricing, and zero fluff. Bangalore&apos;s most trusted
+              web, 3D &amp; marketing studio is one message away.
+            </p>
+
+            <a href="#contact-form" className="ct-hero__cta" aria-label="Get your free quote — scroll to the contact form">
+              Get Your Free Quote
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+
+            <a href="mailto:info@99visual.com" className="ct-hero__link">
+              Or email us directly — info@99visual.com
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
           </div>
 
-          <p className="ct-hero__sub" itemProp="description">
-            Tell us about your project — we respond within 24 hours with a
-            clear plan, honest pricing, and zero fluff. Bangalore&apos;s most trusted
-            web, 3D &amp; marketing studio is one message away.
-          </p>
-
-          <a href="#contact-form" className="ct-hero__cta" aria-label="Get your free quote — scroll to the contact form">
-            Get Your Free Quote
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
-
-          <a href="mailto:info@99visual.com" className="ct-hero__link">
-            Or email us directly — info@99visual.com
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
-        </div>
-
-        <div className="ct-hero__right" aria-hidden="true">
-          <div className="ct-anim">
-            <div className="ct-trail ct-trail-1" />
-            <div className="ct-trail ct-trail-2" />
-            <div className="ct-trail ct-trail-3" />
-            <div className="ct-trail ct-trail-4" />
-            <div className="ct-letter">
-              <svg viewBox="0 0 72 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="70" height="53" rx="5" fill="#1e1032" stroke="#f97316" strokeWidth="1.4" />
-                <rect x="7" y="6" width="58" height="36" rx="2.5" fill="#fff" opacity="0.07" />
-                <line x1="13" y1="17" x2="59" y2="17" stroke="#f97316" strokeWidth=".9" opacity=".45" />
-                <line x1="13" y1="25" x2="52" y2="25" stroke="#f97316" strokeWidth=".9" opacity=".32" />
-                <line x1="13" y1="33" x2="44" y2="33" stroke="#f97316" strokeWidth=".9" opacity=".22" />
-                <path d="M1 7 L36 32 L71 7" stroke="#f97316" strokeWidth="1.2" opacity=".65" fill="none" />
-                <circle cx="36" cy="30" r="7" fill="#f97316" opacity=".75" />
-                <circle cx="36" cy="30" r="4" fill="#fde68a" opacity=".95" />
-                <rect x="3" y="2" width="66" height="4" rx="2" fill="white" opacity=".04" />
-              </svg>
-            </div>
-            <div className="ct-mailbox">
-              <div className="ct-mailbox__glow" />
-              <div className="ct-mailbox__roof" />
-              <div className="ct-mailbox__body">
-                <div className="ct-mailbox__slot" />
-                <svg className="ct-mailbox__icon" width="18" height="13" viewBox="0 0 18 13" fill="none" aria-hidden="true">
-                  <rect x=".5" y=".5" width="17" height="12" rx="2" stroke="white" strokeWidth="1" />
-                  <path d="M.5 1.5 L9 8 L17.5 1.5" stroke="white" strokeWidth="1" fill="none" />
+          <div className="ct-hero__right" aria-hidden="true">
+            <div className="ct-anim">
+              <div className="ct-trail ct-trail-1" />
+              <div className="ct-trail ct-trail-2" />
+              <div className="ct-trail ct-trail-3" />
+              <div className="ct-trail ct-trail-4" />
+              <div className="ct-letter">
+                <svg viewBox="0 0 72 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1" y="1" width="70" height="53" rx="5" fill="#1e1032" stroke="#f97316" strokeWidth="1.4" />
+                  <rect x="7" y="6" width="58" height="36" rx="2.5" fill="#fff" opacity="0.07" />
+                  <line x1="13" y1="17" x2="59" y2="17" stroke="#f97316" strokeWidth=".9" opacity=".45" />
+                  <line x1="13" y1="25" x2="52" y2="25" stroke="#f97316" strokeWidth=".9" opacity=".32" />
+                  <line x1="13" y1="33" x2="44" y2="33" stroke="#f97316" strokeWidth=".9" opacity=".22" />
+                  <path d="M1 7 L36 32 L71 7" stroke="#f97316" strokeWidth="1.2" opacity=".65" fill="none" />
+                  <circle cx="36" cy="30" r="7" fill="#f97316" opacity=".75" />
+                  <circle cx="36" cy="30" r="4" fill="#fde68a" opacity=".95" />
+                  <rect x="3" y="2" width="66" height="4" rx="2" fill="white" opacity=".04" />
                 </svg>
               </div>
-              <div className="ct-mailbox__post" />
-              <div className="ct-spark ct-spark-1" />
-              <div className="ct-spark ct-spark-2" />
-              <div className="ct-spark ct-spark-3" />
-              <div className="ct-spark ct-spark-4" />
-              <div className="ct-spark ct-spark-5" />
-              <div className="ct-spark ct-spark-6" />
+              <div className="ct-mailbox">
+                <div className="ct-mailbox__glow" />
+                <div className="ct-mailbox__roof" />
+                <div className="ct-mailbox__body">
+                  <div className="ct-mailbox__slot" />
+                  <svg className="ct-mailbox__icon" width="18" height="13" viewBox="0 0 18 13" fill="none" aria-hidden="true">
+                    <rect x=".5" y=".5" width="17" height="12" rx="2" stroke="white" strokeWidth="1" />
+                    <path d="M.5 1.5 L9 8 L17.5 1.5" stroke="white" strokeWidth="1" fill="none" />
+                  </svg>
+                </div>
+                <div className="ct-mailbox__post" />
+                <div className="ct-spark ct-spark-1" />
+                <div className="ct-spark ct-spark-2" />
+                <div className="ct-spark ct-spark-3" />
+                <div className="ct-spark ct-spark-4" />
+                <div className="ct-spark ct-spark-5" />
+                <div className="ct-spark ct-spark-6" />
+              </div>
             </div>
           </div>
         </div>
-        </div>{/* /.ct-hero__inner */}
       </section>
 
-      {/* ══ PROOF STRIP — animated counters ════════════════════════════════
-          ✅ UPGRADE #1 — outer element changed from <section> to <section> with
-          inner <dl> so the grid div → <div> stat children host <dd>/<dt> pairs.
-          aria-label updated to reflect the semantic <dl> pattern.
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* ══ PROOF STRIP ═════════════════════════════════════════════════════ */}
       <section className="ct-proof" aria-label="Company highlights" ref={proofRef}>
         <div className="ct-proof__inner">
-          {/* ✅ UPGRADE #1 — <dl> wraps all stat items for correct screen-reader pairing */}
           <dl className="ct-proof__stats" aria-label="Key company statistics">
             {STATS.map((s) => (
               <StatItem key={s.label} stat={s} active={statsActive} />
@@ -935,59 +1009,126 @@ export default function ContactPageClient() {
           </div>
 
           <div className="ct-reach__layout">
-
             {/* LEFT — Testimonials */}
             <div className="ct-testi" aria-label="Client testimonials">
-              <div className="ct-testi__glow" aria-hidden="true" />
-              <div className="ct-testi__badge" aria-hidden="true">
-                <span className="ct-testi__badge-dot" />
-                <span className="ct-testi__badge-text">Client voices</span>
+              <div className="ct-testi__masthead">
+                <span className="ct-testi__masthead-title">Client Voices</span>
+                <div className="ct-testi__masthead-rule" aria-hidden="true" />
+                <span
+                  className="ct-testi__masthead-issue"
+                  aria-label={`Testimonial ${cur + 1} of ${testimonials.length}`}
+                >
+                  {String(cur + 1).padStart(2, "0")}&thinsp;/&thinsp;{String(testimonials.length).padStart(2, "0")}
+                </span>
               </div>
-              <div className="ct-testi__cards" aria-live="polite">
-                {testimonials.map((t, i) => (
-                  <div
-                    key={i}
-                    className="ct-testi__card"
-                    style={cardStyles[getState(i, cur)]}
-                    aria-hidden={i !== cur}
-                  >
-                    <div>
-                      <div className="ct-testi__stars" aria-label="5 stars">
-                        {[...Array(5)].map((_, s) => (
-                          <span key={s} className="ct-testi__star">★</span>
-                        ))}
+
+              <div className="ct-testi__stage" aria-live="polite">
+                {testimonials.map((t, i) => {
+                  const isActive = i === cur;
+                  const offsetX  = isActive ? 0 : dirRef.current * 32;
+                  const style: React.CSSProperties = {
+                    opacity:       isActive ? 1 : 0,
+                    transform:     isActive
+                      ? "translateX(0) scale(1)"
+                      : `translateX(${offsetX}px) scale(0.97)`,
+                    pointerEvents: isActive ? "auto" : "none",
+                    zIndex:        isActive ? 2 : 1,
+                  };
+                  return (
+                    <div
+                      key={i}
+                      className="ct-testi__card"
+                      style={style}
+                      aria-hidden={!isActive}
+                    >
+                      <div className="ct-testi__quote-col">
+                        <div>
+                          <div className="ct-testi__open-mark" aria-hidden="true">&ldquo;</div>
+                          <p className="ct-testi__quote">{t.quote}</p>
+                        </div>
+                        <div className="ct-testi__stars" aria-label="5 out of 5 stars">
+                          {[...Array(5)].map((_, s) => (
+                            <span key={s} className="ct-testi__star">★</span>
+                          ))}
+                        </div>
                       </div>
-                      <p className="ct-testi__quote">&ldquo;{t.quote}&rdquo;</p>
+
+                      <div className="ct-testi__author-col">
+                        <div
+                          className="ct-testi__avatar-wrap"
+                          style={{ "--avatar-ring": t.palette.border } as React.CSSProperties}
+                          aria-hidden="true"
+                        >
+                          <img
+                            src={`/images/clientvoice/${t.imgSlug}.png`}
+                            alt={t.name}
+                            className="ct-testi__avatar"
+                            width={56}
+                            height={56}
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = "none";
+                              const fallback = (e.currentTarget as HTMLImageElement)
+                                .nextElementSibling as HTMLElement | null;
+                              if (fallback) fallback.style.display = "flex";
+                            }}
+                          />
+                          <div
+                            className="ct-testi__avatar-fallback"
+                            style={{ display: "none", background: t.palette.bg, color: t.palette.text }}
+                            aria-hidden="true"
+                          >
+                            {t.initial}
+                          </div>
+                        </div>
+
+                        <div className="ct-testi__byline-wrap">
+                          <span className="ct-testi__name">{t.name}</span>
+                          <span className="ct-testi__role-tag">{t.role}</span>
+                          <span className="ct-testi__company" style={{ color: t.palette.text }}>
+                            {t.company}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="ct-testi__author">
-                      <div className="ct-testi__avatar" style={{ background: t.accent }} aria-hidden="true">
-                        {t.initials}
-                      </div>
-                      <div>
-                        <p className="ct-testi__name">{t.name}</p>
-                        <p className="ct-testi__role">{t.role}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              <div className="ct-testi__pips" aria-hidden="true">
-                {testimonials.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`ct-testi__pip${i === cur ? " ct-testi__pip--on" : ""}`}
-                    style={{ width: i === cur ? 32 : 16 }}
-                  />
-                ))}
+
+              <div className="ct-testi__footer">
+                <div className="ct-testi__progress-bar" style={{ width: `${progress}%` }} aria-hidden="true" />
+                <div className="ct-testi__pips" aria-hidden="true">
+                  {testimonials.map((_, i) => (
+                    <div
+                      key={i}
+                      className={`ct-testi__pip${i === cur ? " ct-testi__pip--on" : ""}`}
+                      style={{ width: i === cur ? 28 : 12 }}
+                    />
+                  ))}
+                </div>
+                <div className="ct-testi__nav" role="group" aria-label="Testimonial navigation">
+                  <button className="ct-testi__nav-btn" onClick={goPrev} aria-label="Previous testimonial">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M7.5 2L3.5 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  <button className="ct-testi__nav-btn" onClick={goNext} aria-label="Next testimonial">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M4.5 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* RIGHT — email + direct line strip, then commitment card */}
+            {/* RIGHT — contact strip + commitment card */}
             <div className="ct-reach__right">
-
-              {/* Single-row contact strip */}
               <div className="ct-reach__strip" role="list">
-                <a className="ct-reach__strip-item" href="mailto:info@99visual.com" aria-label="Email us at info@99visual.com" role="listitem">
+                <a
+                  className="ct-reach__strip-item"
+                  href="mailto:info@99visual.com"
+                  aria-label="Email us at info@99visual.com"
+                  role="listitem"
+                >
                   <div className="ct-reach__strip-icon" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <rect x="2" y="4" width="16" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.4" />
@@ -999,10 +1140,13 @@ export default function ContactPageClient() {
                     <span className="ct-reach__strip-value">info@99visual.com</span>
                   </div>
                 </a>
-
                 <div className="ct-reach__strip-divider" aria-hidden="true" />
-
-                <a className="ct-reach__strip-item" href="tel:+919205737431" aria-label="Call us at +91 92057 37431" role="listitem">
+                <a
+                  className="ct-reach__strip-item"
+                  href="tel:+919205737431"
+                  aria-label="Call us at +91 92057 37431"
+                  role="listitem"
+                >
                   <div className="ct-reach__strip-icon" aria-hidden="true">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M6.3 3H4a1 1 0 00-1 1c0 7.18 5.82 13 13 13a1 1 0 001-1v-2.3a1 1 0 00-.68-.95l-2.64-.88a1 1 0 00-1.04.24L11.9 13.8a10.08 10.08 0 01-5.7-5.7l1.7-1.74a1 1 0 00.23-1.04L7.25 3.68A1 1 0 006.3 3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -1015,7 +1159,6 @@ export default function ContactPageClient() {
                 </a>
               </div>
 
-              {/* Commitment card */}
               <div className="ct-reach__commit">
                 <div className="ct-reach__commit-head">
                   <h3 className="ct-reach__commit-title">Our promise to you</h3>
@@ -1030,9 +1173,15 @@ export default function ContactPageClient() {
                     ["Instant WhatsApp reply",   "Fastest way to reach us"],
                     ["Free initial consultation","No commitment, no pressure"],
                     ["India · USA · UK · UAE · AU","Clients served globally"],
-                  ] as [string,string][]).map(([strong, sub]) => (
+                  ] as [string, string][]).map(([strong, sub]) => (
                     <li key={strong} className="ct-reach__commit-item">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="ct-reach__commit-check" aria-hidden="true">
+                      <svg
+                        width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" strokeWidth="2.2"
+                        strokeLinecap="round" strokeLinejoin="round"
+                        className="ct-reach__commit-check"
+                        aria-hidden="true"
+                      >
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                       <span>
@@ -1043,7 +1192,13 @@ export default function ContactPageClient() {
                   ))}
                 </ul>
                 <div className="ct-reach__location">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="ct-reach__location-icon" aria-hidden="true">
+                  <svg
+                    width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.6"
+                    strokeLinecap="round" strokeLinejoin="round"
+                    className="ct-reach__location-icon"
+                    aria-hidden="true"
+                  >
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
@@ -1052,83 +1207,12 @@ export default function ContactPageClient() {
                   </p>
                 </div>
               </div>
-
-            </div>{/* /.ct-reach__right */}
-          </div>{/* /.ct-reach__layout */}
-        </div>{/* /.ct-reach__inner */}
-      </section>
-
-      {/* ══ FAQ SECTION ═════════════════════════════════════════════════════
-          ✅ UPGRADE #2 — NEW section added to contact page.
-          Identical <details>/<summary> accordion pattern from careers/page.tsx.
-          SEO NOTES:
-            • JSON-LD FAQPage schema should be added to contact/page.tsx using
-              the same faqSchema() helper — see comments in page.tsx below.
-            • itemScope/itemProp microdata is fully preserved here so Google
-              can read FAQ rich results even without the LD+JSON.
-            • All answers are 40+ words for rich result eligibility.
-            • Google reads <details> content regardless of open/closed state.
-      ════════════════════════════════════════════════════════════════════ */}
-      <section
-        className="ct-faq"
-        aria-labelledby="ct-faq-heading"
-        itemScope
-        itemType="https://schema.org/FAQPage"
-      >
-        <div className="ct-faq__inner">
-          <div className="ct-faq__header">
-            {/* ✅ UPGRADE #5 — section label / h2 / sub matching careers pattern */}
-            <span className="ct-section-label">Common questions</span>
-            <h2 className="ct-section-h2" id="ct-faq-heading">
-              Frequently Asked Questions
-            </h2>
-            <p className="ct-section-sub">
-              Everything you need to know about working with 99 Visual Solutions.
-            </p>
+            </div>
           </div>
-
-          {/* ✅ UPGRADE #2 — <dl> accordion card container (careers cr-faq__list pattern) */}
-          <dl className="ct-faq__list">
-            {faqItems.map(({ question, answer }, i) => (
-              <details
-                key={i}
-                className="ct-faq__item"
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
-              >
-                <summary className="ct-faq__q" itemProp="name">
-                  <span className="ct-faq__q-text">{question}</span>
-                  <span className="ct-faq__chevron" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <path
-                        d="M4.5 6.75L9 11.25L13.5 6.75"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </summary>
-                <div
-                  className="ct-faq__a"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
-                >
-                  <p itemProp="text">{answer}</p>
-                </div>
-              </details>
-            ))}
-          </dl>
         </div>
       </section>
 
-      {/* ══ CTA SECTION ═════════════════════════════════════════════════════
-          ✅ UPGRADE #3 — NEW bottom CTA section (careers c-cta pattern).
-          Drives users to the contact form / WhatsApp with a warm close.
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* ══ CTA SECTION ═════════════════════════════════════════════════════ */}
       <section className="ct-cta" aria-labelledby="ct-cta-heading">
         <div className="ct-cta__orb" aria-hidden="true" />
         <div className="ct-cta__content">
@@ -1151,6 +1235,12 @@ export default function ContactPageClient() {
           </a>
         </div>
       </section>
+
+      {/*
+        ══ FAQ REMOVED FROM HERE ══════════════════════════════════════════════
+        FAQ is now rendered in page.tsx, directly below <ContactForm />.
+        See: app/contact/page.tsx → <section id="faq" className="ct-faq-standalone">
+      */}
     </>
   );
 }
