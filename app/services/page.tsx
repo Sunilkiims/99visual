@@ -1,21 +1,4 @@
 // app/services/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// Services Hub Page — 99 Visual Solutions
-// Prefix: "sv-" (services hub — unique, no collision with child pages)
-//
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ IMPROVEMENT #2 — svPageNode now has mainEntity pointing to ItemList node.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed — all variants pointed to identical URLs.
-//   ✅ aria-hidden removed from breadcrumb <nav> — sr-only pattern used.
-//   ✅ Title within 65-char limit.
-//   ✅ Service hrefs unified — all point to confirmed route paths.
-//   ✅ WARNING #4 — service slug /website-development aligned to match
-//      actual page route. Update href values below if your folder names differ.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -40,21 +23,25 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// BASE SAFE — strips trailing slash to prevent double-slash canonicals
+// ─────────────────────────────────────────────────────────────────────────────
+const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 63 chars — within 50–65 sweet spot
   title: "Our Services | Web, 3D Viz, AI QA, SEO & IT Consulting",
 
   description:
     "Explore 99 Visual Solutions' full range of services: custom web development, AI-powered QA & automation testing, digital marketing & SEO, IT consulting, 3D visualization, and CAD/GIS. Trusted worldwide.",
 
-  metadataBase: new URL(BASE),
+  // ✅ REMOVED — already set in root layout.tsx, no need to repeat per page
+  // metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
-    canonical: `${BASE}/services`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
+    // ✅ FIXED — clean absolute canonical using BASE_SAFE
+    canonical: `${BASE_SAFE}/services`,
   },
 
   robots: {
@@ -72,11 +59,11 @@ export const metadata: Metadata = {
   openGraph: {
     title:       "Our Services | Web, 3D Viz, AI QA, SEO & IT Consulting — 99 Visual",
     description: "Full-spectrum technology and creative services: web development, AI-powered QA testing, digital marketing & SEO, IT consulting, 3D visualization, and CAD/GIS — all under one roof.",
-    url:         `${BASE}/services`,
+    url:         `${BASE_SAFE}/services`,
     siteName:    "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/services/services-og.jpg`,
+        url:    `${BASE_SAFE}/images/services/services-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -95,7 +82,7 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        url: `${BASE}/images/services/services-og.jpg`,
+        url: `${BASE_SAFE}/images/services/services-og.jpg`,
         alt: "Services by 99 Visual Solutions",
       },
     ],
@@ -104,7 +91,8 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  // ✅ FIXED — BASE_SAFE used for authors url
+  authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -122,54 +110,47 @@ const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
-
-// ✅ FIX: breadcrumbFromItems() now emits correct @id item objects
 const svBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",     url: "/" },
   { name: "Services", url: "/services" },
 ]);
 
-// ✅ NOTE: Verify these URLs match your actual Next.js folder structure.
-// If your route folder is /services/web-development, use that slug here.
-// If your route folder is /services/website-development, use that instead.
 const svServiceCollectionNode = {
-  "@type":     "ItemList",
-  "@id":       `${BASE}/services#list`,
-  name:        "99 Visual Solutions Service Catalogue",
-  description: "All services offered by 99 Visual Solutions",
-  url:         `${BASE}/services`,
+  "@type":       "ItemList",
+  "@id":         `${BASE_SAFE}/services#list`,
+  name:          "99 Visual Solutions Service Catalogue",
+  description:   "All services offered by 99 Visual Solutions",
+  url:           `${BASE_SAFE}/services`,
   numberOfItems: 6,
   itemListElement: [
-    { "@type": "ListItem", position: 1, url: `${BASE}/services/website-development`,        name: "Website & Web App Development" },
-    { "@type": "ListItem", position: 2, url: `${BASE}/services/digital-marketing-seo`,      name: "Digital Marketing & SEO" },
-    { "@type": "ListItem", position: 3, url: `${BASE}/services/automation-testing`,         name: "AI-Powered QA & Automation Testing" },
-    { "@type": "ListItem", position: 4, url: `${BASE}/services/it-consulting`,              name: "IT Consulting" },
-    { "@type": "ListItem", position: 5, url: `${BASE}/services/visualization`,              name: "3D Visualization & Architectural Rendering" },
-    { "@type": "ListItem", position: 6, url: `${BASE}/services/cad-gis-photogrammetry`,    name: "CAD, GIS & Photogrammetry" },
+    { "@type": "ListItem", position: 1, url: `${BASE_SAFE}/services/website-development`,     name: "Website & Web App Development" },
+    { "@type": "ListItem", position: 2, url: `${BASE_SAFE}/services/digital-marketing-seo`,   name: "Digital Marketing & SEO" },
+    { "@type": "ListItem", position: 3, url: `${BASE_SAFE}/services/automation-testing`,      name: "AI-Powered QA & Automation Testing" },
+    { "@type": "ListItem", position: 4, url: `${BASE_SAFE}/services/it-consulting`,           name: "IT Consulting" },
+    { "@type": "ListItem", position: 5, url: `${BASE_SAFE}/services/visualization`,           name: "3D Visualization & Architectural Rendering" },
+    { "@type": "ListItem", position: 6, url: `${BASE_SAFE}/services/cad-gis-photogrammetry`, name: "CAD, GIS & Photogrammetry" },
   ],
 };
 
 const svPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services#webpage`,
-  url:           `${BASE}/services`,
+  "@id":         `${BASE_SAFE}/services#webpage`,
+  url:           `${BASE_SAFE}/services`,
   name:          "Our Services | Web, 3D Viz, AI QA, SEO & IT Consulting — 99 Visual",
   description:   "Full-spectrum technology and creative services: web development, AI QA testing, digital marketing & SEO, IT consulting, 3D visualization, and CAD/GIS/photogrammetry.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${BASE_SAFE}/#website` },
+  about:         { "@id": `${BASE_SAFE}/#organization` },
+  publisher:     { "@id": `${BASE_SAFE}/#organization` },
   speakable: {
     "@type":     "SpeakableSpecification",
     cssSelector: [".sv-hero__h1", ".sv-hero__sub"],
   },
-  // ✅ FIX: reference only — matches @id from svBreadcrumbNode
-  breadcrumb:      { "@id": `${BASE}/services#breadcrumb` },
-  // ✅ IMPROVEMENT #2: mainEntity links WebPage to the ItemList for sitelinks
-  mainEntity:      { "@id": `${BASE}/services#list` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services`] },
+  breadcrumb:      { "@id": `${BASE_SAFE}/services#breadcrumb` },
+  mainEntity:      { "@id": `${BASE_SAFE}/services#list` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE_SAFE}/services`] },
 };
 
 const svGraph = buildGraph(
@@ -177,15 +158,12 @@ const svGraph = buildGraph(
   localBusinessSchema,
   websiteSchema,
   svPageNode,
-  // ✅ FIX: standalone BreadcrumbList with correct @id item objects
   svBreadcrumbNode,
   svServiceCollectionNode,
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE DATA
-// ✅ NOTE: href values below must match actual Next.js route folder names.
-// Verify each slug against your /app/services/* directory structure.
 // ─────────────────────────────────────────────────────────────────────────────
 const services = [
   {
@@ -283,7 +261,6 @@ export default function ServicesPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ✅ FIX: sr-only — accessible but visually hidden */
         .sv-sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
@@ -349,7 +326,6 @@ export default function ServicesPage() {
         .sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
         @media(max-width:1100px){.sv-grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:680px){.sv-grid{grid-template-columns:1fr;}}
-
         .sv-card{background:#111111;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:2.4rem 2rem 2rem;text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;}
         .sv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sv-accent,#f97316);opacity:0;transition:opacity .3s ease;}
         .sv-card::after{content:attr(data-num);font-family:'Cormorant Garamond',serif;font-size:6rem;font-weight:700;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);position:absolute;bottom:-1.2rem;right:1.2rem;pointer-events:none;user-select:none;transition:-webkit-text-stroke .3s ease;}
@@ -428,7 +404,6 @@ export default function ServicesPage() {
         <div className="sv-corner sv-corner--bl" aria-hidden="true" />
         <div className="sv-corner sv-corner--br" aria-hidden="true" />
 
-        {/* ✅ FIX: aria-hidden removed from <nav> — sv-sr-only used instead */}
         <nav className="sv-sr-only" aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -477,7 +452,7 @@ export default function ServicesPage() {
             <div key={s.label}>
               <div className="sv-stat__val">
                 {s.value.includes("+")
-                  ? <>{s.value.replace("+","")}<span>+</span></>
+                  ? <>{s.value.replace("+", "")}<span>+</span></>
                   : s.value}
               </div>
               <div className="sv-stat__lbl">{s.label}</div>

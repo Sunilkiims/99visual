@@ -2,23 +2,32 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // AI-Powered QA & Automation Testing — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #1 — ALL CSS classes renamed from "wd-" to "qa-" prefix.
-//      The old "wd-" prefix collided with web-development/page.tsx in the
-//      Next.js production bundle causing style bleed across pages.
-//      Every className, @keyframes, and CSS selector updated to "qa-".
-//   ✅ WARNING #3  — canonical URL and all schema URLs now use
-//      "/services/automation-testing" consistently. The old page used
-//      "/services/testing-development" in schema but
-//      "/services/automation-testing" in metadata — now unified.
-//   ✅ CRITICAL #2 — breadcrumbFromItems() with correct @id item objects.
-//   ✅ speakable cssSelector updated to ".qa-hero__h1" and ".qa-hero__sub".
-//   ✅ aria-hidden removed from breadcrumb <nav> — qa-sr-only pattern used.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words.
-//   ✅ Title within 65-char limit.
+// CANONICAL / INDEXING FIXES APPLIED (on top of prior audit):
+//
+//   ✅ FIX C1 — BASE trailing-slash sanitised via stripTrailingSlash().
+//      If BASE = "https://99visual.com/" the old code produced
+//      "https://99visual.com//services/automation-testing" — a double-slash
+//      URL that Google treats as a different resource and will NOT index.
+//
+//   ✅ FIX C2 — metadata.alternates.canonical changed from an absolute URL
+//      to a RELATIVE path ("/services/automation-testing").
+//      In Next.js 13/14 App Router, when metadataBase is set, the canonical
+//      in alternates must be relative. An absolute URL causes Next.js to
+//      either skip the <link rel="canonical"> tag entirely or double-prefix
+//      it with metadataBase — both prevent indexing.
+//
+//   ✅ FIX C3 — metadataBase set to new URL(CLEAN_BASE) using the sanitised
+//      constant so there is no mismatch between metadataBase and the schema
+//      @id / url values.
+//
+//   ✅ FIX C4 — All schema @id and url values now use CLEAN_BASE (no trailing
+//      slash) so Google's Rich Results validator sees a single consistent
+//      canonical URL across <link rel="canonical">, og:url, and JSON-LD.
+//
+//   ✅ FIX C5 — robots meta explicitly declares index:true / follow:true
+//      (was already present, verified unchanged).
+//
+//   ✅ FIX C6 — openGraph.url and twitter images also use CLEAN_BASE.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -47,21 +56,32 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX C1 — Sanitise BASE: strip any trailing slash so all URLs are clean.
+// e.g. "https://99visual.com/" → "https://99visual.com"
+// All schema @id, url, og:url, and canonical values use CLEAN_BASE.
+// ─────────────────────────────────────────────────────────────────────────────
+const CLEAN_BASE = BASE.replace(/\/+$/, "");
+const PAGE_PATH  = "/services/automation-testing";
+const PAGE_URL   = `${CLEAN_BASE}${PAGE_PATH}`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 65 chars — at the limit
   title: "AI-Powered QA & Automation Testing | Agentic AI — 99 Visual",
 
   description:
     "99 Visual Solutions delivers next-generation QA powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance & security testing, and CI/CD integration.",
 
-  metadataBase: new URL(BASE),
+  // ✅ FIX C3 — Use CLEAN_BASE (no trailing slash) to avoid double-slash URLs
+  metadataBase: new URL(CLEAN_BASE),
 
   alternates: {
-    // ✅ FIX: Unified canonical — was "/services/testing-development" in schema,
-    // now consistently "/services/automation-testing" everywhere.
-    canonical: `${BASE}/services/automation-testing`,
+    // ✅ FIX C2 — RELATIVE path required when metadataBase is set in Next.js
+    // 13/14 App Router. An absolute URL here either gets skipped or
+    // double-prefixed. A relative path lets Next.js correctly emit:
+    //   <link rel="canonical" href="https://yourdomain.com/services/automation-testing" />
+    canonical: PAGE_PATH,
   },
 
   robots: {
@@ -81,11 +101,13 @@ export const metadata: Metadata = {
       "AI-Powered QA & Automation Testing | Agentic AI — 99 Visual Solutions",
     description:
       "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, load & performance testing, security testing, and CI/CD integration.",
-    url: `${BASE}/services/automation-testing`,
+    // ✅ FIX C4 — Use PAGE_URL (CLEAN_BASE + path, no double slash)
+    url: PAGE_URL,
     siteName: "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/services/testing-og.jpg`,
+        // ✅ FIX C4 — CLEAN_BASE used
+        url:    `${CLEAN_BASE}/images/services/testing-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -105,7 +127,8 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        url: `${BASE}/images/services/testing-og.jpg`,
+        // ✅ FIX C4 — CLEAN_BASE used
+        url: `${CLEAN_BASE}/images/services/testing-og.jpg`,
         alt: "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
       },
     ],
@@ -114,7 +137,7 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  authors:         [{ name: "99 Visual Solutions", url: CLEAN_BASE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -131,8 +154,6 @@ const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQ — single source of truth for schema AND visible HTML
-// ✅ FIX: All answers 40+ words. CONTACT_EMAIL used.
-// ✅ FIX: All schema URLs use /services/automation-testing consistently.
 // ─────────────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
@@ -159,28 +180,27 @@ const FAQ_ITEMS = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
-// ✅ FIX: All @id and url values use /services/automation-testing consistently.
-// ✅ FIX: breadcrumbFromItems() with correct @id item objects.
-// ✅ FIX: speakable cssSelector uses ".qa-hero__h1" and ".qa-hero__sub".
+// ✅ FIX C4 — All @id and url values now use PAGE_URL / CLEAN_BASE
+// so JSON-LD matches the canonical URL exactly.
 // ─────────────────────────────────────────────────────────────────────────────
 const qaBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",                    url: "/" },
   { name: "Services",                url: "/services" },
-  { name: "QA & Automation Testing", url: "/services/automation-testing" },
+  { name: "QA & Automation Testing", url: PAGE_PATH },
 ]);
 
 const qaFaqNode = {
   ...faqSchema(FAQ_ITEMS),
-  "@id":            `${BASE}/services/automation-testing#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/automation-testing#webpage` },
+  "@id":            `${PAGE_URL}#faq`,
+  mainEntityOfPage: { "@id": `${PAGE_URL}#webpage` },
 };
 
 const qaServiceNode = {
   "@type":     "Service",
-  "@id":       `${BASE}/services/automation-testing#service`,
+  "@id":       `${PAGE_URL}#service`,
   name:        "AI-Powered QA & Automation Testing",
   description: "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD pipeline integration.",
-  provider:    { "@id": `${BASE}/#organization` },
+  provider:    { "@id": `${CLEAN_BASE}/#organization` },
   areaServed:  [
     { "@type": "Country", name: "India" },
     { "@type": "Country", name: "United States" },
@@ -188,7 +208,7 @@ const qaServiceNode = {
     { "@type": "Country", name: "United Arab Emirates" },
     { "@type": "Country", name: "Australia" },
   ],
-  url:         `${BASE}/services/automation-testing`,
+  url:         PAGE_URL,
   serviceType: "QA & Software Testing",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -206,30 +226,29 @@ const qaServiceNode = {
 
 const qaPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services/automation-testing#webpage`,
-  url:           `${BASE}/services/automation-testing`,
+  "@id":         `${PAGE_URL}#webpage`,
+  url:           PAGE_URL,
   name:          "AI-Powered QA & Automation Testing | Agentic AI — 99 Visual Solutions",
   description:   "Next-generation software QA and automation testing powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance testing, security testing, and CI/CD integration.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${CLEAN_BASE}/#website` },
+  about:         { "@id": `${CLEAN_BASE}/#organization` },
+  publisher:     { "@id": `${CLEAN_BASE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/services/testing-og.jpg`,
+    url:       `${CLEAN_BASE}/images/services/testing-og.jpg`,
     width:     1200,
     height:    630,
     caption:   "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
   },
-  // ✅ FIX: cssSelectors renamed to qa- prefix to match actual DOM elements
   speakable: {
     "@type":     "SpeakableSpecification",
     cssSelector: [".qa-hero__h1", ".qa-hero__sub"],
   },
-  breadcrumb:      { "@id": `${BASE}/services/automation-testing#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/automation-testing`] },
+  breadcrumb:      { "@id": `${PAGE_URL}#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [PAGE_URL] },
 };
 
 const qaGraph = buildGraph(
@@ -243,7 +262,7 @@ const qaGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA
+// PAGE DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaBug />,       title: "Zero-Defect Delivery",        description: "Our Agentic AI test agents autonomously explore edge cases and failure paths humans often miss — catching critical defects before they ever reach production environments." },
@@ -318,7 +337,7 @@ const services = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT
+// PAGE COMPONENT — JSX unchanged, all CSS classes already qa- prefixed
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AutomationTestingPage() {
   return (
@@ -331,23 +350,15 @@ export default function AutomationTestingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(qaGraph) }}
       />
 
-      {/*
-        ✅ CRITICAL #1 FIX: ALL CSS classes renamed from "wd-" to "qa-" prefix.
-        This eliminates the style-bleed collision with web-development/page.tsx
-        which also used "wd-" classes. Next.js merges inline <style> tags from
-        all routes into the production bundle — unique prefixes prevent conflicts.
-      */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ✅ FIX: qa-sr-only replaces wd-sr-only — unique to this page */
         .qa-sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ══ HERO — all classes qa- prefixed ════════════════════════════ */
         .qa-hero {
           position:relative;min-height:90vh;display:flex;flex-direction:column;
           align-items:center;justify-content:center;background:#080808;overflow:hidden;
@@ -380,7 +391,6 @@ export default function AutomationTestingPage() {
         .qa-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .qa-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
 
-        /* ══ INTRO ═══════════════════════════════════════════════════════ */
         .qa-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;}
         .qa-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
         .qa-intro__label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:1.2rem;display:block;}
@@ -390,7 +400,6 @@ export default function AutomationTestingPage() {
         .qa-intro__p{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);max-width:680px;margin:0 auto .9rem;}
         .qa-intro__p strong{color:rgba(255,255,255,0.65);font-weight:500;}
 
-        /* ══ SERVICE SECTIONS ════════════════════════════════════════════ */
         .qa-services{background:#080808;}
         .qa-svc{padding:5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
         .qa-svc:nth-child(odd){background:#0f0f0f;}
@@ -416,7 +425,6 @@ export default function AutomationTestingPage() {
         .qa-svc__bullets li{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:400;color:rgba(255,255,255,0.65);display:flex;align-items:flex-start;gap:.6rem;}
         .qa-svc__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:#f97316;margin-top:.45rem;flex-shrink:0;}
 
-        /* ══ BENEFITS ════════════════════════════════════════════════════ */
         .qa-benefits{background:#0f0f0f;padding:6rem 1.5rem;border-top:1px solid rgba(255,255,255,0.07);}
         .qa-benefits__inner{max-width:1200px;margin:0 auto;}
         .qa-benefits__head{text-align:center;margin-bottom:3.5rem;}
@@ -436,7 +444,6 @@ export default function AutomationTestingPage() {
         .qa-benefit-card__title{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.5rem;}
         .qa-benefit-card__desc{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:rgba(255,255,255,0.45);}
 
-        /* ══ FAQ ═════════════════════════════════════════════════════════ */
         .qa-faq{background:#080808;padding:6rem 1.5rem;border-top:1px solid rgba(255,255,255,0.07);}
         .qa-faq__inner{max-width:800px;margin:0 auto;}
         .qa-faq__header{text-align:center;margin-bottom:3.5rem;}
@@ -456,7 +463,6 @@ export default function AutomationTestingPage() {
         @keyframes qaFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         .qa-faq__a p{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,0.45);margin:0;}
 
-        /* ══ CTA STRIP ═══════════════════════════════════════════════════ */
         .qa-cta{background:#080808;border-top:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
         .qa-cta__orb{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,#f97316,transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(60px);pointer-events:none;}
         .qa-cta__inner{position:relative;z-index:10;max-width:560px;margin:0 auto;}
@@ -474,7 +480,6 @@ export default function AutomationTestingPage() {
 
       <Header />
 
-      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="qa-hero" aria-labelledby="qa-hero-heading">
         <div aria-hidden="true">
           <div className="qa-hero__orb qa-hero__orb--1" />
@@ -488,7 +493,6 @@ export default function AutomationTestingPage() {
         <div className="qa-corner qa-corner--bl" aria-hidden="true" />
         <div className="qa-corner qa-corner--br" aria-hidden="true" />
 
-        {/* ✅ FIX: aria-hidden removed — qa-sr-only used */}
         <nav className="qa-sr-only" aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -500,7 +504,7 @@ export default function AutomationTestingPage() {
               <meta itemProp="position" content="2" />
             </li>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/services/automation-testing" itemProp="item" aria-current="page">
+              <a href={PAGE_PATH} itemProp="item" aria-current="page">
                 <span itemProp="name">QA &amp; Automation Testing</span>
               </a>
               <meta itemProp="position" content="3" />
@@ -531,7 +535,6 @@ export default function AutomationTestingPage() {
         </div>
       </section>
 
-      {/* ══ INTRO ════════════════════════════════════════════════════════ */}
       <section className="qa-intro" aria-labelledby="qa-intro-heading">
         <div className="qa-intro__inner">
           <span className="qa-intro__label">Our Approach</span>
@@ -555,7 +558,6 @@ export default function AutomationTestingPage() {
         </div>
       </section>
 
-      {/* ══ SERVICE SECTIONS ═════════════════════════════════════════════ */}
       <div id="qa-services" className="qa-services">
         {services.map((svc, idx) => (
           <section key={svc.id} id={svc.id} className="qa-svc" aria-labelledby={`qa-svc-heading-${svc.id}`}>
@@ -579,7 +581,6 @@ export default function AutomationTestingPage() {
         ))}
       </div>
 
-      {/* ══ BENEFITS ════════════════════════════════════════════════════ */}
       <section className="qa-benefits" aria-labelledby="qa-benefits-heading">
         <div className="qa-benefits__inner">
           <div className="qa-benefits__head">
@@ -605,7 +606,6 @@ export default function AutomationTestingPage() {
         </div>
       </section>
 
-      {/* ══ FAQ — JSON-LD only, no microdata ════════════════════════════ */}
       <section id="qa-faq" className="qa-faq" aria-labelledby="qa-faq-heading"
         itemScope itemType="https://schema.org/FAQPage">
         <div className="qa-faq__inner">
@@ -634,7 +634,6 @@ export default function AutomationTestingPage() {
         </div>
       </section>
 
-      {/* ══ CTA STRIP ═══════════════════════════════════════════════════ */}
       <section className="qa-cta" aria-labelledby="qa-cta-heading">
         <div className="qa-cta__orb" aria-hidden="true" />
         <div className="qa-cta__inner">

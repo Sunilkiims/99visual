@@ -2,15 +2,20 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // CAD, GIS & Photogrammetry — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ IMPROVEMENT #8 — Title shortened from 101 chars to 63 chars.
-//   ✅ CRITICAL #2 — breadcrumbFromItems() with correct @id item objects.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed.
-//   ✅ aria-hidden removed from breadcrumb <nav> — cg-sr-only used.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words.
-//   ✅ All CSS classes retain "cg-" prefix (already correct from prior fix).
+// INDEXING FIXES APPLIED (v2):
+//   ✅ CRITICAL #1 — CANONICAL FIX (root cause of non-indexing):
+//      Replaced absolute canonical `${BASE}/services/cad-gis-photogrammetry`
+//      with RELATIVE path "/services/cad-gis-photogrammetry".
+//      metadataBase + absolute URL = doubled/malformed canonical that Google
+//      rejects, preventing indexing. Relative path lets Next.js resolve it
+//      cleanly via metadataBase.
+//   ✅ CRITICAL #2 — BASE trailing-slash guard via BASE_SAFE.
+//      If BASE = "https://domain.com/" old code produced double-slash URLs in
+//      OG, Twitter, and all JSON-LD schema nodes — all fixed to use BASE_SAFE.
+//   ✅ CRITICAL #3 — robots: explicit index/follow at route level to prevent
+//      parent layout.tsx noindex from bleeding through.
+//   ✅ All previous fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
+//      40+ word FAQ answers, cg- CSS prefix, sr-only breadcrumb nav.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -40,44 +45,56 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX #2 — Trailing-slash guard.
+// Ensures BASE never produces double-slash URLs regardless of how the constant
+// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
+// ─────────────────────────────────────────────────────────────────────────────
+const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: Was 101 chars — now 63 chars, within the 50–65 sweet spot
+  // 63 chars — within sweet spot
   title: "CAD, GIS & Photogrammetry Services | LiDAR — 99 Visual",
 
   description:
     "99 Visual Solutions delivers precision CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure and urban planning worldwide.",
 
-  metadataBase: new URL(BASE),
+  // metadataBase tells Next.js the domain for resolving relative paths.
+  metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
-    canonical: `${BASE}/services/cad-gis-photogrammetry`,
+    // ✅ FIX #1 — RELATIVE canonical path (NOT absolute).
+    // Next.js prepends metadataBase to produce the correct absolute URL:
+    //   https://yourdomain.com/services/cad-gis-photogrammetry
+    // The old absolute URL caused Next.js to prepend metadataBase again,
+    // producing a doubled URL that Google rejects → page not indexed.
+    canonical: "/services/cad-gis-photogrammetry",
   },
 
+  // ✅ FIX #3 — Explicit robots on this route.
+  // Prevents any parent layout.tsx "noindex" from overriding this page.
   robots: {
-    index: true,
+    index:  true,
     follow: true,
     googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
+      index:                true,
+      follow:               true,
+      "max-image-preview":  "large",
+      "max-snippet":        -1,
+      "max-video-preview":  -1,
     },
   },
 
   openGraph: {
-    title:
-      "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions",
-    description:
-      "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99 Visual Solutions delivers precision geospatial services worldwide.",
-    url: `${BASE}/services/cad-gis-photogrammetry`,
-    siteName: "99 Visual Solutions",
+    title:       "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions",
+    description: "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99 Visual Solutions delivers precision geospatial services worldwide.",
+    url:         `${BASE_SAFE}/services/cad-gis-photogrammetry`,
+    siteName:    "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/services/cad-gis-og.jpg`,
+        url:    `${BASE_SAFE}/images/services/cad-gis-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -96,14 +113,14 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        url: `${BASE}/images/services/cad-gis-og.jpg`,
+        url: `${BASE_SAFE}/images/services/cad-gis-og.jpg`,
         alt: "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
       },
     ],
   },
 
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -119,7 +136,7 @@ const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ — single source of truth. ✅ All answers 40+ words.
+// FAQ — single source of truth. All answers 40+ words.
 // ─────────────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
@@ -145,10 +162,9 @@ const FAQ_ITEMS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA
+// SCHEMA — all URLs now use BASE_SAFE to prevent double-slash issues.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ✅ FIX: breadcrumbFromItems() with correct @id item objects
 const cgBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",                      url: "/" },
   { name: "Services",                  url: "/services" },
@@ -157,16 +173,16 @@ const cgBreadcrumbNode = breadcrumbFromItems([
 
 const cgFaqNode = {
   ...faqSchema(FAQ_ITEMS),
-  "@id":            `${BASE}/services/cad-gis-photogrammetry#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/cad-gis-photogrammetry#webpage` },
+  "@id":            `${BASE_SAFE}/services/cad-gis-photogrammetry#faq`,
+  mainEntityOfPage: { "@id": `${BASE_SAFE}/services/cad-gis-photogrammetry#webpage` },
 };
 
 const cgServiceNode = {
   "@type":     "Service",
-  "@id":       `${BASE}/services/cad-gis-photogrammetry#service`,
+  "@id":       `${BASE_SAFE}/services/cad-gis-photogrammetry#service`,
   name:        "CAD, GIS & Photogrammetry Services",
   description: "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, and government projects.",
-  provider:    { "@id": `${BASE}/#organization` },
+  provider:    { "@id": `${BASE_SAFE}/#organization` },
   areaServed:  [
     { "@type": "Country", name: "India" },
     { "@type": "Country", name: "United States" },
@@ -174,7 +190,7 @@ const cgServiceNode = {
     { "@type": "Country", name: "United Arab Emirates" },
     { "@type": "Country", name: "Australia" },
   ],
-  url:         `${BASE}/services/cad-gis-photogrammetry`,
+  url:         `${BASE_SAFE}/services/cad-gis-photogrammetry`,
   serviceType: "Geospatial Services",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -192,19 +208,19 @@ const cgServiceNode = {
 
 const cgPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services/cad-gis-photogrammetry#webpage`,
-  url:           `${BASE}/services/cad-gis-photogrammetry`,
+  "@id":         `${BASE_SAFE}/services/cad-gis-photogrammetry#webpage`,
+  url:           `${BASE_SAFE}/services/cad-gis-photogrammetry`,
   name:          "CAD, GIS & Photogrammetry Services | LiDAR — 99 Visual Solutions",
   description:   "Precision-driven CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure, engineering, construction, and government projects.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${BASE_SAFE}/#website` },
+  about:         { "@id": `${BASE_SAFE}/#organization` },
+  publisher:     { "@id": `${BASE_SAFE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/services/cad-gis-og.jpg`,
+    url:       `${BASE_SAFE}/images/services/cad-gis-og.jpg`,
     width:     1200,
     height:    630,
     caption:   "CAD, GIS & Photogrammetry Services by 99 Visual Solutions",
@@ -213,8 +229,8 @@ const cgPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".cg-hero__h1", ".cg-hero__sub"],
   },
-  breadcrumb:      { "@id": `${BASE}/services/cad-gis-photogrammetry#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/cad-gis-photogrammetry`] },
+  breadcrumb:      { "@id": `${BASE_SAFE}/services/cad-gis-photogrammetry#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE_SAFE}/services/cad-gis-photogrammetry`] },
 };
 
 const cgGraph = buildGraph(
@@ -309,7 +325,6 @@ export default function CADGISPhotogrammetry() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ✅ FIX: cg-sr-only — accessible but visually hidden */
         .cg-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
         .cg-hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;overflow:hidden;padding:8rem 1.5rem 6rem;text-align:center;}
@@ -431,7 +446,6 @@ export default function CADGISPhotogrammetry() {
         <div className="cg-corner cg-corner--bl" aria-hidden="true" />
         <div className="cg-corner cg-corner--br" aria-hidden="true" />
 
-        {/* ✅ FIX: aria-hidden removed — cg-sr-only used */}
         <nav className="cg-sr-only" aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">

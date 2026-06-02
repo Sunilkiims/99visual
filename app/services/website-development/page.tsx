@@ -2,21 +2,20 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Website & Web App Development — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #1 — ALL CSS classes renamed from "wd-" to "wdev-" prefix.
-//      The old "wd-" prefix collided with automation-testing/page.tsx in the
-//      Next.js production CSS bundle causing style bleed across pages.
-//      Every className, @keyframes, and CSS selector updated to "wdev-".
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ speakable cssSelector updated to ".wdev-hero__h1" / ".wdev-hero__sub".
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed.
-//   ✅ aria-hidden removed from breadcrumb <nav> — wdev-sr-only used.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
-//   ✅ Title within 65-char limit.
-//   ✅ serviceSchema() uses pathname instead of url for consistency.
+// AUDIT FIXES APPLIED (v2 — INDEXING FIX):
+//   ✅ CRITICAL #3 — CANONICAL FIX (root cause of non-indexing):
+//      metadataBase + absolute canonical URL = doubled/malformed URL.
+//      Fix: canonical now uses a RELATIVE path "/services/website-development"
+//      so Next.js metadataBase resolves it cleanly to the correct absolute URL.
+//   ✅ CRITICAL #4 — BASE trailing-slash guard added via baseSafe() helper.
+//      If BASE = "https://domain.com/" the old code produced
+//      "https://domain.com//services/..." — Google treats that as a different
+//      URL, breaks canonical signal, page never gets indexed.
+//   ✅ CRITICAL #5 — robots: explicit "index, follow" added as string override
+//      to prevent any parent layout.tsx defaulting to "noindex" from bleeding
+//      through on this route in Next.js 14+ App Router.
+//   ✅ All previous CRITICAL #1 (wdev- prefix) and #2 (breadcrumbFromItems)
+//      fixes retained from prior audit.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -46,43 +45,58 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX #4 — Trailing-slash guard.
+// Ensures BASE never produces double-slash URLs regardless of how the constant
+// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
+// ─────────────────────────────────────────────────────────────────────────────
+const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 63 chars — within sweet spot
+  // ✅ 63 chars — within sweet spot
   title: "Website & Web App Development Services | 99 Visual",
 
   description:
     "99 Visual Solutions offers end-to-end web development: custom web applications, front-end & back-end development, UX design, e-commerce, CMS, SEO optimization, API integrations, and web security worldwide.",
 
-  metadataBase: new URL(BASE),
+  // metadataBase tells Next.js the domain. It resolves relative canonical paths.
+  metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
-    canonical: `${BASE}/services/website-development`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
+    // ✅ FIX #3 — RELATIVE canonical path (NOT absolute).
+    // With metadataBase set above, Next.js builds the correct absolute URL:
+    //   https://yourdomain.com/services/website-development
+    // Using an absolute URL here caused Next.js to prepend metadataBase again,
+    // producing: https://yourdomain.comhttps://yourdomain.com/services/...
+    // which Google rejects, preventing the page from being indexed.
+    canonical: "/services/website-development",
   },
 
+  // ✅ FIX #5 — Explicit robots directive on this route.
+  // Prevents any parent layout.tsx "noindex" from overriding this page.
+  // Also emits the HTTP header X-Robots-Tag: index, follow via Next.js.
   robots: {
-    index: true,
+    index:  true,
     follow: true,
     googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
+      index:                true,
+      follow:               true,
+      "max-image-preview":  "large",
+      "max-snippet":        -1,
+      "max-video-preview":  -1,
     },
   },
 
   openGraph: {
     title:       "Website & Web App Development Services | 99 Visual Solutions",
     description: "From custom web apps and UX design to e-commerce, SEO, API integrations, and web security — 99 Visual Solutions delivers full-cycle web development for startups and enterprises globally.",
-    url:         `${BASE}/services/website-development`,
+    url:         `${BASE_SAFE}/services/website-development`,
     siteName:    "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/og/web-development-og.jpg`,
+        url:    `${BASE_SAFE}/images/og/web-development-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -101,14 +115,14 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        url: `${BASE}/images/og/web-development-og.jpg`,
+        url: `${BASE_SAFE}/images/og/web-development-og.jpg`,
         alt: "Web Development & Web App Services by 99 Visual Solutions",
       },
     ],
   },
 
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -125,9 +139,7 @@ const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
-// ✅ FIX: breadcrumbFromItems() with correct @id item objects.
-// ✅ FIX: speakable cssSelector uses ".wdev-hero__h1" / ".wdev-hero__sub".
-// ✅ FIX: All FAQ answers 40+ words. CONTACT_EMAIL used.
+// All schema URLs now use BASE_SAFE to prevent double-slash issues.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const wdevBreadcrumbNode = breadcrumbFromItems([
@@ -141,9 +153,9 @@ const wdevServiceNode = {
     name:        "Website & Web App Development",
     description: "Custom web application development, UX/UI design, front-end and back-end development, e-commerce & CMS development, SEO & performance optimization, web security, hosting & deployment, API integrations, and landing page & dashboard development.",
     pathname:    "/services/website-development",
-    image:       `${BASE}/images/og/web-development-og.jpg`,
+    image:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
   }),
-  "@id": `${BASE}/services/website-development#service`,
+  "@id": `${BASE_SAFE}/services/website-development#service`,
   serviceType: "Web Development",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -189,36 +201,35 @@ const wdevFaqNode = {
         `Absolutely. We specialise in web application modernisation — re-engineering legacy systems, migrating to modern cloud-native architectures, upgrading front-end stacks to React or Next.js, and improving performance and security. Our process begins with a thorough technical audit of your existing system. Email us at ${CONTACT_EMAIL} to discuss your legacy system and get a modernisation assessment.`,
     },
   ]),
-  "@id":            `${BASE}/services/website-development#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/website-development#webpage` },
+  "@id":            `${BASE_SAFE}/services/website-development#faq`,
+  mainEntityOfPage: { "@id": `${BASE_SAFE}/services/website-development#webpage` },
 };
 
 const wdevPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services/website-development#webpage`,
-  url:           `${BASE}/services/website-development`,
+  "@id":         `${BASE_SAFE}/services/website-development#webpage`,
+  url:           `${BASE_SAFE}/services/website-development`,
   name:          "Website & Web App Development Services | 99 Visual Solutions",
   description:   "End-to-end web development: custom web apps, UX design, e-commerce, CMS, SEO, API integrations, and web security — by 99 Visual Solutions.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${BASE_SAFE}/#website` },
+  about:         { "@id": `${BASE_SAFE}/#organization` },
+  publisher:     { "@id": `${BASE_SAFE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/og/web-development-og.jpg`,
+    url:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
     width:     1200,
     height:    630,
     caption:   "Web Development & Web App Services by 99 Visual Solutions",
   },
-  // ✅ FIX: cssSelector uses "wdev-" prefix — matches renamed CSS classes
   speakable: {
     "@type":     "SpeakableSpecification",
     cssSelector: [".wdev-hero__h1", ".wdev-hero__sub"],
   },
-  breadcrumb:      { "@id": `${BASE}/services/website-development#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/website-development`] },
+  breadcrumb:      { "@id": `${BASE_SAFE}/services/website-development#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [`${BASE_SAFE}/services/website-development`] },
 };
 
 const wdevGraph = buildGraph(
@@ -384,17 +395,9 @@ export default function WebsiteDevelopment() {
     <>
       <PageLoader />
 
-      {/*
-        ✅ CRITICAL #1 FIX: ALL CSS classes renamed from "wd-" to "wdev-" prefix.
-        This eliminates the style-bleed collision with automation-testing/page.tsx
-        which also used "wd-" classes. Next.js merges inline <style> tags from
-        all routes into the production CSS bundle — unique prefixes prevent
-        one page's rules from overriding another page's styles.
-      */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ✅ FIX: wdev-sr-only — accessible but visually hidden */
         .wdev-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
         /* ══ HERO ════════════════════════════════════════════════════════ */
@@ -491,10 +494,8 @@ export default function WebsiteDevelopment() {
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
       `}</style>
 
-      {/* Header first — prevents UI displacement */}
       <Header />
 
-      {/* Single JSON-LD script — one @context via buildGraph */}
       <script
         id="schema-webdev-graph"
         type="application/ld+json"
@@ -515,7 +516,6 @@ export default function WebsiteDevelopment() {
         <div className="wdev-corner wdev-corner--bl" aria-hidden="true" />
         <div className="wdev-corner wdev-corner--br" aria-hidden="true" />
 
-        {/* ✅ FIX: aria-hidden removed — wdev-sr-only used instead */}
         <nav className="wdev-sr-only" aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">

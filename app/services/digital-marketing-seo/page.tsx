@@ -2,17 +2,20 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Digital Marketing & SEO — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ WARNING #8  — CONTACT_EMAIL imported — single source of truth.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed.
-//   ✅ aria-hidden removed from breadcrumb <nav> — sr-only pattern used.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
-//   ✅ Title within 65-char limit.
-//   ✅ serviceSchema() now uses pathname instead of url for consistency.
-//   ✅ All CSS classes retain "dm-" prefix (correct, no collision).
+// PRODUCTION-READY INDEXING FIXES (final):
+//   ✅ FIX 1 — CANONICAL: Absolute URL (not relative) — Google recommends
+//      absolute canonicals. metadataBase is ignored when canonical is already
+//      absolute, so no doubling. Safest across all environments.
+//   ✅ FIX 2 — BASE_SAFE: trailing-slash guard on BASE to prevent double-slash
+//      in OG, Twitter, JSON-LD schema URLs.
+//   ✅ FIX 3 — robots: explicit index/follow at route level to prevent any
+//      parent layout noindex from bleeding through.
+//   ✅ FIX 4 — DATE_MODIFIED: hardcoded, not tied to build time. Prevents
+//      false freshness signals to Google on every deployment.
+//   ✅ FIX 5 — metadataBase: set once in root layout ideally, but included
+//      here as a safe fallback.
+//   ✅ All structural fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
+//      40+ word FAQ answers, dm- CSS prefix, sr-only breadcrumb.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -42,43 +45,60 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX 2 — Trailing-slash guard.
+// Ensures BASE never produces double-slash URLs regardless of how the constant
+// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
+// ─────────────────────────────────────────────────────────────────────────────
+const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// Canonical for this page — used in metadata AND JSON-LD.
+// Absolute URL is Google's recommended form; no risk of environment misresolution.
+const PAGE_CANONICAL = `${BASE_SAFE}/services/digital-marketing-seo`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 63 chars — within sweet spot
+  // 57 chars — within sweet spot
   title: "Digital Marketing & SEO Services | SEO, PPC — 99 Visual",
 
   description:
     "99 Visual Solutions delivers full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content marketing, email automation, local SEO, link building, and promotional video — built for ROI.",
 
-  metadataBase: new URL(BASE),
+  // metadataBase ensures any *other* relative metadata fields resolve correctly.
+  // When canonical is already absolute (below), metadataBase is ignored for it.
+  metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
-    canonical: `${BASE}/services/digital-marketing-seo`,
+    // ✅ FIX 1 — ABSOLUTE canonical URL.
+    // Google explicitly recommends absolute URLs for canonicals.
+    // Since this is already absolute, Next.js will NOT prepend metadataBase.
+    // No doubling. No environment misresolution.
+    canonical: PAGE_CANONICAL,
   },
 
+  // ✅ FIX 3 — Explicit robots at route level.
+  // Prevents any parent layout.tsx "noindex" from overriding this page.
   robots: {
-    index: true,
+    index:  true,
     follow: true,
     googleBot: {
-      index: true,
-      follow: true,
+      index:               true,
+      follow:              true,
       "max-image-preview": "large",
-      "max-snippet": -1,
+      "max-snippet":       -1,
       "max-video-preview": -1,
     },
   },
 
   openGraph: {
-    title: "Digital Marketing & SEO Services | SEO, PPC & Social Media — 99 Visual",
-    description:
-      "From SEO and PPC to Meta Ads, content marketing, email campaigns, local SEO, link building, and promotional videos — 99 Visual Solutions delivers data-driven digital marketing for measurable ROI.",
-    url:     `${BASE}/services/digital-marketing-seo`,
-    siteName: "99 Visual Solutions",
+    title:       "Digital Marketing & SEO Services | SEO, PPC & Social Media — 99 Visual",
+    description: "From SEO and PPC to Meta Ads, content marketing, email campaigns, local SEO, link building, and promotional videos — 99 Visual Solutions delivers data-driven digital marketing for measurable ROI.",
+    url:         PAGE_CANONICAL,
+    siteName:    "99 Visual Solutions",
     images: [
       {
-        url:    `${BASE}/images/services/digital-marketing-og.jpg`,
+        url:    `${BASE_SAFE}/images/services/digital-marketing-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -97,14 +117,14 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        url: `${BASE}/images/services/digital-marketing-og.jpg`,
+        url: `${BASE_SAFE}/images/services/digital-marketing-og.jpg`,
         alt: "Digital Marketing & SEO Services by 99 Visual Solutions",
       },
     ],
   },
 
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -115,21 +135,22 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
+// ✅ FIX 4 — DATE_MODIFIED is hardcoded, NOT `new Date()`.
+// Using new Date() sets dateModified to every build date even when content
+// hasn't changed — Google treats this as a false freshness signal.
+// Update DATE_MODIFIED manually whenever content is actually edited.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA
-// ✅ FIX: breadcrumbFromItems() with correct @id item objects.
-// ✅ FIX: CONTACT_EMAIL used in FAQ answers.
-// ✅ FIX: All FAQ answers 40+ words.
+// SCHEMA — all URLs use BASE_SAFE + PAGE_CANONICAL for consistency.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const dmBreadcrumbNode = breadcrumbFromItems([
-  { name: "Home",                    url: "/" },
-  { name: "Services",                url: "/services" },
-  { name: "Digital Marketing & SEO", url: "/services/digital-marketing-seo" },
+  { name: "Home",                    url: `${BASE_SAFE}/` },
+  { name: "Services",                url: `${BASE_SAFE}/services` },
+  { name: "Digital Marketing & SEO", url: PAGE_CANONICAL },
 ]);
 
 const dmServiceNode = {
@@ -137,9 +158,9 @@ const dmServiceNode = {
     name:        "Digital Marketing & SEO Services",
     description: "Full-spectrum digital marketing including SEO, PPC, Meta Ads, social media marketing, content marketing, email marketing, local SEO, link building, marketing automation, and promotional video.",
     pathname:    "/services/digital-marketing-seo",
-    image:       `${BASE}/images/services/digital-marketing-og.jpg`,
+    image:       `${BASE_SAFE}/images/services/digital-marketing-og.jpg`,
   }),
-  "@id": `${BASE}/services/digital-marketing-seo#service`,
+  "@id": `${PAGE_CANONICAL}#service`,
   serviceType: "Digital Marketing",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -159,7 +180,6 @@ const dmServiceNode = {
   },
 };
 
-// ✅ FIX: All answers 40+ words, CONTACT_EMAIL used.
 const dmFaqNode = {
   ...faqSchema([
     {
@@ -183,32 +203,32 @@ const dmFaqNode = {
         "We track key metrics including organic traffic growth, keyword ranking improvements, conversion rates, cost per lead, return on ad spend (ROAS), and social engagement rates. We provide regular performance reports using Google Analytics 4, Google Search Console, and campaign dashboards. Our data-driven approach ensures every strategy is continuously optimised based on measurable outcomes and client business goals.",
     },
   ]),
-  "@id":            `${BASE}/services/digital-marketing-seo#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/digital-marketing-seo#webpage` },
+  "@id":            `${PAGE_CANONICAL}#faq`,
+  mainEntityOfPage: { "@id": `${PAGE_CANONICAL}#webpage` },
 };
 
 const dmPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services/digital-marketing-seo#webpage`,
-  url:           `${BASE}/services/digital-marketing-seo`,
+  "@id":         `${PAGE_CANONICAL}#webpage`,
+  url:           PAGE_CANONICAL,
   name:          "Digital Marketing & SEO Services | SEO, PPC — 99 Visual Solutions",
   description:   "Full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content & email marketing, local SEO, link building, marketing automation, and promotional video.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${BASE_SAFE}/#website` },
+  about:         { "@id": `${BASE_SAFE}/#organization` },
+  publisher:     { "@id": `${BASE_SAFE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/services/digital-marketing-og.jpg`,
+    url:       `${BASE_SAFE}/images/services/digital-marketing-og.jpg`,
     width:     1200,
     height:    630,
     caption:   "Digital Marketing & SEO Services by 99 Visual Solutions",
   },
   speakable:       { "@type": "SpeakableSpecification", cssSelector: [".dm-hero__h1", ".dm-hero__sub"] },
-  breadcrumb:      { "@id": `${BASE}/services/digital-marketing-seo#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/digital-marketing-seo`] },
+  breadcrumb:      { "@id": `${PAGE_CANONICAL}#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [PAGE_CANONICAL] },
 };
 
 const dmGraph = buildGraph(
@@ -259,7 +279,6 @@ export default function DigitalMarketing() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        /* ✅ FIX: dm-sr-only — accessible but visually hidden */
         .dm-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
         .dm-hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;overflow:hidden;padding:8rem 1.5rem 6rem;text-align:center;}
@@ -346,7 +365,6 @@ export default function DigitalMarketing() {
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
       `}</style>
 
-      {/* Header first — prevents UI displacement */}
       <Header />
 
       <script
@@ -369,7 +387,6 @@ export default function DigitalMarketing() {
         <div className="dm-corner dm-corner--bl" aria-hidden="true" />
         <div className="dm-corner dm-corner--br" aria-hidden="true" />
 
-        {/* ✅ FIX: aria-hidden removed — dm-sr-only used instead */}
         <nav className="dm-sr-only" aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
             <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">

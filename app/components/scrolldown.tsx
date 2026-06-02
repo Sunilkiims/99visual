@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 export default function ScrollDownButton() {
   const [mounted,  setMounted]  = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 800);
@@ -24,9 +25,22 @@ export default function ScrollDownButton() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  const scrollDown = () => {
+  const scrollDown = useCallback(() => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
-  };
+  }, []);
+
+  // Fix 1: Add native touchstart listener for instant response on mobile,
+  // bypassing the 300ms onClick delay on some Android WebViews.
+  useEffect(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+    const onTouch = (e: TouchEvent) => {
+      e.preventDefault(); // prevents ghost click
+      scrollDown();
+    };
+    btn.addEventListener("touchstart", onTouch, { passive: false });
+    return () => btn.removeEventListener("touchstart", onTouch);
+  }, [scrollDown]);
 
   const SIZE          = 48;
   const STROKE        = 1.5;
@@ -41,17 +55,17 @@ export default function ScrollDownButton() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
-        /* ── Anchor: only handles horizontal centering ── */
         .sd-anchor {
           position:  fixed;
-          bottom:    0.2rem;
+          bottom:    env(safe-area-inset-bottom, 0.2rem);
+          /* Fix 2: use env() so the button clears the iOS home indicator */
           left:      50%;
           transform: translateX(-50%);
           z-index:   9999;
-          /* Never set pointer-events here — let children decide */
+          /* Fix 3: ensure the anchor itself never blocks touches */
+          pointer-events: none;
         }
 
-        /* ── Animated wrapper ── */
         .sd-wrap {
           display:        flex;
           flex-direction: column;
@@ -60,12 +74,14 @@ export default function ScrollDownButton() {
           opacity:        0;
           transform:      translateY(12px);
           transition:     opacity 0.5s ease, transform 0.5s ease;
-          pointer-events: none;        /* default off */
+          pointer-events: none;
+          /* Fix 4: isolate stacking context so iOS doesn't misroute touches */
+          isolation:      isolate;
         }
         .sd-wrap--visible {
           opacity:        1;
           transform:      translateY(0);
-          pointer-events: auto;        /* enable the whole subtree at once */
+          pointer-events: auto;
         }
         .sd-wrap--hidden {
           opacity:        0;
@@ -73,7 +89,6 @@ export default function ScrollDownButton() {
           pointer-events: none;
         }
 
-        /* ── Label ── */
         .sd-label {
           font-family:    'DM Sans', sans-serif;
           font-size:      8px;
@@ -85,25 +100,11 @@ export default function ScrollDownButton() {
           pointer-events: none;
         }
 
-        /*
-         * ── Button ──────────────────────────────────────────────────────────
-         * Visual size = 48×48px.
-         * Touch target = 72×72px via ::before pseudo-element.
-         *
-         * WHY ::before instead of padding trick:
-         *   • padding + negative-margin is unreliable on iOS Safari (the UA
-         *     clips the hit area at the element's border-box in some cases).
-         *   • ::before with position:absolute is the most reliable way to
-         *     expand a tap target without affecting layout, and it works
-         *     correctly on iOS Safari, Chrome Android and all modern browsers.
-         *   • pointer-events on the pseudo-element is inherited from the
-         *     button, so no extra CSS needed.
-         */
         .sd-btn {
-          position:   relative;          /* needed for ::before */
+          position:   relative;
           width:      48px;
           height:     48px;
-          padding:    0;                 /* NO padding on the button itself */
+          padding:    0;
           margin:     0;
           border:     none;
           background: transparent;
@@ -114,28 +115,37 @@ export default function ScrollDownButton() {
           box-sizing: border-box;
           outline:    none;
           -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;    /* kills 300ms tap delay on mobile */
+          touch-action: manipulation;
+          /* Fix 5: explicit will-change so iOS composites the layer correctly */
+          will-change: transform;
+          /* Fix 6: transparent background must be set explicitly for touch
+             hit-testing on WKWebView — 'transparent' is treated as
+             pointer-events: none by the compositor in some iOS versions */
+          background-color: rgba(0, 0, 0, 0.001);
         }
 
-        /* Invisible 72×72 touch target centred on the button */
-        .sd-btn::before {
-          content:  '';
+        /*
+         * Fix 7: Replace ::before touch-target pseudo with a real child div.
+         * iOS Safari clips ::before hit areas at the element border-box when
+         * the element uses flexbox or position:relative in certain stacking
+         * contexts. A real DOM node is always reliable.
+         * (The .sd-hit div is added to the JSX below.)
+         */
+        .sd-hit {
           position: absolute;
           top:      50%;
           left:     50%;
           width:    72px;
           height:   72px;
           transform: translate(-50%, -50%);
-          /* Uncomment to debug the hit area: */
-          /* background: rgba(255,0,0,0.15); */
+          /* Uncomment to debug: background: rgba(255,0,0,0.15); */
         }
 
-        /* ── Progress ring ── */
         .sd-ring {
           position:       absolute;
           inset:          0;
           overflow:       visible;
-          pointer-events: none;        /* ring is decorative only */
+          pointer-events: none;
         }
         .sd-ring__track {
           fill:         none;
@@ -152,11 +162,6 @@ export default function ScrollDownButton() {
           transition:       stroke-dashoffset .15s ease;
         }
 
-        /*
-         * ── Inner circle ────────────────────────────────────────────────────
-         * pointer-events: none here is CORRECT because the <button> is the
-         * interactive element. The inner div is purely visual.
-         */
         .sd-inner {
           position:        relative;
           z-index:         2;
@@ -170,24 +175,21 @@ export default function ScrollDownButton() {
           justify-content: center;
           transition:      background .22s ease, border-color .22s ease, transform .22s ease;
           backdrop-filter: blur(8px);
-          pointer-events:  none;       /* visual only — button handles events */
+          pointer-events:  none;
         }
 
-        /* Hover / focus feedback — targets .sd-inner via the parent .sd-btn */
         .sd-btn:hover      .sd-inner,
         .sd-btn:focus-visible .sd-inner {
           background:   rgba(252,246,250,.32);
           border-color: rgba(217,255,0,.6);
           transform:    scale(1.08);
         }
-        /* :active fires on touch too (unlike :hover on mobile) */
         .sd-btn:active .sd-inner {
           background:   rgba(252,246,250,.18);
           border-color: rgba(255,72,0,.7);
           transform:    scale(0.94);
         }
 
-        /* ── Chevrons ── */
         .sd-chevrons {
           display:        flex;
           flex-direction: column;
@@ -220,7 +222,6 @@ export default function ScrollDownButton() {
           100% { opacity: 0;  transform: translateX(-50%) translateY(4px);  }
         }
 
-        /* ── Tick line ── */
         .sd-line {
           width:          1px;
           height:         28px;
@@ -233,14 +234,9 @@ export default function ScrollDownButton() {
           50%     { opacity: 1;  }
         }
 
-        /* ── Reduced motion ── */
         @media (prefers-reduced-motion: reduce) {
-          .sd-chevron, .sd-line {
-            animation:  none !important;
-          }
-          .sd-wrap {
-            transition: none !important;
-          }
+          .sd-chevron, .sd-line { animation: none !important; }
+          .sd-wrap { transition: none !important; }
           .sd-chevron--1 { opacity: .7; transform: translateX(-50%); }
           .sd-chevron--2 { opacity: .4; transform: translateX(-50%); }
         }
@@ -251,21 +247,19 @@ export default function ScrollDownButton() {
           className={`sd-wrap${visible ? " sd-wrap--visible" : " sd-wrap--hidden"}`}
           role={visible ? undefined : "presentation"}
         >
-          {/* Tick line */}
           <div className="sd-line" aria-hidden="true" />
 
-          {/*
-           * Button — 48×48 visual, 72×72 touch target via ::before.
-           * tabIndex={-1} when hidden keeps it out of tab order.
-           */}
           <button
+            ref={btnRef}
             className="sd-btn"
             onClick={scrollDown}
             aria-label="Scroll down to explore content"
             aria-hidden={!visible}
             tabIndex={visible ? 0 : -1}
           >
-            {/* Progress ring — decorative, aria-hidden */}
+            {/* Fix 7: real DOM node for extended touch target */}
+            <div className="sd-hit" aria-hidden="true" />
+
             <svg
               className="sd-ring"
               width={SIZE}
@@ -273,12 +267,7 @@ export default function ScrollDownButton() {
               viewBox={`0 0 ${SIZE} ${SIZE}`}
               aria-hidden="true"
             >
-              <circle
-                className="sd-ring__track"
-                cx={SIZE / 2}
-                cy={SIZE / 2}
-                r={RADIUS}
-              />
+              <circle className="sd-ring__track" cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} />
               <circle
                 className="sd-ring__fill"
                 cx={SIZE / 2}
@@ -289,21 +278,12 @@ export default function ScrollDownButton() {
               />
             </svg>
 
-            {/* Inner circle with animated chevrons */}
             <div className="sd-inner" aria-hidden="true">
               <div className="sd-chevrons">
-                <svg
-                  className="sd-chevron sd-chevron--1"
-                  width="10" height="6" viewBox="0 0 10 6" fill="none"
-                  aria-hidden="true"
-                >
+                <svg className="sd-chevron sd-chevron--1" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
                   <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <svg
-                  className="sd-chevron sd-chevron--2"
-                  width="10" height="6" viewBox="0 0 10 6" fill="none"
-                  aria-hidden="true"
-                >
+                <svg className="sd-chevron sd-chevron--2" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
                   <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>

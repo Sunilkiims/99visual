@@ -2,18 +2,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 3D Visualization & Architectural Rendering — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED:
-//   ✅ CRITICAL #2 — Replaced deprecated breadcrumb() with breadcrumbFromItems()
-//      emitting item as { "@type": "Thing", "@id": url } objects.
-//   ✅ Canonical set to absolute URL.
-//   ✅ Hreflang removed — all variants pointed to identical URLs.
-//   ✅ aria-hidden removed from breadcrumb <nav> — viz-sr-only pattern used.
-//   ✅ CONTACT_EMAIL imported — single source of truth.
-//   ✅ FAQ answers verified 40+ words for rich result eligibility.
-//   ✅ Title within 65-char limit.
-//   ✅ serviceSchema() uses pathname instead of url (legacy) for consistency.
-//   ✅ vizFaqNode mainEntityOfPage added — links FAQ to WebPage node.
-//   ✅ All CSS classes use "viz-" prefix (unique, no collision).
+// PRODUCTION-READY INDEXING FIXES (final):
+//   ✅ FIX 1 — CANONICAL: Absolute URL via PAGE_CANONICAL constant.
+//      Google explicitly recommends absolute canonicals. When canonical is
+//      already absolute, Next.js ignores metadataBase — no doubling.
+//   ✅ FIX 2 — BASE_SAFE: trailing-slash guard prevents double-slash in all
+//      OG, Twitter, and JSON-LD URLs.
+//   ✅ FIX 3 — robots: explicit index/follow at route level to prevent any
+//      parent layout noindex bleeding through.
+//   ✅ FIX 4 — DATE_MODIFIED: hardcoded, not tied to build time. Prevents
+//      false freshness signals to Google on every deployment.
+//   ✅ FIX 5 — Breadcrumb JSON-LD items use absolute URLs (not relative paths).
+//   ✅ FIX 6 — PAGE_CANONICAL single source of truth reused across metadata,
+//      OG url, JSON-LD @id fields, potentialAction, breadcrumb — no typo risk.
+//   ✅ All previous fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
+//      40+ word FAQ answers, viz- CSS prefix, sr-only breadcrumb,
+//      vizFaqNode mainEntityOfPage, serviceSchema pathname.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -40,45 +44,62 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX 2 — Trailing-slash guard.
+// Ensures BASE never produces double-slash URLs regardless of whether the
+// constant in lib/schema.ts ends with "/" or not.
+// ─────────────────────────────────────────────────────────────────────────────
+const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// ✅ FIX 1 & 6 — Single absolute canonical used everywhere.
+// Absolute URL: Next.js ignores metadataBase for it — zero doubling risk.
+// Reusing this constant across metadata, OG, and all JSON-LD eliminates
+// any chance of a mismatched ID from a stray typo.
+const PAGE_CANONICAL = `${BASE_SAFE}/services/visualization`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ FIX: 63 chars — within sweet spot
+  // 55 chars — within sweet spot
   title: "3D Visualization & Architectural Rendering | 99 Visual",
 
   description:
     "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions. Helping architects, developers & designers make confident decisions with stunning visuals.",
 
-  metadataBase: new URL(BASE),
+  // metadataBase resolves any other relative metadata fields (e.g. OG images).
+  // Since canonical is already absolute below, metadataBase is ignored for it.
+  metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX: Absolute canonical URL
-    canonical: `${BASE}/services/visualization`,
-    // ✅ FIX: Hreflang removed — all variants pointed to identical URLs.
+    // ✅ FIX 1 — Absolute canonical. Google recommends absolute URLs.
+    // Next.js does NOT prepend metadataBase when the value is already absolute.
+    canonical: PAGE_CANONICAL,
   },
 
+  // ✅ FIX 3 — Explicit robots at route level.
+  // Prevents any parent layout.tsx "noindex" from overriding this page.
   robots: {
-    index: true,
+    index:  true,
     follow: true,
     googleBot: {
-      index: true,
-      follow: true,
+      index:               true,
+      follow:              true,
       "max-image-preview": "large",
-      "max-snippet": -1,
+      "max-snippet":       -1,
       "max-video-preview": -1,
     },
   },
 
   openGraph: {
     type:        "website",
-    url:         `${BASE}/services/visualization`,
+    url:         PAGE_CANONICAL,
     siteName:    "99 Visual Solutions",
     locale:      "en_US",
     title:       "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
     description: "From photorealistic architectural renders and 3D walkthroughs to precision CAD modeling and product visualization — 99 Visual Solutions turns your concepts into stunning visual realities.",
     images: [
       {
-        url:    `${BASE}/images/services/visualization-og.jpg`,
+        url:    `${BASE_SAFE}/images/services/visualization-og.jpg`,
         width:  1200,
         height: 630,
         type:   "image/jpeg",
@@ -95,14 +116,14 @@ export const metadata: Metadata = {
     description: "Photorealistic architectural renders, CAD modeling, product visualization & 3D walkthroughs — crafted for architects, developers & designers worldwide.",
     images: [
       {
-        url: `${BASE}/images/services/visualization-og.jpg`,
+        url: `${BASE_SAFE}/images/services/visualization-og.jpg`,
         alt: "3D architectural rendering and visualization services by 99 Visual Solutions",
       },
     ],
   },
 
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
-  authors:         [{ name: "99 Visual Solutions", url: BASE }],
+  authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
   category:        "Technology",
@@ -113,22 +134,23 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
+// ✅ FIX 4 — DATE_MODIFIED is hardcoded, NOT `new Date()`.
+// Using new Date() stamps every build as "modified today" even when content
+// hasn't changed — Google treats this as a false freshness signal.
+// Update DATE_MODIFIED manually whenever content is actually edited.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA
-// ✅ FIX: breadcrumbFromItems() with correct @id item objects.
-// ✅ FIX: serviceSchema() uses pathname.
-// ✅ FIX: vizFaqNode mainEntityOfPage added.
-// ✅ FIX: All FAQ answers 40+ words. CONTACT_EMAIL used.
+// SCHEMA — all URLs use BASE_SAFE + PAGE_CANONICAL for consistency.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ✅ FIX 5 — Breadcrumb items use absolute URLs in JSON-LD.
 const vizBreadcrumbNode = breadcrumbFromItems([
-  { name: "Home",             url: "/" },
-  { name: "Services",         url: "/services" },
-  { name: "3D Visualization", url: "/services/visualization" },
+  { name: "Home",             url: `${BASE_SAFE}/` },
+  { name: "Services",         url: `${BASE_SAFE}/services` },
+  { name: "3D Visualization", url: PAGE_CANONICAL },
 ]);
 
 const vizServiceNode = {
@@ -136,9 +158,9 @@ const vizServiceNode = {
     name:        "3D Visualization & Architectural Rendering",
     description: "Photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing.",
     pathname:    "/services/visualization",
-    image:       `${BASE}/images/services/visualization-og.jpg`,
+    image:       `${BASE_SAFE}/images/services/visualization-og.jpg`,
   }),
-  "@id": `${BASE}/services/visualization#service`,
+  "@id": `${PAGE_CANONICAL}#service`,
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name:    "3D Visualization Services",
@@ -154,7 +176,6 @@ const vizServiceNode = {
   },
 };
 
-// ✅ FIX: All answers 40+ words. CONTACT_EMAIL used throughout.
 const vizFaqNode = {
   ...faqSchema([
     {
@@ -178,26 +199,25 @@ const vizFaqNode = {
         "Absolutely. We serve architects, real estate developers, and product designers across India, USA, UK, UAE, and Australia. Our remote-first workflow means geography is never a barrier — we collaborate via email, video calls, and cloud-based file sharing. All deliverables are provided in your preferred format and resolution, ready for presentations, marketing, or planning applications.",
     },
   ]),
-  // ✅ FIX: mainEntityOfPage added — links FAQPage to WebPage node in graph
-  "@id":            `${BASE}/services/visualization#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/services/visualization#webpage` },
+  "@id":            `${PAGE_CANONICAL}#faq`,
+  mainEntityOfPage: { "@id": `${PAGE_CANONICAL}#webpage` },
 };
 
 const vizPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE}/services/visualization#webpage`,
-  url:           `${BASE}/services/visualization`,
+  "@id":         `${PAGE_CANONICAL}#webpage`,
+  url:           PAGE_CANONICAL,
   name:          "3D Visualization & Architectural Rendering | 99 Visual Solutions",
   description:   "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions. Serving architects, developers & designers worldwide.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
-  isPartOf:      { "@id": `${BASE}/#website` },
-  about:         { "@id": `${BASE}/#organization` },
-  publisher:     { "@id": `${BASE}/#organization` },
+  isPartOf:      { "@id": `${BASE_SAFE}/#website` },
+  about:         { "@id": `${BASE_SAFE}/#organization` },
+  publisher:     { "@id": `${BASE_SAFE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE}/images/services/visualization-og.jpg`,
+    url:       `${BASE_SAFE}/images/services/visualization-og.jpg`,
     width:     1200,
     height:    630,
     caption:   "3D architectural rendering and visualization services by 99 Visual Solutions",
@@ -206,9 +226,8 @@ const vizPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".viz-hero__h1", ".viz-hero__sub"],
   },
-  // ✅ FIX: reference only — matches @id from vizBreadcrumbNode
-  breadcrumb:      { "@id": `${BASE}/services/visualization#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE}/services/visualization`] },
+  breadcrumb:      { "@id": `${PAGE_CANONICAL}#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [PAGE_CANONICAL] },
 };
 
 const vizGraph = buildGraph(
@@ -216,7 +235,6 @@ const vizGraph = buildGraph(
   localBusinessSchema,
   websiteSchema,
   vizPageNode,
-  // ✅ FIX: standalone BreadcrumbList with correct @id item objects
   vizBreadcrumbNode,
   vizServiceNode,
   vizFaqNode,
@@ -245,12 +263,6 @@ function HeroSection() {
       <div className="viz-corner viz-corner--bl" aria-hidden="true" />
       <div className="viz-corner viz-corner--br" aria-hidden="true" />
 
-      {/*
-        ✅ FIX: Removed aria-hidden="true" from <nav>.
-        aria-hidden removes the element from the accessibility tree entirely,
-        violating WCAG 2.1. The viz-sr-only class hides it visually
-        while keeping it accessible to screen readers and crawlers.
-      */}
       <nav className="viz-sr-only" aria-label="Breadcrumb">
         <ol
           itemScope
@@ -335,7 +347,6 @@ export default function VisualizationPage() {
           --ff-sans:   'DM Sans', sans-serif;
         }
 
-        /* ✅ FIX: viz-sr-only — accessible but visually hidden */
         .viz-sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
@@ -378,10 +389,8 @@ export default function VisualizationPage() {
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
       `}</style>
 
-      {/* Header first — prevents UI displacement */}
       <Header />
 
-      {/* Single JSON-LD script — one @context via buildGraph */}
       <script
         id="schema-visualization-graph"
         type="application/ld+json"
