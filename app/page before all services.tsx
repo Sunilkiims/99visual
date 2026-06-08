@@ -26,9 +26,7 @@ import Footer           from './components/footer';
 import ScrollDown       from './components/scrolldown';
 import Chatbot          from './components/chatbot';
 import Whatsappbutton   from './components/wahtsappbutton';
-import OurServices from './components/ourservices';
 import PageLoader       from './components/PageLoader';
-
 
 import {
   BASE,
@@ -492,11 +490,9 @@ export default function Home() {
         `}</style>
       </section>
 
-      
-     
+      <Poweredbysection />
+      <HowWeWork />
       <WhyWeAre />
-      
-      <OurServices />
       <WeServe />
       <Footer />
       <ScrollDown />

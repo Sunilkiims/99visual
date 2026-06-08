@@ -1,0 +1,43 @@
+/* ── HomeSeoSection.css ──────────────────────────────────────────────────────
+   Imported by app/page.tsx.
+   Scoped styles for the SEO homepage services content section + About section.
+   No CSS Modules needed — class names are unique enough to avoid collisions.
+────────────────────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* Pulsing dot in the "Global IT" badge */
+@keyframes homePulse {
+  0%, 100% { opacity: 1;   transform: scale(1);  }
+  50%       { opacity: .35; transform: scale(.6); }
+}
+
+.home-pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f97316;
+  animation: homePulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* About section CTA buttons */
+.home-cta-primary:hover  { opacity: 0.85 !important; transform: translateY(-1px) !important; }
+.home-cta-secondary:hover {
+  background: rgba(249,115,22,0.08) !important;
+  border-color: #f97316 !important;
+}
+
+/* Service cards — hover state (replaces JS onMouseEnter/onMouseLeave) */
+.svc-card:hover {
+  border-color: rgba(249,115,22,0.35) !important;
+  background:   rgba(249,115,22,0.035) !important;
+}
+
+/* Service card anchor links */
+.svc-link:hover { border-bottom-color: #f97316 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-pulse-dot { animation: none; }
+  .home-cta-primary:hover { transform: none !important; }
+}
