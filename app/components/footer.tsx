@@ -42,6 +42,7 @@ const NAV_SERVICES = [
   { label: 'Web Development',          href: '/services/website-development'        },
   // UI/UX Design removed ✅
   { label: 'Visualization',            href: '/services/visualization'          }, // ✅ Renamed + new URL
+  { label: 'IT Consulting',            href: '/services/it-consulting'          },
   { label: 'Digital Marketing & SEO',  href: '/services/digital-marketing-seo'  }, // ✅ Renamed + new URL
   { label: 'QA & Automation',          href: '/services/automation-testing'     },
   { label: 'CAD & GIS',                href: '/services/cad-gis-photogrammetry' },
