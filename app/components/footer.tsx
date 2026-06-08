@@ -39,7 +39,7 @@ const NAV_COMPANY = [
 ];
 
 const NAV_SERVICES = [
-  { label: 'Web Development',          href: '/services/web-development'        },
+  { label: 'Web Development',          href: '/services/website-development'        },
   // UI/UX Design removed ✅
   { label: 'Visualization',            href: '/services/visualization'          }, // ✅ Renamed + new URL
   { label: 'Digital Marketing & SEO',  href: '/services/digital-marketing-seo'  }, // ✅ Renamed + new URL
