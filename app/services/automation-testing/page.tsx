@@ -1,35 +1,4 @@
 // app/services/automation-testing/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// AI-Powered QA & Automation Testing — 99 Visual Solutions
-//
-// CANONICAL / INDEXING FIXES APPLIED (on top of prior audit):
-//
-//   ✅ FIX C1 — BASE trailing-slash sanitised via stripTrailingSlash().
-//      If BASE = "https://99visual.com/" the old code produced
-//      "https://99visual.com//services/automation-testing" — a double-slash
-//      URL that Google treats as a different resource and will NOT index.
-//
-//   ✅ FIX C2 — metadata.alternates.canonical changed from an absolute URL
-//      to a RELATIVE path ("/services/automation-testing").
-//      In Next.js 13/14 App Router, when metadataBase is set, the canonical
-//      in alternates must be relative. An absolute URL causes Next.js to
-//      either skip the <link rel="canonical"> tag entirely or double-prefix
-//      it with metadataBase — both prevent indexing.
-//
-//   ✅ FIX C3 — metadataBase set to new URL(CLEAN_BASE) using the sanitised
-//      constant so there is no mismatch between metadataBase and the schema
-//      @id / url values.
-//
-//   ✅ FIX C4 — All schema @id and url values now use CLEAN_BASE (no trailing
-//      slash) so Google's Rich Results validator sees a single consistent
-//      canonical URL across <link rel="canonical">, og:url, and JSON-LD.
-//
-//   ✅ FIX C5 — robots meta explicitly declares index:true / follow:true
-//      (was already present, verified unchanged).
-//
-//   ✅ FIX C6 — openGraph.url and twitter images also use CLEAN_BASE.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import Image from "next/image";
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -55,32 +24,19 @@ import {
   faqSchema,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX C1 — Sanitise BASE: strip any trailing slash so all URLs are clean.
-// e.g. "https://99visual.com/" → "https://99visual.com"
-// All schema @id, url, og:url, and canonical values use CLEAN_BASE.
-// ─────────────────────────────────────────────────────────────────────────────
 const CLEAN_BASE = BASE.replace(/\/+$/, "");
 const PAGE_PATH  = "/services/automation-testing";
 const PAGE_URL   = `${CLEAN_BASE}${PAGE_PATH}`;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// METADATA
-// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "AI-Powered QA & Automation Testing | Agentic AI — 99 Visual",
 
   description:
     "99 Visual Solutions delivers next-generation QA powered by Agentic AI — autonomous test agents, self-healing automation, LLM-driven exploratory testing, performance & security testing, and CI/CD integration.",
 
-  // ✅ FIX C3 — Use CLEAN_BASE (no trailing slash) to avoid double-slash URLs
   metadataBase: new URL(CLEAN_BASE),
 
   alternates: {
-    // ✅ FIX C2 — RELATIVE path required when metadataBase is set in Next.js
-    // 13/14 App Router. An absolute URL here either gets skipped or
-    // double-prefixed. A relative path lets Next.js correctly emit:
-    //   <link rel="canonical" href="https://yourdomain.com/services/automation-testing" />
     canonical: PAGE_PATH,
   },
 
@@ -101,12 +57,10 @@ export const metadata: Metadata = {
       "AI-Powered QA & Automation Testing | Agentic AI — 99 Visual Solutions",
     description:
       "Next-generation QA powered by Agentic AI: autonomous test agents, self-healing automation, LLM-driven exploratory testing, load & performance testing, security testing, and CI/CD integration.",
-    // ✅ FIX C4 — Use PAGE_URL (CLEAN_BASE + path, no double slash)
     url: PAGE_URL,
     siteName: "99 Visual Solutions",
     images: [
       {
-        // ✅ FIX C4 — CLEAN_BASE used
         url:    `${CLEAN_BASE}/images/services/testing-og.jpg`,
         width:  1200,
         height: 630,
@@ -127,7 +81,6 @@ export const metadata: Metadata = {
     creator:     "@99VisualSoluti1",
     images: [
       {
-        // ✅ FIX C4 — CLEAN_BASE used
         url: `${CLEAN_BASE}/images/services/testing-og.jpg`,
         alt: "AI-Powered QA & Automation Testing Services by 99 Visual Solutions",
       },
@@ -146,15 +99,9 @@ export const metadata: Metadata = {
   formatDetection: { email: false, address: false, telephone: false },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATES
-// ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FAQ — single source of truth for schema AND visible HTML
-// ─────────────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
     question: "What AI-powered QA services does 99 Visual Solutions provide?",
@@ -178,11 +125,6 @@ const FAQ_ITEMS = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA
-// ✅ FIX C4 — All @id and url values now use PAGE_URL / CLEAN_BASE
-// so JSON-LD matches the canonical URL exactly.
-// ─────────────────────────────────────────────────────────────────────────────
 const qaBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",                    url: "/" },
   { name: "Services",                url: "/services" },
@@ -261,9 +203,6 @@ const qaGraph = buildGraph(
   qaFaqNode,
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA — unchanged
-// ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaBug />,       title: "Zero-Defect Delivery",        description: "Our Agentic AI test agents autonomously explore edge cases and failure paths humans often miss — catching critical defects before they ever reach production environments." },
   { icon: <FaCogs />,      title: "Self-Healing Automation",     description: "AI-powered test scripts that automatically adapt to UI changes and DOM shifts, drastically reducing maintenance overhead and keeping your CI/CD pipelines green." },
@@ -336,9 +275,6 @@ const services = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT — JSX unchanged, all CSS classes already qa- prefixed
-// ─────────────────────────────────────────────────────────────────────────────
 export default function AutomationTestingPage() {
   return (
     <>
@@ -606,8 +542,12 @@ export default function AutomationTestingPage() {
         </div>
       </section>
 
-      <section id="qa-faq" className="qa-faq" aria-labelledby="qa-faq-heading"
-        itemScope itemType="https://schema.org/FAQPage">
+      {/* ✅ FIX: Removed itemScope/itemType="FAQPage", itemProp="mainEntity",
+          itemProp="name", itemProp="acceptedAnswer", and itemProp="text"
+          microdata attributes. FAQPage structured data is handled exclusively
+          via JSON-LD in the <script> tag above (qaFaqNode), eliminating the
+          duplicate FAQPage declaration that caused Google Search Console errors. */}
+      <section id="qa-faq" className="qa-faq" aria-labelledby="qa-faq-heading">
         <div className="qa-faq__inner">
           <div className="qa-faq__header">
             <span className="qa-faq__label">Got Questions?</span>
@@ -615,9 +555,8 @@ export default function AutomationTestingPage() {
           </div>
           <dl className="qa-faq__list">
             {FAQ_ITEMS.map(({ question, answer }, i) => (
-              <details key={i} className="qa-faq__item"
-                itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                <summary className="qa-faq__q" itemProp="name">
+              <details key={i} className="qa-faq__item">
+                <summary className="qa-faq__q">
                   <span className="qa-faq__q-text">{question}</span>
                   <span className="qa-faq__chevron" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -625,8 +564,8 @@ export default function AutomationTestingPage() {
                     </svg>
                   </span>
                 </summary>
-                <div className="qa-faq__a" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                  <p itemProp="text">{answer}</p>
+                <div className="qa-faq__a">
+                  <p>{answer}</p>
                 </div>
               </details>
             ))}

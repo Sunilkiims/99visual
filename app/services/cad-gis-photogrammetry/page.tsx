@@ -1,23 +1,4 @@
 // app/services/cad-gis-photogrammetry/page.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// CAD, GIS & Photogrammetry — 99 Visual Solutions
-//
-// INDEXING FIXES APPLIED (v2):
-//   ✅ CRITICAL #1 — CANONICAL FIX (root cause of non-indexing):
-//      Replaced absolute canonical `${BASE}/services/cad-gis-photogrammetry`
-//      with RELATIVE path "/services/cad-gis-photogrammetry".
-//      metadataBase + absolute URL = doubled/malformed canonical that Google
-//      rejects, preventing indexing. Relative path lets Next.js resolve it
-//      cleanly via metadataBase.
-//   ✅ CRITICAL #2 — BASE trailing-slash guard via BASE_SAFE.
-//      If BASE = "https://domain.com/" old code produced double-slash URLs in
-//      OG, Twitter, and all JSON-LD schema nodes — all fixed to use BASE_SAFE.
-//   ✅ CRITICAL #3 — robots: explicit index/follow at route level to prevent
-//      parent layout.tsx noindex from bleeding through.
-//   ✅ All previous fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
-//      40+ word FAQ answers, cg- CSS prefix, sr-only breadcrumb nav.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import Image from "next/image";
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -44,37 +25,16 @@ import {
   faqSchema,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX #2 — Trailing-slash guard.
-// Ensures BASE never produces double-slash URLs regardless of how the constant
-// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
-// ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE = BASE.replace(/\/$/, "");
 
-// ─────────────────────────────────────────────────────────────────────────────
-// METADATA
-// ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // 63 chars — within sweet spot
   title: "CAD, GIS & Photogrammetry Services | LiDAR — 99 Visual",
-
   description:
     "99 Visual Solutions delivers precision CAD drafting, GIS mapping, photogrammetry, LiDAR data processing, spatial analysis, and 3D modeling for infrastructure and urban planning worldwide.",
-
-  // metadataBase tells Next.js the domain for resolving relative paths.
   metadataBase: new URL(BASE_SAFE),
-
   alternates: {
-    // ✅ FIX #1 — RELATIVE canonical path (NOT absolute).
-    // Next.js prepends metadataBase to produce the correct absolute URL:
-    //   https://yourdomain.com/services/cad-gis-photogrammetry
-    // The old absolute URL caused Next.js to prepend metadataBase again,
-    // producing a doubled URL that Google rejects → page not indexed.
     canonical: "/services/cad-gis-photogrammetry",
   },
-
-  // ✅ FIX #3 — Explicit robots on this route.
-  // Prevents any parent layout.tsx "noindex" from overriding this page.
   robots: {
     index:  true,
     follow: true,
@@ -86,7 +46,6 @@ export const metadata: Metadata = {
       "max-video-preview":  -1,
     },
   },
-
   openGraph: {
     title:       "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions",
     description: "From CAD drafting and GIS mapping to LiDAR processing, photogrammetry, spatial analysis, and 3D modeling — 99 Visual Solutions delivers precision geospatial services worldwide.",
@@ -104,7 +63,6 @@ export const metadata: Metadata = {
     locale: "en_US",
     type:   "website",
   },
-
   twitter: {
     card:        "summary_large_image",
     title:       "CAD, GIS & Photogrammetry | LiDAR, 3D Mapping — 99 Visual Solutions",
@@ -118,7 +76,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
@@ -129,15 +86,9 @@ export const metadata: Metadata = {
   formatDetection: { email: false, address: false, telephone: false },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATES
-// ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FAQ — single source of truth. All answers 40+ words.
-// ─────────────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   {
     question: "What CAD drafting services does 99 Visual Solutions provide?",
@@ -160,10 +111,6 @@ const FAQ_ITEMS = [
       `We provide drone and aerial photogrammetry, orthomosaic mapping, 3D photogrammetric modelling, and survey-grade mapping for construction, engineering, and environmental monitoring. Our photogrammetry outputs include georeferenced orthomosaics, point clouds, digital elevation models (DEMs), and 3D textured meshes. Email us at ${CONTACT_EMAIL} to discuss your specific project requirements.`,
   },
 ];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — all URLs now use BASE_SAFE to prevent double-slash issues.
-// ─────────────────────────────────────────────────────────────────────────────
 
 const cgBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",                      url: "/" },
@@ -243,9 +190,6 @@ const cgGraph = buildGraph(
   cgFaqNode,
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA
-// ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaDraftingCompass />, title: "Accurate CAD Drafting",       description: "We provide precise CAD drawings and drafting services for engineering, architecture, and infrastructure projects, ensuring every deliverable meets professional standards." },
   { icon: <FaMapMarkedAlt />,    title: "Comprehensive GIS Solutions", description: "Our GIS services transform raw geospatial data into actionable insights for urban planning, resource management, and infrastructure development projects." },
@@ -308,9 +252,6 @@ const services = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
 export default function CADGISPhotogrammetry() {
   return (
     <>
@@ -432,7 +373,6 @@ export default function CADGISPhotogrammetry() {
 
       <Header />
 
-      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="cg-hero" aria-labelledby="cg-hero-heading">
         <div aria-hidden="true">
           <div className="cg-hero__orb cg-hero__orb--1" />
@@ -488,7 +428,6 @@ export default function CADGISPhotogrammetry() {
         </div>
       </section>
 
-      {/* ══ INTRO ════════════════════════════════════════════════════════ */}
       <section className="cg-intro" aria-labelledby="cg-intro-heading">
         <div className="cg-intro__inner">
           <span className="cg-intro__label">Our Expertise</span>
@@ -510,7 +449,6 @@ export default function CADGISPhotogrammetry() {
         </div>
       </section>
 
-      {/* ══ SERVICE SECTIONS ═════════════════════════════════════════════ */}
       <div id="cg-services" className="cg-services">
         {services.map((svc, idx) => (
           <section key={svc.id} id={svc.id} className="cg-svc" aria-labelledby={`cg-svc-heading-${svc.id}`}>
@@ -534,7 +472,6 @@ export default function CADGISPhotogrammetry() {
         ))}
       </div>
 
-      {/* ══ BENEFITS ════════════════════════════════════════════════════ */}
       <section className="cg-benefits" aria-labelledby="cg-benefits-heading">
         <div className="cg-benefits__inner">
           <div className="cg-benefits__head">
@@ -560,9 +497,11 @@ export default function CADGISPhotogrammetry() {
         </div>
       </section>
 
-      {/* ══ FAQ ═════════════════════════════════════════════════════════ */}
-      <section id="cg-faq" className="cg-faq" aria-labelledby="cg-faq-heading"
-        itemScope itemType="https://schema.org/FAQPage">
+      {/* ✅ FIX: Removed itemScope/itemType="FAQPage", itemProp="mainEntity",
+          itemProp="name", itemProp="acceptedAnswer", and itemProp="text"
+          microdata attributes. FAQPage structured data is handled exclusively
+          via JSON-LD in the <script> tag above (cgFaqNode). */}
+      <section id="cg-faq" className="cg-faq" aria-labelledby="cg-faq-heading">
         <div className="cg-faq__inner">
           <div className="cg-faq__header">
             <span className="cg-faq__label">Got Questions?</span>
@@ -570,9 +509,8 @@ export default function CADGISPhotogrammetry() {
           </div>
           <dl className="cg-faq__list">
             {FAQ_ITEMS.map(({ question, answer }, i) => (
-              <details key={i} className="cg-faq__item"
-                itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                <summary className="cg-faq__q" itemProp="name">
+              <details key={i} className="cg-faq__item">
+                <summary className="cg-faq__q">
                   <span className="cg-faq__q-text">{question}</span>
                   <span className="cg-faq__chevron" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -580,8 +518,8 @@ export default function CADGISPhotogrammetry() {
                     </svg>
                   </span>
                 </summary>
-                <div className="cg-faq__a" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                  <p itemProp="text">{answer}</p>
+                <div className="cg-faq__a">
+                  <p>{answer}</p>
                 </div>
               </details>
             ))}
@@ -589,7 +527,6 @@ export default function CADGISPhotogrammetry() {
         </div>
       </section>
 
-      {/* ══ CTA STRIP ═══════════════════════════════════════════════════ */}
       <section className="cg-cta" aria-labelledby="cg-cta-heading">
         <div className="cg-cta__orb" aria-hidden="true" />
         <div className="cg-cta__inner">
