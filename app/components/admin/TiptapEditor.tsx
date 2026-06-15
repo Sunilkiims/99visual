@@ -17,7 +17,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image.configure({ resizable: true }),
+      Image.configure({ inline: true }),
       Link.configure({ openOnClick: false }),
       Placeholder.configure({
         placeholder: placeholder || 'Start writing your post content...',
