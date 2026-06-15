@@ -77,12 +77,12 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
   function addImage() {
     const url = prompt('Enter image URL:')
-    if (url) editor.chain().focus().setImage({ src: url }).run()
+    if (url && editor) editor.chain().focus().setImage({ src: url }).run()
   }
 
   function addLink() {
     const url = prompt('Enter URL:')
-    if (url) editor.chain().focus().setLink({ href: url }).run()
+    if (url && editor) editor.chain().focus().setLink({ href: url }).run()
   }
 
   return (
