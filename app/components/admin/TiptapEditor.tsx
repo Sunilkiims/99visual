@@ -35,7 +35,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     immediatelyRender: false,
     onCreate: ({ editor }) => {
       if (content) {
-        editor.commands.setContent(content, false)
+        editor.commands.setContent(content)
       }
     },
   })
@@ -44,7 +44,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     if (!editor) return
     if (!content) return
     if (editor.isEmpty) {
-      editor.commands.setContent(content, false)
+      editor.commands.setContent(content)
     }
   }, [editor, content])
 
