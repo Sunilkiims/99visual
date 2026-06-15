@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
-
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
     const bytes = await file.arrayBuffer()
@@ -47,6 +46,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, media }, { status: 201 })
   } catch (error) {
     console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Upload failed', details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    )
   }
 }
