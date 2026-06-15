@@ -28,6 +28,7 @@ import Chatbot          from './components/chatbot';
 import Whatsappbutton   from './components/wahtsappbutton';
 import OurServices from './components/ourservices';
 import PageLoader       from './components/PageLoader';
+import InsightsSection  from './components/InsightsSection';
 
 
 import {
@@ -498,6 +499,7 @@ export default function Home() {
       
       <OurServices />
       <WeServe />
+      <InsightsSection />
       <Footer />
       <ScrollDown />
       <Chatbot />

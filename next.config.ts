@@ -1,6 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: __dirname,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
   async redirects() {
     return [
       {
@@ -28,6 +39,16 @@ const nextConfig: NextConfig = {
         destination: "/services/automation-testing",
         permanent: true,
       },
+{
+  source: '/blog',
+  destination: '/insights',
+  permanent: true,
+},
+{
+  source: '/blog/:slug*',
+  destination: '/insights/:slug*',
+  permanent: true,
+},
       {
         source: "/services/gis-cad-photogrammetry",
         destination: "/services/cad-gis-photogrammetry",

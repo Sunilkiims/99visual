@@ -35,7 +35,8 @@ const NAV_COMPANY = [
   { label: 'About',   href: '/about'   },
   { label: 'Careers', href: '/careers' },
   { label: 'Partner', href: '/partner' },
-  { label: 'Contact', href: '/contact' }, // ✅ Added; Blog removed
+  { label: 'Contact', href: '/contact' },
+  { label: 'Insights', href: '/insights' }, // ✅ Added; Blog removed
 ];
 
 const NAV_SERVICES = [

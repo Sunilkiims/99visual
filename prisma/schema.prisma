@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SchemaType {
+  ARTICLE
+  BLOG_POSTING
+  FAQ
+  SERVICE
+  ORGANIZATION
+  LOCAL_BUSINESS
+  WEBSITE
+  NONE
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(EDITOR)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Author {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  bio       String?  @db.Text
+  avatarUrl String?
+  email     String?  @unique
+  twitter   String?
+  linkedin  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+
+  @@map("authors")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  posts       Post[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  postTags  PostTag[]
+
+  @@map("tags")
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String   @unique
+  filename  String
+  altText   String?
+  size      Int
+  width     Int?
+  height    Int?
+  mimeType  String
+  createdAt DateTime @default(now())
+  posts     Post[]
+
+  @@map("media")
+}
+
+model Post {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  excerpt         String?    @db.Text
+  content         String     @db.Text
+  status          PostStatus @default(DRAFT)
+  featured        Boolean    @default(false)
+  readingTime     Int        @default(1)
+  viewCount       Int        @default(0)
+  authorId        String
+  categoryId      String
+  featuredImageId String?
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  author        Author    @relation(fields: [authorId], references: [id])
+  category      Category  @relation(fields: [categoryId], references: [id])
+  featuredImage Media?    @relation(fields: [featuredImageId], references: [id])
+  tags          PostTag[]
+  seo           PostSEO?
+
+  @@map("posts")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+model PostSEO {
+  id                 String     @id @default(cuid())
+  postId             String     @unique
+  metaTitle          String?
+  metaDescription    String?    @db.Text
+  keywords           String?
+  canonicalUrl       String?
+  ogTitle            String?
+  ogDescription      String?    @db.Text
+  ogImage            String?
+  twitterTitle       String?
+  twitterDescription String?    @db.Text
+  twitterImage       String?
+  robots             String     @default("index, follow")
+  schemaType         SchemaType @default(BLOG_POSTING)
+  structuredData     Json?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_seo")
+}
+
+model PageSEO {
+  id                 String     @id @default(cuid())
+  pagePath           String     @unique
+  pageTitle          String
+  metaTitle          String?
+  metaDescription    String?    @db.Text
+  keywords           String?
+  canonicalUrl       String?
+  ogTitle            String?
+  ogDescription      String?    @db.Text
+  ogImage            String?
+  twitterTitle       String?
+  twitterDescription String?    @db.Text
+  twitterImage       String?
+  robots             String     @default("index, follow")
+  schemaType         SchemaType @default(NONE)
+  structuredData     Json?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@map("page_seo")
+}
+
+model Settings {
+  id           String   @id @default(cuid())
+  siteName     String   @default("99 Visual Solutions")
+  siteUrl      String   @default("https://99visual.com")
+  logoUrl      String?
+  faviconUrl   String?
+  adminEmail   String   @default("admin@99visual.com")
+  footerText   String?
+  twitterUrl   String?
+  linkedinUrl  String?
+  instagramUrl String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model ContactLead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  service   String?
+  message   String   @db.Text
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@map("contact_leads")
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  active       Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
