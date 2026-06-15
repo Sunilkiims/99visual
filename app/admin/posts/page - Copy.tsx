@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+import { PostStatus } from '@prisma/client'
 import DeletePostButton from '@/app/components/admin/DeletePostButton'
 
 interface Props {
