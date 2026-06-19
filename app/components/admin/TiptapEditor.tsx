@@ -112,6 +112,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   }
 
   function insertTable() {
+    if (!editor) return
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
     setShowTableMenu(false)
   }
