@@ -29,7 +29,7 @@ import Whatsappbutton   from './components/wahtsappbutton';
 import OurServices from './components/ourservices';
 import PageLoader       from './components/PageLoader';
 import InsightsSection  from './components/InsightsSection';
-
+export const revalidate = 60
 
 import {
   BASE,
