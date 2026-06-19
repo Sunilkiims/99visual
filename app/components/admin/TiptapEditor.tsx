@@ -133,6 +133,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   }
 
   function applyColor(color: string) {
+    if (!editor) return
     editor.chain().focus().setColor(color).run()
     setCustomColor(color)
   }
@@ -141,7 +142,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-      {/* Toolbar Row 1 */}
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-gray-700 flex-wrap">
 
         {/* Font Family */}
@@ -234,8 +234,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           {showColorPicker && (
             <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-56">
               <p className="text-gray-400 text-xs font-medium mb-3">Text Color</p>
-
-              {/* Native color picker + hex input */}
               <div className="flex items-center gap-2 mb-3">
                 <input
                   type="color"
@@ -257,8 +255,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-2 text-white text-xs font-mono focus:outline-none focus:border-orange-500"
                 />
               </div>
-
-              {/* Preset swatches */}
               <p className="text-gray-500 text-xs mb-2">Presets</p>
               <div className="grid grid-cols-6 gap-1.5 mb-3">
                 {PRESET_COLORS.map((color) => (
@@ -274,7 +270,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   />
                 ))}
               </div>
-
               <button
                 type="button"
                 onClick={() => { editor.chain().focus().unsetColor().run(); setShowColorPicker(false) }}
