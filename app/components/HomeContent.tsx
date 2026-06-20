@@ -364,10 +364,34 @@ export default function HomeContent({ insights }: HomeContentProps) {
         <WeServe />
         {insights}
         <Footer />
-        <ScrollDown />
-        <Chatbot />
-        <Whatsappbutton />
       </div>
+
+      {/*
+        ScrollDown, Chatbot, and Whatsappbutton are rendered OUTSIDE the
+        transformed wrapper above, as true siblings — not nested inside it.
+
+        WHY: all three use `position: fixed` internally, which is supposed
+        to position them relative to the viewport regardless of where they
+        sit in the DOM. But per the CSS spec, ANY ancestor with a
+        `transform` value other than `none` becomes the containing block
+        for its `position: fixed` descendants instead of the viewport.
+
+        The wrapper div above has `transform: translateY(...)` on it for
+        the loader-reveal animation (translateY(0) once ready — note
+        translateY(0) still counts as "not none"). With these three
+        components previously rendered INSIDE that div, they were no
+        longer truly viewport-fixed: their effective position and stacking
+        became tied to the wrapper's own box instead, which is why they'd
+        intermittently appear behind other elements or fail to stay fixed
+        in front — exactly the "not always showing in front" symptom.
+
+        Rendering them here, as siblings of the transformed wrapper rather
+        than children of it, restores correct viewport-relative fixed
+        positioning at all times.
+      */}
+      <ScrollDown />
+      <Chatbot />
+      <Whatsappbutton />
     </>
   );
 }
