@@ -11,6 +11,12 @@
 //      and JSON-LD structured data continue to be present in the initial
 //      server-rendered HTML for crawlers/SEO, completely independent of the
 //      client-side loading animation.
+//   ✅ InsightsSection (async Server Component, queries Postgres via Prisma)
+//      is imported and rendered HERE — in the server component — and passed
+//      into <HomeContent> as the `insights` prop. It must not be imported
+//      directly inside HomeContent.tsx, since that file is a Client
+//      Component: doing so drags the `pg` driver into the browser bundle
+//      and breaks the build ("Module not found: pg/lib/...").
 //
 // PRIOR AUDIT FIXES (unchanged):
 //   ✅ CRITICAL #5 — breadcrumbFromPath('/') is the standalone BreadcrumbList
@@ -26,6 +32,15 @@
 
 import type { Metadata } from 'next';
 import HomeContent from './components/HomeContent';
+import InsightsSection from './components/InsightsSection';
+
+// InsightsSection is an async Server Component (it awaits a Prisma query
+// before returning JSX). Some @types/react versions don't model async
+// components as valid JSX element types, which throws a type-only error
+// here even though Next.js's App Router runs this pattern correctly at
+// build/runtime. This cast is the standard workaround — it does not change
+// any runtime behavior, only satisfies the type checker.
+const InsightsSectionAsync = InsightsSection as unknown as () => JSX.Element;
 
 export const revalidate = 60
 
@@ -216,7 +231,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeGraph) }}
       />
 
-      <HomeContent />
+      <HomeContent insights={<InsightsSectionAsync />} />
     </>
   );
 }
