@@ -13,7 +13,17 @@ const STATUSES = [
   '',
 ];
 
-export default function PageLoader() {
+interface PageLoaderProps {
+  /**
+   * Called once the exit animation has finished and the loader is about to
+   * unmount (phase → 'gone'). The parent page uses this to reveal its own
+   * content in sync with the loader's disappearance, instead of the two
+   * existing independently and overlapping mid-animation.
+   */
+  onComplete?: () => void;
+}
+
+export default function PageLoader({ onComplete }: PageLoaderProps) {
   // ─── mount guard ────────────────────────────────────────────────────────────
   // Prevents Next.js from rendering ANY loader HTML on the server.
   // Without this, the server outputs phase="loading"/progress=0 HTML, then the
@@ -54,6 +64,14 @@ export default function PageLoader() {
 
     return () => clearInterval(interval);
   }, [mounted]);
+
+  // Fire onComplete exactly once, the moment we transition to 'gone'.
+  useEffect(() => {
+    if (phase === 'gone') {
+      onComplete?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // Server renders null — no HTML to mismatch against.
   if (!mounted || phase === 'gone') return null;
