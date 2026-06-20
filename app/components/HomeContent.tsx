@@ -59,12 +59,21 @@ export default function HomeContent({ insights }: HomeContentProps) {
         unmount/remount it, we just reveal it. Kept simple (no animation
         library) and respects prefers-reduced-motion via the global rule
         already defined inside the hero section's own <style> block.
+
+        background: '#080810' matches PageLoader's ldr-root background.
+        Without an explicit background here, this wrapper is transparent,
+        so whatever the <body>/global background is (often white by
+        default) shows through during the opacity transition — producing
+        a brief white flash right as the loader unmounts. Setting this
+        background eliminates that gap regardless of global CSS.
       */}
       <div
         style={{
           opacity: ready ? 1 : 0,
           transform: ready ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.6s ease, transform 0.6s ease',
+          background: '#080810',
+          minHeight: '100vh',
         }}
         aria-hidden={!ready}
       >
