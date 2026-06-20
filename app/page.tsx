@@ -30,6 +30,7 @@
 //   ✅ CONTACT_EMAIL imported from schema.ts — single source of truth.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import type { ReactElement } from 'react';
 import type { Metadata } from 'next';
 import HomeContent from './components/HomeContent';
 import InsightsSection from './components/InsightsSection';
@@ -39,8 +40,11 @@ import InsightsSection from './components/InsightsSection';
 // components as valid JSX element types, which throws a type-only error
 // here even though Next.js's App Router runs this pattern correctly at
 // build/runtime. This cast is the standard workaround — it does not change
-// any runtime behavior, only satisfies the type checker.
-const InsightsSectionAsync = InsightsSection as unknown as () => JSX.Element;
+// any runtime behavior, only satisfies the type checker. Using
+// `React.ReactElement` (imported directly) instead of the ambient `JSX`
+// namespace, since that namespace isn't globally available in every
+// React/TypeScript version combination.
+const InsightsSectionAsync = InsightsSection as unknown as () => ReactElement;
 
 export const revalidate = 60
 
