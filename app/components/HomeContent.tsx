@@ -67,26 +67,18 @@ export default function HomeContent({ insights }: HomeContentProps) {
         a brief white flash right as the loader unmounts. Setting this
         background eliminates that gap regardless of global CSS.
 
-        overflow-x: 'hidden' prevents the horizontal scrollbar from
-        flickering during the translateY transition. Several sections
-        (e.g. the #about hero) contain decorative elements positioned with
-        negative offsets (orbs, glows) sized larger than their container.
-        Those sections already clip with their own overflow:hidden, but
-        while THIS wrapper is being transformed (translateY animating),
-        browsers can transiently recompute layout/overflow for the whole
-        subtree — if anything is even fractionally wider than the
-        viewport during that recalculation, the scrollbar toggles on/off
-        each frame. Hiding x-overflow at this top level guarantees no
-        descendant can ever trigger that, regardless of what's nested
-        inside any individual section.
-
-        NOTE: deliberately no minHeight here. A forced 100vh minimum
-        creates a second scroll container in some layouts (the page's own
-        <body> scrolls normally, and this div tried to enforce its own
-        full-viewport height on top of that) — that produced a double
-        scrollbar. This div should just size to its content like a plain
-        block element; the background color alone is enough to prevent
-        the white-flash gap.
+        NOTE: deliberately NO overflow / minHeight properties on this div.
+        Earlier attempts added overflow-x:hidden and minHeight:100vh here
+        to fix a horizontal-scrollbar flicker and a white-flash gap, but
+        combining `overflow` + `transform` on the same element risks the
+        browser treating it as its own scroll/containing context, which
+        produced a second (nested) scrollbar. This div is now a plain,
+        unstyled-for-scroll wrapper — it only handles opacity/transform
+        for the reveal animation and a background color. Any clipping of
+        decorative elements (the negative-offset orbs/glows) is handled
+        entirely by the overflow:hidden already set on the #about
+        <section> itself below, which is the correct, narrowly-scoped
+        place for it — not this top-level wrapper.
       */}
       <div
         style={{
@@ -94,8 +86,6 @@ export default function HomeContent({ insights }: HomeContentProps) {
           transform: ready ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.6s ease, transform 0.6s ease',
           background: '#080810',
-          overflowX: 'hidden',
-          overflowY: 'visible',
         }}
         aria-hidden={!ready}
       >
