@@ -60,32 +60,31 @@ export default function HomeContent({ insights }: HomeContentProps) {
         library) and respects prefers-reduced-motion via the global rule
         already defined inside the hero section's own <style> block.
 
-        background: '#080810' matches PageLoader's ldr-root background.
-        Without an explicit background here, this wrapper is transparent,
-        so whatever the <body>/global background is (often white by
-        default) shows through during the opacity transition — producing
-        a brief white flash right as the loader unmounts. Setting this
-        background eliminates that gap regardless of global CSS.
+        NOTE: deliberately NO background color on this div anymore.
+        A background was previously set here (#080810, matching
+        PageLoader's color) to prevent a white flash during the loader→
+        content crossfade. But this div wraps the ENTIRE page including
+        <Footer>, so that background was visible as a colored strip
+        below the footer wherever Footer's own box doesn't fully cover
+        it edge-to-edge — exactly the "extra height area below footer"
+        artifact being seen. A wrapper spanning the whole page should
+        not carry its own backdrop color; each section (header, hero,
+        footer, etc.) already owns its own background per your design.
+        If a brief flash during the loader handoff still shows, the
+        correct fix is a background-color on <html>/<body> in global
+        CSS (covers the real viewport edges only, never leaks past any
+        single section), not on this in-flow wrapper.
 
-        NOTE: deliberately NO overflow / minHeight properties on this div.
-        Earlier attempts added overflow-x:hidden and minHeight:100vh here
-        to fix a horizontal-scrollbar flicker and a white-flash gap, but
-        combining `overflow` + `transform` on the same element risks the
-        browser treating it as its own scroll/containing context, which
-        produced a second (nested) scrollbar. This div is now a plain,
-        unstyled-for-scroll wrapper — it only handles opacity/transform
-        for the reveal animation and a background color. Any clipping of
-        decorative elements (the negative-offset orbs/glows) is handled
-        entirely by the overflow:hidden already set on the #about
-        <section> itself below, which is the correct, narrowly-scoped
-        place for it — not this top-level wrapper.
+        NOTE: also deliberately NO overflow / minHeight properties — see
+        prior history: those caused a horizontal-scrollbar flicker and a
+        double/nested scrollbar respectively. This div only ever handles
+        opacity + transform for the reveal animation now.
       */}
       <div
         style={{
           opacity: ready ? 1 : 0,
           transform: ready ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.6s ease, transform 0.6s ease',
-          background: '#080810',
         }}
         aria-hidden={!ready}
       >
