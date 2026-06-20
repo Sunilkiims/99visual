@@ -25,13 +25,29 @@ import Marqueee         from './marquee';
 import WhyWeAre         from './whyweare';
 import OurServices      from './ourservices';
 import WeServe          from './weserve';
-import InsightsSection  from './InsightsSection';
 import Footer           from './footer';
 import ScrollDown       from './scrolldown';
 import Chatbot          from './chatbot';
 import Whatsappbutton   from './wahtsappbutton';
 
-export default function HomeContent() {
+interface HomeContentProps {
+  /**
+   * InsightsSection is an async Server Component that queries the database
+   * directly via Prisma (lib/prisma.ts → the `pg` driver). It cannot be
+   * imported into this file: this file is a Client Component ('use client'
+   * below), and importing a module that pulls in `pg` causes Next.js to try
+   * bundling the Postgres driver for the browser, which fails the build
+   * ("Module not found" on node_modules/pg/...).
+   *
+   * Instead, page.tsx (a Server Component) renders <InsightsSection />
+   * itself and passes the already-rendered element down here as a prop.
+   * This is the standard Next.js pattern for embedding a Server Component
+   * inside a Client Component's render tree.
+   */
+  insights: React.ReactNode;
+}
+
+export default function HomeContent({ insights }: HomeContentProps) {
   const [ready, setReady] = useState(false);
 
   return (
@@ -326,7 +342,7 @@ export default function HomeContent() {
         <WhyWeAre />
         <OurServices />
         <WeServe />
-        <InsightsSection />
+        {insights}
         <Footer />
         <ScrollDown />
         <Chatbot />
