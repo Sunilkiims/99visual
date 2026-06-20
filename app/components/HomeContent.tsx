@@ -66,6 +66,19 @@ export default function HomeContent({ insights }: HomeContentProps) {
         default) shows through during the opacity transition — producing
         a brief white flash right as the loader unmounts. Setting this
         background eliminates that gap regardless of global CSS.
+
+        overflow-x: 'hidden' prevents the horizontal scrollbar from
+        flickering during the translateY transition. Several sections
+        (e.g. the #about hero) contain decorative elements positioned with
+        negative offsets (orbs, glows) sized larger than their container.
+        Those sections already clip with their own overflow:hidden, but
+        while THIS wrapper is being transformed (translateY animating),
+        browsers can transiently recompute layout/overflow for the whole
+        subtree — if anything is even fractionally wider than the
+        viewport during that recalculation, the scrollbar toggles on/off
+        each frame. Hiding x-overflow at this top level guarantees no
+        descendant can ever trigger that, regardless of what's nested
+        inside any individual section.
       */}
       <div
         style={{
@@ -74,6 +87,7 @@ export default function HomeContent({ insights }: HomeContentProps) {
           transition: 'opacity 0.6s ease, transform 0.6s ease',
           background: '#080810',
           minHeight: '100vh',
+          overflowX: 'hidden',
         }}
         aria-hidden={!ready}
       >
