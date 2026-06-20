@@ -79,6 +79,14 @@ export default function HomeContent({ insights }: HomeContentProps) {
         each frame. Hiding x-overflow at this top level guarantees no
         descendant can ever trigger that, regardless of what's nested
         inside any individual section.
+
+        NOTE: deliberately no minHeight here. A forced 100vh minimum
+        creates a second scroll container in some layouts (the page's own
+        <body> scrolls normally, and this div tried to enforce its own
+        full-viewport height on top of that) — that produced a double
+        scrollbar. This div should just size to its content like a plain
+        block element; the background color alone is enough to prevent
+        the white-flash gap.
       */}
       <div
         style={{
@@ -86,8 +94,8 @@ export default function HomeContent({ insights }: HomeContentProps) {
           transform: ready ? 'translateY(0)' : 'translateY(10px)',
           transition: 'opacity 0.6s ease, transform 0.6s ease',
           background: '#080810',
-          minHeight: '100vh',
           overflowX: 'hidden',
+          overflowY: 'visible',
         }}
         aria-hidden={!ready}
       >
