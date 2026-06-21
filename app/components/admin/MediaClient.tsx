@@ -56,12 +56,21 @@ export default function MediaClient({ media: initial }: { media: Media[] }) {
     }
   }
 
-  async function handleDelete(id: string, publicId: string) {
+  async function handleDelete(id: string) {
     if (!confirm('Delete this image?')) return
 
-    await fetch('/api/admin/media-delete/' + id, { method: 'DELETE' })
-    router.refresh()
-    window.location.reload()
+    try {
+      const res = await fetch('/api/media-delete/' + id, { method: 'DELETE' })
+      if (res.ok) {
+        router.refresh()
+        window.location.reload()
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to delete image')
+      }
+    } catch {
+      setError('Failed to delete image')
+    }
   }
 
   return (
@@ -121,7 +130,7 @@ export default function MediaClient({ media: initial }: { media: Media[] }) {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id, item.url)}
+                    onClick={() => handleDelete(item.id)}
                     className="p-2 bg-gray-800 rounded-lg text-gray-300 hover:text-red-400 transition-colors"
                     title="Delete"
                   >
