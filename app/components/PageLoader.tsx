@@ -13,7 +13,17 @@ const STATUSES = [
   '',
 ];
 
-export default function PageLoader() {
+interface PageLoaderProps {
+  /**
+   * Called once the exit animation has finished and the loader is about to
+   * unmount (phase → 'gone'). The parent page uses this to reveal its own
+   * content in sync with the loader's disappearance, instead of the two
+   * existing independently and overlapping mid-animation.
+   */
+  onComplete?: () => void;
+}
+
+export default function PageLoader({ onComplete }: PageLoaderProps) {
   // ─── mount guard ────────────────────────────────────────────────────────────
   // Prevents Next.js from rendering ANY loader HTML on the server.
   // Without this, the server outputs phase="loading"/progress=0 HTML, then the
@@ -54,6 +64,21 @@ export default function PageLoader() {
 
     return () => clearInterval(interval);
   }, [mounted]);
+
+  // Fire onComplete the moment the exit fade-out STARTS ('done'), not when
+  // the loader fully unmounts ('gone'). The 'done' → 'gone' gap is 900ms
+  // (300ms delay + 750ms CSS fade), during which the loader is animating
+  // out via opacity/transform. If the parent waits for 'gone' before
+  // revealing its own content, there's a window where the loader has
+  // become transparent/non-interactive but the content underneath hasn't
+  // started fading in yet — producing a visible blank/white gap. Starting
+  // both animations together at 'done' makes them overlap instead.
+  useEffect(() => {
+    if (phase === 'done') {
+      onComplete?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // Server renders null — no HTML to mismatch against.
   if (!mounted || phase === 'gone') return null;

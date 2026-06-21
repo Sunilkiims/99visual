@@ -227,13 +227,14 @@ export default async function InsightPostPage({ params }: Props) {
                 <span>{post.viewCount} views</span>
               </div>
 
-              {post.featuredImage && (
-                <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden mb-10">
+             {post.featuredImage && (
+                <div className="relative w-full rounded-2xl overflow-hidden mb-10 bg-gray-900 flex items-center justify-center max-h-[500px]">
                   <Image
                     src={post.featuredImage.url}
                     alt={post.featuredImage.altText || post.title}
-                    fill
-                    className="object-cover"
+                    width={1200}
+                    height={675}
+                    className="w-full h-auto max-h-[500px] object-contain"
                     priority
                   />
                 </div>

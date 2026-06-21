@@ -145,13 +145,13 @@ export default async function InsightsPage({ searchParams }: Props) {
             <Link href={'/insights/' + featuredPost.slug} className="group block">
               <div className="relative bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                  <div className="relative h-64 lg:h-full min-h-[300px] bg-gradient-to-br from-orange-500/20 to-purple-500/20">
+                  <div className="relative h-64 lg:h-full min-h-[300px] bg-gray-900 flex items-center justify-center">
                     {featuredPost.featuredImage ? (
                       <Image
                         src={featuredPost.featuredImage.url}
                         alt={featuredPost.title}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -222,13 +222,13 @@ export default async function InsightsPage({ searchParams }: Props) {
                     href={'/insights/' + post.slug}
                     className="group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden transition-all hover:-translate-y-1"
                   >
-                    <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900">
+                    <div className="relative h-48 bg-gray-900 flex items-center justify-center">
                       {post.featuredImage ? (
                         <Image
                           src={post.featuredImage.url}
                           alt={post.title}
                           fill
-                          className="object-cover"
+                          className="object-contain"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">

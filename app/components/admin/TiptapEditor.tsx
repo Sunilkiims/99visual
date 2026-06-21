@@ -21,14 +21,29 @@ interface Props {
   placeholder?: string
 }
 
-const COLORS = [
-  '#ffffff', '#d1d5db', '#f97316', '#ef4444', '#22c55e',
-  '#3b82f6', '#a855f7', '#eab308', '#ec4899', '#14b8a6',
+const PRESET_COLORS = [
+  '#000000', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#ffffff',
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
+  '#a855f7', '#ec4899', '#84cc16', '#06b6d4', '#6366f1', '#f59e0b',
+]
+
+const FONT_SIZES = ['12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+
+const FONT_FAMILIES = [
+  { label: 'Default', value: '' },
+  { label: 'Sans Serif', value: 'ui-sans-serif, system-ui, sans-serif' },
+  { label: 'Serif', value: 'ui-serif, Georgia, serif' },
+  { label: 'Monospace', value: 'ui-monospace, monospace' },
+  { label: 'Arial', value: 'Arial, sans-serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Verdana', value: 'Verdana, sans-serif' },
+  { label: 'Times New Roman', value: '"Times New Roman", serif' },
 ]
 
 export default function TiptapEditor({ content, onChange, placeholder }: Props) {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTableMenu, setShowTableMenu] = useState(false)
+  const [customColor, setCustomColor] = useState('#f97316')
 
   const editor = useEditor({
     extensions: [
@@ -112,14 +127,57 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   }
 
   function insertTable() {
+    if (!editor) return
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
     setShowTableMenu(false)
   }
+
+  function applyColor(color: string) {
+    if (!editor) return
+    editor.chain().focus().setColor(color).run()
+    setCustomColor(color)
+  }
+
+  const currentColor = editor.getAttributes('textStyle').color || ''
 
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-gray-700 flex-wrap">
 
+        {/* Font Family */}
+        <select
+          onChange={(e) => {
+            if (e.target.value) {
+              editor.chain().focus().setMark('textStyle', { fontFamily: e.target.value }).run()
+            } else {
+              editor.chain().focus().unsetMark('textStyle').run()
+            }
+          }}
+          className="bg-gray-700 text-gray-300 text-xs rounded-lg px-2 py-1.5 border border-gray-600 focus:outline-none mr-1 max-w-[110px]"
+          title="Font Family"
+        >
+          {FONT_FAMILIES.map((f) => (
+            <option key={f.value} value={f.value}>{f.label}</option>
+          ))}
+        </select>
+
+        {/* Font Size */}
+        <select
+          onChange={(e) => {
+            if (e.target.value) {
+              editor.chain().focus().setMark('textStyle', { fontSize: e.target.value + 'px' }).run()
+            }
+          }}
+          className="bg-gray-700 text-gray-300 text-xs rounded-lg px-2 py-1.5 border border-gray-600 focus:outline-none mr-1 w-16"
+          title="Font Size"
+          defaultValue="16"
+        >
+          {FONT_SIZES.map((size) => (
+            <option key={size} value={size}>{size}px</option>
+          ))}
+        </select>
+
+        {/* Paragraph Style */}
         <select
           onChange={(e) => {
             const val = e.target.value
@@ -146,6 +204,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Bold Italic Strike Highlight */}
         <Btn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Bold">
           <strong>B</strong>
         </Btn>
@@ -161,26 +220,51 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Text Color */}
         <div className="relative">
           <button
             type="button"
             title="Text Color"
             onClick={() => { setShowColorPicker(!showColorPicker); setShowTableMenu(false) }}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors flex items-center gap-1"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors flex flex-col items-center"
           >
-            <span className="text-sm font-bold" style={{ color: editor.getAttributes('textStyle').color || '#fff' }}>A</span>
-            <div className="w-3 h-1 rounded-sm" style={{ backgroundColor: editor.getAttributes('textStyle').color || '#f97316' }} />
+            <span className="text-sm font-bold leading-none" style={{ color: currentColor || '#ffffff' }}>A</span>
+            <div className="w-4 h-1 rounded-sm mt-0.5" style={{ backgroundColor: currentColor || '#f97316' }} />
           </button>
           {showColorPicker && (
-            <div className="absolute top-8 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl">
-              <p className="text-gray-400 text-xs mb-2">Text color</p>
-              <div className="grid grid-cols-5 gap-1.5">
-                {COLORS.map((color) => (
+            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-56">
+              <p className="text-gray-400 text-xs font-medium mb-3">Text Color</p>
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="color"
+                  value={currentColor || '#f97316'}
+                  onChange={(e) => applyColor(e.target.value)}
+                  className="w-10 h-9 rounded-lg cursor-pointer border border-gray-600 bg-transparent p-0.5"
+                />
+                <input
+                  type="text"
+                  value={currentColor || ''}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+                      applyColor(val)
+                    }
+                  }}
+                  placeholder="#f97316"
+                  maxLength={7}
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-2 text-white text-xs font-mono focus:outline-none focus:border-orange-500"
+                />
+              </div>
+              <p className="text-gray-500 text-xs mb-2">Presets</p>
+              <div className="grid grid-cols-6 gap-1.5 mb-3">
+                {PRESET_COLORS.map((color) => (
                   <button
                     key={color}
                     type="button"
-                    onClick={() => { editor.chain().focus().setColor(color).run(); setShowColorPicker(false) }}
-                    className="w-6 h-6 rounded-full border-2 border-gray-600 hover:border-white transition-colors"
+                    onClick={() => applyColor(color)}
+                    className={`w-7 h-7 rounded border-2 transition-all ${
+                      currentColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'
+                    }`}
                     style={{ backgroundColor: color }}
                     title={color}
                   />
@@ -189,9 +273,9 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
               <button
                 type="button"
                 onClick={() => { editor.chain().focus().unsetColor().run(); setShowColorPicker(false) }}
-                className="mt-2 text-xs text-gray-400 hover:text-white w-full text-center"
+                className="text-xs text-gray-400 hover:text-white w-full text-center border border-gray-700 rounded-lg py-1.5 hover:border-gray-500 transition-colors"
               >
-                Reset color
+                Reset to default
               </button>
             </div>
           )}
@@ -199,6 +283,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Text Align */}
         <Btn onClick={() => editor.chain().focus().setTextAlign('left').run()} active={editor.isActive({ textAlign: 'left' })} title="Align Left">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h12" />
@@ -214,9 +299,15 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M8 18h12" />
           </svg>
         </Btn>
+        <Btn onClick={() => editor.chain().focus().setTextAlign('justify').run()} active={editor.isActive({ textAlign: 'justify' })} title="Justify">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </Btn>
 
         <Divider />
 
+        {/* Lists */}
         <Btn onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Bullet List">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -240,6 +331,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Table */}
         <div className="relative">
           <button
             type="button"
@@ -252,24 +344,24 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             </svg>
           </button>
           {showTableMenu && (
-            <div className="absolute top-8 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl min-w-[160px]">
-              <p className="text-gray-400 text-xs mb-2">Table options</p>
-              <div className="space-y-1">
+            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl min-w-[170px]">
+              <p className="text-gray-400 text-xs font-medium mb-2">Table options</p>
+              <div className="space-y-0.5">
                 {[
-                  { label: 'Insert table (3x3)', action: insertTable, red: false },
-                  { label: 'Add column before', action: () => { editor.chain().focus().addColumnBefore().run(); setShowTableMenu(false) }, red: false },
-                  { label: 'Add column after', action: () => { editor.chain().focus().addColumnAfter().run(); setShowTableMenu(false) }, red: false },
-                  { label: 'Add row before', action: () => { editor.chain().focus().addRowBefore().run(); setShowTableMenu(false) }, red: false },
-                  { label: 'Add row after', action: () => { editor.chain().focus().addRowAfter().run(); setShowTableMenu(false) }, red: false },
-                  { label: 'Delete column', action: () => { editor.chain().focus().deleteColumn().run(); setShowTableMenu(false) }, red: true },
-                  { label: 'Delete row', action: () => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false) }, red: true },
-                  { label: 'Delete table', action: () => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false) }, red: true },
+                  { label: '+ Insert table (3×3)', action: insertTable, red: false },
+                  { label: '+ Add column before', action: () => { editor.chain().focus().addColumnBefore().run(); setShowTableMenu(false) }, red: false },
+                  { label: '+ Add column after', action: () => { editor.chain().focus().addColumnAfter().run(); setShowTableMenu(false) }, red: false },
+                  { label: '+ Add row before', action: () => { editor.chain().focus().addRowBefore().run(); setShowTableMenu(false) }, red: false },
+                  { label: '+ Add row after', action: () => { editor.chain().focus().addRowAfter().run(); setShowTableMenu(false) }, red: false },
+                  { label: '− Delete column', action: () => { editor.chain().focus().deleteColumn().run(); setShowTableMenu(false) }, red: true },
+                  { label: '− Delete row', action: () => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false) }, red: true },
+                  { label: '× Delete table', action: () => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false) }, red: true },
                 ].map((item) => (
                   <button
                     key={item.label}
                     type="button"
                     onClick={item.action}
-                    className={`w-full text-left text-xs py-1.5 px-2 rounded hover:bg-gray-800 transition-colors ${item.red ? 'text-red-400 hover:text-red-300' : 'text-gray-300 hover:text-white'}`}
+                    className={`w-full text-left text-xs py-1.5 px-2 rounded transition-colors ${item.red ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}
                   >
                     {item.label}
                   </button>
@@ -281,6 +373,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Link Image */}
         <Btn onClick={addLink} active={editor.isActive('link')} title="Add Link">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -294,6 +387,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* Undo Redo */}
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo" active={false}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
@@ -312,10 +406,12 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
       <style>{`
         .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        .ProseMirror td, .ProseMirror th { border: 1px solid #374151; padding: 8px 12px; text-align: left; min-width: 80px; }
+        .ProseMirror td, .ProseMirror th { border: 1px solid #374151; padding: 8px 12px; text-align: left; min-width: 80px; position: relative; }
         .ProseMirror th { background: #1f2937; color: #f9fafb; font-weight: 600; }
         .ProseMirror td { color: #d1d5db; }
-        .ProseMirror .selectedCell { background: #1e3a5f; }
+        .ProseMirror .selectedCell { background: #1e3a5f !important; }
+        .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
+        .ProseMirror.resize-cursor { cursor: col-resize; }
       `}</style>
 
       <EditorContent editor={editor} />
