@@ -44,12 +44,21 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTableMenu, setShowTableMenu] = useState(false)
   const [customColor, setCustomColor] = useState('#f97316')
+  const [showLinkDialog, setShowLinkDialog] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
+  const [linkTarget, setLinkTarget] = useState('_blank')
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Image.configure({ inline: true }),
-      Link.configure({ openOnClick: false }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer nofollow',
+        },
+      }),
       Placeholder.configure({
         placeholder: placeholder || 'Start writing your post content...',
       }),
@@ -122,8 +131,27 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   }
 
   function addLink() {
-    const url = prompt('Enter URL:')
-    if (url && editor) editor.chain().focus().setLink({ href: url }).run()
+    if (!editor) return
+    const existingHref = editor.getAttributes('link').href || ''
+    const existingTarget = editor.getAttributes('link').target || '_blank'
+    setLinkUrl(existingHref)
+    setLinkTarget(existingTarget)
+    setShowLinkDialog(true)
+  }
+
+  function applyLink() {
+    if (!editor) return
+    if (!linkUrl) {
+      editor.chain().focus().unsetLink().run()
+    } else {
+      const isInternal = linkUrl.startsWith('/')
+      editor.chain().focus().setLink({
+        href: linkUrl,
+        target: linkTarget,
+        rel: isInternal ? undefined : 'noopener noreferrer nofollow',
+      }).run()
+    }
+    setShowLinkDialog(false)
   }
 
   function insertTable() {
@@ -373,12 +401,14 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
-        {/* Link Image */}
+        {/* Link */}
         <Btn onClick={addLink} active={editor.isActive('link')} title="Add Link">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
         </Btn>
+
+        {/* Image */}
         <Btn onClick={addImage} title="Add Image" active={false}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -412,9 +442,133 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
         .ProseMirror .selectedCell { background: #1e3a5f !important; }
         .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
         .ProseMirror.resize-cursor { cursor: col-resize; }
+        .ProseMirror a { color: #f97316; text-decoration: underline; cursor: pointer; }
       `}</style>
 
       <EditorContent editor={editor} />
+
+      {/* Link Dialog */}
+      {showLinkDialog && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h3 className="text-white font-semibold mb-5 text-lg">Insert Link</h3>
+
+            <div className="space-y-4">
+              {/* URL */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">URL</label>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://example.com or /about"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === 'Enter') applyLink() }}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500"
+                />
+                <p className="text-gray-500 text-xs mt-1.5">
+                  External: <span className="text-gray-400">https://example.com</span> &nbsp;·&nbsp; Internal: <span className="text-gray-400">/services/web-development</span>
+                </p>
+              </div>
+
+              {/* Quick internal links */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Quick internal links</label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[
+                    { label: 'Home', path: '/' },
+                    { label: 'About', path: '/about' },
+                    { label: 'Contact', path: '/contact' },
+                    { label: 'Careers', path: '/careers' },
+                    { label: 'All Insights', path: '/insights' },
+                    { label: 'Web Development', path: '/services/website-development' },
+                    { label: '3D Visualization', path: '/services/visualization' },
+                    { label: 'Digital Marketing', path: '/services/digital-marketing-seo' },
+                    { label: 'CAD / GIS', path: '/services/cad-gis-photogrammetry' },
+                    { label: 'IT Consulting', path: '/services/it-consulting' },
+                    { label: 'Automation Testing', path: '/services/automation-testing' },
+                    { label: 'Partner', path: '/partner' },
+                  ].map((item) => (
+                    <button
+                      key={item.path}
+                      type="button"
+                      onClick={() => { setLinkUrl(item.path); setLinkTarget('_self') }}
+                      className={`text-left text-xs px-3 py-2 rounded-lg border transition-colors ${
+                        linkUrl === item.path
+                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
+                          : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Open in */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Open in</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setLinkTarget('_blank')}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                      linkTarget === '_blank'
+                        ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
+                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    🌐 New Tab
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLinkTarget('_self')}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                      linkTarget === '_self'
+                        ? 'bg-green-500/20 border-green-500/40 text-green-400'
+                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    🔗 Same Tab
+                  </button>
+                </div>
+                <p className="text-gray-500 text-xs mt-1.5">
+                  Use <span className="text-green-400">Same Tab</span> for internal links · <span className="text-orange-400">New Tab</span> for external links
+                </p>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!editor) return
+                  editor.chain().focus().unsetLink().run()
+                  setShowLinkDialog(false)
+                }}
+                className="px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors"
+              >
+                Remove
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowLinkDialog(false)}
+                className="flex-1 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={applyLink}
+                className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-medium transition-colors"
+              >
+                Apply Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
