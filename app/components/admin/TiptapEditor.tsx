@@ -46,6 +46,12 @@ const TABLE_BORDER_COLORS = [
   '#d1d5db', '#fbbf24', '#14b8a6', '#6366f1',
 ]
 
+const TABLE_FILL_COLORS = [
+  '#1f2937', '#111827', '#ffffff', '#fef3c7',
+  '#dcfce7', '#dbeafe', '#f3e8ff', '#fee2e2',
+  '#f97316', '#374151', '#065f46', '#1e40af',
+]
+
 export default function TiptapEditor({ content, onChange, placeholder }: Props) {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTableMenu, setShowTableMenu] = useState(false)
@@ -56,6 +62,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   const [linkTarget, setLinkTarget] = useState('_blank')
   const [tableBorderColor, setTableBorderColor] = useState('#374151')
   const [tableBorderSize, setTableBorderSize] = useState('1')
+  const [tableFillColor, setTableFillColor] = useState('#1f2937')
 
   const editor = useEditor({
     extensions: [
@@ -68,16 +75,12 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             target: {
               default: '_blank',
               parseHTML: (element) => element.getAttribute('target'),
-              renderHTML: (attributes) => ({
-                target: attributes.target || '_blank',
-              }),
+              renderHTML: (attributes) => ({ target: attributes.target || '_blank' }),
             },
             rel: {
               default: 'noopener noreferrer nofollow',
               parseHTML: (element) => element.getAttribute('rel'),
-              renderHTML: (attributes) => ({
-                rel: attributes.rel || 'noopener noreferrer nofollow',
-              }),
+              renderHTML: (attributes) => ({ rel: attributes.rel || 'noopener noreferrer nofollow' }),
             },
           }
         },
@@ -105,27 +108,20 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     },
     immediatelyRender: false,
     onCreate: ({ editor }) => {
-      if (content) {
-        editor.commands.setContent(content)
-      }
+      if (content) editor.commands.setContent(content)
     },
   })
 
   useEffect(() => {
     if (!editor) return
     if (!content) return
-    if (editor.isEmpty) {
-      editor.commands.setContent(content)
-    }
+    if (editor.isEmpty) editor.commands.setContent(content)
   }, [editor, content])
 
   if (!editor) return null
 
   const Btn = ({
-    onClick,
-    active,
-    title,
-    children,
+    onClick, active, title, children,
   }: {
     onClick: () => void
     active?: boolean
@@ -137,9 +133,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
       onClick={onClick}
       title={title}
       className={`p-1.5 rounded-lg text-sm transition-colors ${
-        active
-          ? 'bg-orange-500/20 text-orange-400'
-          : 'text-gray-400 hover:text-white hover:bg-gray-700'
+        active ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'
       }`}
     >
       {children}
@@ -155,10 +149,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
   function addLink() {
     if (!editor) return
-    const existingHref = editor.getAttributes('link').href || ''
-    const existingTarget = editor.getAttributes('link').target || '_blank'
-    setLinkUrl(existingHref)
-    setLinkTarget(existingTarget)
+    setLinkUrl(editor.getAttributes('link').href || '')
+    setLinkTarget(editor.getAttributes('link').target || '_blank')
     setShowLinkDialog(true)
   }
 
@@ -190,18 +182,46 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   }
 
   function applyTableStyles(color: string, size: string) {
+    if (!editor) return
     setTableBorderColor(color)
     setTableBorderSize(size)
-    const existing = document.getElementById('tiptap-table-style')
-    if (existing) existing.remove()
-    const style = document.createElement('style')
-    style.id = 'tiptap-table-style'
-    style.textContent = `
-      .ProseMirror td, .ProseMirror th {
-        border: ${size}px solid ${color} !important;
+    const { state, view } = editor
+    const { tr } = state
+    let modified = false
+    state.doc.descendants((node, pos) => {
+      if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
+        const currentStyle = (node.attrs.style || '')
+          .replace(/border:[^;]+;?/g, '')
+          .trim()
+        tr.setNodeMarkup(pos, undefined, {
+          ...node.attrs,
+          style: (currentStyle ? currentStyle + ' ' : '') + `border: ${size}px solid ${color};`,
+        })
+        modified = true
       }
-    `
-    document.head.appendChild(style)
+    })
+    if (modified) view.dispatch(tr)
+  }
+
+  function applyTableFillColor(color: string) {
+    if (!editor) return
+    setTableFillColor(color)
+    const { state, view } = editor
+    const { tr } = state
+    let modified = false
+    state.doc.descendants((node, pos) => {
+      if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
+        const currentStyle = (node.attrs.style || '')
+          .replace(/background(-color)?:[^;]+;?/g, '')
+          .trim()
+        tr.setNodeMarkup(pos, undefined, {
+          ...node.attrs,
+          style: (currentStyle ? currentStyle + ' ' : '') + `background-color: ${color};`,
+        })
+        modified = true
+      }
+    })
+    if (modified) view.dispatch(tr)
   }
 
   const currentColor = editor.getAttributes('textStyle').color || ''
@@ -311,8 +331,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   type="text"
                   value={currentColor || ''}
                   onChange={(e) => {
-                    const val = e.target.value
-                    if (/^#[0-9A-Fa-f]{6}$/.test(val)) applyColor(val)
+                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) applyColor(e.target.value)
                   }}
                   placeholder="#f97316"
                   maxLength={7}
@@ -433,11 +452,11 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           )}
         </div>
 
-        {/* Table Border Style */}
+        {/* Table Border + Fill Style */}
         <div className="relative">
           <button
             type="button"
-            title="Table Border Style"
+            title="Table Border & Fill Style"
             onClick={() => { setShowTableStyleMenu(!showTableStyleMenu); setShowTableMenu(false); setShowColorPicker(false) }}
             className={`p-1.5 rounded-lg text-sm transition-colors ${showTableStyleMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
           >
@@ -448,8 +467,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             </svg>
           </button>
           {showTableStyleMenu && (
-            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-64">
-              <p className="text-gray-400 text-xs font-medium mb-3">Table Border Style</p>
+            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-64 max-h-[80vh] overflow-y-auto">
+              <p className="text-gray-400 text-xs font-medium mb-3">Table Style</p>
 
               {/* Border Color */}
               <div className="mb-4">
@@ -465,9 +484,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                     type="text"
                     value={tableBorderColor}
                     onChange={(e) => {
-                      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                        applyTableStyles(e.target.value, tableBorderSize)
-                      }
+                      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) applyTableStyles(e.target.value, tableBorderSize)
                     }}
                     maxLength={7}
                     className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-2 text-white text-xs font-mono focus:outline-none focus:border-orange-500"
@@ -528,14 +545,54 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 </div>
               </div>
 
-              {/* Remove borders */}
               <button
                 type="button"
-                onClick={() => applyTableStyles('transparent', '1')}
-                className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors"
+                onClick={() => applyTableStyles('transparent', '0')}
+                className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors mb-4"
               >
                 Remove borders
               </button>
+
+              {/* Fill Color */}
+              <div className="pt-4 border-t border-gray-700">
+                <label className="block text-gray-500 text-xs mb-1.5">Cell Fill Color</label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="color"
+                    value={tableFillColor}
+                    onChange={(e) => applyTableFillColor(e.target.value)}
+                    className="w-10 h-9 rounded-lg cursor-pointer border border-gray-600 bg-transparent p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={tableFillColor}
+                    onChange={(e) => {
+                      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) applyTableFillColor(e.target.value)
+                    }}
+                    maxLength={7}
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-2 text-white text-xs font-mono focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <div className="grid grid-cols-6 gap-1 mb-2">
+                  {TABLE_FILL_COLORS.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => applyTableFillColor(color)}
+                      className={`w-7 h-7 rounded border-2 transition-all ${tableFillColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => applyTableFillColor('transparent')}
+                  className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors"
+                >
+                  Remove fill color
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -577,8 +634,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
       <style>{`
         .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        .ProseMirror td, .ProseMirror th { border: ${tableBorderSize}px solid ${tableBorderColor}; padding: 8px 12px; text-align: left; min-width: 80px; position: relative; resize: vertical; overflow: auto; }
-        .ProseMirror th { background: #1f2937; color: #f9fafb; font-weight: 600; }
+        .ProseMirror td, .ProseMirror th { padding: 8px 12px; text-align: left; min-width: 80px; position: relative; }
+        .ProseMirror th { color: #f9fafb; font-weight: 600; }
         .ProseMirror td { color: #d1d5db; }
         .ProseMirror .selectedCell { background: #1e3a5f !important; }
         .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
@@ -593,7 +650,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="text-white font-semibold mb-5 text-lg">Insert Link</h3>
-
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-2">URL</label>
@@ -679,11 +735,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             <div className="flex gap-3 mt-6">
               <button
                 type="button"
-                onClick={() => {
-                  if (!editor) return
-                  editor.chain().focus().unsetLink().run()
-                  setShowLinkDialog(false)
-                }}
+                onClick={() => { if (!editor) return; editor.chain().focus().unsetLink().run(); setShowLinkDialog(false) }}
                 className="px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors"
               >
                 Remove
