@@ -1,23 +1,28 @@
+# ── General crawl rules ──────────────────────────────────────────────────────
 User-agent: *
 Allow: /
 
-# Block non-canonical query string parameters to prevent duplicate content
-Disallow: /*?*
-
-# Block Next.js internal routes from crawl budget
+# Block Next.js internals from crawl budget
 Disallow: /_next/
 Disallow: /api/
 
-# Allow Next.js static assets explicitly (CSS, JS, fonts)
+# Allow static assets explicitly
 Allow: /_next/static/
-Allow: /_next/image
+Allow: /_next/image/
 
-# Block admin or private routes if they exist
+# Block private routes
 Disallow: /admin/
 Disallow: /dashboard/
 
-# ── AI Crawler Management ─────────────────────────────────────────────────────
-# Allow major AI search crawlers that drive referral traffic
+# Block specific noisy query params only (not all query strings)
+Disallow: /*?utm_source=
+Disallow: /*?utm_medium=
+Disallow: /*?utm_campaign=
+Disallow: /*?ref=
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+
+# ── AI crawler management ────────────────────────────────────────────────────
 User-agent: GPTBot
 Allow: /
 
@@ -33,7 +38,7 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-# Block scraper bots that provide no SEO value
+# Block low-value scrapers
 User-agent: CCBot
 Disallow: /
 

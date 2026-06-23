@@ -40,25 +40,48 @@ const FONT_FAMILIES = [
   { label: 'Times New Roman', value: '"Times New Roman", serif' },
 ]
 
+const TABLE_BORDER_COLORS = [
+  '#374151', '#ffffff', '#f97316', '#ef4444',
+  '#22c55e', '#3b82f6', '#a855f7', '#000000',
+  '#d1d5db', '#fbbf24', '#14b8a6', '#6366f1',
+]
+
 export default function TiptapEditor({ content, onChange, placeholder }: Props) {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTableMenu, setShowTableMenu] = useState(false)
+  const [showTableStyleMenu, setShowTableStyleMenu] = useState(false)
   const [customColor, setCustomColor] = useState('#f97316')
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
   const [linkTarget, setLinkTarget] = useState('_blank')
+  const [tableBorderColor, setTableBorderColor] = useState('#374151')
+  const [tableBorderSize, setTableBorderSize] = useState('1')
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Image.configure({ inline: true }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          target: '_blank',
-          rel: 'noopener noreferrer nofollow',
+      Link.extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            target: {
+              default: '_blank',
+              parseHTML: (element) => element.getAttribute('target'),
+              renderHTML: (attributes) => ({
+                target: attributes.target || '_blank',
+              }),
+            },
+            rel: {
+              default: 'noopener noreferrer nofollow',
+              parseHTML: (element) => element.getAttribute('rel'),
+              renderHTML: (attributes) => ({
+                rel: attributes.rel || 'noopener noreferrer nofollow',
+              }),
+            },
+          }
         },
-      }),
+      }).configure({ openOnClick: false }),
       Placeholder.configure({
         placeholder: placeholder || 'Start writing your post content...',
       }),
@@ -166,6 +189,21 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     setCustomColor(color)
   }
 
+  function applyTableStyles(color: string, size: string) {
+    setTableBorderColor(color)
+    setTableBorderSize(size)
+    const existing = document.getElementById('tiptap-table-style')
+    if (existing) existing.remove()
+    const style = document.createElement('style')
+    style.id = 'tiptap-table-style'
+    style.textContent = `
+      .ProseMirror td, .ProseMirror th {
+        border: ${size}px solid ${color} !important;
+      }
+    `
+    document.head.appendChild(style)
+  }
+
   const currentColor = editor.getAttributes('textStyle').color || ''
 
   return (
@@ -253,7 +291,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           <button
             type="button"
             title="Text Color"
-            onClick={() => { setShowColorPicker(!showColorPicker); setShowTableMenu(false) }}
+            onClick={() => { setShowColorPicker(!showColorPicker); setShowTableMenu(false); setShowTableStyleMenu(false) }}
             className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors flex flex-col items-center"
           >
             <span className="text-sm font-bold leading-none" style={{ color: currentColor || '#ffffff' }}>A</span>
@@ -274,9 +312,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   value={currentColor || ''}
                   onChange={(e) => {
                     const val = e.target.value
-                    if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-                      applyColor(val)
-                    }
+                    if (/^#[0-9A-Fa-f]{6}$/.test(val)) applyColor(val)
                   }}
                   placeholder="#f97316"
                   maxLength={7}
@@ -290,9 +326,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                     key={color}
                     type="button"
                     onClick={() => applyColor(color)}
-                    className={`w-7 h-7 rounded border-2 transition-all ${
-                      currentColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'
-                    }`}
+                    className={`w-7 h-7 rounded border-2 transition-all ${currentColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
                     style={{ backgroundColor: color }}
                     title={color}
                   />
@@ -364,7 +398,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           <button
             type="button"
             title="Table"
-            onClick={() => { setShowTableMenu(!showTableMenu); setShowColorPicker(false) }}
+            onClick={() => { setShowTableMenu(!showTableMenu); setShowColorPicker(false); setShowTableStyleMenu(false) }}
             className={`p-1.5 rounded-lg text-sm transition-colors ${showTableMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,7 +406,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             </svg>
           </button>
           {showTableMenu && (
-            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl min-w-[170px]">
+            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl min-w-[180px]">
               <p className="text-gray-400 text-xs font-medium mb-2">Table options</p>
               <div className="space-y-0.5">
                 {[
@@ -395,6 +429,113 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Table Border Style */}
+        <div className="relative">
+          <button
+            type="button"
+            title="Table Border Style"
+            onClick={() => { setShowTableStyleMenu(!showTableStyleMenu); setShowTableMenu(false); setShowColorPicker(false) }}
+            className={`p-1.5 rounded-lg text-sm transition-colors ${showTableStyleMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="1" strokeWidth={2} />
+              <line x1="3" y1="12" x2="21" y2="12" strokeWidth={2} />
+              <line x1="12" y1="3" x2="12" y2="21" strokeWidth={2} />
+            </svg>
+          </button>
+          {showTableStyleMenu && (
+            <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-64">
+              <p className="text-gray-400 text-xs font-medium mb-3">Table Border Style</p>
+
+              {/* Border Color */}
+              <div className="mb-4">
+                <label className="block text-gray-500 text-xs mb-1.5">Border Color</label>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="color"
+                    value={tableBorderColor}
+                    onChange={(e) => applyTableStyles(e.target.value, tableBorderSize)}
+                    className="w-10 h-9 rounded-lg cursor-pointer border border-gray-600 bg-transparent p-0.5"
+                  />
+                  <input
+                    type="text"
+                    value={tableBorderColor}
+                    onChange={(e) => {
+                      if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                        applyTableStyles(e.target.value, tableBorderSize)
+                      }
+                    }}
+                    maxLength={7}
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-2 text-white text-xs font-mono focus:outline-none focus:border-orange-500"
+                  />
+                </div>
+                <div className="grid grid-cols-6 gap-1">
+                  {TABLE_BORDER_COLORS.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => applyTableStyles(color, tableBorderSize)}
+                      className={`w-7 h-7 rounded border-2 transition-all ${tableBorderColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Border Size */}
+              <div className="mb-4">
+                <label className="block text-gray-500 text-xs mb-1.5">
+                  Border Size: <span className="text-orange-400">{tableBorderSize}px</span>
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="8"
+                  value={tableBorderSize}
+                  onChange={(e) => applyTableStyles(tableBorderColor, e.target.value)}
+                  className="w-full accent-orange-500 mb-1"
+                />
+                <div className="flex justify-between text-gray-600 text-xs">
+                  <span>0px</span>
+                  <span>4px</span>
+                  <span>8px</span>
+                </div>
+              </div>
+
+              {/* Quick sizes */}
+              <div className="mb-4">
+                <label className="block text-gray-500 text-xs mb-1.5">Quick sizes</label>
+                <div className="flex gap-1.5">
+                  {['0', '1', '2', '3', '4'].map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => applyTableStyles(tableBorderColor, size)}
+                      className={`flex-1 py-1.5 rounded-lg text-xs border transition-colors ${
+                        tableBorderSize === size
+                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
+                          : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      {size}px
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Remove borders */}
+              <button
+                type="button"
+                onClick={() => applyTableStyles('transparent', '1')}
+                className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors"
+              >
+                Remove borders
+              </button>
             </div>
           )}
         </div>
@@ -436,7 +577,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
       <style>{`
         .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        .ProseMirror td, .ProseMirror th { border: 1px solid #374151; padding: 8px 12px; text-align: left; min-width: 80px; position: relative; }
+        .ProseMirror td, .ProseMirror th { border: ${tableBorderSize}px solid ${tableBorderColor}; padding: 8px 12px; text-align: left; min-width: 80px; position: relative; resize: vertical; overflow: auto; }
         .ProseMirror th { background: #1f2937; color: #f9fafb; font-weight: 600; }
         .ProseMirror td { color: #d1d5db; }
         .ProseMirror .selectedCell { background: #1e3a5f !important; }
@@ -454,7 +595,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             <h3 className="text-white font-semibold mb-5 text-lg">Insert Link</h3>
 
             <div className="space-y-4">
-              {/* URL */}
               <div>
                 <label className="block text-gray-400 text-sm mb-2">URL</label>
                 <input
@@ -471,7 +611,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 </p>
               </div>
 
-              {/* Quick internal links */}
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Quick internal links</label>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -505,7 +644,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 </div>
               </div>
 
-              {/* Open in */}
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Open in</label>
                 <div className="flex gap-3">
@@ -538,7 +676,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 mt-6">
               <button
                 type="button"
