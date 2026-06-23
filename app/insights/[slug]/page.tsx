@@ -246,6 +246,10 @@ export default async function InsightPostPage({ params }: Props) {
               />
               <style>{`
                 .article-content { color: #d1d5db; font-size: 1.05rem; line-height: 1.85; }
+                 .article-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+            .article-content td, .article-content th { padding: 8px 12px; text-align: left; min-width: 80px; }
+            .article-content th { font-weight: 600; color: #f9fafb; }
+            .article-content td { color: #d1d5db; }
                 .article-content h1,
                 .article-content h2,
                 .article-content h3,
