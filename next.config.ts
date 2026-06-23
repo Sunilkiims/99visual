@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-
 const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
@@ -14,6 +13,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // ── Service page redirects ─────────────────────────────────────────────
       {
         source: "/our_services",
         destination: "/services",
@@ -39,23 +39,49 @@ const nextConfig: NextConfig = {
         destination: "/services/automation-testing",
         permanent: true,
       },
-{
-  source: '/blog',
-  destination: '/insights',
-  permanent: true,
-},
-{
-  source: '/blog/:slug*',
-  destination: '/insights/:slug*',
-  permanent: true,
-},
       {
         source: "/services/gis-cad-photogrammetry",
         destination: "/services/cad-gis-photogrammetry",
         permanent: true,
       },
+      {
+        source: "/services/web-development",
+        destination: "/services/website-development",
+        permanent: true,
+      },
+
+      // ── Blog / insights redirects ──────────────────────────────────────────
+      {
+        source: "/blog",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*",
+        destination: "/insights/:slug*",
+        permanent: true,
+      },
+      {
+        source: "/category/:slug*",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/post002",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/:year(\\d{4})",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})",
+        destination: "/insights",
+        permanent: true,
+      },
     ];
   },
 };
-
 export default nextConfig;
