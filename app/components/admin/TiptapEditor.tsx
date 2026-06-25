@@ -52,6 +52,39 @@ const TABLE_FILL_COLORS = [
   '#f97316', '#374151', '#065f46', '#1e40af',
 ]
 
+// Extended TableCell that preserves inline styles
+const CustomTableCell = TableCell.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      style: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('style'),
+        renderHTML: (attributes) => {
+          if (!attributes.style) return {}
+          return { style: attributes.style }
+        },
+      },
+    }
+  },
+})
+
+const CustomTableHeader = TableHeader.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      style: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('style'),
+        renderHTML: (attributes) => {
+          if (!attributes.style) return {}
+          return { style: attributes.style }
+        },
+      },
+    }
+  },
+})
+
 export default function TiptapEditor({ content, onChange, placeholder }: Props) {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTableMenu, setShowTableMenu] = useState(false)
@@ -94,8 +127,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
       Highlight.configure({ multicolor: true }),
       Table.configure({ resizable: true }),
       TableRow,
-      TableCell,
-      TableHeader,
+      CustomTableCell,
+      CustomTableHeader,
     ],
     content: content || '',
     onUpdate: ({ editor }) => {
@@ -191,12 +224,11 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     state.doc.descendants((node, pos) => {
       if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
         const currentStyle = (node.attrs.style || '')
-          .replace(/border:[^;]+;?/g, '')
+          .replace(/border:[^;]+;?\s*/g, '')
           .trim()
-        tr.setNodeMarkup(pos, undefined, {
-          ...node.attrs,
-          style: (currentStyle ? currentStyle + ' ' : '') + `border: ${size}px solid ${color};`,
-        })
+        const newStyle = (currentStyle ? currentStyle + ' ' : '') +
+          `border: ${size}px solid ${color};`
+        tr.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle })
         modified = true
       }
     })
@@ -212,12 +244,11 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     state.doc.descendants((node, pos) => {
       if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
         const currentStyle = (node.attrs.style || '')
-          .replace(/background(-color)?:[^;]+;?/g, '')
+          .replace(/background(-color)?:[^;]+;?\s*/g, '')
           .trim()
-        tr.setNodeMarkup(pos, undefined, {
-          ...node.attrs,
-          style: (currentStyle ? currentStyle + ' ' : '') + `background-color: ${color};`,
-        })
+        const newStyle = (currentStyle ? currentStyle + ' ' : '') +
+          `background-color: ${color};`
+        tr.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle })
         modified = true
       }
     })
@@ -634,10 +665,10 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
       <style>{`
         .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        .ProseMirror td, .ProseMirror th { padding: 8px 12px; text-align: left; min-width: 80px; position: relative; }
+        .ProseMirror td, .ProseMirror th { padding: 8px 12px; text-align: left; min-width: 80px; position: relative; border: 1px solid #374151; }
         .ProseMirror th { color: #f9fafb; font-weight: 600; }
         .ProseMirror td { color: #d1d5db; }
-        .ProseMirror .selectedCell { background: #1e3a5f !important; }
+        .ProseMirror .selectedCell { outline: 2px solid #f97316 !important; }
         .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
         .ProseMirror.resize-cursor { cursor: col-resize; }
         .ProseMirror a { color: #f97316; text-decoration: underline; cursor: pointer; }
