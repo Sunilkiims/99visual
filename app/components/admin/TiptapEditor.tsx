@@ -21,6 +21,16 @@ interface Props {
   placeholder?: string
 }
 
+// ─── NEW: Contact form state type ────────────────────────────────────────────
+interface ContactFormData {
+  name: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+  service: string
+}
+
 const PRESET_COLORS = [
   '#000000', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#ffffff',
   '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
@@ -52,7 +62,18 @@ const TABLE_FILL_COLORS = [
   '#f97316', '#374151', '#065f46', '#1e40af',
 ]
 
-// Extended TableCell that preserves inline styles
+// ─── NEW: Service options for the contact form ────────────────────────────────
+const SERVICE_OPTIONS = [
+  'Select a service...',
+  'Website Development',
+  '3D Visualization',
+  'Digital Marketing & SEO',
+  'CAD / GIS & Photogrammetry',
+  'IT Consulting',
+  'Automation Testing',
+  'Other',
+]
+
 const CustomTableCell = TableCell.extend({
   addAttributes() {
     return {
@@ -96,6 +117,19 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   const [tableBorderColor, setTableBorderColor] = useState('#374151')
   const [tableBorderSize, setTableBorderSize] = useState('1')
   const [tableFillColor, setTableFillColor] = useState('#1f2937')
+
+  // ─── NEW: Contact Us modal state ─────────────────────────────────────────
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [contactFormData, setContactFormData] = useState<ContactFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+    service: '',
+  })
+  const [contactSubmitted, setContactSubmitted] = useState(false)
+  const [contactSubmitting, setContactSubmitting] = useState(false)
 
   const editor = useEditor({
     extensions: [
@@ -150,6 +184,39 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     if (!content) return
     if (editor.isEmpty) editor.commands.setContent(content)
   }, [editor, content])
+
+  // ─── NEW: Close all dropdowns when contact modal opens ───────────────────
+  function openContactModal() {
+    setShowColorPicker(false)
+    setShowTableMenu(false)
+    setShowTableStyleMenu(false)
+    setShowLinkDialog(false)
+    setContactSubmitted(false)
+    setContactFormData({ name: '', email: '', phone: '', subject: '', message: '', service: '' })
+    setShowContactModal(true)
+  }
+
+  // ─── NEW: Handle contact form submit ─────────────────────────────────────
+  async function handleContactSubmit() {
+    if (!contactFormData.name || !contactFormData.email || !contactFormData.message) return
+    setContactSubmitting(true)
+    // Simulate API call — replace with your actual endpoint
+    await new Promise((res) => setTimeout(res, 1200))
+    setContactSubmitting(false)
+    setContactSubmitted(true)
+  }
+
+  // ─── NEW: Insert a "Contact Us" CTA link into the editor ─────────────────
+  function insertContactUsLink() {
+    if (!editor) return
+    editor
+      .chain()
+      .focus()
+      .insertContent(
+        `<a href="/contact" target="_self" rel="noopener noreferrer nofollow">Contact Us</a>`
+      )
+      .run()
+  }
 
   if (!editor) return null
 
@@ -646,6 +713,21 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
+        {/* ─── NEW: Contact Us Button ──────────────────────────────────────────── */}
+        <button
+          type="button"
+          title="Insert Contact Us CTA"
+          onClick={openContactModal}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-semibold transition-colors shadow-sm"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          Contact Us
+        </button>
+
+        <Divider />
+
         {/* Undo Redo */}
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo" active={false}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -672,11 +754,36 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
         .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
         .ProseMirror.resize-cursor { cursor: col-resize; }
         .ProseMirror a { color: #f97316; text-decoration: underline; cursor: pointer; }
+
+        /* ─── Contact modal animations ─────────────────────────────────── */
+        @keyframes contactModalIn {
+          from { opacity: 0; transform: scale(0.96) translateY(8px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes contactOverlayIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .contact-modal-overlay { animation: contactOverlayIn 0.2s ease forwards; }
+        .contact-modal-panel   { animation: contactModalIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .contact-input {
+          width: 100%;
+          background: #111827;
+          border: 1px solid #374151;
+          border-radius: 10px;
+          padding: 10px 14px;
+          color: #f9fafb;
+          font-size: 13px;
+          outline: none;
+          transition: border-color 0.15s;
+        }
+        .contact-input:focus { border-color: #f97316; }
+        .contact-input::placeholder { color: #6b7280; }
       `}</style>
 
       <EditorContent editor={editor} />
 
-      {/* Link Dialog */}
+      {/* ─── Link Dialog ──────────────────────────────────────────────────────── */}
       {showLinkDialog && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -786,6 +893,217 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 Apply Link
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── NEW: Contact Us Modal ─────────────────────────────────────────────── */}
+      {showContactModal && (
+        <div
+          className="contact-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowContactModal(false) }}
+        >
+          <div className="contact-modal-panel bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-white font-semibold text-base">Contact Us</h2>
+                  <p className="text-gray-500 text-xs">We'll get back to you within 24 hours</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowContactModal(false)}
+                className="text-gray-500 hover:text-white hover:bg-gray-800 p-1.5 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">
+              {contactSubmitted ? (
+                /* ── Success state ── */
+                <div className="py-8 flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-2">Message Sent!</h3>
+                  <p className="text-gray-400 text-sm mb-6 max-w-xs">
+                    Thanks for reaching out, <span className="text-orange-400">{contactFormData.name}</span>. Our team will get back to you at <span className="text-orange-400">{contactFormData.email}</span> within 24 hours.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        insertContactUsLink()
+                        setShowContactModal(false)
+                      }}
+                      className="px-4 py-2.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-xl text-sm hover:bg-orange-500/20 transition-colors"
+                    >
+                      Insert "Contact Us" link
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowContactModal(false)}
+                      className="px-4 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* ── Form state ── */
+                <div className="space-y-4">
+                  {/* Name + Email row */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-gray-400 text-xs font-medium mb-1.5">
+                        Full Name <span className="text-orange-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="contact-input"
+                        placeholder="John Smith"
+                        value={contactFormData.name}
+                        onChange={(e) => setContactFormData({ ...contactFormData, name: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-xs font-medium mb-1.5">
+                        Email <span className="text-orange-400">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        className="contact-input"
+                        placeholder="john@company.com"
+                        value={contactFormData.email}
+                        onChange={(e) => setContactFormData({ ...contactFormData, email: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Phone + Service row */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-gray-400 text-xs font-medium mb-1.5">Phone</label>
+                      <input
+                        type="tel"
+                        className="contact-input"
+                        placeholder="+1 (555) 000-0000"
+                        value={contactFormData.phone}
+                        onChange={(e) => setContactFormData({ ...contactFormData, phone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 text-xs font-medium mb-1.5">Service</label>
+                      <select
+                        className="contact-input"
+                        value={contactFormData.service}
+                        onChange={(e) => setContactFormData({ ...contactFormData, service: e.target.value })}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {SERVICE_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt === 'Select a service...' ? '' : opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Subject */}
+                  <div>
+                    <label className="block text-gray-400 text-xs font-medium mb-1.5">Subject</label>
+                    <input
+                      type="text"
+                      className="contact-input"
+                      placeholder="How can we help you?"
+                      value={contactFormData.subject}
+                      onChange={(e) => setContactFormData({ ...contactFormData, subject: e.target.value })}
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label className="block text-gray-400 text-xs font-medium mb-1.5">
+                      Message <span className="text-orange-400">*</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      className="contact-input resize-none"
+                      placeholder="Tell us about your project..."
+                      value={contactFormData.message}
+                      onChange={(e) => setContactFormData({ ...contactFormData, message: e.target.value })}
+                    />
+                  </div>
+
+                  {/* Insert link shortcut */}
+                  <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-3 flex items-start gap-3">
+                    <svg className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    <div className="flex-1">
+                      <p className="text-gray-300 text-xs">Want to add a Contact Us link in the editor?</p>
+                      <button
+                        type="button"
+                        onClick={() => { insertContactUsLink(); setShowContactModal(false) }}
+                        className="text-orange-400 hover:text-orange-300 text-xs underline underline-offset-2 mt-0.5 transition-colors"
+                      >
+                        Insert "Contact Us" link at cursor →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {!contactSubmitted && (
+              <div className="px-6 py-4 border-t border-gray-800 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowContactModal(false)}
+                  className="flex-1 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleContactSubmit}
+                  disabled={!contactFormData.name || !contactFormData.email || !contactFormData.message || contactSubmitting}
+                  className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  {contactSubmitting ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Sending…
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
