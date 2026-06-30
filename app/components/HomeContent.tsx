@@ -1,8 +1,6 @@
 // app/components/HomeContent.tsx
 'use client';
 
-import { useState } from 'react';
-import PageLoader        from './PageLoader';
 import Header           from './header';
 import HomeScreenSlider from './homeslider';
 import WhyWeAre         from './whyweare';
@@ -20,20 +18,9 @@ interface HomeContentProps {
 }
 
 export default function HomeContent({ insights }: HomeContentProps) {
-  const [ready, setReady] = useState(false);
-
   return (
     <>
-      {!ready && <PageLoader onComplete={() => setReady(true)} />}
-
-      <div
-        style={{
-          opacity: ready ? 1 : 0,
-          transform: ready ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.6s ease, transform 0.6s ease',
-        }}
-        aria-hidden={!ready}
-      >
+      <div>
         {/* 1. Navigation */}
         <Header />
 
@@ -155,10 +142,8 @@ export default function HomeContent({ insights }: HomeContentProps) {
       </div>
 
       {/*
-        Fixed-position elements OUTSIDE the transformed wrapper.
-        Any ancestor with transform !== none becomes the containing block
-        for position:fixed children, breaking viewport anchoring.
-        Siblings of the wrapper preserve true fixed positioning.
+        Fixed-position elements OUTSIDE the wrapper, preserving true
+        fixed positioning relative to the viewport.
       */}
       <ScrollDown />
       <Chatbot />
