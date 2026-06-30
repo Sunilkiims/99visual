@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { FaHistory, FaBullseye, FaHeart } from 'react-icons/fa';
 import clsx from 'clsx';
 
@@ -63,7 +63,7 @@ Together, these values guide our decisions, strengthen our partnerships, and def
 
 /* ---------------- ANIMATION VARIANTS ---------------- */
 
-const sectionReveal = {
+const sectionReveal: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
@@ -72,7 +72,7 @@ const sectionReveal = {
   },
 };
 
-const headerReveal = {
+const headerReveal: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number = 0) => ({
     opacity: 1,
@@ -81,14 +81,14 @@ const headerReveal = {
   }),
 };
 
-const summaryContainer = {
+const summaryContainer: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.09, delayChildren: 0.05 },
   },
 };
 
-const summaryItem = {
+const summaryItem: Variants = {
   hidden: { opacity: 0, y: 18 },
   visible: {
     opacity: 1,
@@ -97,7 +97,7 @@ const summaryItem = {
   },
 };
 
-const imageReveal = {
+const imageReveal: Variants = {
   hidden: { opacity: 0, scale: 0.96, x: -16 },
   visible: {
     opacity: 1,
@@ -574,7 +574,7 @@ export default function CompanyTabs() {
                   key={`summary-${activeIndex}`}
                   initial="hidden"
                   animate="visible"
-                  exit={{ opacity: 0, y: -18, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
+                  exit={{ opacity: 0, y: -18, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] as const } }}
                   variants={summaryContainer}
                   className="ct-summary-grid"
                 >
@@ -627,8 +627,8 @@ export default function CompanyTabs() {
                   key={`full-${activeIndex}`}
                   initial={{ opacity: 0, y: 28, scale: 0.985 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -18, scale: 0.985, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  exit={{ opacity: 0, y: -18, scale: 0.985, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] as const } }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
                   className="ct-full-body"
                 >
                   <span className="ct-content-eyebrow">{activeTab.title}</span>
@@ -690,7 +690,7 @@ export default function CompanyTabs() {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{
-                        height: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+                        height: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
                         opacity: { duration: 0.3, ease: 'easeInOut' },
                       }}
                       className="ct-accord-body"
@@ -699,7 +699,7 @@ export default function CompanyTabs() {
                         className="ct-accord-body__inner"
                         initial={{ y: -8 }}
                         animate={{ y: 0 }}
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const, delay: 0.05 }}
                       >
                         <h4 className="ct-accord-body__h4">
                           {tab.content.heading}
