@@ -6,7 +6,7 @@ import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader     from "@/app/components/PageLoader";
+
 
 import {
   FaBug, FaCogs, FaChartLine, FaRocket, FaShieldAlt, FaTools,
@@ -278,7 +278,7 @@ const services = [
 export default function AutomationTestingPage() {
   return (
     <>
-      <PageLoader />
+      
 
       <script
         id="schema-qa-graph"

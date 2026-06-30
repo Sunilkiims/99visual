@@ -30,7 +30,7 @@ import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader     from "@/app/components/PageLoader";
+
 import type { Metadata } from "next";
 import {
   FaCogs, FaShieldAlt, FaProjectDiagram,
@@ -380,7 +380,7 @@ const services = [
 export default function ITConsulting() {
   return (
     <>
-      <PageLoader />
+      
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');

@@ -1,16 +1,7 @@
 // components/ourservices.tsx
-// ─────────────────────────────────────────────────────────────────────────────
-// "Our Services" homepage section — Server Component (no 'use client')
-//
-// FIX: All onMouseEnter / onMouseLeave handlers removed.
-//      Hover interactivity replaced with injected CSS class rules so the
-//      component remains a pure React Server Component compatible with
-//      Next.js App Router.
-// ─────────────────────────────────────────────────────────────────────────────
 
 import Link from 'next/link';
 
-// ─── Service data ─────────────────────────────────────────────────────────────
 const SERVICES = [
   {
     number:  '01',
@@ -25,9 +16,7 @@ const SERVICES = [
       ADA accessibility compliance, and seamless third-party integrations. From
       conversion-focused landing pages to complex SaaS platforms and enterprise
       portals, we translate business requirements into scalable digital products
-      that engage users and drive measurable growth. We own the full lifecycle:
-      discovery, UX research, UI design, development, QA, cloud deployment, and
-      ongoing maintenance — so you never juggle multiple vendors.`,
+      that engage users and drive measurable growth.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -50,9 +39,7 @@ const SERVICES = [
       to earn and sustain top-three rankings in competitive SERPs. Beyond organic
       search, we orchestrate paid media campaigns on Google Ads and Meta, conversion
       rate optimisation (CRO) programmes, and analytics pipelines that surface
-      actionable insights. Every engagement begins with a clear KPI framework —
-      because traffic that does not convert is a vanity metric. We serve B2B and
-      B2C brands across India, the USA, UK, UAE, and Australia.`,
+      actionable insights.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
@@ -71,11 +58,7 @@ const SERVICES = [
       discipline. We design and execute end-to-end test frameworks using Selenium,
       Cypress, Playwright, and Appium, covering functional, regression, performance,
       API, and accessibility testing. Our AI-assisted test generation accelerates
-      coverage while reducing manual effort. For enterprises migrating legacy systems
-      or shipping high-frequency releases, our shift-left testing methodology
-      dramatically reduces time-to-market and production incident rates. We also
-      offer independent quality assurance for third-party codebases — giving you an
-      impartial technical review before any critical launch or deployment.`,
+      coverage while reducing manual effort.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <path d="M9 3H5a2 2 0 0 0-2 2v4" />
@@ -98,12 +81,7 @@ const SERVICES = [
       stack selection, cybersecurity posture assessments, and vendor evaluation.
       We work embedded with your leadership team to align IT strategy with commercial
       objectives — identifying inefficiencies, reducing technical debt, and designing
-      infrastructure that scales cost-effectively. Whether you are a startup choosing
-      your first cloud provider, a mid-market firm modernising a monolithic system,
-      or an enterprise planning a multi-year transformation programme, our consultants
-      bring cross-industry experience and vendor-neutral recommendations that protect
-      your interests. Engagements are structured as fixed-scope advisory, fractional
-      CTO support, or long-term retainer partnerships.`,
+      infrastructure that scales cost-effectively.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <circle cx="12" cy="12" r="3" />
@@ -121,13 +99,9 @@ const SERVICES = [
       photorealistic renders, immersive walkthroughs, and virtual staging assets
       that transform technical drawings into compelling narratives. We specialise
       in exterior and interior rendering for residential and commercial real estate,
-      hospitality, retail, and infrastructure projects. Our artists work from CAD
-      files, SketchUp models, Revit BIM data, or hand-drawn schematics — delivering
-      stills, 360° panoramas, and cinematic animations that accelerate project
-      approvals, pre-sales, and investor presentations. With competitive offshore
-      pricing and international studio quality, clients across the UK, USA, UAE, and
-      Australia consistently choose us over local alternatives for complex, high-stakes
-      visualisation mandates.`,
+      hospitality, retail, and infrastructure projects — delivering stills, 360°
+      panoramas, and cinematic animations that accelerate project approvals,
+      pre-sales, and investor presentations.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -145,14 +119,9 @@ const SERVICES = [
       construction, infrastructure, urban planning, agriculture, and environmental
       management. Our geospatial team delivers end-to-end CAD drafting and detailing,
       2D and 3D GIS mapping, LiDAR point-cloud processing, drone photogrammetry
-      surveys, and as-built documentation. We work with industry-standard platforms
-      including AutoCAD, ArcGIS, QGIS, Civil 3D, and Agisoft Metashape to produce
-      survey-grade deliverables: topographic maps, terrain models, utility corridor
-      plans, and facility management layers. Our photogrammetry workflows generate
-      dense mesh models and orthomosaic outputs suitable for engineering design,
-      heritage documentation, and insurance assessment. Clients include government
-      agencies, engineering consultancies, real estate developers, and mining
-      operators across India and internationally.`,
+      surveys, and as-built documentation — producing survey-grade deliverables:
+      topographic maps, terrain models, utility corridor plans, and facility
+      management layers.`,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 26, height: 26 }}>
         <polygon points="3 11 22 2 13 21 11 13 3 11" />
@@ -161,7 +130,6 @@ const SERVICES = [
   },
 ] as const;
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function OurServices() {
   return (
     <section
@@ -171,26 +139,34 @@ export default function OurServices() {
       itemType="https://schema.org/Service"
       style={{
         position: 'relative',
-        background: '#0a0a0a',
-        borderTop:    '1px solid rgba(255,255,255,0.06)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: '#f8fafc',
+        border: '0 !important',
         overflow: 'hidden',
-        padding: '6rem 1.5rem 5rem',
+        padding: '0 24px',
         fontFamily: "'DM Sans', sans-serif",
       }}
     >
-      {/* ── CSS: hover states, fonts, animations — no JS handlers needed ─ */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap');
-
         .vs-card {
-          background: rgba(255,255,255,0.024);
-          border: 1px solid rgba(255,255,255,0.07);
-          transition: background 0.25s ease, border-color 0.25s ease;
+          background: #fff;
+          border: 1px solid rgba(0, 0, 0, 0.07);
+          border-radius: 16px;
+          transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
         .vs-card:hover {
-          background: rgba(249,115,22,0.05);
-          border-color: rgba(249,115,22,0.28);
+          border-color: rgba(249, 115, 22, 0.3);
+          box-shadow: 0 8px 32px rgba(249, 115, 22, 0.08);
+        }
+
+        .vs-number {
+          position: absolute;
+          top: 16px;
+          right: 20px;
+          font-size: 3rem;
+          font-weight: 700;
+          color: rgba(249, 115, 22, 0.06);
+          line-height: 1;
+          user-select: none;
         }
 
         .vs-link {
@@ -203,7 +179,7 @@ export default function OurServices() {
           text-transform: uppercase;
           color: #f97316;
           text-decoration: none;
-          border-bottom: 1px solid rgba(249,115,22,0.35);
+          border-bottom: 1px solid rgba(249, 115, 22, 0.3);
           padding-bottom: 2px;
           transition: border-color 0.2s ease, gap 0.2s ease;
         }
@@ -212,7 +188,58 @@ export default function OurServices() {
           gap: 10px;
         }
 
+        @property --vs-angle {
+          syntax: '<angle>';
+          initial-value: 0deg;
+          inherits: false;
+        }
+        @keyframes vs-border-spin {
+          to { --vs-angle: 360deg; }
+        }
+
+        .vs-cta-wrap {
+          position: relative;
+          display: inline-flex;
+          border-radius: 100px;
+          padding: 3px;
+        }
+        .vs-cta-wrap::before {
+          content: '';
+          position: absolute;
+          inset: -3px;
+          border-radius: 100px;
+          background: conic-gradient(
+            from var(--vs-angle),
+            transparent 0%,
+            transparent 60%,
+            #f97316 75%,
+            #fb923c 85%,
+            #f97316 95%,
+            transparent 100%
+          );
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          z-index: 0;
+        }
+        .vs-cta-wrap:hover::before {
+          opacity: 1;
+          animation: vs-border-spin 2s linear infinite;
+        }
+        .vs-cta-wrap::after {
+          content: '';
+          position: absolute;
+          inset: 0px;
+          border-radius: 100px;
+          background: #fff;
+          z-index: 1;
+          transition: background 0.3s ease;
+        }
+        .vs-cta-wrap:hover::after {
+          background: #fff;
+        }
         .vs-cta {
+          position: relative;
+          z-index: 2;
           display: inline-flex;
           align-items: center;
           gap: 8px;
@@ -220,139 +247,120 @@ export default function OurServices() {
           border-radius: 100px;
           background: #f97316;
           color: #fff;
-          font-family: 'DM Sans', sans-serif;
           font-size: .9rem;
           font-weight: 600;
           letter-spacing: .05em;
           text-decoration: none;
-          transition: opacity 0.2s ease, transform 0.2s ease;
+          transition: background 0.3s ease, transform 0.2s ease;
         }
-        .vs-cta:hover {
-          opacity: 0.85;
+        .vs-cta-wrap:hover .vs-cta {
+          background: #000;
+          color: #f97316;
           transform: translateY(-1px);
+        }
+
+        .vs-icon-wrap {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 10px;
+          background: rgba(249, 115, 22, 0.08);
+          border: 1px solid rgba(249, 115, 22, 0.18);
+          color: #f97316;
+          margin-bottom: 1.2rem;
+        }
+
+        .vs-footer {
+          margin-top: 3.5rem;
+          text-align: center;
+          padding: 2.4rem 2rem;
         }
 
         @media (prefers-reduced-motion: reduce) {
           .vs-card, .vs-link, .vs-cta { transition: none !important; }
+          .vs-cta-wrap::before { animation: none !important; }
         }
       `}</style>
 
-      {/* ── Background grid texture ─────────────────────────────────────── */}
+      {/* Ambient glow */}
       <div
         aria-hidden="true"
         style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,.014) 1px, transparent 1px),' +
-            'linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px)',
-          backgroundSize: '72px 72px',
+          background:
+            'radial-gradient(ellipse 60% 50% at 10% 0%, rgba(249,115,22,0.04) 0%, transparent 70%),' +
+            'radial-gradient(ellipse 50% 40% at 90% 100%, rgba(249,115,22,0.03) 0%, transparent 70%)',
         }}
       />
 
-      {/* ── Ambient glow — top-right ────────────────────────────────────── */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute', borderRadius: '50%',
-          width: 600, height: 600,
-          background: 'radial-gradient(circle, #f97316, transparent 68%)',
-          top: -260, right: -200, opacity: 0.045,
-          filter: 'blur(120px)', pointerEvents: 'none',
-        }}
-      />
-
-      {/* ── Ambient glow — bottom-left ──────────────────────────────────── */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute', borderRadius: '50%',
-          width: 500, height: 500,
-          background: 'radial-gradient(circle, #6366f1, transparent 68%)',
-          bottom: -200, left: -150, opacity: 0.04,
-          filter: 'blur(120px)', pointerEvents: 'none',
-        }}
-      />
-
-      {/* ── Corner brackets ─────────────────────────────────────────────── */}
-      {(
-        [
-          { top: 20,    left: 20,  borderTop:    '1px solid #f97316', borderLeft:   '1px solid #f97316' },
-          { top: 20,    right: 20, borderTop:    '1px solid #f97316', borderRight:  '1px solid #f97316' },
-          { bottom: 20, left: 20,  borderBottom: '1px solid #f97316', borderLeft:   '1px solid #f97316' },
-          { bottom: 20, right: 20, borderBottom: '1px solid #f97316', borderRight:  '1px solid #f97316' },
-        ] as React.CSSProperties[]
-      ).map((s, i) => (
-        <div key={i} aria-hidden="true" style={{ position: 'absolute', width: 22, height: 22, opacity: 0.13, zIndex: 5, ...s }} />
-      ))}
-
-      {/* ── Inner wrapper ───────────────────────────────────────────────── */}
       <div style={{ position: 'relative', zIndex: 10, maxWidth: 1200, margin: '0 auto' }}>
 
-        {/* ── Section header ──────────────────────────────────────────── */}
-        <header style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+        {/* Section header */}
+        <header style={{ textAlign: 'center', marginBottom: '3.5rem', paddingTop: '96px' }}>
           <p
             aria-hidden="true"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               fontSize: 10, fontWeight: 500,
-              letterSpacing: '.22em', textTransform: 'uppercase',
+              letterSpacing: '.18em', textTransform: 'uppercase',
               color: '#f97316',
-              border: '1px solid rgba(249,115,22,.28)',
-              background: 'rgba(249,115,22,.07)',
-              padding: '6px 16px', borderRadius: 100,
-              marginBottom: '1.4rem',
-              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(249,115,22,0.2)',
+              background: 'rgba(249,115,22,0.08)',
+              padding: '5px 14px', borderRadius: 100,
+              marginBottom: '1.2rem',
             }}
           >
-            <span
-              style={{
-                width: 5, height: 5, borderRadius: '50%',
-                background: '#f97316', display: 'inline-block',
-              }}
-            />
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#f97316', display: 'inline-block' }} />
             What We Do
           </p>
 
           <h2
             id="services-heading"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
-              fontWeight: 700, lineHeight: 1.1,
+              fontSize: 'clamp(28px, 4vw, 42px)',
+              fontWeight: 800,
+              lineHeight: 1.15,
               letterSpacing: '-.02em',
-              color: '#fff',
-              margin: '0 0 1rem',
+              color: '#0f172a',
+              margin: '0 0 8px',
             }}
           >
-            Our Services
+            Our{' '}
+            <span style={{
+              background: 'linear-gradient(135deg, #f97316, #fb923c)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              Services
+            </span>
           </h2>
 
-          <div
-            aria-hidden="true"
-            style={{
-              width: 40, height: 1,
-              background: 'linear-gradient(90deg, transparent, #f97316, transparent)',
-              margin: '0 auto 1.2rem',
-            }}
-          />
+          <div style={{
+            width: 48, height: 3, borderRadius: 2,
+            background: 'linear-gradient(to right, #f97316, #fbbf24)',
+            margin: '16px auto 20px',
+          }} />
 
           <p style={{
-            fontSize: '.97rem', fontWeight: 300, lineHeight: 1.8,
-            color: 'rgba(255,255,255,0.42)',
-            maxWidth: 640, margin: '0 auto',
+            fontSize: '.97rem', fontWeight: 400, lineHeight: 1.8,
+            color: '#475569',
+            maxWidth: 600, margin: '0 auto',
           }}>
             Six specialised disciplines. One accountable partner. Delivered from
             Bengaluru to clients across India, the USA, UK, UAE, and Australia.
           </p>
         </header>
 
-        {/* ── Service cards grid ──────────────────────────────────────── */}
+        {/* Service cards grid */}
         <div
           role="list"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))',
-            gap: '1.5px',
+            gap: '20px',
           }}
         >
           {SERVICES.map((svc) => (
@@ -362,47 +370,16 @@ export default function OurServices() {
               className="vs-card"
               itemScope
               itemType="https://schema.org/Service"
-              style={{
-                position: 'relative',
-                padding: '2.2rem 2rem 2rem',
-              }}
+              style={{ position: 'relative', padding: '2.2rem 2rem 2rem' }}
             >
-              {/* Service number watermark */}
-              <span
-                aria-hidden="true"
-                style={{
-                  position: 'absolute', top: 16, right: 20,
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: '3rem', fontWeight: 700,
-                  color: 'rgba(249,115,22,0.07)',
-                  lineHeight: 1, userSelect: 'none',
-                }}
-              >
-                {svc.number}
-              </span>
-
-              {/* Icon */}
-              <div
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: 48, height: 48, borderRadius: 10,
-                  background: 'rgba(249,115,22,0.1)',
-                  border: '1px solid rgba(249,115,22,0.22)',
-                  color: '#f97316',
-                  marginBottom: '1.2rem',
-                }}
-              >
-                {svc.icon}
-              </div>
-
-              {/* Heading */}
+              <span aria-hidden="true" className="vs-number">{svc.number}</span>
+              <div className="vs-icon-wrap">{svc.icon}</div>
               <h3
                 itemProp="name"
                 style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: 'clamp(1.15rem, 2vw, 1.35rem)',
+                  fontSize: 'clamp(1.1rem, 2vw, 1.3rem)',
                   fontWeight: 700,
-                  color: '#fff',
+                  color: '#0f172a',
                   margin: '0 0 .9rem',
                   letterSpacing: '-.01em',
                   lineHeight: 1.25,
@@ -410,39 +387,21 @@ export default function OurServices() {
               >
                 {svc.heading}
               </h3>
-
-              {/* Body copy */}
               <p
                 itemProp="description"
                 style={{
                   fontSize: '.88rem',
-                  fontWeight: 300,
+                  fontWeight: 400,
                   lineHeight: 1.82,
-                  color: 'rgba(255,255,255,0.44)',
+                  color: '#475569',
                   margin: '0 0 1.6rem',
                 }}
               >
                 {svc.body}
               </p>
-
-              {/* CTA link — descriptive anchor text for SEO */}
-              <Link
-                href={svc.href}
-                itemProp="url"
-                aria-label={svc.anchor}
-                className="vs-link"
-              >
+              <Link href={svc.href} itemProp="url" aria-label={svc.anchor} className="vs-link">
                 {svc.anchor}
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ width: 12, height: 12, flexShrink: 0 }}
-                >
+                <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12, flexShrink: 0 }}>
                   <path d="M3 8h10M9 4l4 4-4 4" />
                 </svg>
               </Link>
@@ -450,36 +409,26 @@ export default function OurServices() {
           ))}
         </div>
 
-        {/* ── Closing CTA paragraph ────────────────────────────────────── */}
-        <footer
-          style={{
-            marginTop: '3.5rem',
-            textAlign: 'center',
-            padding: '2.4rem 2rem',
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.07)',
-          }}
-        >
+        {/* Closing CTA */}
+        <footer className="vs-footer">
           <p style={{
-            fontSize: '.97rem', fontWeight: 300, lineHeight: 1.85,
-            color: 'rgba(255,255,255,0.45)',
-            maxWidth: 680, margin: '0 auto 1.6rem',
+            fontSize: '.97rem', fontWeight: 400, lineHeight: 1.85,
+            color: '#475569',
+            maxWidth: 640, margin: '0 auto 1.6rem',
           }}>
             Whether you need a single service or an integrated programme spanning
             multiple disciplines, 99 Visual Solutions brings every capability
             in-house — eliminating handoff friction and giving you a single
             accountable partner from strategy through delivery.
           </p>
-
-          <Link
-            href="/services"
-            aria-label="View all services offered by 99 Visual Solutions"
-            className="vs-cta"
-          >
-            View All Services
-            <span aria-hidden="true">→</span>
-          </Link>
+          <div className="vs-cta-wrap">
+            <Link href="/services" aria-label="View all services offered by 99 Visual Solutions" className="vs-cta">
+              View All Services
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </footer>
+
       </div>
     </section>
   );

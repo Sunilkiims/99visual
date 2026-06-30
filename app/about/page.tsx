@@ -22,9 +22,9 @@ import Footer         from "../components/footer";
 import ScrollDown     from "../components/scrolldown";
 import Chatbot        from "../components/chatbot";
 import Whatsappbutton from "../components/wahtsappbutton";
-import PageLoader     from "../components/PageLoader";
+
 import TabAbout       from "../components/tabstory";
-import WhyChooseUs    from "../components/whychooseus";
+import WhyChooseUs    from "../components/Story";
 import DataPrivacy    from "../components/dataprivacy";
 import ContactCTA     from "@/app/components/Contactcta";
 import { FaCode, FaCubes, FaSearchLocation, FaLaptopCode } from "react-icons/fa";
@@ -238,7 +238,7 @@ const aboutGraph = buildGraph(
 export default function AboutPage() {
   return (
     <>
-      <PageLoader />
+      
 
       <script
         id="schema-about-graph"

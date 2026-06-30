@@ -99,7 +99,11 @@ BASE STYLES
 @layer base {
 
   * {
-    @apply border-border outline-ring/50;
+    @apply outline-ring/50;
+  }
+
+  section {
+    border: 0 !important;
   }
 
   body {

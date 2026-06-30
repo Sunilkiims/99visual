@@ -61,6 +61,52 @@ Together, these values guide our decisions, strengthen our partnerships, and def
   },
 ];
 
+/* ---------------- ANIMATION VARIANTS ---------------- */
+
+const sectionReveal = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const headerReveal = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.08 },
+  }),
+};
+
+const summaryContainer = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.09, delayChildren: 0.05 },
+  },
+};
+
+const summaryItem = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const imageReveal = {
+  hidden: { opacity: 0, scale: 0.96, x: -16 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 /* ---------------- COMPONENT ---------------- */
 
 export default function CompanyTabs() {
@@ -192,6 +238,7 @@ export default function CompanyTabs() {
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
           }
         }
 
@@ -204,28 +251,33 @@ export default function CompanyTabs() {
           background: transparent;
           border: none; cursor: pointer;
           position: relative;
-          transition: color .25s ease;
+          transition: color .3s ease;
           white-space: nowrap;
+          z-index: 2;
         }
         .ct-tab-btn + .ct-tab-btn {
           border-left: 1px solid var(--c-border);
         }
-        .ct-tab-btn::after {
-          content: '';
-          position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-          background: var(--c-orange);
-          transform: scaleX(0); transform-origin: center;
-          transition: transform .3s ease;
-        }
         .ct-tab-btn:hover { color: var(--c-muted2); }
         .ct-tab-btn--active {
-          color: var(--c-orange) !important;
-          background: var(--c-orange-dim);
+          color: #fff !important;
         }
-        .ct-tab-btn--active::after { transform: scaleX(1); }
+
+        .ct-tab-indicator {
+          position: absolute;
+          top: 0; bottom: 0;
+          background: linear-gradient(135deg, rgba(249,115,22,.22), rgba(249,115,22,.08));
+          border-bottom: 2px solid var(--c-orange);
+          z-index: 1;
+        }
 
         .ct-tab-btn svg, .ct-tab-btn .ct-tab-icon {
           font-size: .9rem; opacity: .8;
+          transition: transform .35s cubic-bezier(.22,1,.36,1);
+        }
+        .ct-tab-btn--active .ct-tab-icon {
+          transform: scale(1.12) rotate(-4deg);
+          opacity: 1;
         }
 
         /* ── DESKTOP CONTENT ── */
@@ -256,9 +308,9 @@ export default function CompanyTabs() {
           width: 100%; height: auto; display: block;
           border-radius: 16px;
           border: 1px solid var(--c-border);
-          transition: transform .4s ease;
+          transition: transform .5s cubic-bezier(.22,1,.36,1);
         }
-        .ct-img-wrap:hover img { transform: scale(1.03); }
+        .ct-img-wrap:hover img { transform: scale(1.045); }
 
         /* Ghost number behind content */
         .ct-ghost-num {
@@ -367,6 +419,11 @@ export default function CompanyTabs() {
           border-radius: 12px;
           background: var(--c-surface2);
           overflow: hidden;
+          transition: border-color .3s ease, box-shadow .3s ease;
+        }
+        .ct-accord-item--open {
+          border-color: rgba(249,115,22,.3);
+          box-shadow: 0 8px 24px -12px rgba(249,115,22,.18);
         }
         .ct-accord-trigger {
           width: 100%; display: flex; justify-content: space-between; align-items: center;
@@ -389,9 +446,13 @@ export default function CompanyTabs() {
           border: 1px solid rgba(249,115,22,.2);
           display: flex; align-items: center; justify-content: center;
           color: var(--c-orange); font-size: .85rem; flex-shrink: 0;
+          transition: transform .35s cubic-bezier(.22,1,.36,1);
+        }
+        .ct-accord-trigger--open .ct-accord-trigger__icon {
+          transform: scale(1.1) rotate(-6deg);
         }
         .ct-accord-chevron {
-          font-size: 1.1rem; color: var(--c-muted); transition: transform .3s ease;
+          font-size: 1.1rem; color: var(--c-muted); transition: transform .35s cubic-bezier(.22,1,.36,1), color .2s ease;
         }
         .ct-accord-chevron--open {
           transform: rotate(45deg);
@@ -426,9 +487,21 @@ export default function CompanyTabs() {
         .ct-corner--tr { top: 20px; right: 20px; border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
         .ct-corner--bl { bottom: 20px; left: 20px; border-bottom: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
         .ct-corner--br { bottom: 20px; right: 20px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+
+        @media (prefers-reduced-motion: reduce) {
+          .ct-img-wrap img, .ct-tab-icon, .ct-accord-trigger__icon, .ct-accord-chevron {
+            transition: none !important;
+          }
+        }
       `}</style>
 
-      <section className="ct-section">
+      <motion.section
+        className="ct-section"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={sectionReveal}
+      >
         {/* BG */}
         <div className="ct-section__grid" />
         <div className="ct-section__grain" />
@@ -445,18 +518,27 @@ export default function CompanyTabs() {
 
           {/* ── Section Header ── */}
           <div className="ct-header">
-            <div className="ct-header__eyebrow">
+            <motion.div
+              className="ct-header__eyebrow"
+              custom={0}
+              variants={headerReveal}
+            >
               <span className="ct-header__dot" />
               About · 99 Visual
-            </div>
-            <h2 className="ct-header__h2">
+            </motion.div>
+            <motion.h2 className="ct-header__h2" custom={1} variants={headerReveal}>
               Who we are &amp; what we <em>stand for</em>
-            </h2>
-            <div className="ct-header__rule" />
+            </motion.h2>
+            <motion.div className="ct-header__rule" custom={2} variants={headerReveal} />
           </div>
 
           {/* ── DESKTOP TABS NAV ── */}
-          <nav className="ct-tabs-nav" role="tablist">
+          <motion.nav
+            className="ct-tabs-nav"
+            role="tablist"
+            custom={3}
+            variants={headerReveal}
+          >
             {tabs.map((tab, index) => (
               <button
                 key={tab.title}
@@ -468,11 +550,19 @@ export default function CompanyTabs() {
                   activeIndex === index && 'ct-tab-btn--active'
                 )}
               >
+                {activeIndex === index && (
+                  <motion.span
+                    layoutId="ct-tab-indicator"
+                    className="ct-tab-indicator"
+                    style={{ left: 0, right: 0 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
                 <span className="ct-tab-icon">{tab.icon}</span>
                 {tab.title}
               </button>
             ))}
-          </nav>
+          </motion.nav>
 
           {/* ── DESKTOP CONTENT ── */}
           <div className="ct-desktop-content">
@@ -482,14 +572,14 @@ export default function CompanyTabs() {
               {pageView === 'summary' && (
                 <motion.div
                   key={`summary-${activeIndex}`}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{ opacity: 0, y: -18, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
+                  variants={summaryContainer}
                   className="ct-summary-grid"
                 >
                   {/* Image */}
-                  <div className="ct-img-wrap">
+                  <motion.div className="ct-img-wrap" variants={imageReveal}>
                     <Image
                       src={activeTab.content.image}
                       alt={activeTab.content.heading}
@@ -497,34 +587,36 @@ export default function CompanyTabs() {
                       height={380}
                       style={{ width: '100%', height: 'auto' }}
                     />
-                  </div>
+                  </motion.div>
 
                   {/* Text */}
                   <div className="ct-content-body">
-                    <span className="ct-ghost-num">
+                    <motion.span className="ct-ghost-num" variants={summaryItem}>
                       {String(activeIndex + 1).padStart(2, '0')}
-                    </span>
+                    </motion.span>
 
-                    <span className="ct-content-eyebrow">
+                    <motion.span className="ct-content-eyebrow" variants={summaryItem}>
                       {activeTab.title}
-                    </span>
-                    <h3 className="ct-content-h3">
+                    </motion.span>
+                    <motion.h3 className="ct-content-h3" variants={summaryItem}>
                       {activeTab.content.heading}
-                    </h3>
-                    <div className="ct-content-rule" />
-                    <p className="ct-content-p">
+                    </motion.h3>
+                    <motion.div className="ct-content-rule" variants={summaryItem} />
+                    <motion.p className="ct-content-p" variants={summaryItem}>
                       {activeTab.content.shortText}
-                    </p>
+                    </motion.p>
 
-                    <button
+                    <motion.button
                       onClick={() => setPageView('full')}
                       className="ct-read-btn"
+                      variants={summaryItem}
+                      whileTap={{ scale: 0.96 }}
                     >
                       Read more
                       <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                         <path d="M2 6.5h9M7 2.5l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
-                    </button>
+                    </motion.button>
                   </div>
                 </motion.div>
               )}
@@ -533,10 +625,10 @@ export default function CompanyTabs() {
               {pageView === 'full' && (
                 <motion.div
                   key={`full-${activeIndex}`}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -16 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  initial={{ opacity: 0, y: 28, scale: 0.985 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -18, scale: 0.985, transition: { duration: 0.3, ease: [0.4, 0, 1, 1] } }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                   className="ct-full-body"
                 >
                   <span className="ct-content-eyebrow">{activeTab.title}</span>
@@ -544,15 +636,16 @@ export default function CompanyTabs() {
                   <div className="ct-full-rule" />
                   <p className="ct-full-text">{activeTab.content.fullText}</p>
 
-                  <button
+                  <motion.button
                     onClick={() => setPageView('summary')}
                     className="ct-back-btn"
+                    whileTap={{ scale: 0.96 }}
                   >
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                       <path d="M11 6.5H2M6 2.5l-4 4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Back
-                  </button>
+                  </motion.button>
                 </motion.div>
               )}
 
@@ -562,7 +655,13 @@ export default function CompanyTabs() {
           {/* ── MOBILE ACCORDION ── */}
           <div className="ct-accordion">
             {tabs.map((tab, index) => (
-              <div key={tab.title} className="ct-accord-item">
+              <div
+                key={tab.title}
+                className={clsx(
+                  'ct-accord-item',
+                  accordionOpen === index && 'ct-accord-item--open'
+                )}
+              >
                 <button
                   onClick={() =>
                     setAccordionOpen(accordionOpen === index ? null : index)
@@ -584,23 +683,31 @@ export default function CompanyTabs() {
                   </span>
                 </button>
 
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                   {accordionOpen === index && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{
+                        height: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+                        opacity: { duration: 0.3, ease: 'easeInOut' },
+                      }}
                       className="ct-accord-body"
                     >
-                      <div className="ct-accord-body__inner">
+                      <motion.div
+                        className="ct-accord-body__inner"
+                        initial={{ y: -8 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                      >
                         <h4 className="ct-accord-body__h4">
                           {tab.content.heading}
                         </h4>
                         <p className="ct-accord-body__text">
                           {tab.content.fullText}
                         </p>
-                      </div>
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -609,7 +716,7 @@ export default function CompanyTabs() {
           </div>
 
         </div>
-      </section>
+      </motion.section>
     </>
   );
 }

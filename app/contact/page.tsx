@@ -23,7 +23,7 @@ import Footer         from "../components/footer";
 import ScrollDown     from "../components/scrolldown";
 import Chatbot        from "../components/chatbot";
 import Whatsappbutton from "../components/wahtsappbutton";
-import PageLoader     from "../components/PageLoader";
+
 import ContactForm    from "../components/contactform";
 
 import {
@@ -364,7 +364,7 @@ const faqStyles = `
 export default function ContactPage() {
   return (
     <>
-      <PageLoader />
+      
 
       <script
         id="schema-contact-graph"

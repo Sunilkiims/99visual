@@ -22,7 +22,7 @@ import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader     from "@/app/components/PageLoader";
+
 import { FaHandshake, FaGlobe, FaUsers, FaLightbulb } from "react-icons/fa";
 
 import {
@@ -235,7 +235,7 @@ const whyItems = [
 export default function PartnersPage() {
   return (
     <>
-      <PageLoader />
+      
 
       <script
         id="schema-partner-graph"

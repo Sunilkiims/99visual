@@ -31,7 +31,6 @@ import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader     from "@/app/components/PageLoader";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
 
 import {
@@ -467,7 +466,7 @@ const openRoles = [
 export default function CareersPage() {
   return (
     <>
-      <PageLoader />
+     
 
       <script
         id="schema-careers-graph"

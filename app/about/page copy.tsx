@@ -22,7 +22,7 @@ import Chatbot        from "../components/chatbot";
 import Whatsappbutton from "../components/wahtsappbutton";
 import PageLoader     from "../components/PageLoader";
 import TabAbout       from "../components/tabstory";
-import WhyChooseUs    from "../components/whychooseus";
+import WhyChooseUs    from "../components/Story";
 import DataPrivacy    from "../components/dataprivacy";
 import ContactCTA     from "@/app/components/Contactcta";
 

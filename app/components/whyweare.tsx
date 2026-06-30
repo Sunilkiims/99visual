@@ -1,119 +1,91 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const highlights = [
-  'Cutting-edge Visualization',
-  'Streamlined IT Systems',
-  'Expert Consulting Team',
-  'Custom Web & App Solutions',
-  'Result-Driven Strategies',
-  'Trusted by Enterprises',
-];
-
-export default function WhyWeAre() {
+export default function WhoWeAre() {
   const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsVisible(true), 200);
-    return () => clearTimeout(timeout);
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        :root {
-          --c-bg:         #080808;
-          --c-surface:    #0f0f0f;
-          --c-surface2:   #141414;
-          --c-border:     rgba(255,255,255,0.07);
-          --c-orange:     #f97316;
-          --c-orange-dim: rgba(249,115,22,0.12);
-          --c-muted:      rgba(255,255,255,0.45);
-          --c-muted2:     rgba(255,255,255,0.65);
-          --ff-serif:     'Cormorant Garamond', serif;
-          --ff-sans:      'DM Sans', sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .wwa-section {
           position: relative;
-          background: var(--c-bg);
           overflow: hidden;
-          padding: 6rem 1.5rem;
-          border-top: 1px solid var(--c-border);
-          border-bottom: 1px solid var(--c-border);
-          opacity: 0;
-          transform: translateY(28px);
-          transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1);
-        }
-        .wwa-section--visible {
-          opacity: 1;
-          transform: translateY(0);
+          padding: 6rem 1.5rem 0;
+          background: #f8fafc;
         }
 
-        /* bg layers */
         .wwa-grid {
           position: absolute; inset: 0; pointer-events: none;
           background-image:
-            linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-        .wwa-grain {
-          position: absolute; inset: 0; opacity: .025; pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 180px 180px;
-        }
-        .wwa-orb {
-          position: absolute; border-radius: 50%;
-          filter: blur(100px); pointer-events: none;
-        }
-        .wwa-orb--1 {
-          width: 420px; height: 420px;
-          background: radial-gradient(circle, #f97316, transparent 70%);
-          top: -150px; left: -100px; opacity: .06;
-        }
-        .wwa-orb--2 {
-          width: 320px; height: 320px;
-          background: radial-gradient(circle, #6366f1, transparent 70%);
-          bottom: -120px; right: -80px; opacity: .05;
+            linear-gradient(rgba(15,23,42,.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15,23,42,.025) 1px, transparent 1px);
+          background-size: 64px 64px;
+          mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
         }
 
-        /* corners */
-        .wwa-corner {
-          position: absolute; width: 22px; height: 22px; z-index: 5; opacity: .15;
+        .wwa-orb {
+          position: absolute; border-radius: 50%;
+          filter: blur(120px); pointer-events: none;
+          width: 420px; height: 420px;
+          background: radial-gradient(circle, #f97316, transparent 70%);
+          top: -160px; left: -120px; opacity: .08;
         }
-        .wwa-corner--tl { top: 20px; left: 20px; border-top: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .wwa-corner--tr { top: 20px; right: 20px; border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
-        .wwa-corner--bl { bottom: 20px; left: 20px; border-bottom: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .wwa-corner--br { bottom: 20px; right: 20px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
 
         .wwa-inner {
           position: relative; z-index: 10;
-          max-width: 1000px; margin: 0 auto;
+          max-width: 760px; margin: 0 auto;
+          text-align: center;
         }
 
-        /* header */
-        .wwa-header { text-align: center; margin-bottom: 3.5rem; }
+        /* ---- Left column: copy ---- */
+        .wwa-copy {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .wwa-animate {
+          opacity: 0;
+          transform: translateY(26px);
+          transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+        }
+        .wwa-section--visible .wwa-animate { opacity: 1; transform: translateY(0); }
 
         .wwa-eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
-          font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
-          color: var(--c-orange);
-          border: 1px solid rgba(249,115,22,.28);
+          color: #f97316;
+          border: 1px solid rgba(249,115,22,.25);
           background: rgba(249,115,22,.07);
-          padding: 6px 16px; border-radius: 100px;
-          margin-bottom: 1.6rem;
-          backdrop-filter: blur(8px);
+          padding: 5px 14px; border-radius: 100px;
+          margin-bottom: 1.4rem;
         }
         .wwa-eyebrow__dot {
           width: 5px; height: 5px; border-radius: 50%;
-          background: var(--c-orange);
+          background: #f97316; display: inline-block;
           animation: wwaPulse 2s ease-in-out infinite;
-          display: inline-block;
         }
         @keyframes wwaPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
@@ -121,109 +93,101 @@ export default function WhyWeAre() {
         }
 
         .wwa-h2 {
-          font-family: var(--ff-serif);
-          font-size: clamp(2rem, 4.5vw, 3.2rem);
-          font-weight: 700; line-height: 1.1; letter-spacing: -.02em;
-          color: #fff; margin: 0 0 1rem;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(2.1rem, 4.2vw, 3.1rem);
+          font-weight: 700; line-height: 1.12; letter-spacing: -.02em;
+          color: #0f172a;
+          margin: 0 0 .7rem;
         }
-        .wwa-h2 em { font-style: italic; color: var(--c-orange); }
+        .wwa-h2 em { font-style: italic; color: #f97316; }
+
+        .wwa-subhead {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.02rem; font-weight: 500;
+          color: #475569;
+          margin: 0 0 1.6rem;
+          letter-spacing: -.01em;
+        }
 
         .wwa-rule {
-          width: 40px; height: 1px;
-          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
-          margin: 0 auto 1.8rem;
+          width: 44px; height: 2px;
+          border-radius: 2px;
+          background: linear-gradient(90deg, #f97316, #fbbf24);
+          margin: 0 auto 1.6rem;
         }
 
         .wwa-p {
-          font-family: var(--ff-sans); font-size: .97rem;
-          font-weight: 300; line-height: 1.85; color: var(--c-muted);
-          max-width: 720px; margin: 0 auto .9rem;
+          font-family: 'DM Sans', sans-serif;
+          font-size: .98rem; font-weight: 400; line-height: 1.9;
+          max-width: 620px; margin: 0 auto 1.1rem;
+          color: #475569;
         }
-        .wwa-p strong { color: var(--c-orange); font-weight: 600; }
+        .wwa-p:last-of-type { margin-bottom: 1.8rem; }
+        .wwa-p strong { color: #0f172a; font-weight: 600; }
 
-        /* highlights grid */
-        .wwa-grid-cards {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-          margin-top: 3rem;
+        .wwa-tagline {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.05rem; font-weight: 600;
+          letter-spacing: .01em;
+          color: #0f172a;
+          padding-top: .4rem;
+          border-top: 1px solid rgba(15,23,42,.08);
+          display: inline-block;
         }
-        @media (max-width: 768px) { .wwa-grid-cards { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 480px) { .wwa-grid-cards { grid-template-columns: 1fr; } }
+        .wwa-tagline span { color: #f97316; }
 
-        .wwa-chip {
-          display: flex; align-items: center; gap: 10px;
-          background: var(--c-surface2);
-          border: 1px solid var(--c-border);
-          border-radius: 10px;
-          padding: .85rem 1.1rem;
-          font-family: var(--ff-sans); font-size: .85rem;
-          font-weight: 400; color: var(--c-muted2);
-          transition: border-color .25s ease, transform .25s ease, color .25s ease;
-          cursor: default;
-        }
-        .wwa-chip:hover {
-          border-color: rgba(249,115,22,.3);
-          transform: translateY(-2px);
-          color: #fff;
-        }
-        .wwa-chip__dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--c-orange); flex-shrink: 0;
+        @media (prefers-reduced-motion: reduce) {
+          .wwa-animate { transition: none !important; opacity: 1 !important; transform: none !important; }
+          .wwa-eyebrow__dot { animation: none !important; }
         }
       `}</style>
 
-      <section className={`wwa-section${isVisible ? ' wwa-section--visible' : ''}`}>
-        {/* BG */}
-        <div className="wwa-grid" aria-hidden />
-        <div className="wwa-grain" aria-hidden />
-        <div className="wwa-orb wwa-orb--1" aria-hidden />
-        <div className="wwa-orb wwa-orb--2" aria-hidden />
-
-        {/* Corners */}
-        <div className="wwa-corner wwa-corner--tl" aria-hidden />
-        <div className="wwa-corner wwa-corner--tr" aria-hidden />
-        <div className="wwa-corner wwa-corner--bl" aria-hidden />
-        <div className="wwa-corner wwa-corner--br" aria-hidden />
+      <section
+        ref={sectionRef}
+        className={`wwa-section${isVisible ? ' wwa-section--visible' : ''}`}
+        aria-labelledby="who-we-are-heading"
+      >
+        <div className="wwa-grid" aria-hidden="true" />
+        <div className="wwa-orb" aria-hidden="true" />
 
         <div className="wwa-inner">
 
-          {/* Header */}
-          <div className="wwa-header">
+          <div className="wwa-copy">
             <div className="wwa-eyebrow">
               <span className="wwa-eyebrow__dot" />
-              Our Purpose
+              About 99 Visual Solutions
             </div>
-            <h2 className="wwa-h2">
-              Why We <em>Are</em>
+
+            <h2 id="who-we-are-heading" className="wwa-h2">
+              Who We <em>Are</em>
             </h2>
+
+            <p className="wwa-subhead">
+              Where creativity, technology, and engineering converge.
+            </p>
+
             <div className="wwa-rule" />
 
             <p className="wwa-p">
-              In the ever-evolving landscape of information technology, businesses require innovative
-              and visually compelling solutions to stay competitive.{' '}
-              <strong>99 Visual Solutions</strong> is a leading IT consulting firm dedicated to
-              revolutionizing the industry by providing cutting-edge visual solutions.
+              <strong>99 Visual Solutions</strong> is a multidisciplinary technology
+              and creative studio built on one belief: exceptional digital products
+              demand both imagination and engineering precision. We bring 3D
+              Visualisation, Web &amp; App Development, Digital Marketing &amp; SEO,
+              IT Consulting, CAD, GIS &amp; LiDAR, QA &amp; Automation, and
+              AI-powered solutions together under one team, one process, and one
+              point of accountability.
             </p>
             <p className="wwa-p">
-              From enhancing user experiences to streamlining complex processes, our team of experts
-              leverages the power of visualization to bring remarkable transformations to your IT
-              systems.
+              Every engagement begins with a clear understanding of your business
+              objectives and ends with measurable, scalable outcomes. We design,
+              build, and optimise with the same discipline — prioritising
+              innovation, quality, and collaboration at every stage, from early
+              concept to enterprise deployment.
             </p>
-            <p className="wwa-p">
-              Explore our comprehensive range of solutions that will take your business to new
-              heights.
-            </p>
-          </div>
 
-          {/* Highlight chips */}
-          <div className="wwa-grid-cards">
-            {highlights.map((item, idx) => (
-              <div key={idx} className="wwa-chip">
-                <span className="wwa-chip__dot" />
-                {item}
-              </div>
-            ))}
+            <p className="wwa-tagline">
+              One Partner. <span>Endless Possibilities.</span>
+            </p>
           </div>
 
         </div>

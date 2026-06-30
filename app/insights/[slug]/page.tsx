@@ -5,6 +5,8 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
+// ─── NEW: import PostViewer so contact CTA popup works ────────────────────────
+import PostViewer from '@/app/components/PostViewer'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -227,7 +229,7 @@ export default async function InsightPostPage({ params }: Props) {
                 <span>{post.viewCount} views</span>
               </div>
 
-             {post.featuredImage && (
+              {post.featuredImage && (
                 <div className="relative w-full rounded-2xl overflow-hidden mb-10 bg-gray-900 flex items-center justify-center max-h-[500px]">
                   <Image
                     src={post.featuredImage.url}
@@ -240,16 +242,17 @@ export default async function InsightPostPage({ params }: Props) {
                 </div>
               )}
 
-              <div
-                className="article-content"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+              <PostViewer
+                html={post.content}
+                postTitle={post.title}
+                postUrl={`/insights/${post.slug}`}
               />
               <style>{`
                 .article-content { color: #d1d5db; font-size: 1.05rem; line-height: 1.85; }
-                 .article-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-            .article-content td, .article-content th { padding: 8px 12px; text-align: left; min-width: 80px; }
-            .article-content th { font-weight: 600; color: #f9fafb; }
-            .article-content td { color: #d1d5db; }
+                .article-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+                .article-content td, .article-content th { padding: 8px 12px; text-align: left; min-width: 80px; }
+                .article-content th { font-weight: 600; color: #f9fafb; }
+                .article-content td { color: #d1d5db; }
                 .article-content h1,
                 .article-content h2,
                 .article-content h3,

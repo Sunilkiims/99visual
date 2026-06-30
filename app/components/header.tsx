@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useRef, useCallback, useId } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Menu, X, ChevronDown,
   Layers, Boxes, Code2, BrainCircuit,
@@ -14,7 +14,6 @@ import { FaFacebookF, FaXTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 
-/* ─── Service catalogue ──────────────────────────────────────────────────── */
 const SERVICE_ITEMS = [
   {
     href:   '/services',
@@ -90,7 +89,6 @@ const SOCIAL_LINKS = [
   { href: 'https://www.instagram.com/99visualsolutions/',            icon: <FaInstagram />,  label: 'Instagram' },
 ] as const;
 
-/* ─── Scroll progress hook ───────────────────────────────────────────────── */
 function useScrollProgress() {
   const [progress, setProgress] = useState(0);
   const [scrolled, setScrolled]  = useState(false);
@@ -109,7 +107,6 @@ function useScrollProgress() {
   return { progress, scrolled };
 }
 
-/* ─── Focus-trap hook ────────────────────────────────────────────────────── */
 function useFocusTrap(ref: React.RefObject<HTMLElement | null>, active: boolean) {
   useEffect(() => {
     if (!active || !ref.current) return;
@@ -134,7 +131,6 @@ function useFocusTrap(ref: React.RefObject<HTMLElement | null>, active: boolean)
   }, [active, ref]);
 }
 
-/* ─── Component ──────────────────────────────────────────────────────────── */
 const Header = () => {
   const [mobileMenuOpen,     setMobileMenuOpen]     = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
@@ -145,27 +141,25 @@ const Header = () => {
   const closeTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
   const drawerRef    = useRef<HTMLDivElement>(null);
   const pathname     = usePathname();
-  const menuButtonId = useId();
-  const dropdownId   = useId();
+
+  const menuButtonId = 'header-services-btn';
+  const dropdownId   = 'header-services-dropdown';
 
   const { progress, scrolled } = useScrollProgress();
 
   useEffect(() => { setMounted(true); }, []);
 
-  /* Body scroll lock — cleaned up on unmount */
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = prev; };
   }, [mobileMenuOpen]);
 
-  /* Close mobile menu on route change */
   useEffect(() => {
     setMobileMenuOpen(false);
     setServicesOpen(false);
   }, [pathname]);
 
-  /* Escape key closes everything */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -179,7 +173,6 @@ const Header = () => {
 
   useFocusTrap(drawerRef, mobileMenuOpen);
 
-  /* Dropdown open/close with cleanup */
   const openServices = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setServicesOpen(true);
@@ -189,7 +182,6 @@ const Header = () => {
     closeTimer.current = setTimeout(() => setServicesOpen(false), 150);
   }, []);
 
-  /* Cleanup timer on unmount */
   useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
 
   const isActive        = (href: string) => pathname === href;
@@ -208,7 +200,6 @@ const Header = () => {
 
   return (
     <>
-      {/* ── Pulse keyframe — injected once globally ──────────────────────── */}
       <style>{`
         @keyframes navdot-ping {
           0%   { transform: scale(1);   opacity: 0.7; }
@@ -219,9 +210,37 @@ const Header = () => {
           0%, 100% { opacity: 1;    transform: scale(1);    }
           50%       { opacity: 0.75; transform: scale(0.88); }
         }
+        @keyframes card-ring-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        .svc-card-ring {
+          position: absolute;
+          inset: -60%;
+          opacity: 0;
+          pointer-events: none;
+          animation: card-ring-spin 2s linear infinite;
+          transition: opacity 0.3s ease;
+          z-index: 0;
+        }
+        .group:hover .svc-card-ring {
+          opacity: 1;
+        }
+        .svc-card-mask {
+          position: absolute;
+          inset: 1px;
+          border-radius: 10px;
+          pointer-events: none;
+          background: #0d1117;
+          z-index: 1;
+        }
+        .svc-card-content {
+          position: relative;
+          z-index: 2;
+          display: contents;
+        }
       `}</style>
 
-      {/* ── HEADER ──────────────────────────────────────────────────────────── */}
       <header
         className={clsx(
           'fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md',
@@ -229,7 +248,6 @@ const Header = () => {
         )}
         role="banner"
       >
-        {/* ── Scroll progress bar ──────────────────────────────────────────── */}
         <div
           className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-orange-500 to-amber-400 transition-all duration-100 ease-out z-10 pointer-events-none"
           style={{ width: `${progress * 100}%`, opacity: scrolled ? 1 : 0 }}
@@ -243,21 +261,19 @@ const Header = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-8 lg:space-x-12">
 
-            {/* Logo */}
             <Link href="/" aria-label="99 Visual Solutions — home">
-              <div className="relative w-[120px] h-[40px]">
+              <div className="relative w-[150px] h-[45px]">
                 <Image
                   src={scrolled ? '/logo-dark.png' : '/logo.png'}
                   alt="99 Visual Solutions"
                   fill
-                  sizes="120px"
+                  sizes="180px"
                   priority
                   className="object-contain transition-opacity duration-300"
                 />
               </div>
             </Link>
 
-            {/* ── Desktop Nav ──────────────────────────────────────────────── */}
             <nav
               className={clsx(
                 'hidden md:flex items-center gap-6 lg:gap-8 font-medium transition-colors duration-300',
@@ -268,7 +284,6 @@ const Header = () => {
               <Link href="/"      className={navLinkClass('/')}      aria-current={isActive('/')      ? 'page' : undefined}>Home</Link>
               <Link href="/about" className={navLinkClass('/about')} aria-current={isActive('/about') ? 'page' : undefined}>About</Link>
 
-              {/* ── Services dropdown ─────────────────────────────────────── */}
               <div
                 className="relative"
                 onMouseEnter={openServices}
@@ -303,12 +318,10 @@ const Header = () => {
                   />
                 </button>
 
-                {/* gap-bridge */}
                 {servicesOpen && (
                   <div className="absolute left-0 top-full h-3 w-full" aria-hidden="true" />
                 )}
 
-                {/* ── DROPDOWN PANEL ───────────────────────────────────────── */}
                 <AnimatePresence>
                   {servicesOpen && (
                     <motion.div
@@ -331,16 +344,13 @@ const Header = () => {
                       onMouseEnter={openServices}
                       onMouseLeave={closeServices}
                     >
-                      {/* accent bar */}
                       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-80" aria-hidden="true" />
 
-                      {/* header strip */}
                       <div className="px-5 pt-4 pb-2 flex items-center justify-between" aria-hidden="true">
                         <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-white/30">What we do</p>
                         <span className="text-[10px] text-white/20 tracking-wide">{SERVICE_ITEMS.length} services</span>
                       </div>
 
-                      {/* 2-column grid */}
                       <div className="px-3 pb-3 grid grid-cols-2 gap-1.5">
                         {SERVICE_ITEMS.map((svc, idx) => {
                           const active  = pathname === svc.href;
@@ -356,23 +366,36 @@ const Header = () => {
                               aria-current={active ? 'page' : undefined}
                               className={clsx(
                                 'group relative flex items-center gap-3 rounded-xl px-3 py-3',
-                                'transition-all duration-200 ease-out',
+                                'transition-all duration-200 ease-out overflow-hidden',
                                 'border border-transparent',
                                 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-orange-500',
                                 active
                                   ? 'bg-white/[0.08] border-white/10'
-                                  : 'hover:bg-white/[0.06] hover:border-white/[0.08]',
+                                  : 'hover:bg-white/[0.06]',
                               )}
-                              style={{
-                                boxShadow: hovered
-                                  ? `inset 0 0 0 1px ${svc.glow}30, 0 4px 20px ${svc.glow}18`
-                                  : 'none',
-                              }}
                             >
-                              {/* icon badge */}
+                              {/* ── Spinning card border light ── */}
+                              <div
+                                className="svc-card-ring"
+                                style={{
+                                  background: `conic-gradient(
+                                    transparent 0deg,
+                                    transparent 160deg,
+                                    ${svc.glow}ee 200deg,
+                                    ${svc.glow}55 225deg,
+                                    transparent 265deg,
+                                    transparent 360deg
+                                  )`,
+                                }}
+                                aria-hidden="true"
+                              />
+                              {/* Mask: punches out center so only 1px border glow shows */}
+                              <div className="svc-card-mask" aria-hidden="true" />
+
+                              {/* Icon box */}
                               <div
                                 className={clsx(
-                                  'relative flex-shrink-0 w-9 h-9 rounded-lg',
+                                  'relative z-[2] flex-shrink-0 w-9 h-9 rounded-lg',
                                   'flex items-center justify-center',
                                   `bg-gradient-to-br ${svc.accent}`,
                                   `shadow-lg ${svc.shadow}`,
@@ -389,8 +412,8 @@ const Header = () => {
                                 <svc.Icon className="w-4 h-4 text-white z-10" strokeWidth={1.8} />
                               </div>
 
-                              {/* text */}
-                              <div className="min-w-0 flex-1">
+                              {/* Text */}
+                              <div className="relative z-[2] min-w-0 flex-1">
                                 <p className={clsx(
                                   'text-[13px] font-semibold leading-tight truncate',
                                   'transition-colors duration-150',
@@ -403,29 +426,15 @@ const Header = () => {
                                 </p>
                               </div>
 
-                              {/* ── active dot — upgraded pulse ring ───────── */}
+                              {/* Active dot */}
                               {active && (
-                                <span
-                                  className="relative flex-shrink-0 flex items-center justify-center w-2.5 h-2.5"
-                                  aria-hidden="true"
-                                >
-                                  {/* outer ping ring */}
+                                <span className="relative z-[2] flex-shrink-0 flex items-center justify-center w-2.5 h-2.5" aria-hidden="true">
                                   <span
-                                    className={clsx(
-                                      'absolute inline-flex w-full h-full rounded-full',
-                                      `bg-gradient-to-br ${svc.accent}`,
-                                    )}
-                                    style={{
-                                      animation: 'navdot-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
-                                      opacity: 0.65,
-                                    }}
+                                    className={clsx('absolute inline-flex w-full h-full rounded-full', `bg-gradient-to-br ${svc.accent}`)}
+                                    style={{ animation: 'navdot-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite', opacity: 0.65 }}
                                   />
-                                  {/* inner core dot with glow + breathe */}
                                   <span
-                                    className={clsx(
-                                      'relative inline-flex w-1.5 h-1.5 rounded-full',
-                                      `bg-gradient-to-br ${svc.accent}`,
-                                    )}
+                                    className={clsx('relative inline-flex w-1.5 h-1.5 rounded-full', `bg-gradient-to-br ${svc.accent}`)}
                                     style={{
                                       boxShadow: `0 0 6px ${svc.glow}dd, 0 0 2px ${svc.glow}, inset 0 1px 0 rgba(255,255,255,0.4)`,
                                       animation: 'navdot-breathe 2.2s ease-in-out infinite',
@@ -434,11 +443,10 @@ const Header = () => {
                                 </span>
                               )}
 
-                              {/* chevron arrow */}
+                              {/* Arrow */}
                               <svg
-                                className="flex-shrink-0 w-3.5 h-3.5 text-white/0 group-hover:text-white/40 -translate-x-1 group-hover:translate-x-0 transition-all duration-200"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-                                aria-hidden="true"
+                                className="relative z-[2] flex-shrink-0 w-3.5 h-3.5 text-white/0 group-hover:text-white/40 -translate-x-1 group-hover:translate-x-0 transition-all duration-200"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"
                               >
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                               </svg>
@@ -447,7 +455,6 @@ const Header = () => {
                         })}
                       </div>
 
-                      {/* footer CTA */}
                       <div className="mx-3 mb-3 mt-1">
                         <Link
                           href="/services"
@@ -471,7 +478,6 @@ const Header = () => {
                         </Link>
                       </div>
 
-                      {/* bottom inner shadow */}
                       <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent pointer-events-none rounded-b-2xl" aria-hidden="true" />
                     </motion.div>
                   )}
@@ -484,7 +490,6 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* ── Desktop Social Icons ─────────────────────────────────────── */}
           <div
             className={clsx(
               'hidden md:flex items-center space-x-4',
@@ -506,7 +511,6 @@ const Header = () => {
             ))}
           </div>
 
-          {/* ── Mobile toggle ────────────────────────────────────────────── */}
           <button
             className="md:hidden p-1 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
             onClick={() => setMobileMenuOpen((v) => !v)}
@@ -522,12 +526,11 @@ const Header = () => {
         </div>
       </header>
 
-      {/* ── MOBILE DRAWER (PORTAL) ───────────────────────────────────────────── */}
+      {/* ── MOBILE DRAWER ───────────────────────────────────────────────────── */}
       {mounted && createPortal(
         <AnimatePresence>
           {mobileMenuOpen && (
             <>
-              {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -538,7 +541,6 @@ const Header = () => {
                 aria-hidden="true"
               />
 
-              {/* Drawer */}
               <motion.div
                 id="mobile-drawer"
                 ref={drawerRef}
@@ -551,11 +553,10 @@ const Header = () => {
                 transition={{ type: 'tween', duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                 className="fixed top-0 right-0 h-full w-[85%] max-w-sm z-[9999] bg-[#0f1c2e] text-white flex flex-col shadow-2xl"
               >
-                {/* Drawer header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
                   <Link href="/" onClick={() => setMobileMenuOpen(false)} aria-label="99 Visual Solutions — home">
-                    <div className="relative w-[110px] h-[36px]">
-                      <Image src="/logo.png" alt="99 Visual Solutions" fill sizes="110px" priority className="object-contain" />
+                    <div className="relative w-[150px] h-[45px]">
+                      <Image src="/logo.png" alt="99 Visual Solutions" fill sizes="150px" priority className="object-contain" />
                     </div>
                   </Link>
                   <button
@@ -567,15 +568,10 @@ const Header = () => {
                   </button>
                 </div>
 
-                {/* Nav links */}
-                <nav
-                  className="flex-1 overflow-y-auto px-6 py-6 space-y-1"
-                  aria-label="Mobile navigation"
-                >
-                  {/* Home & About */}
+                <nav className="flex-1 overflow-y-auto px-6 py-6 space-y-1" aria-label="Mobile navigation">
                   {[
-                    { href: '/',      label: 'Home',   delay: 0.08 },
-                    { href: '/about', label: 'About',  delay: 0.13 },
+                    { href: '/',      label: 'Home',  delay: 0.08 },
+                    { href: '/about', label: 'About', delay: 0.13 },
                   ].map((item) => (
                     <motion.div
                       key={item.href}
@@ -600,7 +596,6 @@ const Header = () => {
                     </motion.div>
                   ))}
 
-                  {/* Services accordion */}
                   <motion.div
                     initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -657,41 +652,22 @@ const Header = () => {
                                   )}
                                 >
                                   <span
-                                    className={clsx(
-                                      'flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center',
-                                      `bg-gradient-to-br ${svc.accent}`,
-                                    )}
+                                    className={clsx('flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center', `bg-gradient-to-br ${svc.accent}`)}
                                     aria-hidden="true"
                                   >
                                     <svc.Icon className="w-3 h-3 text-white" strokeWidth={2} />
                                   </span>
                                   {svc.label}
 
-                                  {/* mobile active pulse dot */}
                                   {mobileActive && (
-                                    <span
-                                      className="relative ml-auto flex-shrink-0 flex items-center justify-center w-2.5 h-2.5"
-                                      aria-hidden="true"
-                                    >
+                                    <span className="relative ml-auto flex-shrink-0 flex items-center justify-center w-2.5 h-2.5" aria-hidden="true">
                                       <span
-                                        className={clsx(
-                                          'absolute inline-flex w-full h-full rounded-full',
-                                          `bg-gradient-to-br ${svc.accent}`,
-                                        )}
-                                        style={{
-                                          animation: 'navdot-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
-                                          opacity: 0.6,
-                                        }}
+                                        className={clsx('absolute inline-flex w-full h-full rounded-full', `bg-gradient-to-br ${svc.accent}`)}
+                                        style={{ animation: 'navdot-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite', opacity: 0.6 }}
                                       />
                                       <span
-                                        className={clsx(
-                                          'relative inline-flex w-1.5 h-1.5 rounded-full',
-                                          `bg-gradient-to-br ${svc.accent}`,
-                                        )}
-                                        style={{
-                                          boxShadow: `0 0 5px ${svc.glow}cc`,
-                                          animation: 'navdot-breathe 2.2s ease-in-out infinite',
-                                        }}
+                                        className={clsx('relative inline-flex w-1.5 h-1.5 rounded-full', `bg-gradient-to-br ${svc.accent}`)}
+                                        style={{ boxShadow: `0 0 5px ${svc.glow}cc`, animation: 'navdot-breathe 2.2s ease-in-out infinite' }}
                                       />
                                     </span>
                                   )}
@@ -704,7 +680,6 @@ const Header = () => {
                     </AnimatePresence>
                   </motion.div>
 
-                  {/* Partner, Career, Contact */}
                   {[
                     { href: '/partner', label: 'Partner', delay: 0.23 },
                     { href: '/careers', label: 'Career',  delay: 0.28 },
@@ -734,11 +709,8 @@ const Header = () => {
                   ))}
                 </nav>
 
-                {/* Social icons footer */}
                 <div className="px-6 py-5 border-t border-white/10">
-                  <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3" aria-hidden="true">
-                    Follow Us
-                  </p>
+                  <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-gray-500 mb-3" aria-hidden="true">Follow Us</p>
                   <div className="flex gap-3" aria-label="Social media links">
                     {SOCIAL_LINKS.map((s) => (
                       <a

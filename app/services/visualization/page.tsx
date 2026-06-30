@@ -29,7 +29,7 @@ import ContactCTA     from "@/app/components/Contactcta";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-import PageLoader     from "@/app/components/PageLoader";
+
 
 import {
   BASE,
@@ -332,7 +332,7 @@ function HeroSection() {
 export default function VisualizationPage() {
   return (
     <>
-      <PageLoader />
+      
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');

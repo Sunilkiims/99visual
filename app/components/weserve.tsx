@@ -1,364 +1,236 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 const industries = [
   {
     index: "01",
     title: "Real Estate & Architecture",
     tags: ["3D Visualisation", "CAD Drafting", "BIM", "Rendering"],
-    desc: "Photorealistic renders, immersive walkthroughs, and precision CAD detailing that transform concept drawings into investor-ready presentations — before a single brick is laid.",
-    stat: { value: "500+", label: "Projects Delivered" },
+    desc: "Photorealistic renders and precision CAD detailing that transform concept drawings into investor-ready presentations.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    ),
   },
   {
     index: "02",
     title: "IT & Technology",
     tags: ["SaaS Platforms", "APIs", "Cloud", "DevOps"],
-    desc: "Full-lifecycle engineering for complex digital products — from SaaS architecture and microservices to cloud-native deployments on AWS, GCP, and Azure.",
-    stat: { value: "99.9%", label: "Uptime SLA" },
+    desc: "Full-lifecycle engineering for complex digital products — from SaaS architecture to cloud-native deployments.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="M8 21h8M12 17v4" />
+        <path d="M7 8l3 3-3 3" />
+        <line x1="13" y1="11" x2="17" y2="11" />
+      </svg>
+    ),
   },
   {
     index: "03",
     title: "Government & Public Sector",
     tags: ["GIS Mapping", "LiDAR", "Secure Infrastructure", "Compliance"],
-    desc: "Survey-grade GIS and LiDAR mapping, resilient IT infrastructure, and ISO-compliant data practices built to meet the rigorous standards of public-sector mandates.",
-    stat: { value: "ISO", label: "Compliant Delivery" },
+    desc: "Survey-grade GIS mapping, resilient IT infrastructure, and ISO-compliant data practices for public-sector mandates.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+      </svg>
+    ),
   },
   {
     index: "04",
     title: "Startups & Entrepreneurs",
     tags: ["MVP Development", "UX Design", "Growth", "Automation"],
-    desc: "Zero-to-one product builds and rapid MVPs engineered for speed-to-market — paired with growth marketing and process automation to compound momentum from day one.",
-    stat: { value: "4 wks", label: "Avg. MVP Launch" },
+    desc: "Zero-to-one product builds and rapid MVPs paired with growth marketing to compound momentum from day one.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+        <polyline points="16 7 22 7 22 13" />
+      </svg>
+    ),
   },
   {
     index: "05",
     title: "E-commerce & Retail",
-    tags: ["Conversion CRO", "SEO", "Headless Commerce", "Analytics"],
-    desc: "Headless commerce architectures, performance-obsessed storefronts, and data-driven SEO programmes that translate traffic into revenue at every stage of the funnel.",
-    stat: { value: "3×", label: "Avg. Conversion Lift" },
+    tags: ["CRO", "SEO", "Headless Commerce", "Analytics"],
+    desc: "Performance-obsessed storefronts and data-driven SEO that translate traffic into revenue at every funnel stage.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+    ),
   },
 ];
 
-// ─── Row component ─────────────────────────────────────────────────────────────
-function IndustryRow({
-  item,
-  idx,
-}: {
-  item: (typeof industries)[0];
-  idx: number;
-}) {
+function IndustryCard({ item }: { item: (typeof industries)[0] }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         position: "relative",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
-        overflow: "hidden",
-        cursor: "default",
+        background: "#fff",
+        border: `1px solid ${hovered ? "rgba(249,115,22,0.3)" : "rgba(0,0,0,0.07)"}`,
+        borderRadius: 16,
+        padding: "1.5rem 1.6rem",
+        transition: "border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease",
+        boxShadow: hovered ? "0 8px 32px rgba(249,115,22,0.08)" : "none",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "1.1rem",
       }}
     >
-      {/* Sweep fill */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(249,115,22,0.055)",
-          transform: hovered ? "scaleX(1)" : "scaleX(0)",
-          transformOrigin: "left center",
-          transition: "transform 0.45s cubic-bezier(0.76,0,0.24,1)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+      <span aria-hidden="true" style={{
+        position: "absolute", top: 12, right: 16,
+        fontSize: "2.2rem", fontWeight: 800, lineHeight: 1,
+        color: hovered ? "rgba(249,115,22,0.07)" : "rgba(0,0,0,0.04)",
+        userSelect: "none", transition: "color 0.3s ease",
+      }}>
+        {item.index}
+      </span>
 
-      {/* Left accent bar */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 2,
-          background: "#f97316",
-          transform: hovered ? "scaleY(1)" : "scaleY(0)",
-          transformOrigin: "bottom",
-          transition: "transform 0.4s cubic-bezier(0.76,0,0.24,1)",
-          zIndex: 1,
-        }}
-      />
+      <div style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: 42, height: 42, borderRadius: 10, flexShrink: 0,
+        background: hovered ? "rgba(249,115,22,0.1)" : "rgba(249,115,22,0.07)",
+        border: `1px solid ${hovered ? "rgba(249,115,22,0.28)" : "rgba(249,115,22,0.15)"}`,
+        color: "#f97316",
+        transition: "background 0.25s ease, border-color 0.25s ease",
+      }}>
+        {item.icon}
+      </div>
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 2,
-          display: "grid",
-          gridTemplateColumns: "80px 1fr auto",
-          gap: "0 2.5rem",
-          alignItems: "center",
-          padding: "2.4rem 2.5rem 2.4rem 2.8rem",
-        }}
-        className="vs-row-inner"
-      >
-        {/* Index number */}
-        <span
-          aria-hidden="true"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: "clamp(2.4rem, 4vw, 3.5rem)",
-            fontWeight: 700,
-            lineHeight: 1,
-            color: hovered ? "#f97316" : "rgba(255,255,255,0.1)",
-            transition: "color 0.35s ease",
-            userSelect: "none",
-          }}
-        >
-          {item.index}
-        </span>
-
-        {/* Main content */}
-        <div>
-          <h3
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(1.3rem, 2.5vw, 1.8rem)",
-              fontWeight: 700,
-              color: "#fff",
-              margin: "0 0 0.55rem",
-              letterSpacing: "-0.02em",
-              lineHeight: 1.15,
-            }}
-          >
-            {item.title}
-          </h3>
-
-          <p
-            style={{
-              fontSize: "0.875rem",
-              fontWeight: 300,
-              lineHeight: 1.78,
-              color: "rgba(255,255,255,0.42)",
-              margin: "0 0 1rem",
-              maxWidth: 560,
-            }}
-          >
-            {item.desc}
-          </p>
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-            {item.tags.map((tag) => (
-              <span
-                key={tag}
-                style={{
-                  fontSize: "0.7rem",
-                  fontWeight: 500,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: hovered ? "#f97316" : "rgba(255,255,255,0.35)",
-                  border: `1px solid ${hovered ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
-                  background: hovered ? "rgba(249,115,22,0.08)" : "transparent",
-                  padding: "4px 10px",
-                  borderRadius: 100,
-                  transition: "color 0.3s ease, border-color 0.3s ease, background 0.3s ease",
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Stat */}
-        <div
-          style={{
-            textAlign: "right",
-            minWidth: 100,
-            flexShrink: 0,
-          }}
-          className="vs-stat"
-        >
-          <div
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
-              fontWeight: 700,
-              color: hovered ? "#f97316" : "rgba(255,255,255,0.55)",
-              lineHeight: 1,
-              transition: "color 0.35s ease",
-            }}
-          >
-            {item.stat.value}
-          </div>
-          <div
-            style={{
-              fontSize: "0.7rem",
-              fontWeight: 500,
-              letterSpacing: "0.1em",
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h3 style={{
+          fontSize: "0.97rem", fontWeight: 700, color: "#0f172a",
+          margin: "0 0 0.3rem", letterSpacing: "-0.01em",
+          lineHeight: 1.25, paddingRight: "2rem",
+        }}>
+          {item.title}
+        </h3>
+        <p style={{
+          fontSize: "0.82rem", fontWeight: 400, lineHeight: 1.75,
+          color: "#64748b", margin: "0 0 0.9rem",
+        }}>
+          {item.desc}
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+          {item.tags.map((tag) => (
+            <span key={tag} style={{
+              fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.07em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.28)",
-              marginTop: 4,
-            }}
-          >
-            {item.stat.label}
-          </div>
+              color: hovered ? "#f97316" : "#64748b",
+              border: `1px solid ${hovered ? "rgba(249,115,22,0.3)" : "rgba(0,0,0,0.09)"}`,
+              background: hovered ? "rgba(249,115,22,0.06)" : "transparent",
+              padding: "2px 8px", borderRadius: 100,
+              transition: "color 0.25s ease, border-color 0.25s ease, background 0.25s ease",
+            }}>
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
-// ─── Section ──────────────────────────────────────────────────────────────────
 export default function IndustriesSection() {
   return (
     <section
       aria-labelledby="industries-heading"
       style={{
         position: "relative",
-        background: "#0a0a0a",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "#f8fafc",
         overflow: "hidden",
-        padding: "6rem 0 5rem",
+        padding: "0 24px",
         fontFamily: "'DM Sans', sans-serif",
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        @media (max-width: 640px) {
-          .vs-row-inner {
-            grid-template-columns: 52px 1fr !important;
-            gap: 0 1.2rem !important;
-            padding: 1.8rem 1.2rem 1.8rem 1.4rem !important;
-          }
-          .vs-stat { display: none !important; }
-        }
-
         @media (prefers-reduced-motion: reduce) {
           * { transition-duration: 0.01ms !important; }
         }
       `}</style>
 
-      {/* ── Background grid ──────────────────────────────────────────────── */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px)," +
-            "linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-        }}
-      />
+      <div aria-hidden="true" style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background:
+          "radial-gradient(ellipse 60% 50% at 90% 0%, rgba(249,115,22,0.04) 0%, transparent 70%)," +
+          "radial-gradient(ellipse 50% 40% at 10% 100%, rgba(249,115,22,0.03) 0%, transparent 70%)",
+      }} />
 
-      {/* ── Ambient glows ─────────────────────────────────────────────────── */}
-      <div aria-hidden="true" style={{ position: "absolute", borderRadius: "50%", width: 700, height: 700, background: "radial-gradient(circle, #f97316, transparent 65%)", top: -320, right: -250, opacity: 0.035, filter: "blur(130px)", pointerEvents: "none" }} />
-      <div aria-hidden="true" style={{ position: "absolute", borderRadius: "50%", width: 500, height: 500, background: "radial-gradient(circle, #6366f1, transparent 65%)", bottom: -200, left: -150, opacity: 0.035, filter: "blur(130px)", pointerEvents: "none" }} />
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1200, margin: "0 auto" }}>
 
-      {/* ── Inner wrapper ─────────────────────────────────────────────────── */}
-      <div style={{ position: "relative", zIndex: 10, maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem" }}>
+        <header style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <h2 id="industries-heading" style={{
+            fontSize: "clamp(28px, 4vw, 42px)",
+            fontWeight: 800, lineHeight: 1.15,
+            letterSpacing: "-.02em", color: "#0f172a",
+            margin: "0 0 8px",
+          }}>
+            Industries We{" "}
+            <span style={{
+              background: "linear-gradient(135deg, #f97316, #fb923c)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              Serve
+            </span>
+          </h2>
 
-        {/* ── Header ────────────────────────────────────────────────────── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "flex-end", gap: "2rem", marginBottom: "3.5rem" }}>
-          <div>
-            <p
-              aria-hidden="true"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                fontSize: 10, fontWeight: 500,
-                letterSpacing: ".22em", textTransform: "uppercase",
-                color: "#f97316",
-                border: "1px solid rgba(249,115,22,.28)",
-                background: "rgba(249,115,22,.07)",
-                padding: "6px 16px", borderRadius: 100,
-                marginBottom: "1.2rem",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#f97316", display: "inline-block" }} />
-              Sectors We Serve
-            </p>
+          <div style={{
+            width: 48, height: 3, borderRadius: 2,
+            background: "linear-gradient(to right, #f97316, #fbbf24)",
+            margin: "16px auto 20px",
+          }} />
 
-            <h2
-              id="industries-heading"
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(2rem, 4.5vw, 3.2rem)",
-                fontWeight: 700, lineHeight: 1.05,
-                letterSpacing: "-.03em",
-                color: "#fff",
-                margin: 0,
-              }}
-            >
-              Industries We{" "}
-              <em style={{ fontStyle: "italic", color: "#f97316" }}>Serve</em>
-            </h2>
-          </div>
-
-          <p
-            style={{
-              fontSize: ".88rem", fontWeight: 300, lineHeight: 1.8,
-              color: "rgba(255,255,255,0.38)",
-              maxWidth: 300, margin: 0,
-              textAlign: "right",
-            }}
-            className="vs-header-sub"
-          >
+          <p style={{
+            fontSize: ".97rem", fontWeight: 400, lineHeight: 1.8,
+            color: "#475569", maxWidth: 520, margin: "0 auto",
+          }}>
             Tailored expertise across diverse verticals — helping organisations innovate, scale, and lead.
           </p>
-        </div>
+        </header>
 
-        {/* ── Row list ──────────────────────────────────────────────────── */}
-        <div
-          role="list"
-          aria-label="Industries served by 99 Visual Solutions"
-          style={{
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderBottom: "none",
-          }}
-        >
-          {industries.map((item, idx) => (
+        <div role="list" aria-label="Industries served by 99 Visual Solutions" style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 360px), 1fr))",
+          gap: "16px",
+        }}>
+          {industries.map((item) => (
             <div key={item.index} role="listitem">
-              <IndustryRow item={item} idx={idx} />
+              <IndustryCard item={item} />
             </div>
           ))}
         </div>
 
-        {/* ── Bottom border line ────────────────────────────────────────── */}
-        <div style={{ height: 1, background: "rgba(255,255,255,0.07)" }} />
-
-        {/* ── Footer note ───────────────────────────────────────────────── */}
-        <div
-          style={{
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            padding: "1.4rem 0 0",
-            flexWrap: "wrap", gap: "1rem",
-          }}
-        >
-          <p style={{ fontSize: ".8rem", fontWeight: 300, color: "rgba(255,255,255,0.25)", letterSpacing: ".04em", margin: 0 }}>
+        <footer style={{
+          marginTop: "3rem",
+          marginBottom: 0,
+          textAlign: "center",
+          padding: "1.4rem 2rem",
+          background: "#fff",
+          border: "1px solid rgba(0,0,0,0.07)",
+          borderRadius: 16,
+        }}>
+          <p style={{
+            fontSize: ".82rem", fontWeight: 400,
+            color: "#94a3b8", margin: 0, letterSpacing: ".03em",
+          }}>
             Serving clients across India · USA · UK · UAE · Australia
           </p>
-          <div style={{ display: "flex", gap: "1.5rem" }}>
-            {["500+ Projects", "5+ Years", "Global Reach"].map((badge) => (
-              <span
-                key={badge}
-                style={{
-                  fontSize: ".72rem", fontWeight: 500,
-                  letterSpacing: ".1em", textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.3)",
-                }}
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
-        </div>
+        </footer>
+
       </div>
     </section>
   );

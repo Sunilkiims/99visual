@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
 interface ContactCTAProps {
   headline?: string;
   subtext?: string;
@@ -21,6 +25,27 @@ export default function ContactCTA({
   buttonLabel = "Start a conversation",
   contactPath = "/contact",
 }: ContactCTAProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <style>{`
@@ -38,7 +63,49 @@ export default function ContactCTA({
         .xcta-topbar {
           width: 100%;
           height: 2px;
-          background: linear-gradient(90deg, #1a1a1a 0%, #b8953f 40%, #e8c96d 55%, #b8953f 70%, #1a1a1a 100%);
+          background: linear-gradient(90deg, #1a1a1a 0%, #c2540f 40%, #f97316 55%, #c2540f 70%, #1a1a1a 100%);
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .xcta-wrap.xcta-in .xcta-topbar {
+          transform: scaleX(1);
+        }
+
+        @keyframes xctaRise {
+          from { opacity: 0; transform: translateY(22px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes xctaPop {
+          from { opacity: 0; transform: translateY(14px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .xcta-anim {
+          opacity: 0;
+        }
+        .xcta-wrap.xcta-in .xcta-anim {
+          animation: xctaRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .xcta-wrap.xcta-in .xcta-anim--pop {
+          animation-name: xctaPop;
+        }
+
+        .xcta-d1 { animation-delay: 0.05s; }
+        .xcta-d2 { animation-delay: 0.15s; }
+        .xcta-d3 { animation-delay: 0.25s; }
+        .xcta-d4 { animation-delay: 0.35s; }
+        .xcta-d5 { animation-delay: 0.45s; }
+        .xcta-d6 { animation-delay: 0.55s; }
+        .xcta-d7 { animation-delay: 0.65s; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .xcta-anim, .xcta-topbar {
+            animation: none !important;
+            transition: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+          }
         }
 
         .xcta-body {
@@ -68,13 +135,13 @@ export default function ContactCTA({
         .xcta-badge-line {
           width: 32px;
           height: 1px;
-          background: #b8953f;
+          background: #f97316;
         }
         .xcta-badge-text {
           font-size: 10px;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: #b8953f;
+          color: #f97316;
           font-weight: 400;
         }
 
@@ -91,7 +158,7 @@ export default function ContactCTA({
         .xcta-headline em {
           font-style: italic;
           font-weight: 400;
-          color: #b8953f;
+          color: #f97316;
         }
 
         .xcta-sub {
@@ -124,7 +191,7 @@ export default function ContactCTA({
           font-family: 'Playfair Display', serif;
           font-size: 26px;
           font-weight: 700;
-          color: #b8953f;
+          color: #f97316;
           line-height: 1;
           display: block;
         }
@@ -146,7 +213,7 @@ export default function ContactCTA({
           display: inline-flex;
           align-items: center;
           gap: 12px;
-          background: #b8953f;
+          background: #f97316;
           color: #080808;
           border: none;
           padding: 15px 34px;
@@ -168,12 +235,12 @@ export default function ContactCTA({
           position: absolute;
           bottom: 0; left: 0; right: 0;
           height: 1px;
-          background: #e8c96d;
+          background: #fdba74;
           transform: scaleX(0);
           transition: transform 0.25s;
         }
         .xcta-btn-primary:hover {
-          background: #cca84a;
+          background: #fb923c;
           letter-spacing: 0.14em;
         }
         .xcta-btn-primary:hover::after {
@@ -200,8 +267,8 @@ export default function ContactCTA({
           transition: color 0.2s, border-color 0.2s;
         }
         .xcta-btn-ghost:hover {
-          color: #b8953f;
-          border-color: #b8953f;
+          color: #f97316;
+          border-color: #f97316;
         }
 
         .xcta-reassure {
@@ -214,7 +281,7 @@ export default function ContactCTA({
         .xcta-reassure-dot {
           width: 4px; height: 4px;
           border-radius: 50%;
-          background: #b8953f;
+          background: #f97316;
           opacity: 0.6;
         }
         .xcta-reassure-text {
@@ -245,23 +312,23 @@ export default function ContactCTA({
         }
       `}</style>
 
-      <section className="xcta-wrap">
+      <section ref={sectionRef} className={`xcta-wrap ${isVisible ? 'xcta-in' : ''}`}>
         <div className="xcta-topbar" />
 
         <div className="xcta-body">
           <div className="xcta-left">
-            <div className="xcta-badge">
+            <div className="xcta-badge xcta-anim xcta-d1">
               <span className="xcta-badge-line" />
               <span className="xcta-badge-text">Work with us</span>
             </div>
-            <h2 className="xcta-headline">
+            <h2 className="xcta-headline xcta-anim xcta-d2">
               Let's build something <em>remarkable.</em>
             </h2>
-            <p className="xcta-sub">{subtext}</p>
+            <p className="xcta-sub xcta-anim xcta-d3">{subtext}</p>
           </div>
 
           <div className="xcta-right">
-            <div className="xcta-stats">
+            <div className="xcta-stats xcta-anim xcta-d3">
               <div className="xcta-stat">
                 <span className="xcta-stat-num">500+</span>
                 <span className="xcta-stat-label">Clients</span>
@@ -278,18 +345,18 @@ export default function ContactCTA({
               </div>
             </div>
 
-            <a href={contactPath} className="xcta-btn-primary">
+            <a href={contactPath} className="xcta-btn-primary xcta-anim xcta-anim--pop xcta-d4">
               {buttonLabel}
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="#080808" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </a>
 
-            <a href={contactPath} className="xcta-btn-ghost">
+            <a href={contactPath} className="xcta-btn-ghost xcta-anim xcta-anim--pop xcta-d5">
               Schedule a free call
             </a>
 
-            <div className="xcta-reassure">
+            <div className="xcta-reassure xcta-anim xcta-d6">
               <span className="xcta-reassure-dot" />
               <span className="xcta-reassure-text">No obligation · Confidential</span>
               <span className="xcta-reassure-dot" />

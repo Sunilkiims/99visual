@@ -2,26 +2,14 @@
 
 // app/components/footer.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Production-grade Footer — 99 Visual Solutions
-//
-// DESIGN SYSTEM: Matches the dark editorial aesthetic across all service pages.
-//   • Fonts  : Cormorant Garamond (display) + DM Sans (body) — same as pages
-//   • Accent : #f97316 orange — single source of truth
-//   • Base   : #080808 background, #0f0f0f surface, rgba(255,255,255,0.07) borders
-//   • Motion : CSS-only — orb drift, fade-up on mount, hover micro-interactions
-//
-// CHANGES (v2):
-//   ✅ Removed UI/UX Design from Services
-//   ✅ Added Contact to Company nav
-//   ✅ Removed Blog from Company nav
-//   ✅ Renamed "Digital Marketing" → "Digital Marketing & SEO"
-//   ✅ Updated Digital Marketing URL → /services/digital-marketing-seo
-//   ✅ Renamed "3D Visualisation" → "Visualization"
-//   ✅ Updated Visualization URL → /services/visualization
+// Footer — 99 Visual Solutions
+// Theme  : Crisp white + Indigo (#4F46E5)
+// Fonts  : Playfair Display (display) + Inter (body)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React, { FormEvent, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   FaFacebookF,
   FaXTwitter,
@@ -32,56 +20,39 @@ import {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const NAV_COMPANY = [
-  { label: 'About',   href: '/about'   },
-  { label: 'Careers', href: '/careers' },
-  { label: 'Partner', href: '/partner' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Insights', href: '/insights' }, // ✅ Added; Blog removed
+  { label: 'About',    href: '/about'    },
+  { label: 'Careers',  href: '/careers'  },
+  { label: 'Partner',  href: '/partner'  },
+  { label: 'Contact',  href: '/contact'  },
+  { label: 'Insights', href: '/insights' },
 ];
 
 const NAV_SERVICES = [
-  { label: 'Web Development',          href: '/services/website-development'        },
-  // UI/UX Design removed ✅
-  { label: 'Visualization',            href: '/services/visualization'          }, // ✅ Renamed + new URL
-  { label: 'IT Consulting',            href: '/services/it-consulting'          },
-  { label: 'Digital Marketing & SEO',  href: '/services/digital-marketing-seo'  }, // ✅ Renamed + new URL
-  { label: 'QA & Automation',          href: '/services/automation-testing'     },
-  { label: 'CAD & GIS',                href: '/services/cad-gis-photogrammetry' },
+  { label: 'Web Development',         href: '/services/website-development'    },
+  { label: 'Visualization',           href: '/services/visualization'          },
+  { label: 'IT Consulting',           href: '/services/it-consulting'          },
+  { label: 'Digital Marketing & SEO', href: '/services/digital-marketing-seo'  },
+  { label: 'QA & Automation',         href: '/services/automation-testing'     },
+  { label: 'CAD & GIS',               href: '/services/cad-gis-photogrammetry' },
 ];
 
-const NAV_SUPPORT = [
-  { label: 'Contact',        href: '/contact'        },
-  { label: 'Help Centre',    href: '/help-center'    },
-  { label: 'Privacy Policy', href: '/privacy-policy' },
-  { label: 'Terms of Use',   href: '/terms'          },
+const TICKER_ITEMS = [
+  'Website & Web App Development',
+  'Advanced Visualization',
+  'IT Consulting',
+  'Digital Marketing & SEO',
+  'QA & Automation',
+  'CAD & GIS',
+  'Research & Development ',
 ];
+
+const TICKER_DOUBLED = [...TICKER_ITEMS, ...TICKER_ITEMS];
 
 const SOCIALS = [
-  {
-    label:    'Facebook',
-    href:     'https://www.facebook.com/profile.php?id=100093639888151',
-    icon:     FaFacebookF,
-    hoverBg:  '#1877f2',
-  },
-  {
-    label:    'X (Twitter)',
-    href:     'https://x.com/99VisualSoluti1',
-    icon:     FaXTwitter,
-    hoverBg:  '#e7e7e7',
-    hoverColor: '#000',
-  },
-  {
-    label:    'Instagram',
-    href:     'https://www.instagram.com/99visualsolutions/',
-    icon:     FaInstagram,
-    hoverBg:  'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)',
-  },
-  {
-    label:    'LinkedIn',
-    href:     'https://www.linkedin.com/company/99-visual-solutions/',
-    icon:     FaLinkedinIn,
-    hoverBg:  '#0a66c2',
-  },
+  { label: 'Facebook',    href: 'https://www.facebook.com/profile.php?id=100093639888151', Icon: FaFacebookF  },
+  { label: 'X (Twitter)', href: 'https://x.com/99VisualSoluti1',                           Icon: FaXTwitter   },
+  { label: 'Instagram',   href: 'https://www.instagram.com/99visualsolutions/',             Icon: FaInstagram  },
+  { label: 'LinkedIn',    href: 'https://www.linkedin.com/company/99-visual-solutions/',    Icon: FaLinkedinIn },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -94,7 +65,6 @@ const Footer: React.FC = () => {
   const [visible,   setVisible]   = useState(false);
   const footerRef = useRef<HTMLElement>(null);
 
-  // Staggered entrance animation
   useEffect(() => {
     const el = footerRef.current;
     if (!el) return;
@@ -110,7 +80,6 @@ const Footer: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSubmitted(false);
 
     try {
       const res    = await fetch('/api/subscribe', {
@@ -137,419 +106,299 @@ const Footer: React.FC = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
         /* ── Tokens ──────────────────────────────────────────────────── */
         .ft {
-          --ft-bg:      #080808;
-          --ft-surface: #0d0d0d;
-          --ft-border:  rgba(255,255,255,0.07);
-          --ft-orange:  #f97316;
-          --ft-muted:   rgba(255,255,255,0.38);
-          --ft-mid:     rgba(255,255,255,0.6);
-          --ff-serif:   'Cormorant Garamond', serif;
-          --ff-sans:    'DM Sans', sans-serif;
+          --indigo:        #4F46E5;
+          --indigo-mid:    #6366F1;
+          --indigo-light:  #EEF2FF;
+          --indigo-border: rgba(79,70,229,0.20);
+          --bg:            #FFFFFF;
+          --surface:       #F8F8FB;
+          --border:        #E8E8F0;
+          --border-strong: #D4D4E8;
+          --text-primary:  #111118;
+          --text-secondary:#6B6B80;
+          --text-muted:    #A0A0B8;
+          --serif:         'Playfair Display', serif;
+          --sans:          'Inter', sans-serif;
         }
 
         /* ── Shell ───────────────────────────────────────────────────── */
         .ft {
+          background: var(--bg);
+          border-top: 1px solid var(--border);
+          font-family: var(--sans);
           position: relative;
-          background: var(--ft-bg);
-          border-top: 1px solid var(--ft-border);
           overflow: hidden;
+          width: 100%;
         }
 
-        /* Background orbs — identical technique to page heroes */
-        .ft__orb {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(120px);
-          pointer-events: none;
-          animation: ftOrbDrift 20s ease-in-out infinite alternate;
-        }
-        .ft__orb--1 {
-          width: 500px; height: 500px;
-          background: radial-gradient(circle, #6366f1, #4f46e5);
-          top: -180px; left: -100px; opacity: .06;
-        }
-        .ft__orb--2 {
-          width: 420px; height: 420px;
-          background: radial-gradient(circle, #f97316, #ea580c);
-          bottom: -140px; right: -80px; opacity: .07;
-          animation-delay: -10s;
-        }
-        @keyframes ftOrbDrift {
-          0%   { transform: translate(0, 0) scale(1); }
-          100% { transform: translate(28px, 20px) scale(1.05); }
-        }
-
-        /* Dot grid */
-        .ft__grid {
+        /* Ambient indigo glow */
+        .ft__surface {
           position: absolute; inset: 0; pointer-events: none;
-          background-image:
-            radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
-          background-size: 28px 28px;
-          mask-image: linear-gradient(to bottom, transparent, rgba(0,0,0,.6) 30%, rgba(0,0,0,.6) 70%, transparent);
+          background:
+            radial-gradient(ellipse 600px 300px at 80% 0%,  rgba(99,102,241,.04) 0%, transparent 70%),
+            radial-gradient(ellipse 400px 200px at 10% 100%, rgba(79,70,229,.03) 0%, transparent 60%);
+        }
+
+        /* Top indigo accent line */
+        .ft__topline {
+          height: 2px;
+          background: linear-gradient(90deg, var(--indigo), var(--indigo-mid) 60%, var(--indigo));
+          position: relative; z-index: 1;
         }
 
         /* ── Main body ───────────────────────────────────────────────── */
         .ft__body {
-          position: relative; z-index: 10;
-          max-width: 1200px; margin: 0 auto;
-          padding: 5rem 2rem 0;
+          width: 100%;
+          padding: 2.5rem 1rem 0;
+          position: relative; z-index: 1;
         }
 
-        /* Top row: brand col + nav cols */
-        .ft__grid-top {
+        /* ── Card grid ───────────────────────────────────────────────── */
+        .ft__grid {
           display: grid;
-          grid-template-columns: 1.6fr 1fr 1.2fr 1fr;
-          gap: 3rem;
+          grid-template-columns: 1.8fr 1fr 1.3fr 1.15fr;
+          width: 100%;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          overflow: hidden;
+          background: var(--bg);
+          box-shadow: 0 1px 4px rgba(79,70,229,.06), 0 8px 32px rgba(79,70,229,.04);
         }
+
         @media (max-width: 1024px) {
-          .ft__grid-top { grid-template-columns: 1fr 1fr; gap: 2.5rem 3rem; }
+          .ft__grid { grid-template-columns: 1fr 1fr; }
+          .ft__col:nth-child(3) { border-left: none !important; border-top: 1px solid var(--border); }
+          .ft__col:nth-child(4) { border-top: 1px solid var(--border); }
         }
         @media (max-width: 560px) {
-          .ft__grid-top { grid-template-columns: 1fr; gap: 2rem; }
+          .ft__grid { grid-template-columns: 1fr; }
+          .ft__col + .ft__col { border-left: none !important; border-top: 1px solid var(--border); }
+          .ft__bottom { flex-direction: column; align-items: flex-start; }
         }
 
-        /* ── Entrance animation ─────────────────────────────────────── */
+        .ft__col {
+          padding: 1.8rem 1.4rem;
+          position: relative;
+          background: var(--bg);
+        }
+        .ft__col + .ft__col { border-left: 1px solid var(--border); }
+
+        /* Brand col */
+        .ft__col--brand { background: var(--surface); }
+        .ft__col--brand::after {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, var(--indigo), var(--indigo-mid));
+        }
+
+        /* ── Entrance animation ──────────────────────────────────────── */
         .ft__col {
           opacity: 0;
-          transform: translateY(24px);
-          transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+          transform: translateY(20px);
+          transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
         }
         .ft--visible .ft__col { opacity: 1; transform: translateY(0); }
-        .ft__col:nth-child(1) { transition-delay: 0s;    }
-        .ft__col:nth-child(2) { transition-delay: .08s;  }
-        .ft__col:nth-child(3) { transition-delay: .14s;  }
-        .ft__col:nth-child(4) { transition-delay: .20s;  }
+        .ft__col:nth-child(1) { transition-delay: 0s;   }
+        .ft__col:nth-child(2) { transition-delay: .08s; }
+        .ft__col:nth-child(3) { transition-delay: .14s; }
+        .ft__col:nth-child(4) { transition-delay: .20s; }
 
         /* ── Brand column ────────────────────────────────────────────── */
+        .ft__logo-link {
+          display: inline-block;
+          margin-bottom: .5rem;
+          line-height: 0;
+          transition: opacity .2s ease;
+        }
+        .ft__logo-link:hover { opacity: .82; }
+
         .ft__logo-img {
-          display: block;
           width: auto;
-          height: 56px;
-          max-width: 200px;
+          height: 60px;
           object-fit: contain;
-          margin: 0 0 .75rem;
-          /* Lighten the dark background of the PNG so it blends on --ft-bg */
-          filter: brightness(1.08) drop-shadow(0 2px 12px rgba(99,102,241,.18));
-          transition: filter .25s ease, transform .25s ease;
-        }
-        .ft__logo-img:hover {
-          filter: brightness(1.15) drop-shadow(0 4px 20px rgba(249,115,22,.25));
-          transform: translateY(-1px);
-        }
-        .ft__tagline {
-          font-family: var(--ff-sans);
-          font-size: 8.5px;
-          font-weight: 600;
-          letter-spacing: .28em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,.45);
-          margin: 0 0 1.6rem;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          /* Subtle shimmer sweep across the text */
-          background: linear-gradient(
-            90deg,
-            rgba(255,255,255,.35) 0%,
-            rgba(249,115,22,.9)   40%,
-            rgba(255,255,255,.35) 80%
-          );
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: ftTaglineShimmer 4s linear infinite;
-        }
-        @keyframes ftTaglineShimmer {
-          0%   { background-position: 200% center; }
-          100% { background-position:   0% center; }
+          object-position: left center;
+          display: block;
         }
 
-        /* Premium heartbeat dot */
-        .ft__tagline-dot {
-          display: inline-block;
-          width: 3px;
-          height: 3px;
-          border-radius: 50%;
-          background: var(--ft-orange);
-          flex-shrink: 0;
-          position: relative;
-          animation: ftPulse 2s cubic-bezier(.4,0,.6,1) infinite;
-          box-shadow:
-            0 0 0   0   rgba(249,115,22,.9),
-            0 0 4px 1px rgba(249,115,22,.3);
+        .ft__tagline {
+          font-family: var(--sans);
+          font-size: .72rem;
+          font-weight: 500;
+          letter-spacing: .08em;
+          color: var(--text-primary);
+          margin-bottom: 1rem;
         }
-        /* Ripple ring */
-        .ft__tagline-dot::after {
-          content: '';
-          position: absolute;
-          inset: -2px;
-          border-radius: 50%;
-          border: 1px solid rgba(249,115,22,.4);
-          animation: ftRipple 2s cubic-bezier(.4,0,.6,1) infinite;
-          opacity: 0;
-        }
-        .ft__tagline-dot:last-of-type {
-          animation-delay: 1s;
-        }
-        .ft__tagline-dot:last-of-type::after {
-          animation-delay: 1s;
-        }
-        @keyframes ftPulse {
-          0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0   rgba(249,115,22,.8), 0 0 4px 1px rgba(249,115,22,.3); }
-          50%       { transform: scale(1.08); box-shadow: 0 0 0 3px rgba(249,115,22,0),   0 0 5px 1px rgba(249,115,22,.15); }
-        }
-        @keyframes ftRipple {
-          0%   { transform: scale(1);   opacity: .5; }
-          100% { transform: scale(2.2); opacity: 0;  }
-        }
+
         .ft__desc {
-          font-family: var(--ff-sans);
-          font-size: .88rem;
-          font-weight: 300;
-          line-height: 1.8;
-          color: var(--ft-muted);
-          margin: 0 0 2rem;
-          max-width: 280px;
+          font-family: var(--sans);
+          font-size: .78rem; font-weight: 300; line-height: 1.8;
+          color: var(--text-secondary); margin-bottom: 1.4rem;
         }
 
         /* Social icons */
-        .ft__socials {
-          display: flex;
-          gap: .6rem;
-          list-style: none;
-          padding: 0; margin: 0;
-        }
+        .ft__socials { display: flex; gap: .4rem; list-style: none; padding: 0; }
         .ft__social-btn {
-          width: 36px; height: 36px;
-          border-radius: 10px;
-          border: 1px solid var(--ft-border);
-          background: rgba(255,255,255,.04);
-          color: var(--ft-mid);
+          width: 30px; height: 30px;
+          border: 1px solid var(--indigo-border); border-radius: 7px;
           display: flex; align-items: center; justify-content: center;
-          font-size: .85rem;
-          text-decoration: none;
-          transition: transform .2s ease, background .2s ease,
-                      color .2s ease, border-color .2s ease,
-                      box-shadow .2s ease;
+          color: var(--indigo); font-size: .75rem; text-decoration: none;
+          background: var(--indigo-light);
+          transition: background .2s, color .2s, transform .2s, box-shadow .2s;
         }
         .ft__social-btn:hover {
-          transform: translateY(-3px);
-          border-color: transparent;
-          box-shadow: 0 8px 20px rgba(0,0,0,.4);
+          background: var(--indigo); color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(79,70,229,.22);
         }
-        .ft__social-btn--fb:hover  { background: #1877f2; color: #fff; }
-        .ft__social-btn--tw:hover  { background: #e7e7e7; color: #000; }
-        .ft__social-btn--ig:hover  { background: linear-gradient(135deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); color: #fff; }
-        .ft__social-btn--li:hover  { background: #0a66c2; color: #fff; }
 
-        /* ── Nav columns ────────────────────────────────────────────── */
+        /* ── Nav columns ─────────────────────────────────────────────── */
         .ft__nav-heading {
-          font-family: var(--ff-sans);
-          font-size: 9px;
-          font-weight: 600;
-          letter-spacing: .22em;
-          text-transform: uppercase;
-          color: var(--ft-orange);
-          margin: 0 0 1.4rem;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+          font-family: var(--sans);
+          font-size: 10px; font-weight: 600; letter-spacing: .24em;
+          text-transform: uppercase; color: var(--indigo);
+          margin-bottom: 1.1rem;
+          display: flex; align-items: center; gap: 7px;
+        }
+        .ft__nav-heading-num {
+          font-family: var(--serif);
+          font-size: .85rem; font-weight: 400; font-style: italic;
+          color: var(--indigo-border); letter-spacing: 0; text-transform: none;
         }
         .ft__nav-heading::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(90deg, rgba(249,115,22,.3), transparent);
+          content: ''; flex: 1; height: 1px;
+          background: linear-gradient(90deg, var(--indigo-border), transparent);
         }
-        .ft__nav-list {
-          list-style: none;
-          padding: 0; margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: .55rem;
-        }
+
+        .ft__nav-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .38rem; }
         .ft__nav-link {
-          font-family: var(--ff-sans);
-          font-size: .88rem;
-          font-weight: 300;
-          color: var(--ft-muted);
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          transition: color .2s ease, gap .2s ease;
-          position: relative;
+          font-family: var(--sans);
+          font-size: .78rem; font-weight: 400; color: var(--text-secondary);
+          text-decoration: none; display: inline-flex; align-items: center; gap: 0;
+          padding: .08rem 0; transition: color .2s, gap .2s;
         }
         .ft__nav-link::before {
-          content: '';
-          width: 0;
-          height: 1px;
-          background: var(--ft-orange);
-          transition: width .25s cubic-bezier(.22,1,.36,1);
-          display: inline-block;
-          flex-shrink: 0;
+          content: ''; display: inline-block; width: 0; height: 1.5px;
+          background: var(--indigo); border-radius: 1px;
+          transition: width .22s cubic-bezier(.22,1,.36,1); flex-shrink: 0;
         }
-        .ft__nav-link:hover {
-          color: #fff;
-          gap: 10px;
-        }
-        .ft__nav-link:hover::before { width: 12px; }
+        .ft__nav-link:hover { color: var(--indigo); gap: 6px; }
+        .ft__nav-link:hover::before { width: 9px; }
 
-        /* ── Newsletter column ─────────────────────────────────────── */
+        /* ── Newsletter ───────────────────────────────────────────────── */
         .ft__nl-desc {
-          font-family: var(--ff-sans);
-          font-size: .88rem;
-          font-weight: 300;
-          line-height: 1.75;
-          color: var(--ft-muted);
-          margin: 0 0 1.4rem;
-        }
-        .ft__nl-form {
-          display: flex;
-          flex-direction: column;
-          gap: .6rem;
-        }
-        .ft__nl-input-wrap {
-          position: relative;
+          font-family: var(--sans);
+          font-size: .78rem; font-weight: 300; line-height: 1.75;
+          color: var(--text-secondary); margin-bottom: 1rem;
         }
         .ft__nl-input {
-          width: 100%;
-          background: rgba(255,255,255,.05);
-          border: 1px solid var(--ft-border);
-          border-radius: 10px;
-          padding: 11px 44px 11px 14px;
-          font-family: var(--ff-sans);
-          font-size: .88rem;
-          font-weight: 300;
-          color: #fff;
-          outline: none;
-          transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
-          box-sizing: border-box;
+          width: 100%; background: var(--surface);
+          border: 1px solid var(--border-strong); border-radius: 7px;
+          padding: 9px 12px; font-family: var(--sans); font-size: .78rem;
+          color: var(--text-primary); outline: none; margin-bottom: .45rem;
+          transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
         }
-        .ft__nl-input::placeholder { color: rgba(255,255,255,.25); }
+        .ft__nl-input::placeholder { color: var(--text-muted); }
         .ft__nl-input:focus {
-          border-color: rgba(249,115,22,.5);
-          background: rgba(249,115,22,.04);
-          box-shadow: 0 0 0 3px rgba(249,115,22,.1);
+          border-color: var(--indigo);
+          box-shadow: 0 0 0 3px rgba(79,70,229,.08);
         }
         .ft__nl-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-family: var(--ff-sans);
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: .14em;
-          text-transform: uppercase;
-          color: #080808;
-          background: linear-gradient(135deg, #fb923c, #f97316);
-          border: none;
-          border-radius: 10px;
-          padding: 12px 20px;
-          cursor: pointer;
-          transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
-          box-shadow: 0 6px 24px rgba(249,115,22,.3);
+          width: 100%; font-family: var(--sans); font-size: 9px; font-weight: 600;
+          letter-spacing: .18em; text-transform: uppercase; color: #fff;
+          background: var(--indigo); border: none; border-radius: 7px;
+          padding: 10px 16px; cursor: pointer;
+          display: flex; align-items: center; justify-content: center; gap: 6px;
+          transition: background .2s, transform .18s, box-shadow .18s;
         }
         .ft__nl-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 32px rgba(249,115,22,.5);
+          background: #4338CA; transform: translateY(-1px);
+          box-shadow: 0 8px 24px rgba(79,70,229,.28);
         }
         .ft__nl-btn:disabled { opacity: .6; cursor: not-allowed; }
+
         .ft__nl-status {
-          font-family: var(--ff-sans);
-          font-size: .8rem;
-          font-weight: 400;
-          margin: .2rem 0 0;
-          line-height: 1.5;
+          font-family: var(--sans); font-size: .75rem; font-weight: 400;
+          margin-top: .4rem; line-height: 1.5;
           animation: ftStatusIn .3s cubic-bezier(.22,1,.36,1) both;
         }
+        .ft__nl-status--ok    { color: #16a34a; }
+        .ft__nl-status--error { color: #dc2626; }
+        .ft__nl-note { font-size: .67rem; color: var(--text-muted); margin-top: .45rem; line-height: 1.5; }
+
         @keyframes ftStatusIn {
           from { opacity: 0; transform: translateY(-4px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .ft__nl-status--ok    { color: #4ade80; }
-        .ft__nl-status--error { color: #f87171; }
 
         /* Spinner */
         .ft__spinner {
           width: 13px; height: 13px;
-          border: 2px solid rgba(0,0,0,.25);
-          border-top-color: #000;
-          border-radius: 50%;
-          animation: ftSpin .6s linear infinite;
-          flex-shrink: 0;
+          border: 2px solid rgba(255,255,255,.3);
+          border-top-color: #fff; border-radius: 50%;
+          animation: ftSpin .6s linear infinite; flex-shrink: 0;
         }
         @keyframes ftSpin { to { transform: rotate(360deg); } }
 
-        /* ── Divider ────────────────────────────────────────────────── */
-        .ft__divider {
-          position: relative; z-index: 10;
-          max-width: 1200px; margin: 4rem auto 0;
-          padding: 0 2rem;
+        /* ── Ticker ──────────────────────────────────────────────────── */
+        .ft__ticker-wrap {
+          width: 100%;
+          margin-top: 1.8rem;
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+          padding: .65rem 0;
+          background: var(--surface);
+          position: relative; z-index: 1;
+          overflow: hidden;
         }
-        .ft__divider-line {
-          height: 1px;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            var(--ft-border) 20%,
-            rgba(249,115,22,.2) 50%,
-            var(--ft-border) 80%,
-            transparent
-          );
+        .ft__ticker {
+          display: flex;
+          width: max-content;
+          animation: ftTicker 22s linear infinite;
+        }
+        .ft__ticker-inner {
+          display: flex; align-items: center;
+          flex-shrink: 0; white-space: nowrap;
+        }
+        .ft__ticker-item {
+          font-family: var(--sans);
+          font-size: 8.5px; font-weight: 500; letter-spacing: .22em;
+          text-transform: uppercase; color: var(--text-muted);
+          padding: 0 1.6rem; white-space: nowrap;
+        }
+        .ft__ticker-dot {
+          width: 4px; height: 4px; border-radius: 50%;
+          background: var(--indigo); opacity: .4;
+          flex-shrink: 0; display: inline-block;
+        }
+        @keyframes ftTicker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
 
-        /* ── Bottom bar ─────────────────────────────────────────────── */
+        /* ── Bottom bar ──────────────────────────────────────────────── */
         .ft__bottom {
-          position: relative; z-index: 10;
-          max-width: 1200px; margin: 0 auto;
-          padding: 1.6rem 2rem 2.4rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 1rem;
+          width: 100%; padding: 1.1rem 1rem 1.6rem;
+          display: flex; align-items: center; justify-content: space-between;
+          flex-wrap: wrap; gap: .7rem; position: relative; z-index: 1;
         }
-        .ft__copy {
-          font-family: var(--ff-sans);
-          font-size: .78rem;
-          font-weight: 300;
-          color: rgba(255,255,255,.25);
-          line-height: 1.5;
-        }
-        .ft__copy strong {
-          color: rgba(255,255,255,.45);
-          font-weight: 500;
-        }
-        .ft__legal {
-          display: flex;
-          gap: 1.5rem;
-          flex-wrap: wrap;
-          padding-right: 4.5rem;
-        }
+        .ft__copy { font-family: var(--sans); font-size: .7rem; font-weight: 300; color: var(--text-muted); }
+        .ft__copy strong { color: var(--text-secondary); font-weight: 500; }
+        .ft__legal { display: flex; gap: 1.4rem; align-items: center; }
         .ft__legal-link {
-          font-family: var(--ff-sans);
-          font-size: .78rem;
-          font-weight: 300;
-          color: rgba(255,255,255,.25);
-          text-decoration: none;
-          transition: color .2s ease;
+          font-family: var(--sans); font-size: .7rem; font-weight: 400;
+          color: var(--text-muted); text-decoration: none; transition: color .2s;
         }
-        .ft__legal-link:hover { color: rgba(255,255,255,.65); }
+        .ft__legal-link:hover { color: var(--indigo); }
+        .ft__legal-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--border-strong); flex-shrink: 0; }
 
-        /* ── Reduced motion ─────────────────────────────────────────── */
+        /* ── Reduced motion ──────────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
-          *,*::before,*::after {
-            animation-duration: .01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: .01ms !important;
-          }
+          .ft__ticker { animation: none; }
+          .ft__col { opacity: 1 !important; transform: none !important; transition: none !important; }
         }
       `}</style>
 
@@ -559,51 +408,38 @@ const Footer: React.FC = () => {
         role="contentinfo"
         aria-label="Site footer"
       >
-        {/* Background */}
-        <div className="ft__orb ft__orb--1" aria-hidden="true" />
-        <div className="ft__orb ft__orb--2" aria-hidden="true" />
-        <div className="ft__grid"           aria-hidden="true" />
+        <div className="ft__surface" aria-hidden="true" />
+        <div className="ft__topline" aria-hidden="true" />
 
-        {/* ── Main grid ───────────────────────────────────────────── */}
+        {/* ── Main grid ─────────────────────────────────────────────── */}
         <div className="ft__body">
-          <div className="ft__grid-top">
+          <div className="ft__grid">
 
-            {/* ── Brand ─────────────────────────────────────────── */}
-            <div className="ft__col">
-              <Link href="/" aria-label="99 Visual Solutions — home">
-                <img
-                  src="/logo.png"
+            {/* Brand */}
+            <div className="ft__col ft__col--brand">
+              <Link href="/" className="ft__logo-link" aria-label="99 Visual Solutions — home">
+                <Image
+                  src="/logo-dark.png"
                   alt="99 Visual Solutions"
+                  width={240}
+                  height={60}
                   className="ft__logo-img"
-                  width={200}
-                  height={56}
+                  priority={false}
                 />
               </Link>
-              <span className="ft__tagline">
-                Digital
-                <span className="ft__tagline-dot" aria-hidden="true" />
-                Design
-                <span className="ft__tagline-dot" aria-hidden="true" />
-                Innovation
-              </span>
+              <p className="ft__tagline">Emmersive Experience · Intelligent Solutions</p>
               <p className="ft__desc">
-                Empowering digital journeys through next-generation technology,
-                intelligent automation, and exceptional creative design.
+                Where technology meets creativity — web platforms, 3D worlds,
+                smart automation, and strategies that scale.
               </p>
-
               <ul className="ft__socials" aria-label="Social media links">
-                {[
-                  { label: 'Facebook',    href: 'https://www.facebook.com/profile.php?id=100093639888151', Icon: FaFacebookF,  cls: 'fb' },
-                  { label: 'X (Twitter)', href: 'https://x.com/99VisualSoluti1',                           Icon: FaXTwitter,   cls: 'tw' },
-                  { label: 'Instagram',   href: 'https://www.instagram.com/99visualsolutions/',             Icon: FaInstagram,  cls: 'ig' },
-                  { label: 'LinkedIn',    href: 'https://www.linkedin.com/company/99-visual-solutions/',    Icon: FaLinkedinIn, cls: 'li' },
-                ].map(({ label, href, Icon, cls }) => (
+                {SOCIALS.map(({ label, href, Icon }) => (
                   <li key={label}>
                     <a
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`ft__social-btn ft__social-btn--${cls}`}
+                      className="ft__social-btn"
                       aria-label={label}
                     >
                       <Icon aria-hidden="true" />
@@ -613,9 +449,12 @@ const Footer: React.FC = () => {
               </ul>
             </div>
 
-            {/* ── Company nav ───────────────────────────────────── */}
+            {/* Company */}
             <nav className="ft__col" aria-label="Company links">
-              <h3 className="ft__nav-heading">Company</h3>
+              <h3 className="ft__nav-heading">
+                <span className="ft__nav-heading-num">01</span>
+                Company
+              </h3>
               <ul className="ft__nav-list">
                 {NAV_COMPANY.map(({ label, href }) => (
                   <li key={href}>
@@ -625,9 +464,12 @@ const Footer: React.FC = () => {
               </ul>
             </nav>
 
-            {/* ── Services nav ──────────────────────────────────── */}
+            {/* Services */}
             <nav className="ft__col" aria-label="Services links">
-              <h3 className="ft__nav-heading">Services</h3>
+              <h3 className="ft__nav-heading">
+                <span className="ft__nav-heading-num">02</span>
+                Services
+              </h3>
               <ul className="ft__nav-list">
                 {NAV_SERVICES.map(({ label, href }) => (
                   <li key={href}>
@@ -637,33 +479,31 @@ const Footer: React.FC = () => {
               </ul>
             </nav>
 
-            {/* ── Newsletter ────────────────────────────────────── */}
+            {/* Newsletter */}
             <div className="ft__col">
-              <h3 className="ft__nav-heading">Newsletter</h3>
+              <h3 className="ft__nav-heading">
+                <span className="ft__nav-heading-num">03</span>
+                Newsletter
+              </h3>
               <p className="ft__nl-desc">
-                Insights that drive innovation and technology.
+                Insights that drive innovation — delivered monthly.
               </p>
-
               <form
                 onSubmit={handleSubmit}
-                className="ft__nl-form"
                 aria-label="Newsletter subscription form"
                 noValidate
               >
-                <div className="ft__nl-input-wrap">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="your@email.com"
-                    className="ft__nl-input"
-                    aria-label="Email address for newsletter"
-                    autoComplete="email"
-                    disabled={loading}
-                  />
-                </div>
-
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="your@email.com"
+                  className="ft__nl-input"
+                  aria-label="Email address for newsletter"
+                  autoComplete="email"
+                  disabled={loading}
+                />
                 <button
                   type="submit"
                   className="ft__nl-btn"
@@ -685,8 +525,8 @@ const Footer: React.FC = () => {
                   ) : (
                     <>
                       Subscribe
-                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </>
                   )}
@@ -703,25 +543,37 @@ const Footer: React.FC = () => {
                   </p>
                 )}
               </form>
+              <p className="ft__nl-note">Unsubscribe anytime.</p>
             </div>
 
-          </div>{/* /.ft__grid-top */}
-        </div>{/* /.ft__body */}
-
-        {/* ── Divider ─────────────────────────────────────────────── */}
-        <div className="ft__divider" aria-hidden="true">
-          <div className="ft__divider-line" />
+          </div>
         </div>
 
-        {/* ── Bottom bar ──────────────────────────────────────────── */}
+        {/* ── Ticker ────────────────────────────────────────────────── */}
+        <div className="ft__ticker-wrap" aria-hidden="true">
+          <div className="ft__ticker">
+            {[0, 1].map((dupe) => (
+              <div className="ft__ticker-inner" key={dupe} aria-hidden={dupe === 1 ? 'true' : undefined}>
+                {TICKER_DOUBLED.map((item, i) => (
+                  <React.Fragment key={`${dupe}-${i}`}>
+                    <span className="ft__ticker-item">{item}</span>
+                    <span className="ft__ticker-dot" />
+                  </React.Fragment>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Bottom bar ────────────────────────────────────────────── */}
         <div className="ft__bottom">
           <p className="ft__copy">
-            &copy; {new Date().getFullYear()} <strong>99 Visual Solutions</strong>.
-            {' '}All rights reserved.
+            &copy; {new Date().getFullYear()} <strong>99 Visual Solutions</strong>. All rights reserved.
           </p>
           <nav className="ft__legal" aria-label="Legal links">
             <Link href="/privacy-policy" className="ft__legal-link">Privacy Policy</Link>
-            <Link href="/terms"          className="ft__legal-link">Terms of Use</Link>
+            <span className="ft__legal-sep" aria-hidden="true" />
+            <Link href="/terms" className="ft__legal-link">Terms of Use</Link>
           </nav>
         </div>
 

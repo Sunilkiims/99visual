@@ -1,5 +1,10 @@
 'use client'
 
+// components/TiptapEditor.tsx
+// Toolbar actions:
+//   1. "Contact CTA" dropdown → inserts text link or styled CTA button
+//   2. Both carry data-contact-popup so PostViewer intercepts the click.
+
 import { useEditor, EditorContent } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { Image } from '@tiptap/extension-image'
@@ -19,16 +24,6 @@ interface Props {
   content: string
   onChange: (content: string) => void
   placeholder?: string
-}
-
-// ─── NEW: Contact form state type ────────────────────────────────────────────
-interface ContactFormData {
-  name: string
-  email: string
-  phone: string
-  subject: string
-  message: string
-  service: string
 }
 
 const PRESET_COLORS = [
@@ -60,18 +55,6 @@ const TABLE_FILL_COLORS = [
   '#1f2937', '#111827', '#ffffff', '#fef3c7',
   '#dcfce7', '#dbeafe', '#f3e8ff', '#fee2e2',
   '#f97316', '#374151', '#065f46', '#1e40af',
-]
-
-// ─── NEW: Service options for the contact form ────────────────────────────────
-const SERVICE_OPTIONS = [
-  'Select a service...',
-  'Website Development',
-  '3D Visualization',
-  'Digital Marketing & SEO',
-  'CAD / GIS & Photogrammetry',
-  'IT Consulting',
-  'Automation Testing',
-  'Other',
 ]
 
 const CustomTableCell = TableCell.extend({
@@ -107,29 +90,16 @@ const CustomTableHeader = TableHeader.extend({
 })
 
 export default function TiptapEditor({ content, onChange, placeholder }: Props) {
-  const [showColorPicker, setShowColorPicker] = useState(false)
-  const [showTableMenu, setShowTableMenu] = useState(false)
+  const [showColorPicker, setShowColorPicker]       = useState(false)
+  const [showTableMenu, setShowTableMenu]           = useState(false)
   const [showTableStyleMenu, setShowTableStyleMenu] = useState(false)
-  const [customColor, setCustomColor] = useState('#f97316')
-  const [showLinkDialog, setShowLinkDialog] = useState(false)
-  const [linkUrl, setLinkUrl] = useState('')
-  const [linkTarget, setLinkTarget] = useState('_blank')
-  const [tableBorderColor, setTableBorderColor] = useState('#374151')
-  const [tableBorderSize, setTableBorderSize] = useState('1')
-  const [tableFillColor, setTableFillColor] = useState('#1f2937')
-
-  // ─── NEW: Contact Us modal state ─────────────────────────────────────────
-  const [showContactModal, setShowContactModal] = useState(false)
-  const [contactFormData, setContactFormData] = useState<ContactFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-    service: '',
-  })
-  const [contactSubmitted, setContactSubmitted] = useState(false)
-  const [contactSubmitting, setContactSubmitting] = useState(false)
+  const [showLinkDialog, setShowLinkDialog]         = useState(false)
+  const [linkUrl, setLinkUrl]                       = useState('')
+  const [linkTarget, setLinkTarget]                 = useState('_blank')
+  const [tableBorderColor, setTableBorderColor]     = useState('#374151')
+  const [tableBorderSize, setTableBorderSize]       = useState('1')
+  const [tableFillColor, setTableFillColor]         = useState('#1f2937')
+  const [showContactMenu, setShowContactMenu]       = useState(false)
 
   const editor = useEditor({
     extensions: [
@@ -148,6 +118,21 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
               default: 'noopener noreferrer nofollow',
               parseHTML: (element) => element.getAttribute('rel'),
               renderHTML: (attributes) => ({ rel: attributes.rel || 'noopener noreferrer nofollow' }),
+            },
+            // Preserve data-contact-popup on anchor tags
+            'data-contact-popup': {
+              default: null,
+              parseHTML: (element) => element.getAttribute('data-contact-popup'),
+              renderHTML: (attributes) =>
+                attributes['data-contact-popup']
+                  ? { 'data-contact-popup': 'true' }
+                  : {},
+            },
+            class: {
+              default: null,
+              parseHTML: (element) => element.getAttribute('class'),
+              renderHTML: (attributes) =>
+                attributes.class ? { class: attributes.class } : {},
             },
           }
         },
@@ -185,37 +170,30 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     if (editor.isEmpty) editor.commands.setContent(content)
   }, [editor, content])
 
-  // ─── NEW: Close all dropdowns when contact modal opens ───────────────────
-  function openContactModal() {
-    setShowColorPicker(false)
-    setShowTableMenu(false)
-    setShowTableStyleMenu(false)
-    setShowLinkDialog(false)
-    setContactSubmitted(false)
-    setContactFormData({ name: '', email: '', phone: '', subject: '', message: '', service: '' })
-    setShowContactModal(true)
-  }
-
-  // ─── NEW: Handle contact form submit ─────────────────────────────────────
-  async function handleContactSubmit() {
-    if (!contactFormData.name || !contactFormData.email || !contactFormData.message) return
-    setContactSubmitting(true)
-    // Simulate API call — replace with your actual endpoint
-    await new Promise((res) => setTimeout(res, 1200))
-    setContactSubmitting(false)
-    setContactSubmitted(true)
-  }
-
-  // ─── NEW: Insert a "Contact Us" CTA link into the editor ─────────────────
-  function insertContactUsLink() {
+  // Insert a plain text link CTA
+  function insertContactLink() {
     if (!editor) return
     editor
       .chain()
       .focus()
       .insertContent(
-        `<a href="/contact" target="_self" rel="noopener noreferrer nofollow">Contact Us</a>`
+        `<a href="/contact" data-contact-popup="true" target="_self">Contact Us Now</a>`
       )
       .run()
+    setShowContactMenu(false)
+  }
+
+  // Insert a styled CTA button (as anchor so Tiptap preserves it)
+  function insertContactButton() {
+    if (!editor) return
+    editor
+      .chain()
+      .focus()
+      .insertContent(
+        `<p><a href="/contact" data-contact-popup="true" target="_self" class="contact-cta-btn">&#9993; Contact Us Now</a></p>`
+      )
+      .run()
+    setShowContactMenu(false)
   }
 
   if (!editor) return null
@@ -241,6 +219,13 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   )
 
   const Divider = () => <div className="w-px h-5 bg-gray-600 mx-1" />
+
+  function closeAll() {
+    setShowColorPicker(false)
+    setShowTableMenu(false)
+    setShowTableStyleMenu(false)
+    setShowContactMenu(false)
+  }
 
   function addImage() {
     const url = prompt('Enter image URL:')
@@ -278,7 +263,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
   function applyColor(color: string) {
     if (!editor) return
     editor.chain().focus().setColor(color).run()
-    setCustomColor(color)
   }
 
   function applyTableStyles(color: string, size: string) {
@@ -290,11 +274,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     let modified = false
     state.doc.descendants((node, pos) => {
       if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
-        const currentStyle = (node.attrs.style || '')
-          .replace(/border:[^;]+;?\s*/g, '')
-          .trim()
-        const newStyle = (currentStyle ? currentStyle + ' ' : '') +
-          `border: ${size}px solid ${color};`
+        const currentStyle = (node.attrs.style || '').replace(/border:[^;]+;?\s*/g, '').trim()
+        const newStyle = (currentStyle ? currentStyle + ' ' : '') + `border: ${size}px solid ${color};`
         tr.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle })
         modified = true
       }
@@ -310,11 +291,8 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
     let modified = false
     state.doc.descendants((node, pos) => {
       if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
-        const currentStyle = (node.attrs.style || '')
-          .replace(/background(-color)?:[^;]+;?\s*/g, '')
-          .trim()
-        const newStyle = (currentStyle ? currentStyle + ' ' : '') +
-          `background-color: ${color};`
+        const currentStyle = (node.attrs.style || '').replace(/background(-color)?:[^;]+;?\s*/g, '').trim()
+        const newStyle = (currentStyle ? currentStyle + ' ' : '') + `background-color: ${color};`
         tr.setNodeMarkup(pos, undefined, { ...node.attrs, style: newStyle })
         modified = true
       }
@@ -388,16 +366,9 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         <Divider />
 
-        {/* Bold Italic Strike Highlight */}
-        <Btn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Bold">
-          <strong>B</strong>
-        </Btn>
-        <Btn onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Italic">
-          <em>I</em>
-        </Btn>
-        <Btn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="Strikethrough">
-          <s>S</s>
-        </Btn>
+        <Btn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Bold"><strong>B</strong></Btn>
+        <Btn onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Italic"><em>I</em></Btn>
+        <Btn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="Strikethrough"><s>S</s></Btn>
         <Btn onClick={() => editor.chain().focus().toggleHighlight().run()} active={editor.isActive('highlight')} title="Highlight">
           <span className="bg-yellow-400 text-black px-0.5 rounded text-xs font-bold">H</span>
         </Btn>
@@ -409,7 +380,7 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           <button
             type="button"
             title="Text Color"
-            onClick={() => { setShowColorPicker(!showColorPicker); setShowTableMenu(false); setShowTableStyleMenu(false) }}
+            onClick={() => { closeAll(); setShowColorPicker(true) }}
             className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors flex flex-col items-center"
           >
             <span className="text-sm font-bold leading-none" style={{ color: currentColor || '#ffffff' }}>A</span>
@@ -439,88 +410,52 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
               <p className="text-gray-500 text-xs mb-2">Presets</p>
               <div className="grid grid-cols-6 gap-1.5 mb-3">
                 {PRESET_COLORS.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => applyColor(color)}
-                    className={`w-7 h-7 rounded border-2 transition-all ${currentColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
+                  <button key={color} type="button" onClick={() => applyColor(color)} className={`w-7 h-7 rounded border-2 transition-all ${currentColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`} style={{ backgroundColor: color }} title={color} />
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => { editor.chain().focus().unsetColor().run(); setShowColorPicker(false) }}
-                className="text-xs text-gray-400 hover:text-white w-full text-center border border-gray-700 rounded-lg py-1.5 hover:border-gray-500 transition-colors"
-              >
-                Reset to default
-              </button>
+              <button type="button" onClick={() => { editor.chain().focus().unsetColor().run(); setShowColorPicker(false) }} className="text-xs text-gray-400 hover:text-white w-full text-center border border-gray-700 rounded-lg py-1.5 hover:border-gray-500 transition-colors">Reset to default</button>
             </div>
           )}
         </div>
 
         <Divider />
 
-        {/* Text Align */}
+        {/* Align */}
         <Btn onClick={() => editor.chain().focus().setTextAlign('left').run()} active={editor.isActive({ textAlign: 'left' })} title="Align Left">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h12" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h12" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().setTextAlign('center').run()} active={editor.isActive({ textAlign: 'center' })} title="Align Center">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M6 18h12" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M6 18h12" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().setTextAlign('right').run()} active={editor.isActive({ textAlign: 'right' })} title="Align Right">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M8 18h12" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M8 18h12" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().setTextAlign('justify').run()} active={editor.isActive({ textAlign: 'justify' })} title="Justify">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
         </Btn>
 
         <Divider />
 
         {/* Lists */}
         <Btn onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} title="Bullet List">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive('orderedList')} title="Ordered List">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5h11M9 12h11M9 19h11M5 5v.01M5 12v.01M5 19v.01" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5h11M9 12h11M9 19h11M5 5v.01M5 12v.01M5 19v.01" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="Blockquote">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} title="Code Block">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
         </Btn>
 
         <Divider />
 
         {/* Table */}
         <div className="relative">
-          <button
-            type="button"
-            title="Table"
-            onClick={() => { setShowTableMenu(!showTableMenu); setShowColorPicker(false); setShowTableStyleMenu(false) }}
-            className={`p-1.5 rounded-lg text-sm transition-colors ${showTableMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 6h18M3 14h18M3 18h18M8 6v12M16 6v12" />
-            </svg>
+          <button type="button" title="Table" onClick={() => { closeAll(); setShowTableMenu(true) }} className={`p-1.5 rounded-lg text-sm transition-colors ${showTableMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 6h18M3 14h18M3 18h18M8 6v12M16 6v12" /></svg>
           </button>
           {showTableMenu && (
             <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-3 shadow-xl min-w-[180px]">
@@ -536,28 +471,16 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                   { label: '− Delete row', action: () => { editor.chain().focus().deleteRow().run(); setShowTableMenu(false) }, red: true },
                   { label: '× Delete table', action: () => { editor.chain().focus().deleteTable().run(); setShowTableMenu(false) }, red: true },
                 ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={item.action}
-                    className={`w-full text-left text-xs py-1.5 px-2 rounded transition-colors ${item.red ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}
-                  >
-                    {item.label}
-                  </button>
+                  <button key={item.label} type="button" onClick={item.action} className={`w-full text-left text-xs py-1.5 px-2 rounded transition-colors ${item.red ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}>{item.label}</button>
                 ))}
               </div>
             </div>
           )}
         </div>
 
-        {/* Table Border + Fill Style */}
+        {/* Table Style */}
         <div className="relative">
-          <button
-            type="button"
-            title="Table Border & Fill Style"
-            onClick={() => { setShowTableStyleMenu(!showTableStyleMenu); setShowTableMenu(false); setShowColorPicker(false) }}
-            className={`p-1.5 rounded-lg text-sm transition-colors ${showTableStyleMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-          >
+          <button type="button" title="Table Border & Fill Style" onClick={() => { closeAll(); setShowTableStyleMenu(true) }} className={`p-1.5 rounded-lg text-sm transition-colors ${showTableStyleMenu ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <rect x="3" y="3" width="18" height="18" rx="1" strokeWidth={2} />
               <line x1="3" y1="12" x2="21" y2="12" strokeWidth={2} />
@@ -567,8 +490,6 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
           {showTableStyleMenu && (
             <div className="absolute top-9 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl w-64 max-h-[80vh] overflow-y-auto">
               <p className="text-gray-400 text-xs font-medium mb-3">Table Style</p>
-
-              {/* Border Color */}
               <div className="mb-4">
                 <label className="block text-gray-500 text-xs mb-1.5">Border Color</label>
                 <div className="flex items-center gap-2 mb-2">
@@ -590,68 +511,24 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 </div>
                 <div className="grid grid-cols-6 gap-1">
                   {TABLE_BORDER_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => applyTableStyles(color, tableBorderSize)}
-                      className={`w-7 h-7 rounded border-2 transition-all ${tableBorderColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
-                      style={{ backgroundColor: color }}
-                      title={color}
-                    />
+                    <button key={color} type="button" onClick={() => applyTableStyles(color, tableBorderSize)} className={`w-7 h-7 rounded border-2 transition-all ${tableBorderColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`} style={{ backgroundColor: color }} title={color} />
                   ))}
                 </div>
               </div>
-
-              {/* Border Size */}
               <div className="mb-4">
-                <label className="block text-gray-500 text-xs mb-1.5">
-                  Border Size: <span className="text-orange-400">{tableBorderSize}px</span>
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="8"
-                  value={tableBorderSize}
-                  onChange={(e) => applyTableStyles(tableBorderColor, e.target.value)}
-                  className="w-full accent-orange-500 mb-1"
-                />
-                <div className="flex justify-between text-gray-600 text-xs">
-                  <span>0px</span>
-                  <span>4px</span>
-                  <span>8px</span>
-                </div>
+                <label className="block text-gray-500 text-xs mb-1.5">Border Size: <span className="text-orange-400">{tableBorderSize}px</span></label>
+                <input type="range" min="0" max="8" value={tableBorderSize} onChange={(e) => applyTableStyles(tableBorderColor, e.target.value)} className="w-full accent-orange-500 mb-1" />
+                <div className="flex justify-between text-gray-600 text-xs"><span>0px</span><span>4px</span><span>8px</span></div>
               </div>
-
-              {/* Quick sizes */}
               <div className="mb-4">
                 <label className="block text-gray-500 text-xs mb-1.5">Quick sizes</label>
                 <div className="flex gap-1.5">
                   {['0', '1', '2', '3', '4'].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => applyTableStyles(tableBorderColor, size)}
-                      className={`flex-1 py-1.5 rounded-lg text-xs border transition-colors ${
-                        tableBorderSize === size
-                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
-                          : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {size}px
-                    </button>
+                    <button key={size} type="button" onClick={() => applyTableStyles(tableBorderColor, size)} className={`flex-1 py-1.5 rounded-lg text-xs border transition-colors ${tableBorderSize === size ? 'bg-orange-500/20 border-orange-500/40 text-orange-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'}`}>{size}px</button>
                   ))}
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => applyTableStyles('transparent', '0')}
-                className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors mb-4"
-              >
-                Remove borders
-              </button>
-
-              {/* Fill Color */}
+              <button type="button" onClick={() => applyTableStyles('transparent', '0')} className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors mb-4">Remove borders</button>
               <div className="pt-4 border-t border-gray-700">
                 <label className="block text-gray-500 text-xs mb-1.5">Cell Fill Color</label>
                 <div className="flex items-center gap-2 mb-2">
@@ -673,23 +550,10 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
                 </div>
                 <div className="grid grid-cols-6 gap-1 mb-2">
                   {TABLE_FILL_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => applyTableFillColor(color)}
-                      className={`w-7 h-7 rounded border-2 transition-all ${tableFillColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`}
-                      style={{ backgroundColor: color }}
-                      title={color}
-                    />
+                    <button key={color} type="button" onClick={() => applyTableFillColor(color)} className={`w-7 h-7 rounded border-2 transition-all ${tableFillColor === color ? 'border-white scale-110' : 'border-gray-700 hover:border-gray-400'}`} style={{ backgroundColor: color }} title={color} />
                   ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => applyTableFillColor('transparent')}
-                  className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors"
-                >
-                  Remove fill color
-                </button>
+                <button type="button" onClick={() => applyTableFillColor('transparent')} className="w-full text-xs py-2 px-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors">Remove fill color</button>
               </div>
             </div>
           )}
@@ -699,45 +563,93 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
 
         {/* Link */}
         <Btn onClick={addLink} active={editor.isActive('link')} title="Add Link">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
         </Btn>
 
         {/* Image */}
         <Btn onClick={addImage} title="Add Image" active={false}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
         </Btn>
 
         <Divider />
 
-        {/* ─── NEW: Contact Us Button ──────────────────────────────────────────── */}
-        <button
-          type="button"
-          title="Insert Contact Us CTA"
-          onClick={openContactModal}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white text-xs font-semibold transition-colors shadow-sm"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          Contact Us
-        </button>
+        {/* Contact CTA dropdown */}
+        <div className="relative">
+          <button
+            type="button"
+            title="Insert Contact Us CTA"
+            onClick={() => { closeAll(); setShowContactMenu(true) }}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
+              showContactMenu
+                ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
+                : 'bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20'
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Contact CTA
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showContactMenu && (
+            <div className="absolute top-10 left-0 z-50 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden w-64">
+              <div className="px-4 py-3 border-b border-gray-800">
+                <p className="text-gray-300 text-xs font-semibold">Insert Contact Us CTA</p>
+                <p className="text-gray-500 text-xs mt-0.5">Readers click → popup form opens</p>
+              </div>
+
+              {/* Option 1 — Text link */}
+              <button
+                type="button"
+                onClick={insertContactLink}
+                className="w-full flex items-start gap-3 px-4 py-3 hover:bg-gray-800 transition-colors text-left border-b border-gray-800"
+              >
+                <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-gray-200 text-xs font-medium">Text Link</p>
+                  <p className="text-gray-500 text-xs mt-0.5">Inline orange underlined link</p>
+                  <span className="inline-block mt-2 text-orange-400 text-xs underline underline-offset-2 font-medium">Contact Us Now</span>
+                </div>
+              </button>
+
+              {/* Option 2 — CTA Button */}
+              <button
+                type="button"
+                onClick={insertContactButton}
+                className="w-full flex items-start gap-3 px-4 py-3 hover:bg-gray-800 transition-colors text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-gray-200 text-xs font-medium">CTA Button</p>
+                  <p className="text-gray-500 text-xs mt-0.5">Full-width orange button block</p>
+                  <span className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-lg">
+                    ✉ Contact Us Now
+                  </span>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
 
         <Divider />
 
-        {/* Undo Redo */}
+        {/* Undo / Redo */}
         <Btn onClick={() => editor.chain().focus().undo().run()} title="Undo" active={false}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
         </Btn>
         <Btn onClick={() => editor.chain().focus().redo().run()} title="Redo" active={false}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
-          </svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" /></svg>
         </Btn>
 
         <div className="ml-auto text-gray-500 text-xs">
@@ -754,36 +666,17 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
         .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: #f97316; cursor: col-resize; z-index: 20; }
         .ProseMirror.resize-cursor { cursor: col-resize; }
         .ProseMirror a { color: #f97316; text-decoration: underline; cursor: pointer; }
-
-        /* ─── Contact modal animations ─────────────────────────────────── */
-        @keyframes contactModalIn {
-          from { opacity: 0; transform: scale(0.96) translateY(8px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
+        .ProseMirror a.contact-cta-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 10px 22px; background: #f97316; color: #fff !important;
+          border-radius: 10px; font-size: 14px; font-weight: 600;
+          text-decoration: none !important; pointer-events: none;
         }
-        @keyframes contactOverlayIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        .contact-modal-overlay { animation: contactOverlayIn 0.2s ease forwards; }
-        .contact-modal-panel   { animation: contactModalIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards; }
-        .contact-input {
-          width: 100%;
-          background: #111827;
-          border: 1px solid #374151;
-          border-radius: 10px;
-          padding: 10px 14px;
-          color: #f9fafb;
-          font-size: 13px;
-          outline: none;
-          transition: border-color 0.15s;
-        }
-        .contact-input:focus { border-color: #f97316; }
-        .contact-input::placeholder { color: #6b7280; }
       `}</style>
 
       <EditorContent editor={editor} />
 
-      {/* ─── Link Dialog ──────────────────────────────────────────────────────── */}
+      {/* Link Dialog */}
       {showLinkDialog && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -791,319 +684,36 @@ export default function TiptapEditor({ content, onChange, placeholder }: Props) 
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-400 text-sm mb-2">URL</label>
-                <input
-                  type="text"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://example.com or /about"
-                  autoFocus
-                  onKeyDown={(e) => { if (e.key === 'Enter') applyLink() }}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500"
-                />
-                <p className="text-gray-500 text-xs mt-1.5">
-                  External: <span className="text-gray-400">https://example.com</span> &nbsp;·&nbsp; Internal: <span className="text-gray-400">/services/web-development</span>
-                </p>
+                <input type="text" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://example.com or /about" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') applyLink() }} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500" />
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Quick internal links</label>
                 <div className="grid grid-cols-2 gap-1.5">
                   {[
-                    { label: 'Home', path: '/' },
-                    { label: 'About', path: '/about' },
-                    { label: 'Contact', path: '/contact' },
-                    { label: 'Careers', path: '/careers' },
-                    { label: 'All Insights', path: '/insights' },
-                    { label: 'Web Development', path: '/services/website-development' },
-                    { label: '3D Visualization', path: '/services/visualization' },
-                    { label: 'Digital Marketing', path: '/services/digital-marketing-seo' },
-                    { label: 'CAD / GIS', path: '/services/cad-gis-photogrammetry' },
-                    { label: 'IT Consulting', path: '/services/it-consulting' },
-                    { label: 'Automation Testing', path: '/services/automation-testing' },
-                    { label: 'Partner', path: '/partner' },
+                    { label: 'Home', path: '/' }, { label: 'About', path: '/about' },
+                    { label: 'Contact', path: '/contact' }, { label: 'Careers', path: '/careers' },
+                    { label: 'All Insights', path: '/insights' }, { label: 'Web Development', path: '/services/website-development' },
+                    { label: '3D Visualization', path: '/services/visualization' }, { label: 'Digital Marketing', path: '/services/digital-marketing-seo' },
+                    { label: 'CAD / GIS', path: '/services/cad-gis-photogrammetry' }, { label: 'IT Consulting', path: '/services/it-consulting' },
+                    { label: 'Automation Testing', path: '/services/automation-testing' }, { label: 'Partner', path: '/partner' },
                   ].map((item) => (
-                    <button
-                      key={item.path}
-                      type="button"
-                      onClick={() => { setLinkUrl(item.path); setLinkTarget('_self') }}
-                      className={`text-left text-xs px-3 py-2 rounded-lg border transition-colors ${
-                        linkUrl === item.path
-                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
-                          : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
+                    <button key={item.path} type="button" onClick={() => { setLinkUrl(item.path); setLinkTarget('_self') }} className={`text-left text-xs px-3 py-2 rounded-lg border transition-colors ${linkUrl === item.path ? 'bg-orange-500/20 border-orange-500/40 text-orange-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white hover:border-gray-600'}`}>{item.label}</button>
                   ))}
                 </div>
               </div>
-
               <div>
                 <label className="block text-gray-400 text-sm mb-2">Open in</label>
                 <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setLinkTarget('_blank')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
-                      linkTarget === '_blank'
-                        ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
-                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    🌐 New Tab
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLinkTarget('_self')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
-                      linkTarget === '_self'
-                        ? 'bg-green-500/20 border-green-500/40 text-green-400'
-                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    🔗 Same Tab
-                  </button>
+                  <button type="button" onClick={() => setLinkTarget('_blank')} className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${linkTarget === '_blank' ? 'bg-orange-500/20 border-orange-500/40 text-orange-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'}`}>🌐 New Tab</button>
+                  <button type="button" onClick={() => setLinkTarget('_self')} className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${linkTarget === '_self' ? 'bg-green-500/20 border-green-500/40 text-green-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'}`}>🔗 Same Tab</button>
                 </div>
-                <p className="text-gray-500 text-xs mt-1.5">
-                  Use <span className="text-green-400">Same Tab</span> for internal links · <span className="text-orange-400">New Tab</span> for external links
-                </p>
               </div>
             </div>
-
             <div className="flex gap-3 mt-6">
-              <button
-                type="button"
-                onClick={() => { if (!editor) return; editor.chain().focus().unsetLink().run(); setShowLinkDialog(false) }}
-                className="px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors"
-              >
-                Remove
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowLinkDialog(false)}
-                className="flex-1 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={applyLink}
-                className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-medium transition-colors"
-              >
-                Apply Link
-              </button>
+              <button type="button" onClick={() => { editor.chain().focus().unsetLink().run(); setShowLinkDialog(false) }} className="px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/20 transition-colors">Remove</button>
+              <button type="button" onClick={() => setShowLinkDialog(false)} className="flex-1 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
+              <button type="button" onClick={applyLink} className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-medium transition-colors">Apply Link</button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── NEW: Contact Us Modal ─────────────────────────────────────────────── */}
-      {showContactModal && (
-        <div
-          className="contact-modal-overlay fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={(e) => { if (e.target === e.currentTarget) setShowContactModal(false) }}
-        >
-          <div className="contact-modal-panel bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-800">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-orange-500/20 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h2 className="text-white font-semibold text-base">Contact Us</h2>
-                  <p className="text-gray-500 text-xs">We'll get back to you within 24 hours</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowContactModal(false)}
-                className="text-gray-500 hover:text-white hover:bg-gray-800 p-1.5 rounded-lg transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">
-              {contactSubmitted ? (
-                /* ── Success state ── */
-                <div className="py-8 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-white font-semibold text-lg mb-2">Message Sent!</h3>
-                  <p className="text-gray-400 text-sm mb-6 max-w-xs">
-                    Thanks for reaching out, <span className="text-orange-400">{contactFormData.name}</span>. Our team will get back to you at <span className="text-orange-400">{contactFormData.email}</span> within 24 hours.
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        insertContactUsLink()
-                        setShowContactModal(false)
-                      }}
-                      className="px-4 py-2.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-xl text-sm hover:bg-orange-500/20 transition-colors"
-                    >
-                      Insert "Contact Us" link
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowContactModal(false)}
-                      className="px-4 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                /* ── Form state ── */
-                <div className="space-y-4">
-                  {/* Name + Email row */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-gray-400 text-xs font-medium mb-1.5">
-                        Full Name <span className="text-orange-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="contact-input"
-                        placeholder="John Smith"
-                        value={contactFormData.name}
-                        onChange={(e) => setContactFormData({ ...contactFormData, name: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-400 text-xs font-medium mb-1.5">
-                        Email <span className="text-orange-400">*</span>
-                      </label>
-                      <input
-                        type="email"
-                        className="contact-input"
-                        placeholder="john@company.com"
-                        value={contactFormData.email}
-                        onChange={(e) => setContactFormData({ ...contactFormData, email: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Phone + Service row */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-gray-400 text-xs font-medium mb-1.5">Phone</label>
-                      <input
-                        type="tel"
-                        className="contact-input"
-                        placeholder="+1 (555) 000-0000"
-                        value={contactFormData.phone}
-                        onChange={(e) => setContactFormData({ ...contactFormData, phone: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-400 text-xs font-medium mb-1.5">Service</label>
-                      <select
-                        className="contact-input"
-                        value={contactFormData.service}
-                        onChange={(e) => setContactFormData({ ...contactFormData, service: e.target.value })}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {SERVICE_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt === 'Select a service...' ? '' : opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Subject */}
-                  <div>
-                    <label className="block text-gray-400 text-xs font-medium mb-1.5">Subject</label>
-                    <input
-                      type="text"
-                      className="contact-input"
-                      placeholder="How can we help you?"
-                      value={contactFormData.subject}
-                      onChange={(e) => setContactFormData({ ...contactFormData, subject: e.target.value })}
-                    />
-                  </div>
-
-                  {/* Message */}
-                  <div>
-                    <label className="block text-gray-400 text-xs font-medium mb-1.5">
-                      Message <span className="text-orange-400">*</span>
-                    </label>
-                    <textarea
-                      rows={4}
-                      className="contact-input resize-none"
-                      placeholder="Tell us about your project..."
-                      value={contactFormData.message}
-                      onChange={(e) => setContactFormData({ ...contactFormData, message: e.target.value })}
-                    />
-                  </div>
-
-                  {/* Insert link shortcut */}
-                  <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-3 flex items-start gap-3">
-                    <svg className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                    <div className="flex-1">
-                      <p className="text-gray-300 text-xs">Want to add a Contact Us link in the editor?</p>
-                      <button
-                        type="button"
-                        onClick={() => { insertContactUsLink(); setShowContactModal(false) }}
-                        className="text-orange-400 hover:text-orange-300 text-xs underline underline-offset-2 mt-0.5 transition-colors"
-                      >
-                        Insert "Contact Us" link at cursor →
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Footer */}
-            {!contactSubmitted && (
-              <div className="px-6 py-4 border-t border-gray-800 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowContactModal(false)}
-                  className="flex-1 py-2.5 bg-gray-800 border border-gray-700 text-gray-400 rounded-xl text-sm hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleContactSubmit}
-                  disabled={!contactFormData.name || !contactFormData.email || !contactFormData.message || contactSubmitting}
-                  className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  {contactSubmitting ? (
-                    <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                      </svg>
-                      Sending…
-                    </>
-                  ) : (
-                    <>
-                      Send Message
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}
