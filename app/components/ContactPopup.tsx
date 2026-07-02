@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Renders a full-screen modal overlay with a simple contact form.
 // Submitted data is POSTed to /api/contact (Nodemailer).
+// Includes a server-verified math captcha + honeypot for bot protection.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
@@ -25,13 +26,38 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
   const [errorMsg, setErrorMsg] = useState('')
   const firstInputRef = useRef<HTMLInputElement>(null)
 
-  // Auto-focus first input when modal opens
+  // ── Captcha + honeypot state ──────────────────────────────────────────────
+  const [captchaQuestion, setCaptchaQuestion] = useState('')
+  const [captchaToken, setCaptchaToken]       = useState('')
+  const [captchaAnswer, setCaptchaAnswer]     = useState('')
+  const [captchaLoading, setCaptchaLoading]   = useState(false)
+  const [honeypot, setHoneypot]               = useState('') // must stay empty — bots tend to fill it
+
+  function loadCaptcha() {
+    setCaptchaLoading(true)
+    fetch('/api/captcha')
+      .then((res) => res.json())
+      .then((data) => {
+        setCaptchaQuestion(data.question)
+        setCaptchaToken(data.token)
+      })
+      .catch(() => {
+        setCaptchaQuestion('')
+        setCaptchaToken('')
+      })
+      .finally(() => setCaptchaLoading(false))
+  }
+
+  // Auto-focus first input + reset form + fetch a fresh captcha when modal opens
   useEffect(() => {
     if (isOpen) {
       setStage('form')
       setName('')
       setEmail('')
       setMessage('')
+      setCaptchaAnswer('')
+      setHoneypot('')
+      loadCaptcha()
       setTimeout(() => firstInputRef.current?.focus(), 80)
     }
   }, [isOpen])
@@ -53,17 +79,31 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
   if (!isOpen) return null
 
   async function handleSubmit() {
-    if (!name.trim() || !email.trim() || !message.trim()) return
+    if (!name.trim() || !email.trim() || !message.trim() || !captchaAnswer.trim()) return
     setStage('sending')
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message, postTitle, postUrl }),
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          postTitle,
+          postUrl,
+          captcha: captchaAnswer,
+          captchaToken,
+          honeypot,
+        }),
       })
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error ?? 'Something went wrong')
+        // If captcha failed/expired, refresh it so the user can retry
+        if (res.status === 400 && /captcha/i.test(data.message ?? '')) {
+          loadCaptcha()
+          setCaptchaAnswer('')
+        }
+        throw new Error(data.message ?? data.error ?? 'Something went wrong')
       }
       setStage('success')
     } catch (err: unknown) {
@@ -72,7 +112,11 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
     }
   }
 
-  const isValid = name.trim() && /\S+@\S+\.\S+/.test(email) && message.trim()
+  const isValid =
+    name.trim() &&
+    /\S+@\S+\.\S+/.test(email) &&
+    message.trim() &&
+    captchaAnswer.trim()
 
   return (
     <>
@@ -164,6 +208,42 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     placeholder="Tell us how we can help you..."
                     disabled={stage === 'sending'}
                     className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 disabled:opacity-50 resize-none transition-colors"
+                  />
+                </div>
+
+                {/* Honeypot field — hidden from real users via off-screen positioning.
+                    Bots that auto-fill every input will trip this and get silently rejected. */}
+                <input
+                  type="text"
+                  name="website"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    width: '1px',
+                    height: '1px',
+                    opacity: 0,
+                  }}
+                />
+
+                {/* Captcha */}
+                <div>
+                  <label className="block text-gray-400 text-xs font-medium mb-1.5">
+                    {captchaLoading ? 'Loading question…' : captchaQuestion || 'Verification'}{' '}
+                    <span className="text-orange-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                    placeholder="Your answer"
+                    disabled={stage === 'sending' || captchaLoading}
+                    className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 disabled:opacity-50 transition-colors"
                   />
                 </div>
 
