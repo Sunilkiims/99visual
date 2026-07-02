@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import {
@@ -29,20 +29,30 @@ export default function ContactForm() {
     const [status, setStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
+    // ── Captcha state (server-verified) ────────────────────────────────────
     const [captchaQuestion, setCaptchaQuestion] = useState('');
-    const [captchaAnswer, setCaptchaAnswer] = useState('');
+    const [captchaToken, setCaptchaToken] = useState('');
     const [userCaptcha, setUserCaptcha] = useState('');
+    const [captchaLoading, setCaptchaLoading] = useState(false);
     const [honeypot, setHoneypot] = useState('');
 
     useEffect(() => {
-        generateCaptcha();
+        loadCaptcha();
     }, []);
 
-    const generateCaptcha = () => {
-        const num1 = Math.floor(Math.random() * 10);
-        const num2 = Math.floor(Math.random() * 10);
-        setCaptchaQuestion(`${num1} + ${num2}`);
-        setCaptchaAnswer(String(num1 + num2));
+    const loadCaptcha = () => {
+        setCaptchaLoading(true);
+        fetch('/api/captcha')
+            .then((res) => res.json())
+            .then((data) => {
+                setCaptchaQuestion(data.question);
+                setCaptchaToken(data.token);
+            })
+            .catch(() => {
+                setCaptchaQuestion('');
+                setCaptchaToken('');
+            })
+            .finally(() => setCaptchaLoading(false));
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -60,14 +70,6 @@ export default function ContactForm() {
             return;
         }
 
-        if (userCaptcha !== captchaAnswer) {
-            setStatus('❌ Captcha incorrect');
-            generateCaptcha();
-            setUserCaptcha('');
-            setLoading(false);
-            return;
-        }
-
         try {
             const res = await fetch('/api/contact', {
                 method: 'POST',
@@ -75,7 +77,7 @@ export default function ContactForm() {
                 body: JSON.stringify({
                     ...form,
                     captcha: userCaptcha,
-                    expected: captchaAnswer,
+                    captchaToken,
                     honeypot,
                 }),
             });
@@ -86,8 +88,13 @@ export default function ContactForm() {
                 setStatus('✅ Thanks for contacting us! We will get back to you soon.');
                 setForm({ name: '', email: '', message: '' });
                 setUserCaptcha('');
-                generateCaptcha();
+                loadCaptcha();
             } else {
+                // If captcha was wrong/expired, refresh it so the user can retry
+                if (res.status === 400 && /captcha/i.test(result.message || '')) {
+                    loadCaptcha();
+                    setUserCaptcha('');
+                }
                 setStatus(`❌ ${result.message || 'Something went wrong.'}`);
             }
         } catch {
@@ -108,7 +115,7 @@ export default function ContactForm() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2 className="text-2xl font-bold text-white-600 mt-0">Let&apos;s Connect</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mt-0">Let&apos;s Connect</h2>
                     <p className="text-gray-600">We&apos;d love to hear from you. Send us a message!</p>
 
                     <input
@@ -117,6 +124,7 @@ export default function ContactForm() {
                         value={form.name}
                         onChange={handleChange}
                         placeholder="Your Name"
+                        maxLength={100}
                         className="w-full border border-gray-300 p-3 rounded-lg shadow-sm"
                         required
                     />
@@ -127,6 +135,7 @@ export default function ContactForm() {
                         value={form.email}
                         onChange={handleChange}
                         placeholder="Your Email"
+                        maxLength={200}
                         className="w-full border border-gray-300 p-3 rounded-lg shadow-sm"
                         required
                     />
@@ -137,27 +146,34 @@ export default function ContactForm() {
                         onChange={handleChange}
                         placeholder="Your Message"
                         rows={5}
+                        maxLength={5000}
                         className="w-full border border-gray-300 p-3 rounded-lg shadow-sm"
                         required
                     />
 
                     <div>
                         <label className="block text-sm mb-1 text-gray-600">
-                            Solve: <span className="font-semibold">{captchaQuestion}</span>
+                            Solve:{' '}
+                            <span className="font-semibold">
+                                {captchaLoading ? 'Loading…' : captchaQuestion || 'Unavailable'}
+                            </span>
                         </label>
                         <input
                             type="text"
+                            inputMode="numeric"
                             value={userCaptcha}
                             onChange={(e) => setUserCaptcha(e.target.value)}
                             placeholder="Enter answer"
-                            className="w-full border border-gray-300 p-3 rounded-lg shadow-sm"
+                            disabled={captchaLoading}
+                            className="w-full border border-gray-300 p-3 rounded-lg shadow-sm disabled:opacity-50"
                             required
                         />
                     </div>
 
-                    {/* Honeypot — hidden from real users */}
+                    {/* Honeypot — hidden from real users, bots tend to fill every input */}
                     <input
                         type="text"
+                        name="website"
                         value={honeypot}
                         onChange={(e) => setHoneypot(e.target.value)}
                         className="hidden"
@@ -168,7 +184,7 @@ export default function ContactForm() {
 
                     <motion.button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || captchaLoading}
                         whileTap={{ scale: 0.97 }}
                         whileHover={{ scale: 1.03 }}
                         className={`w-full text-center bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 hover:bg-orange-700 ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
@@ -190,7 +206,7 @@ export default function ContactForm() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2 className="text-2xl font-bold text-white-600 mt-0">Why Reach Out to Us?</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mt-0">Why Reach Out to Us?</h2>
                     <div className="space-y-3 text-gray-700">
                         <div className="flex items-start gap-4">
                             <FaHandshake className="text-orange-500 mt-1" size={20} />
