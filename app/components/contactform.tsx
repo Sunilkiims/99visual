@@ -12,6 +12,9 @@ import {
     FaXTwitter,
 } from 'react-icons/fa6';
 import { motion } from 'framer-motion';
+// ── Lead source tracking ────────────────────────────────────────────────
+// Pure data-collection utility — no UI impact. See lib/leadTracking.ts
+import { getTrackingData, type TrackingData } from '@/lib/leadTracking';
 
 type FormData = {
     name: string;
@@ -19,7 +22,15 @@ type FormData = {
     message: string;
 };
 
-export default function ContactForm() {
+// Optional props so blog/insights pages can pass an explicit, guaranteed-
+// accurate title + slug. If omitted, leadTracking.ts will attempt to
+// auto-detect them from the URL and document.title.
+type ContactFormProps = {
+    blogTitle?: string;
+    blogSlug?: string;
+};
+
+export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = {}) {
     const [form, setForm] = useState<FormData>({
         name: '',
         email: '',
@@ -36,8 +47,19 @@ export default function ContactForm() {
     const [captchaLoading, setCaptchaLoading] = useState(false);
     const [honeypot, setHoneypot] = useState('');
 
+    // ── Lead source tracking state ──────────────────────────────────────────
+    // Captured once on mount (client-side only) and reused on every submit.
+    // We capture it up-front rather than only at submit time so that the
+    // "landing page" sessionStorage write happens as early as possible in
+    // the visit, matching true first-touch attribution for this session.
+    const [tracking, setTracking] = useState<TrackingData | null>(null);
+
     useEffect(() => {
         loadCaptcha();
+        // Populate tracking data on mount. Safe no-op on the server since
+        // getTrackingData() guards every window/document/navigator access.
+        setTracking(getTrackingData(blogTitle, blogSlug));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadCaptcha = () => {
@@ -71,6 +93,12 @@ export default function ContactForm() {
         }
 
         try {
+            // Re-capture at submit time so `currentPage`, `submittedAt`, etc.
+            // are accurate to the exact moment of submission, while
+            // `landingPage`/`referrer` stay pinned to the original values
+            // already stored in localStorage.
+            const submissionTracking = getTrackingData(blogTitle, blogSlug);
+
             const res = await fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -79,6 +107,8 @@ export default function ContactForm() {
                     captcha: userCaptcha,
                     captchaToken,
                     honeypot,
+                    // ── Lead source tracking fields appended to the payload ──
+                    tracking: submissionTracking,
                 }),
             });
 
