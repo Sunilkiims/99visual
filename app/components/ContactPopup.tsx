@@ -8,6 +8,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
+// ── Lead source tracking ────────────────────────────────────────────────────
+// Pure data-collection utility — no UI impact. See lib/leadTracking.ts
+// (shared with components/ContactForm.tsx, so both forms stay consistent).
+import { getTrackingData, type TrackingData } from '@/lib/leadTracking'
 
 interface Props {
   isOpen: boolean
@@ -17,6 +21,27 @@ interface Props {
 }
 
 type Stage = 'form' | 'sending' | 'success' | 'error'
+
+/**
+ * ── NEW ──
+ * If this popup was opened from a blog/insights post, `postUrl` is often
+ * the full URL to that post. Pull the last path segment out as the blog
+ * slug so we don't require every caller to pass a separate slug prop.
+ * Falls back to undefined (letting leadTracking.ts auto-detect from the
+ * current page URL instead) if postUrl isn't a parseable URL/path.
+ */
+function extractSlugFromPostUrl(postUrl?: string): string | undefined {
+  if (!postUrl) return undefined
+  try {
+    // Handle both absolute URLs ("https://site.com/insights/foo") and
+    // bare paths ("/insights/foo").
+    const path = postUrl.startsWith('http') ? new URL(postUrl).pathname : postUrl
+    const segments = path.split('/').filter(Boolean)
+    return segments.length ? segments[segments.length - 1] : undefined
+  } catch {
+    return undefined
+  }
+}
 
 export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Props) {
   const [name, setName]       = useState('')
@@ -32,6 +57,12 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
   const [captchaAnswer, setCaptchaAnswer]     = useState('')
   const [captchaLoading, setCaptchaLoading]   = useState(false)
   const [honeypot, setHoneypot]               = useState('') // must stay empty — bots tend to fill it
+
+  // ── Lead source tracking state ──────────────────────────────────────────
+  // Captured fresh every time the modal opens (client-side only). Kept in
+  // state rather than recomputed only at submit time so the "landing page"
+  // sessionStorage write happens as early as possible.
+  const [tracking, setTracking] = useState<TrackingData | null>(null)
 
   function loadCaptcha() {
     setCaptchaLoading(true)
@@ -58,9 +89,14 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
       setCaptchaAnswer('')
       setHoneypot('')
       loadCaptcha()
+      // ── NEW: capture lead source tracking data for this open/session ──
+      // postTitle becomes the blog title override; the slug is parsed out
+      // of postUrl when available. Both fall back to auto-detection from
+      // the current URL/document.title if not provided.
+      setTracking(getTrackingData(postTitle, extractSlugFromPostUrl(postUrl)))
       setTimeout(() => firstInputRef.current?.focus(), 80)
     }
-  }, [isOpen])
+  }, [isOpen, postTitle, postUrl])
 
   // Close on Escape key
   useEffect(() => {
@@ -82,6 +118,11 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
     if (!name.trim() || !email.trim() || !message.trim() || !captchaAnswer.trim()) return
     setStage('sending')
     try {
+      // ── NEW: re-capture at submit time so `currentPage`/`submittedAt`
+      // reflect the exact moment of submission, while `landingPage`/
+      // `referrer` stay pinned to the values already stored this session.
+      const submissionTracking = getTrackingData(postTitle, extractSlugFromPostUrl(postUrl))
+
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,6 +135,8 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
           captcha: captchaAnswer,
           captchaToken,
           honeypot,
+          // ── Lead source tracking fields appended to the payload ──
+          tracking: submissionTracking,
         }),
       })
       if (!res.ok) {
