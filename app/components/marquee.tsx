@@ -1,8 +1,26 @@
 'use client';
 
-import Image from "next/image";
+export type Partner = {
+  name: string;
+  logo: string;
+};
 
-const partners = [
+export type Stat = {
+  value: string;
+  label: string;
+};
+
+type PartnerMarqueeProps = {
+  partners?: Partner[];
+  /**
+   * Pass real, verifiable numbers only. This section renders as a trust
+   * signal — an invented stat is worse than no stat at all. Omit this
+   * prop entirely to hide the stat row until you have numbers to show.
+   */
+  stats?: Stat[];
+};
+
+const defaultPartners: Partner[] = [
   { name: "Partner 1", logo: "/partners/partner1.png" },
   { name: "Partner 2", logo: "/partners/partner2.png" },
   { name: "Partner 3", logo: "/partners/partner3.png" },
@@ -13,7 +31,13 @@ const partners = [
   { name: "Partner 8", logo: "/partners/partner8.png" },
 ];
 
-const PartnerMarquee = () => {
+const PartnerMarquee = ({
+  partners = defaultPartners,
+  stats,
+}: PartnerMarqueeProps) => {
+  const looped = [...partners, ...partners];
+  const half = partners.length;
+
   return (
     <>
       <style jsx>{`
@@ -24,7 +48,6 @@ const PartnerMarquee = () => {
           border-top: 0.5px solid rgba(0, 0, 0, 0.06);
         }
 
-        /* Header */
         .pm-header {
           text-align: center;
           padding: 48px 24px 36px;
@@ -94,6 +117,7 @@ const PartnerMarquee = () => {
           border-top: 1px solid rgba(249, 115, 22, 0.15);
           border-bottom: 1px solid rgba(249, 115, 22, 0.15);
           background: #fff;
+          padding: 22px 0;
         }
 
         .pm-strip::before,
@@ -114,12 +138,20 @@ const PartnerMarquee = () => {
           background: linear-gradient(270deg, #fff 0%, transparent 100%);
         }
 
-        .pm-marquee {
+        .pm-track-wrap {
+          overflow: hidden;
+          width: 100%;
+        }
+
+        .pm-track {
           display: flex;
           align-items: center;
           width: max-content;
-          animation: pmScroll 28s linear infinite;
-          padding: 20px 0;
+          animation: pmScroll 32s linear infinite;
+        }
+
+        .pm-strip:hover .pm-track {
+          animation-play-state: paused;
         }
 
         @keyframes pmScroll {
@@ -127,37 +159,95 @@ const PartnerMarquee = () => {
           100% { transform: translateX(-50%); }
         }
 
-        .pm-item {
+        .pm-chip {
           position: relative;
           flex-shrink: 0;
-          width: 130px;
-          height: 52px;
-          margin: 0 2rem;
+          width: 128px;
+          height: 60px;
+          margin: 0 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 14px;
+          border: 1px solid rgba(0, 0, 0, 0.07);
+          background: #fff;
+          transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
         }
 
-        .pm-item img {
-          opacity: 0.55;
-          transition: opacity 0.3s ease;
+        .pm-chip:hover {
+          border-color: rgba(249, 115, 22, 0.3);
+          box-shadow: 0 8px 24px rgba(249, 115, 22, 0.08);
+          transform: translateY(-2px);
+        }
+
+        .pm-chip img {
+          max-width: 72%;
+          max-height: 46%;
           object-fit: contain;
+          filter: grayscale(1);
+          opacity: 0.55;
+          transition: filter 0.3s ease, opacity 0.3s ease;
         }
-        .pm-item:hover img { opacity: 1; }
 
-        .pm-item + .pm-item::before {
+        .pm-chip:hover img {
+          filter: grayscale(0);
+          opacity: 1;
+        }
+
+        /* Stat strip */
+        .pm-stats {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          padding: 32px 24px 44px;
+          max-width: 900px;
+          margin: 0 auto;
+        }
+
+        .pm-stat {
+          flex: 1;
+          min-width: 130px;
+          text-align: center;
+          padding: 0 20px;
+          position: relative;
+        }
+
+        .pm-stat + .pm-stat::before {
           content: '';
           position: absolute;
-          left: -2rem;
-          top: 20%; height: 60%;
+          left: 0;
+          top: 10%;
+          height: 80%;
           width: 1px;
-          background: rgba(0, 0, 0, 0.07);
+          background: rgba(0, 0, 0, 0.08);
+        }
+
+        .pm-stat__value {
+          font-size: 1.6rem;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          color: #0f172a;
+        }
+
+        .pm-stat__label {
+          font-size: 0.72rem;
+          font-weight: 500;
+          letter-spacing: 0.03em;
+          color: #64748b;
+          margin-top: 4px;
+        }
+
+        @media (max-width: 640px) {
+          .pm-stat + .pm-stat::before { display: none; }
+          .pm-stat { min-width: 46%; margin-bottom: 18px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .pm-marquee { animation: none; }
+          .pm-track { animation: none; }
         }
       `}</style>
 
       <section className="pm-section">
-
         <div className="pm-header">
           <div className="pm-eyebrow">
             <span className="pm-eyebrow__dot" />
@@ -170,21 +260,32 @@ const PartnerMarquee = () => {
         </div>
 
         <div className="pm-strip">
-          <div className="pm-marquee">
-            {[...partners, ...partners].map((partner, index) => (
-              <div key={index} className="pm-item">
-                <Image
-                  src={partner.logo}
-                  alt={partner.name}
-                  fill
-                  sizes="130px"
-                  className="object-contain"
-                />
-              </div>
-            ))}
+          <div className="pm-track-wrap">
+            <div className="pm-track">
+              {looped.map((partner, index) => (
+                <div
+                  key={`${partner.name}-${index}`}
+                  className="pm-chip"
+                  aria-hidden={index >= half ? true : undefined}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={partner.logo} alt={partner.name} loading="lazy" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
+        {stats && stats.length > 0 && (
+          <div className="pm-stats" aria-label="Company highlights">
+            {stats.map((stat) => (
+              <div className="pm-stat" key={stat.label}>
+                <div className="pm-stat__value">{stat.value}</div>
+                <div className="pm-stat__label">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
