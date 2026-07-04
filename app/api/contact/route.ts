@@ -57,7 +57,13 @@ async function getGeoFromIp(ip: string) {
   return { city: "Unknown", region: "Unknown", country: "Unknown" };
 }
 
-// ─── Device / Browser parsing ─────────────────────────────────────────────
+// ─── Device / Browser parsing (server-side, from request headers) ────────
+// NOTE: this is separate from the client-captured `tracking.browser` /
+// `tracking.operatingSystem` / `tracking.deviceType` fields below. Both are
+// kept — this one is authoritative (parsed server-side from the real
+// request header, can't be spoofed by client JS), the client-side one adds
+// screen resolution, language, timezone, UTM/referrer, and page context
+// that the server has no way to know. Nothing here changes.
 function getDeviceInfo(req: NextRequest) {
   const uaString = req.headers.get("user-agent") || "";
   const parser = new UAParser(uaString);
@@ -87,9 +93,93 @@ function getDeviceInfo(req: NextRequest) {
   };
 }
 
+// ── NEW: shape of the client-captured tracking object ────────────────────
+// Sent by both components/ContactForm.tsx and components/ContactPopup.tsx
+// via lib/leadTracking.ts's getTrackingData().
+interface TrackingPayload {
+  landingPage: string;
+  currentPage: string;
+  pageTitle: string;
+  blogTitle: string;
+  blogSlug: string;
+  referrer: string;
+  utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
+  utmContent: string;
+  utmTerm: string;
+  browser: string;
+  operatingSystem: string;
+  deviceType: string;
+  screenResolution: string;
+  userLanguage: string;
+  userTimeZone: string;
+  submittedAt: string;
+}
+
+// ── NEW: renders the "Lead Source Information" HTML block for the email.
+// Falls back to "—" for any field that wasn't captured (e.g. blog fields
+// on non-blog pages, or if the client failed to send tracking at all).
+function formatTrackingSectionHtml(tracking?: TrackingPayload): string {
+  if (!tracking) return "";
+
+  const row = (label: string, value?: string) => `
+          <tr>
+            <td style="padding:4px 12px 4px 0;color:#6b7280;font-size:12px;white-space:nowrap;vertical-align:top;"><strong>${label}</strong></td>
+            <td style="padding:4px 0;color:#111827;font-size:12px;word-break:break-all;">${value || "—"}</td>
+          </tr>`;
+
+  return `
+        <hr style="margin:20px 0;" />
+        <h3 style="color:#333;font-size:14px;margin:0 0 10px;">Lead Source Information</h3>
+        <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;">
+          ${row("Landing Page", tracking.landingPage)}
+          ${row("Current Page", tracking.currentPage)}
+          ${row("Page Title", tracking.pageTitle)}
+          ${row("Blog Title", tracking.blogTitle)}
+          ${row("Blog Slug", tracking.blogSlug)}
+          ${row("Referrer", tracking.referrer)}
+          ${row("UTM Source", tracking.utmSource)}
+          ${row("UTM Medium", tracking.utmMedium)}
+          ${row("UTM Campaign", tracking.utmCampaign)}
+          ${row("UTM Content", tracking.utmContent)}
+          ${row("UTM Term", tracking.utmTerm)}
+          ${row("Browser", tracking.browser)}
+          ${row("Operating System", tracking.operatingSystem)}
+          ${row("Device", tracking.deviceType)}
+          ${row("Screen Resolution", tracking.screenResolution)}
+          ${row("Language", tracking.userLanguage)}
+          ${row("Time Zone", tracking.userTimeZone)}
+          ${row("Submitted At", tracking.submittedAt)}
+        </table>`;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, message, captcha, captchaToken, honeypot } = await req.json();
+    // ── NEW: destructure `tracking` (and postTitle/postUrl, sent by
+    // ContactPopup.tsx) alongside all existing fields. All optional —
+    // missing tracking data never blocks submission.
+    const {
+      name,
+      email,
+      message,
+      captcha,
+      captchaToken,
+      honeypot,
+      tracking,
+      postTitle,
+      postUrl,
+    }: {
+      name: string;
+      email: string;
+      message: string;
+      captcha: string;
+      captchaToken: string;
+      honeypot: string;
+      tracking?: TrackingPayload;
+      postTitle?: string;
+      postUrl?: string;
+    } = await req.json();
 
     if (!name || !email || !message) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
@@ -122,6 +212,41 @@ export async function POST(req: NextRequest) {
 
     await transporter.verify();
 
+    // ── NEW: build the Lead Source Information block. If postTitle/postUrl
+    // arrived from ContactPopup.tsx but the client-side `tracking` object
+    // somehow didn't (e.g. blocked storage), fall back to using those two
+    // fields directly so blog context still shows up in the email.
+    const trackingWithFallback: TrackingPayload | undefined = tracking
+      ? {
+          ...tracking,
+          blogTitle: tracking.blogTitle || postTitle || "",
+          blogSlug: tracking.blogSlug || "",
+        }
+      : postTitle || postUrl
+      ? ({
+          landingPage: "",
+          currentPage: postUrl || "",
+          pageTitle: "",
+          blogTitle: postTitle || "",
+          blogSlug: "",
+          referrer: "",
+          utmSource: "",
+          utmMedium: "",
+          utmCampaign: "",
+          utmContent: "",
+          utmTerm: "",
+          browser: "",
+          operatingSystem: "",
+          deviceType: "",
+          screenResolution: "",
+          userLanguage: "",
+          userTimeZone: "",
+          submittedAt: new Date().toISOString(),
+        } as TrackingPayload)
+      : undefined;
+
+    const leadSourceHtml = formatTrackingSectionHtml(trackingWithFallback);
+
     await transporter.sendMail({
       from: `"${name}" <${process.env.EMAIL_USER}>`,
       to: process.env.EMAIL_USER,
@@ -144,7 +269,8 @@ export async function POST(req: NextRequest) {
             <strong>OS:</strong> ${device.os}<br/>
             <strong>Browser:</strong> ${device.browser}
           </p>
-          <p style="font-size:12px;color:gray;">Sent from 99Visual Contact Form</p>
+          ${leadSourceHtml}
+          <p style="font-size:12px;color:gray;margin-top:20px;">Sent from 99Visual Contact Form</p>
         </div>
       `,
     });
