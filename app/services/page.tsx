@@ -103,9 +103,15 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
+// ✅ FIX — DATE_MODIFIED is now hardcoded, NOT `new Date()`.
+// The previous version stamped this page as "modified today" on every single
+// build/deploy, even when nothing on the page changed. This is a false
+// freshness signal to Google and contradicts the real dateModified used on
+// sibling pages like /services/visualization. Update this string manually
+// only when the page's actual content changes.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
