@@ -21,7 +21,6 @@ const industries = [
     title: "Healthcare & Medical",
     tags: ["HIPAA-Ready", "Telehealth", "Patient Portals", "EHR Integration"],
     desc: "Secure, compliant platforms — from telehealth portals to EHR-integrated systems — built to protect patient trust at every touchpoint, without slowing clinicians down.",
-    featured: true,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 22, height: 22 }}>
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -114,12 +113,9 @@ function IndustryCard({ item }: { item: (typeof industries)[0] }) {
     <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={item.featured ? "bento-featured" : undefined}
       style={{
         position: "relative",
-        background: item.featured
-          ? "linear-gradient(135deg, #fff7ed 0%, #ffffff 55%)"
-          : "#fff",
+        background: "#fff",
         border: `1px solid ${hovered ? "rgba(249,115,22,0.3)" : "rgba(0,0,0,0.07)"}`,
         borderRadius: 16,
         padding: "1.5rem 1.6rem",
@@ -141,23 +137,9 @@ function IndustryCard({ item }: { item: (typeof industries)[0] }) {
         {item.index}
       </span>
 
-      {item.featured && (
-        <span aria-hidden="true" style={{
-          position: "absolute", top: 12, left: 16,
-          fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.1em",
-          textTransform: "uppercase", color: "#f97316",
-          background: "rgba(249,115,22,0.1)",
-          border: "1px solid rgba(249,115,22,0.25)",
-          borderRadius: 100, padding: "3px 9px",
-        }}>
-          Featured
-        </span>
-      )}
-
       <div style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center",
         width: 42, height: 42, borderRadius: 10, flexShrink: 0,
-        marginTop: item.featured ? "1.6rem" : 0,
         background: hovered ? "rgba(249,115,22,0.1)" : "rgba(249,115,22,0.07)",
         border: `1px solid ${hovered ? "rgba(249,115,22,0.28)" : "rgba(249,115,22,0.15)"}`,
         color: "#f97316",
@@ -166,9 +148,9 @@ function IndustryCard({ item }: { item: (typeof industries)[0] }) {
         {item.icon}
       </div>
 
-      <div style={{ flex: 1, minWidth: 0, marginTop: item.featured ? "1.6rem" : 0 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <h3 style={{
-          fontSize: item.featured ? "1.05rem" : "0.97rem", fontWeight: 700, color: "#0f172a",
+          fontSize: "0.97rem", fontWeight: 700, color: "#0f172a",
           margin: "0 0 0.3rem", letterSpacing: "-0.01em",
           lineHeight: 1.25, paddingRight: "2rem",
         }}>
@@ -177,7 +159,6 @@ function IndustryCard({ item }: { item: (typeof industries)[0] }) {
         <p style={{
           fontSize: "0.82rem", fontWeight: 400, lineHeight: 1.75,
           color: "#64748b", margin: "0 0 0.9rem",
-          maxWidth: item.featured ? "560px" : "none",
         }}>
           {item.desc}
         </p>
@@ -324,12 +305,13 @@ export default function IndustriesSection() {
         }
         .industries-grid-wrap {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+          grid-template-columns: 1fr;
           gap: 16px;
-          align-items: stretch;
         }
-        .bento-featured {
-          grid-column: span 1;
+        @media (min-width: 640px) {
+          .industries-grid-wrap {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
         @media (min-width: 1024px) {
           .industries-layout {
@@ -339,9 +321,7 @@ export default function IndustriesSection() {
           .industries-grid-wrap {
             flex: 1;
             grid-template-columns: repeat(2, 1fr);
-          }
-          .bento-featured {
-            grid-column: span 2;
+            grid-auto-rows: 1fr;
           }
           .industries-banner {
             width: 300px;
@@ -397,7 +377,7 @@ export default function IndustriesSection() {
         <div className="industries-layout" role="list" aria-label="Industries served by 99 Visual Solutions">
           <div className="industries-grid-wrap">
             {industries.map((item) => (
-              <div key={item.index} role="listitem" className={item.featured ? "bento-featured" : undefined}>
+              <div key={item.index} role="listitem">
                 <IndustryCard item={item} />
               </div>
             ))}
