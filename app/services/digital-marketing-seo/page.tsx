@@ -3,17 +3,19 @@
 // Digital Marketing & SEO — 99 Visual Solutions
 //
 // PRODUCTION-READY INDEXING FIXES (final):
-//   ✅ FIX 1 — CANONICAL: Absolute URL (not relative) — Google recommends
-//      absolute canonicals. metadataBase is ignored when canonical is already
-//      absolute, so no doubling. Safest across all environments.
-//   ✅ FIX 2 — BASE_SAFE: trailing-slash guard on BASE to prevent double-slash
-//      in OG, Twitter, JSON-LD schema URLs.
-//   ✅ FIX 3 — robots: explicit index/follow at route level to prevent any
-//      parent layout noindex from bleeding through.
-//   ✅ FIX 4 — DATE_MODIFIED: hardcoded, not tied to build time. Prevents
-//      false freshness signals to Google on every deployment.
-//   ✅ FIX 5 — metadataBase: set once in root layout ideally, but included
-//      here as a safe fallback.
+//   ✅ FIX 1 — CANONICAL: Absolute URL (not relative).
+//   ✅ FIX 2 — BASE_SAFE: trailing-slash guard.
+//   ✅ FIX 3 — robots: explicit index/follow at route level.
+//   ✅ FIX 4 — DATE_MODIFIED: hardcoded, not tied to build time.
+//   ✅ FIX 5 — metadataBase included as safe fallback.
+//   ✅ NEW FIX 6 — SCHEMA/CONTENT MISMATCH: dmFaqNode declared 4 FAQPage
+//      questions in JSON-LD (including "What is MindTrick.io?") that were
+//      never rendered anywhere visible on the page. FAQ copy is now pulled
+//      from a single shared `dmFaqs` array used by BOTH the schema and a
+//      new, real, visible <FaqSection />, so structured data and on-page
+//      content can never drift out of sync — this page already had strong
+//      content depth (12 detailed service sections), so this was the only
+//      indexing-relevant gap found.
 //   ✅ All structural fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
 //      40+ word FAQ answers, dm- CSS prefix, sr-only breadcrumb.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -46,39 +48,26 @@ import {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ✅ FIX 2 — Trailing-slash guard.
-// Ensures BASE never produces double-slash URLs regardless of how the constant
-// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
 // ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE = BASE.replace(/\/$/, "");
 
-// Canonical for this page — used in metadata AND JSON-LD.
-// Absolute URL is Google's recommended form; no risk of environment misresolution.
 const PAGE_CANONICAL = `${BASE_SAFE}/services/digital-marketing-seo`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // 57 chars — within sweet spot
   title: "Digital Marketing & SEO Services | SEO, PPC — 99 Visual",
 
   description:
     "99 Visual Solutions delivers full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content marketing, email automation, local SEO, link building, and promotional video — built for ROI.",
 
-  // metadataBase ensures any *other* relative metadata fields resolve correctly.
-  // When canonical is already absolute (below), metadataBase is ignored for it.
   metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX 1 — ABSOLUTE canonical URL.
-    // Google explicitly recommends absolute URLs for canonicals.
-    // Since this is already absolute, Next.js will NOT prepend metadataBase.
-    // No doubling. No environment misresolution.
     canonical: PAGE_CANONICAL,
   },
 
-  // ✅ FIX 3 — Explicit robots at route level.
-  // Prevents any parent layout.tsx "noindex" from overriding this page.
   robots: {
     index:  true,
     follow: true,
@@ -135,10 +124,6 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
-// ✅ FIX 4 — DATE_MODIFIED is hardcoded, NOT `new Date()`.
-// Using new Date() sets dateModified to every build date even when content
-// hasn't changed — Google treats this as a false freshness signal.
-// Update DATE_MODIFIED manually whenever content is actually edited.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
@@ -180,29 +165,36 @@ const dmServiceNode = {
   },
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ✅ FIX 6 — FAQ copy extracted to a shared array. Used by BOTH the schema
+// (via faqSchema(dmFaqs) below) and the visible <FaqSection /> further down,
+// so the two can never drift out of sync.
+// ─────────────────────────────────────────────────────────────────────────────
+const dmFaqs = [
+  {
+    question: "What digital marketing services does 99 Visual Solutions offer?",
+    answer:
+      `We offer SEO (on-page, off-page, technical, local), PPC advertising on Google Ads, Meta Ads on Facebook and Instagram, social media marketing, content marketing, email marketing and automation, link building, on-page optimisation, creative banner design, and promotional video production. Contact us at ${CONTACT_EMAIL} for a free digital marketing consultation tailored to your business goals.`,
+  },
+  {
+    question: "Do you manage Google Ads and Meta Ads campaigns?",
+    answer:
+      "Yes, we manage end-to-end PPC campaigns on Google Ads as well as paid social campaigns on Facebook, Instagram, and LinkedIn, including strategy, creative design, audience targeting, and continuous optimisation. Our paid media specialists focus on maximising return on ad spend (ROAS) and reducing cost per lead through data-driven campaign management and regular performance reporting.",
+  },
+  {
+    question: "What is MindTrick.io?",
+    answer:
+      "MindTrick.io is our dedicated digital marketing hub focused on delivering result-oriented, data-driven marketing solutions — from performance marketing and SEO to brand storytelling and content strategy. It brings together our full digital marketing expertise under one platform, helping businesses build strong online visibility, generate quality leads, and achieve sustainable growth in competitive digital markets.",
+  },
+  {
+    question: "How do you measure digital marketing performance?",
+    answer:
+      "We track key metrics including organic traffic growth, keyword ranking improvements, conversion rates, cost per lead, return on ad spend (ROAS), and social engagement rates. We provide regular performance reports using Google Analytics 4, Google Search Console, and campaign dashboards. Our data-driven approach ensures every strategy is continuously optimised based on measurable outcomes and client business goals.",
+  },
+];
+
 const dmFaqNode = {
-  ...faqSchema([
-    {
-      question: "What digital marketing services does 99 Visual Solutions offer?",
-      answer:
-        `We offer SEO (on-page, off-page, technical, local), PPC advertising on Google Ads, Meta Ads on Facebook and Instagram, social media marketing, content marketing, email marketing and automation, link building, on-page optimisation, creative banner design, and promotional video production. Contact us at ${CONTACT_EMAIL} for a free digital marketing consultation tailored to your business goals.`,
-    },
-    {
-      question: "Do you manage Google Ads and Meta Ads campaigns?",
-      answer:
-        "Yes, we manage end-to-end PPC campaigns on Google Ads as well as paid social campaigns on Facebook, Instagram, and LinkedIn, including strategy, creative design, audience targeting, and continuous optimisation. Our paid media specialists focus on maximising return on ad spend (ROAS) and reducing cost per lead through data-driven campaign management and regular performance reporting.",
-    },
-    {
-      question: "What is MindTrick.io?",
-      answer:
-        "MindTrick.io is our dedicated digital marketing hub focused on delivering result-oriented, data-driven marketing solutions — from performance marketing and SEO to brand storytelling and content strategy. It brings together our full digital marketing expertise under one platform, helping businesses build strong online visibility, generate quality leads, and achieve sustainable growth in competitive digital markets.",
-    },
-    {
-      question: "How do you measure digital marketing performance?",
-      answer:
-        "We track key metrics including organic traffic growth, keyword ranking improvements, conversion rates, cost per lead, return on ad spend (ROAS), and social engagement rates. We provide regular performance reports using Google Analytics 4, Google Search Console, and campaign dashboards. Our data-driven approach ensures every strategy is continuously optimised based on measurable outcomes and client business goals.",
-    },
-  ]),
+  ...faqSchema(dmFaqs),
   "@id":            `${PAGE_CANONICAL}#faq`,
   mainEntityOfPage: { "@id": `${PAGE_CANONICAL}#webpage` },
 };
@@ -267,6 +259,36 @@ const services = [
   { id:"creative",title:"Creative Banner & Promotional Video",image:"/images/creative-banner.png",imageAlt:"Creative Banner & Promotional Video illustration",description:"Capture attention and make a lasting impression with visually compelling banners and engaging promotional videos. We design high-impact creatives that communicate your brand message effectively across all digital platforms and advertising channels.",highlight:"From eye-catching display ads to dynamic video content, our creative solutions are crafted to boost engagement, enhance brand recall, and drive measurable conversions across digital platforms.",bullets:["Custom banner designs for ads, websites & social media","Promotional videos, motion graphics & brand storytelling","Platform-optimised creatives for maximum engagement & ROI"],imageLeft:false },
   { id:"mindtrick",title:"MindTrick.io – Our Dedicated Digital Marketing Hub",image:"/images/mindtrick-marketing.png",imageAlt:"MindTrick.io — dedicated digital marketing hub by 99 Visual Solutions",description:"At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power your digital growth. As our dedicated digital marketing hub, MindTrick.io delivers result-oriented solutions that help businesses build strong online visibility and achieve sustainable success.",highlight:"From performance marketing to brand storytelling, we combine cutting-edge tools with expert insights to craft campaigns that truly make a measurable impact on your business's digital presence and revenue.",bullets:["End-to-end digital marketing solutions under one platform","Data-driven campaigns focused on growth & ROI","Expert strategies, creative execution & continuous optimisation"],imageLeft:true },
 ];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ✅ NEW — FAQ SECTION
+// Renders the exact same questions/answers declared in dmFaqNode's JSON-LD
+// (sourced from the shared dmFaqs array above), so structured data matches
+// visible content per Google's FAQPage guidelines.
+// ─────────────────────────────────────────────────────────────────────────────
+function FaqSection() {
+  return (
+    <section className="dm-faq" aria-labelledby="dm-faq-heading" id="dm-faq">
+      <div className="dm-faq__inner">
+        <div className="dm-faq__head">
+          <span className="dm-faq__label">FAQ</span>
+          <h2 className="dm-faq__h2" id="dm-faq-heading">
+            Common <em>questions</em>
+          </h2>
+          <div className="dm-faq__rule" aria-hidden="true" />
+        </div>
+        <div className="dm-faq__list">
+          {dmFaqs.map((f) => (
+            <div className="dm-faq-item" key={f.question}>
+              <h3 className="dm-faq-item__q">{f.question}</h3>
+              <p className="dm-faq-item__a">{f.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -352,6 +374,20 @@ export default function DigitalMarketing() {
         .dm-benefit-card__icon{width:44px;height:44px;border-radius:10px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;color:#f97316;font-size:1.1rem;margin-bottom:1.2rem;}
         .dm-benefit-card__title{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.5rem;}
         .dm-benefit-card__desc{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:rgba(255,255,255,0.45);}
+
+        /* ══ FAQ ═════════════════════════════════════════════════════════ */
+        .dm-faq{background:#080808;border-top:1px solid rgba(255,255,255,0.07);padding:6rem 1.5rem;}
+        .dm-faq__inner{max-width:820px;margin:0 auto;}
+        .dm-faq__head{text-align:center;margin-bottom:3rem;}
+        .dm-faq__label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:1rem;display:block;}
+        .dm-faq__h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.15;color:#fff;margin:0 0 1rem;}
+        .dm-faq__h2 em{font-style:italic;color:#f97316;}
+        .dm-faq__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto;}
+        .dm-faq__list{display:flex;flex-direction:column;gap:1.25rem;}
+        .dm-faq-item{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.6rem 1.8rem;}
+        .dm-faq-item__q{font-family:'DM Sans',sans-serif;font-size:.98rem;font-weight:600;color:#fff;margin:0 0 .7rem;}
+        .dm-faq-item__a{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,0.45);margin:0;}
+
         .dm-cta{background:#080808;border-top:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
         .dm-cta__orb{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,#f97316,transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(60px);pointer-events:none;}
         .dm-cta__inner{position:relative;z-index:10;max-width:560px;margin:0 auto;}
@@ -500,6 +536,9 @@ export default function DigitalMarketing() {
           </div>
         </div>
       </section>
+
+      {/* ══ FAQ ═══════════════════════════════════════════════════════════ */}
+      <FaqSection />
 
       {/* ══ CTA STRIP ═════════════════════════════════════════════════════ */}
       <section className="dm-cta" aria-labelledby="dm-cta-heading">
