@@ -2,25 +2,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 3D Visualization & Architectural Rendering — 99 Visual Solutions
 //
-// PRODUCTION-READY INDEXING FIXES (final):
-//   ✅ FIX 1 — CANONICAL: Absolute URL via PAGE_CANONICAL constant.
-//   ✅ FIX 2 — BASE_SAFE: trailing-slash guard.
-//   ✅ FIX 3 — robots: explicit index/follow at route level.
-//   ✅ FIX 4 — DATE_MODIFIED: hardcoded, not tied to build time.
-//   ✅ FIX 5 — Breadcrumb JSON-LD items use absolute URLs.
-//   ✅ FIX 6 — PAGE_CANONICAL single source of truth reused everywhere.
-//   ✅ NEW FIX 7 — THIN CONTENT: this page previously rendered almost no
-//      unique on-page content (just a hero + shared components also used on
-//      other pages). Added a real intro section and a full offerings detail
-//      section (mirroring the depth of app/services/it-consulting/page.tsx),
-//      so the page has substantial unique text for Google to index.
-//   ✅ NEW FIX 8 — SCHEMA/CONTENT MISMATCH: vizFaqNode declared 4 FAQPage
-//      questions in JSON-LD that were never actually rendered anywhere on
-//      the page. Google's guidelines require structured data to reflect
-//      visible content — invisible FAQ schema can get the rich result
-//      ignored and reads as thin/mismatched content. The same 4 Q&As are
-//      now rendered as a real, visible FAQ section using the exact same
-//      copy as the schema, so schema and visible content match exactly.
+// CONTENT REWRITE (this revision):
+//   This page is written as a fully standalone service page. It does not
+//   reference, cross-sell, or blend copy with any other 99 Visual Solutions
+//   service line (web development, SEO, digital marketing, CAD/GIS as a
+//   separate offering, QA, IT consulting, etc). CAD drafting, BIM, and LiDAR
+//   appear ONLY as sub-disciplines inside the visualization workflow itself
+//   (i.e. how a render gets built), not as separate businesses.
+//
+//   New sections added beyond the previous revision:
+//     - WhoSection      → who this service is actually built for
+//     - ProcessSection  → the real production workflow, stage by stage
+//     - BenefitsSection → business outcomes / ROI framed in operational terms
+//     - Expanded OfferingsSection copy (problem → solution → outcome)
+//     - Expanded FaqSection (7 questions, EEAT signals: process, revisions,
+//       file formats, software, ownership, turnaround, accuracy standards)
+//
+//   All previous SEO/indexing fixes (canonical, robots, breadcrumb schema,
+//   dateModified, FAQ schema/content parity) are preserved unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -32,7 +31,6 @@ import ContactCTA     from "@/app/components/Contactcta";
 import ScrollDown     from "@/app/components/scrolldown";
 import Chatbot        from "@/app/components/chatbot";
 import Whatsappbutton from "@/app/components/wahtsappbutton";
-
 
 import {
   BASE,
@@ -46,12 +44,7 @@ import {
   serviceSchema,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX 2 — Trailing-slash guard.
-// ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE = BASE.replace(/\/$/, "");
-
-// ✅ FIX 1 & 6 — Single absolute canonical used everywhere.
 const PAGE_CANONICAL = `${BASE_SAFE}/services/visualization`;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -61,7 +54,7 @@ export const metadata: Metadata = {
   title: "3D Visualization & Architectural Rendering | 99 Visual",
 
   description:
-    "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions. Helping architects, developers & designers make confident decisions with stunning visuals.",
+    "Photorealistic architectural rendering, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR point cloud processing for architects, developers, and product designers. In-house team, transparent revision cycles, fixed turnaround.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -87,7 +80,7 @@ export const metadata: Metadata = {
     siteName:    "99 Visual Solutions",
     locale:      "en_US",
     title:       "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
-    description: "From photorealistic architectural renders and 3D walkthroughs to precision CAD modeling and product visualization — 99 Visual Solutions turns your concepts into stunning visual realities.",
+    description: "Photorealistic architectural renders, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR processing — built in-house, delivered on a fixed production timeline.",
     images: [
       {
         url:    `${BASE_SAFE}/images/services/visualization-og.jpg`,
@@ -130,9 +123,8 @@ const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — all URLs use BASE_SAFE + PAGE_CANONICAL for consistency.
+// SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
-
 const vizBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",             url: `${BASE_SAFE}/` },
   { name: "Services",         url: `${BASE_SAFE}/services` },
@@ -163,29 +155,43 @@ const vizServiceNode = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX 8 — This exact copy is now also rendered visibly in <FaqSection />
-// below, so the FAQPage schema matches real, visible page content.
+// FAQ — exact copy rendered visibly in <FaqSection /> below, matching schema.
 // ─────────────────────────────────────────────────────────────────────────────
 const vizFaqs = [
   {
     question: "What types of 3D visualization services do you offer?",
     answer:
-      `We offer photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization, CAD drafting, BIM modeling, and LiDAR data processing. Our team works with architects, real estate developers, product designers, and urban planners worldwide. Contact us at ${CONTACT_EMAIL} for a free consultation and project quote tailored to your specific requirements.`,
+      `We produce photorealistic exterior and interior architectural renders, 3D walkthrough animations, product visualization for manufacturing and marketing, CAD drafting, BIM modeling, and LiDAR point cloud processing. Our team works directly with architects, real estate developers, product designers, and urban planners. Email ${CONTACT_EMAIL} with your project brief and we'll respond with scope, timeline, and pricing within one business day.`,
   },
   {
-    question: "How long does a typical 3D rendering project take?",
+    question: "How long does a typical rendering or animation project take?",
     answer:
-      "Turnaround depends on project complexity and scope. Single still renders are usually delivered within 3–5 business days. Full walkthrough animations typically take 2–4 weeks depending on length, level of detail, and number of revision rounds. We provide a detailed project timeline in our proposal so you know exactly what to expect before work begins.",
+      "A single still render is generally delivered in 3–5 business days once modeling references are confirmed. A full interior-plus-exterior package usually takes 7–10 business days. Walkthrough animations run 2–4 weeks depending on runtime, camera complexity, and revision rounds. You receive a dated production schedule before any work begins, not an estimate after the fact.",
   },
   {
-    question: "Can you work from hand sketches or rough floor plans?",
+    question: "Can you produce accurate renders from hand sketches or incomplete plans?",
     answer:
-      `Yes, we work from architectural drawings, CAD files, PDF plans, hand sketches, or even reference photos to produce high-quality 3D renders. Our team handles all necessary modelling from your source materials. If you have detailed CAD files, they speed up the process — but they are not required. Email your materials to ${CONTACT_EMAIL} and we'll assess the scope and provide a quote.`,
+      `Yes. We routinely build from architectural drawing sets, DWG/DXF CAD files, PDF floor plans, hand sketches, or site reference photography. Detailed CAD files reduce modeling time and cost, but they aren't a requirement — our team can reconstruct geometry from partial documentation. Send materials to ${CONTACT_EMAIL} and we'll confirm exactly what's usable before quoting.`,
   },
   {
-    question: "Do you serve international clients?",
+    question: "Which software and rendering engines does your team use?",
     answer:
-      "Absolutely. We serve architects, real estate developers, and product designers across India, USA, UK, UAE, and Australia. Our remote-first workflow means geography is never a barrier — we collaborate via email, video calls, and cloud-based file sharing. All deliverables are provided in your preferred format and resolution, ready for presentations, marketing, or planning applications.",
+      "Modeling is done in 3ds Max, SketchUp, and Revit depending on the project's source files, with rendering handled through V-Ray and Corona for photoreal stills, and Unreal Engine for real-time walkthroughs and interactive fly-throughs. This lets us match render fidelity to the project's purpose — planning submission, marketing collateral, or interactive client presentation.",
+  },
+  {
+    question: "What file formats and resolutions do you deliver?",
+    answer:
+      "Stills are delivered as high-resolution JPEG or TIFF (print-ready up to A1/A0), with layered PSD files available on request for post-production flexibility. Animations are delivered as 4K MP4 (H.264) by default, with ProRes masters available for broadcast or cinema use. CAD and BIM deliverables come in DWG, DXF, RVT, or IFC as required by your workflow.",
+  },
+  {
+    question: "How many revision rounds are included, and who owns the final files?",
+    answer:
+      "Every project includes two structured revision rounds at defined checkpoints — after the initial camera-angle/composition approval, and after the first color-graded render pass — so feedback is captured before final output, not after. Once final payment is made, you own full rights to the delivered visuals and source scene files if included in your package.",
+  },
+  {
+    question: "Do you serve clients outside India?",
+    answer:
+      "Yes. We currently deliver projects to architecture and real estate clients across India, the USA, UK, UAE, and Australia, coordinating entirely through email, scheduled video reviews, and cloud file transfer. Time zone differences are handled with async review checkpoints so a project doesn't stall waiting on a live call.",
   },
 ];
 
@@ -200,7 +206,7 @@ const vizPageNode = {
   "@id":         `${PAGE_CANONICAL}#webpage`,
   url:           PAGE_CANONICAL,
   name:          "3D Visualization & Architectural Rendering | 99 Visual Solutions",
-  description:   "Expert 3D visualization, architectural rendering, CAD modeling, and walkthrough animations by 99 Visual Solutions. Serving architects, developers & designers worldwide.",
+  description:   "Photorealistic architectural rendering, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR processing for architects, developers & product designers worldwide.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -233,51 +239,146 @@ const vizGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ✅ NEW — OFFERINGS DATA
-// Mirrors the 7 items in hasOfferCatalog above, each with real descriptive
-// copy. This is what previously existed only as schema with nothing visible
-// backing it up.
+// OFFERINGS DATA — problem → what we do → outcome, per discipline
 // ─────────────────────────────────────────────────────────────────────────────
 const offerings = [
   {
     id:          "exterior-rendering",
     title:       "Architectural Exterior Rendering",
-    description: "Photorealistic exterior renders that showcase materials, lighting, landscaping, and context exactly as they'll appear once built — ideal for planning approvals, marketing, and investor presentations.",
+    description: "Buyers and planning committees can't approve what they can't picture. We build photorealistic exterior renders — correct material specification, accurate sun-path lighting for the site's actual latitude, and true-to-scale landscaping — so a facade reads exactly as it will once built, not as an artist's impression.",
   },
   {
     id:          "interior-rendering",
     title:       "Architectural Interior Rendering",
-    description: "Richly detailed interior visualizations that capture mood, materiality, and spatial flow, helping clients and stakeholders confidently sign off on design decisions before construction begins.",
+    description: "Interior finishes are the hardest sell before construction — clients hesitate on material and lighting decisions they can't visualize. Our interior renders resolve material palettes, fixture placement, and natural-versus-artificial light balance in advance, so sign-off happens before procurement, not after a costly on-site change order.",
   },
   {
     id:          "walkthrough-animation",
     title:       "3D Walkthrough Animation",
-    description: "Cinematic walkthrough animations that guide viewers through a space in motion, communicating scale, circulation, and atmosphere far more effectively than static images alone.",
+    description: "A floor plan tells a viewer where rooms are; it doesn't tell them how a space feels to move through. Walkthrough animation choreographs camera movement through circulation paths, entry sequences, and key sightlines, giving investors and pre-sale buyers a spatial understanding that static stills can't provide.",
   },
   {
     id:          "product-visualization",
     title:       "Product Visualization",
-    description: "High-fidelity 3D product renders for marketing, e-commerce, and packaging — accurately representing materials, finishes, and form ahead of physical prototyping or manufacturing.",
+    description: "Physical prototyping is expensive to iterate on. We render products at manufacturing-accurate scale and material finish — brushed metal, injection-molded plastic, glass, fabric — so marketing, e-commerce, and packaging teams can finalize visual direction before a single physical unit exists.",
   },
   {
     id:          "cad-drafting",
     title:       "CAD Drafting & Modeling",
-    description: "Precise 2D and 3D CAD drafting and modeling services, translating sketches, plans, or as-built surveys into accurate, construction-ready documentation.",
+    description: "Renders and construction documentation both fail without accurate underlying geometry. We produce precise 2D drafting and 3D modeling from site surveys, as-built measurements, or rough sketches, giving contractors and fabricators dimensionally reliable drawings to build from.",
   },
   {
     id:          "bim-modeling",
     title:       "BIM Modeling",
-    description: "Detailed Building Information Modeling that supports coordinated design, clash detection, and lifecycle management across architecture, structural, and MEP disciplines.",
+    description: "Design conflicts caught after construction starts cost far more than conflicts caught on screen. Our BIM modeling coordinates architectural, structural, and MEP elements in a shared model, surfacing clashes — a duct crossing a beam, a pipe run through a load-bearing wall — before they become change orders.",
   },
   {
     id:          "lidar-processing",
     title:       "LiDAR Data Processing",
-    description: "Conversion of raw LiDAR point cloud data into clean, usable 3D models and CAD drawings — accelerating renovation, as-built documentation, and site analysis projects.",
+    description: "Renovation and heritage projects often start with no reliable as-built documentation. We process raw LiDAR point cloud scans into clean, usable 3D models and CAD drawings, giving renovation teams accurate existing-condition data instead of decades-old drawings that no longer match the building.",
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HERO SECTION COMPONENT
+// WHO THIS SERVICE IS FOR
+// ─────────────────────────────────────────────────────────────────────────────
+const audiences = [
+  {
+    id:    "architects",
+    title: "Architecture & Design Studios",
+    desc:  "Need client-ready visuals for design review meetings and planning submissions before a design is locked, without pulling design staff off active project work to build renders internally.",
+  },
+  {
+    id:    "developers",
+    title: "Real Estate Developers",
+    desc:  "Need pre-construction marketing visuals — exterior hero shots, interior unit renders, walkthrough animation — to open pre-sales and secure early bookings before the first slab is poured.",
+  },
+  {
+    id:    "agents",
+    title: "Real Estate Marketing Teams",
+    desc:  "Need a consistent library of high-resolution stills and animation clips for brochures, listing pages, and social campaigns that match the finished product, not a stock-photo approximation.",
+  },
+  {
+    id:    "manufacturers",
+    title: "Product Designers & Manufacturers",
+    desc:  "Need accurate product renders for catalogs, e-commerce listings, and packaging design before tooling or physical prototypes are finalized, so marketing timelines don't wait on production timelines.",
+  },
+  {
+    id:    "contractors",
+    title: "Contractors & Renovation Firms",
+    desc:  "Need reliable as-built documentation — from CAD drafting or LiDAR scan processing — for buildings where original drawings are missing, outdated, or don't match current site conditions.",
+  },
+  {
+    id:    "planners",
+    title: "Urban Planners & Public Agencies",
+    desc:  "Need clear, community-facing visuals of proposed developments for public consultation and planning board presentations, where technical drawings alone don't communicate scale or impact.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PRODUCTION WORKFLOW
+// ─────────────────────────────────────────────────────────────────────────────
+const processSteps = [
+  {
+    step:  "01",
+    title: "Brief & Scope Confirmation",
+    desc:  "We review your drawings, references, and intended use case — planning submission, marketing, or internal review — and confirm camera angles, deliverable formats, and a dated production schedule before work starts.",
+  },
+  {
+    step:  "02",
+    title: "Reference Collation & Base Modeling",
+    desc:  "CAD files, drawing sets, site photography, or LiDAR scans are consolidated into an accurate 3D base model, resolving dimensional discrepancies before any texturing or lighting begins.",
+  },
+  {
+    step:  "03",
+    title: "Materials, Texturing & Lighting",
+    desc:  "Material specifications, finishes, and site-accurate lighting (sun-path for exteriors, fixture layout for interiors) are applied so the render reflects real construction specification rather than generic stock materials.",
+  },
+  {
+    step:  "04",
+    title: "First Review Checkpoint",
+    desc:  "A draft render or animatic is shared for composition and camera-angle sign-off. This is the first of two included revision rounds, catching structural feedback before final rendering time is spent.",
+  },
+  {
+    step:  "05",
+    title: "Final Render & Color Grade",
+    desc:  "Approved scenes go through final high-resolution rendering and post-production color grading, with the second revision round reserved for finishing notes rather than structural changes.",
+  },
+  {
+    step:  "06",
+    title: "Delivery & Handover",
+    desc:  "Final files are delivered in the agreed formats and resolutions, with source scene files and CAD/BIM data included where specified in scope.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BENEFITS / ROI
+// ─────────────────────────────────────────────────────────────────────────────
+const benefits = [
+  {
+    title: "Faster Pre-Sales Cycles",
+    desc:  "Developers open bookings against finished-quality visuals during construction instead of waiting for a show unit or completed structure, compressing the sales timeline by months.",
+  },
+  {
+    title: "Fewer Costly Change Orders",
+    desc:  "Material and lighting decisions get resolved on screen before procurement and construction, and BIM clash detection catches coordination conflicts before they reach the site.",
+  },
+  {
+    title: "Higher-Converting Marketing Assets",
+    desc:  "Photoreal stills and walkthrough animation outperform floor plans and mood boards in listing engagement, giving marketing teams assets that hold up across print, web, and social formats.",
+  },
+  {
+    title: "Faster Planning Approvals",
+    desc:  "Clear, accurate exterior visualization gives planning committees and public consultations a realistic basis for review, reducing back-and-forth caused by ambiguous technical drawings.",
+  },
+  {
+    title: "Reliable As-Built Data",
+    desc:  "LiDAR-processed point clouds and CAD drafting give renovation and heritage teams dimensionally accurate existing-condition data, removing guesswork from scope estimation.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HERO SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
@@ -325,28 +426,28 @@ function HeroSection() {
       <div className="viz-hero__content">
         <p className="viz-hero__eyebrow" aria-hidden="true">
           <span className="viz-hero__dot" />
-          Services · Visualization
+          Architectural Rendering & 3D Visualization
         </p>
 
         <h1 className="viz-hero__h1" id="viz-hero-heading">
-          Transforming concepts<br />
-          into visuals that <em>inspire</em>
+          See it before<br />
+          it's <em>built</em>
         </h1>
 
         <div className="viz-hero__rule" aria-hidden="true" />
 
         <p className="viz-hero__sub">
-          From photorealistic architectural renders and immersive 3D walkthroughs
-          to precision CAD modeling — we turn your ideas into stunning visual
-          experiences that drive clarity, confidence, and conversions.
+          Photorealistic architectural rendering, walkthrough animation, and
+          product visualization for teams who need buyers, planners, and
+          stakeholders to say yes before construction starts — not after.
         </p>
 
         <a
           href="/contact"
           className="viz-hero__cta"
-          aria-label="Get a free quote for 3D visualization services from 99 Visual Solutions"
+          aria-label="Request a project quote for 3D visualization services from 99 Visual Solutions"
         >
-          Get a Free Quote
+          Request a Project Quote
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path
               d="M2 7h10M8 3l4 4-4 4"
@@ -363,34 +464,33 @@ function HeroSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ✅ NEW — INTRO SECTION
-// Gives Google and visitors real, unique on-page text about this specific
-// service, in the same pattern as app/services/it-consulting/page.tsx's
-// .itc-intro section.
+// INTRO SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 function IntroSection() {
   return (
     <section className="viz-intro" aria-labelledby="viz-intro-heading">
       <div className="viz-intro__inner">
-        <span className="viz-intro__label">Our Approach</span>
+        <span className="viz-intro__label">The Problem We Solve</span>
         <h2 className="viz-intro__h2" id="viz-intro-heading">
-          Precision visuals that help you<br />decide, present &amp; <em>sell with confidence</em>
+          Decisions get delayed when<br />people can't <em>picture the outcome</em>
         </h2>
         <div className="viz-intro__rule" aria-hidden="true" />
         <p className="viz-intro__p">
-          At <strong>99 Visual Solutions</strong>, we combine architectural expertise, CAD
-          precision, and cinematic rendering craft to turn plans, sketches, and CAD files
-          into visuals your clients and stakeholders can actually picture themselves in.
-          Whether you need a single photorealistic still or a full walkthrough animation,
-          our team handles every stage in-house — modeling, lighting, texturing, and final
-          render — so you get consistent quality on every project.
+          A floor plan communicates dimensions. It doesn't communicate what a
+          lobby feels like at golden hour, whether a facade material reads as
+          premium from the street, or whether a proposed tower actually fits
+          its skyline context. That gap is where projects stall — buyers hesitate,
+          planning committees ask for clarification, and stakeholders delay
+          sign-off because the drawings alone don't answer their real question:
+          <em> what will this actually look like?</em>
         </p>
         <p className="viz-intro__p">
-          We work with architects, real estate developers, product designers, and urban
-          planners across India, the USA, UK, UAE, and Australia, supporting projects from
-          early concept design through to marketing-ready final delivery, including{" "}
-          <strong>CAD drafting, BIM modeling, and LiDAR point cloud processing</strong> for
-          renovation and as-built documentation.
+          <strong>99 Visual Solutions</strong> closes that gap with photorealistic
+          rendering, walkthrough animation, and precision 3D modeling built
+          in-house — from CAD files, drawing sets, hand sketches, or LiDAR scans
+          — so architects, developers, and product designers can put a decision
+          in front of the people who need to approve it, months before ground is
+          broken or a physical prototype exists.
         </p>
       </div>
     </section>
@@ -398,9 +498,34 @@ function IntroSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ✅ NEW — OFFERINGS SECTION
-// Renders each of the 7 offerCatalog items with real descriptive copy,
-// matching what's declared in the Service schema's hasOfferCatalog.
+// WHO SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+function WhoSection() {
+  return (
+    <section className="viz-who" aria-labelledby="viz-who-heading" id="viz-who">
+      <div className="viz-who__inner">
+        <div className="viz-who__head">
+          <span className="viz-who__label">Who This Is Built For</span>
+          <h2 className="viz-who__h2" id="viz-who-heading">
+            Built for teams who need<br />a decision made <em>on time</em>
+          </h2>
+          <div className="viz-who__rule" aria-hidden="true" />
+        </div>
+        <div className="viz-who__grid">
+          {audiences.map((a) => (
+            <div className="viz-who-card" key={a.id}>
+              <h3 className="viz-who-card__title">{a.title}</h3>
+              <p className="viz-who-card__desc">{a.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OFFERINGS SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 function OfferingsSection() {
   return (
@@ -409,7 +534,7 @@ function OfferingsSection() {
         <div className="viz-offerings__head">
           <span className="viz-offerings__label">What We Deliver</span>
           <h2 className="viz-offerings__h2" id="viz-offerings-heading">
-            Seven ways we bring<br />your project to <em>life</em>
+            Seven disciplines,<br />one <em>production team</em>
           </h2>
           <div className="viz-offerings__rule" aria-hidden="true" />
         </div>
@@ -427,9 +552,64 @@ function OfferingsSection() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ✅ NEW — FAQ SECTION
-// Renders the exact same 4 Q&As declared in vizFaqNode's JSON-LD, so
-// structured data matches visible content (Google's FAQPage guidelines).
+// PROCESS SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+function ProcessSection() {
+  return (
+    <section className="viz-process" aria-labelledby="viz-process-heading" id="viz-process">
+      <div className="viz-process__inner">
+        <div className="viz-process__head">
+          <span className="viz-process__label">How A Project Runs</span>
+          <h2 className="viz-process__h2" id="viz-process-heading">
+            From CAD file to<br />final delivery — <em>six stages</em>
+          </h2>
+          <div className="viz-process__rule" aria-hidden="true" />
+        </div>
+        <div className="viz-process__list">
+          {processSteps.map((s) => (
+            <div className="viz-process-item" key={s.step}>
+              <span className="viz-process-item__num">{s.step}</span>
+              <div>
+                <h3 className="viz-process-item__title">{s.title}</h3>
+                <p className="viz-process-item__desc">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BENEFITS SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+function BenefitsSection() {
+  return (
+    <section className="viz-benefits" aria-labelledby="viz-benefits-heading" id="viz-benefits">
+      <div className="viz-benefits__inner">
+        <div className="viz-benefits__head">
+          <span className="viz-benefits__label">Business Impact</span>
+          <h2 className="viz-benefits__h2" id="viz-benefits-heading">
+            What accurate visualization<br />actually <em>changes</em>
+          </h2>
+          <div className="viz-benefits__rule" aria-hidden="true" />
+        </div>
+        <div className="viz-benefits__grid">
+          {benefits.map((b) => (
+            <div className="viz-benefit-card" key={b.title}>
+              <h3 className="viz-benefit-card__title">{b.title}</h3>
+              <p className="viz-benefit-card__desc">{b.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FAQ SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 function FaqSection() {
   return (
@@ -461,8 +641,6 @@ function FaqSection() {
 export default function VisualizationPage() {
   return (
     <>
-      
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -524,9 +702,26 @@ export default function VisualizationPage() {
         .viz-intro__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto 1.8rem;}
         .viz-intro__p{font-family:var(--ff-sans);font-size:1rem;font-weight:300;line-height:1.85;color:var(--c-muted);max-width:680px;margin:0 auto .9rem;}
         .viz-intro__p strong{color:rgba(255,255,255,0.65);font-weight:500;}
+        .viz-intro__p em{color:var(--c-orange);font-style:italic;}
+
+        /* ══ WHO ═════════════════════════════════════════════════════════ */
+        .viz-who{background:#080808;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-who__inner{max-width:1200px;margin:0 auto;}
+        .viz-who__head{text-align:center;margin-bottom:3.5rem;}
+        .viz-who__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
+        .viz-who__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
+        .viz-who__h2 em{font-style:italic;color:var(--c-orange);}
+        .viz-who__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-who__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+        @media(max-width:1024px){.viz-who__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:640px){.viz-who__grid{grid-template-columns:1fr;}}
+        .viz-who-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease;}
+        .viz-who-card:hover{border-color:rgba(249,115,22,.25);transform:translateY(-4px);}
+        .viz-who-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
+        .viz-who-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
 
         /* ══ OFFERINGS ═══════════════════════════════════════════════════ */
-        .viz-offerings{background:#080808;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-offerings{background:#0f0f0f;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
         .viz-offerings__inner{max-width:1200px;margin:0 auto;}
         .viz-offerings__head{text-align:center;margin-bottom:3.5rem;}
         .viz-offerings__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
@@ -543,8 +738,37 @@ export default function VisualizationPage() {
         .viz-offering-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
         .viz-offering-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
 
+        /* ══ PROCESS ═════════════════════════════════════════════════════ */
+        .viz-process{background:#080808;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-process__inner{max-width:820px;margin:0 auto;}
+        .viz-process__head{text-align:center;margin-bottom:3.5rem;}
+        .viz-process__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
+        .viz-process__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
+        .viz-process__h2 em{font-style:italic;color:var(--c-orange);}
+        .viz-process__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-process__list{display:flex;flex-direction:column;gap:0;}
+        .viz-process-item{display:flex;gap:1.75rem;padding:1.75rem 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-process-item:last-child{border-bottom:none;}
+        .viz-process-item__num{font-family:var(--ff-serif);font-size:1.8rem;font-weight:700;color:var(--c-orange);opacity:.55;min-width:44px;flex-shrink:0;}
+        .viz-process-item__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin:0 0 .5rem;}
+        .viz-process-item__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);margin:0;}
+
+        /* ══ BENEFITS ════════════════════════════════════════════════════ */
+        .viz-benefits{background:#0f0f0f;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-benefits__inner{max-width:1100px;margin:0 auto;}
+        .viz-benefits__head{text-align:center;margin-bottom:3.5rem;}
+        .viz-benefits__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
+        .viz-benefits__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
+        .viz-benefits__h2 em{font-style:italic;color:var(--c-orange);}
+        .viz-benefits__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-benefits__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+        @media(max-width:768px){.viz-benefits__grid{grid-template-columns:1fr;}}
+        .viz-benefit-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-left:2px solid var(--c-orange);border-radius:12px;padding:1.75rem;}
+        .viz-benefit-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
+        .viz-benefit-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
+
         /* ══ FAQ ═════════════════════════════════════════════════════════ */
-        .viz-faq{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:6rem 1.5rem;}
+        .viz-faq{background:#080808;border-bottom:1px solid rgba(255,255,255,0.07);padding:6rem 1.5rem;}
         .viz-faq__inner{max-width:820px;margin:0 auto;}
         .viz-faq__head{text-align:center;margin-bottom:3rem;}
         .viz-faq__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
@@ -571,11 +795,17 @@ export default function VisualizationPage() {
 
       <IntroSection />
 
+      <WhoSection />
+
       <OfferingsSection />
 
       <div id="services">
         <Services />
       </div>
+
+      <ProcessSection />
+
+      <BenefitsSection />
 
       <FaqSection />
 
