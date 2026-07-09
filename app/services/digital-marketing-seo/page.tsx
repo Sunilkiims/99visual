@@ -18,6 +18,14 @@
 //      indexing-relevant gap found.
 //   ✅ All structural fixes retained: breadcrumbFromItems(), CONTACT_EMAIL,
 //      40+ word FAQ answers, dm- CSS prefix, sr-only breadcrumb.
+//
+// THIS REVISION: Hero background updated to a full-bleed photo banner
+//   (dark purple/blue marketing-dashboard desk-setup image) with a dark
+//   gradient overlay so text stays readable — same treatment as
+//   /services/visualization, /services/website-development, and
+//   /services/it-consulting. The hero was previously centered/single-column;
+//   it's now left-aligned to match those pages exactly. No copy, schema, or
+//   metadata changes.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -303,29 +311,48 @@ export default function DigitalMarketing() {
 
         .dm-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
-        .dm-hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;overflow:hidden;padding:8rem 1.5rem 6rem;text-align:center;}
-        .dm-hero__orb{position:absolute;border-radius:50%;filter:blur(100px);animation:dmOrbDrift 16s ease-in-out infinite alternate;pointer-events:none;}
-        .dm-hero__orb--1{width:540px;height:540px;background:radial-gradient(circle,#6366f1,#4f46e5);top:-160px;left:-100px;opacity:.13;}
-        .dm-hero__orb--2{width:460px;height:460px;background:radial-gradient(circle,#f97316,#ea580c);bottom:-130px;right:-80px;opacity:.12;animation-delay:-8s;}
-        .dm-hero__orb--3{width:300px;height:300px;background:radial-gradient(circle,#06b6d4,#0891b2);top:40%;right:15%;opacity:.07;animation-delay:-4s;}
-        @keyframes dmOrbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(32px,24px) scale(1.06)}}
-        .dm-hero__grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:60px 60px;}
-        .dm-hero__grain{position:absolute;inset:0;opacity:.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        /* ══ HERO — full-bleed photo banner, same treatment as
+           /services/visualization, /services/website-development, and
+           /services/it-consulting: photo as CSS background with a dark
+           gradient overlay so the text column stays legible. Previously
+           centered/single-column; now left-aligned to match those pages. ══ */
+        .dm-hero {
+          position:relative;min-height:90vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
+          overflow:hidden;padding:8rem 1.5rem 6rem;
+        }
+        .dm-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .dm-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
         .dm-corner--tl{top:24px;left:24px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
         .dm-corner--tr{top:24px;right:24px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
         .dm-corner--bl{bottom:64px;left:24px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
         .dm-corner--br{bottom:64px;right:24px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
-        .dm-hero__content{position:relative;z-index:10;max-width:860px;margin:0 auto;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) both;}
+
+        /* Single-column content — sits on top of the photo banner
+           background, left-aligned and capped to a comfortable reading
+           width, matching the other three service-page heroes. */
+        .dm-hero__inner{
+          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
+          display:grid;grid-template-columns:1fr;
+        }
+
+        .dm-hero__content{animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
         @keyframes dmFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.dm-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
         .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:#f97316;animation:dmPulse 2s ease-in-out infinite;}
         @keyframes dmPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .dm-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;}
+        .dm-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .dm-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.2px #f97316;}
-        .dm-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.4rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        .dm-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.95rem,2vw,1.1rem);font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);max-width:680px;margin:0 auto 2.6rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;}
-        .dm-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .dm-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.2rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.dm-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,#f97316,transparent);}}
+        .dm-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.dm-hero__sub{margin:0 auto 2.2rem;}}
+        .dm-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .dm-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
         .dm-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;}
         .dm-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
@@ -412,10 +439,6 @@ export default function DigitalMarketing() {
       {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="dm-hero" aria-labelledby="dm-hero-heading">
         <div aria-hidden="true">
-          <div className="dm-hero__orb dm-hero__orb--1" />
-          <div className="dm-hero__orb dm-hero__orb--2" />
-          <div className="dm-hero__orb dm-hero__orb--3" />
-          <div className="dm-hero__grid" />
           <div className="dm-hero__grain" />
         </div>
         <div className="dm-corner dm-corner--tl" aria-hidden="true" />
@@ -442,26 +465,35 @@ export default function DigitalMarketing() {
           </ol>
         </nav>
 
-        <div className="dm-hero__content">
-          <div className="dm-hero__eyebrow" aria-hidden="true">
-            <span className="dm-hero__dot" />
-            Services · Digital Marketing &amp; SEO
+        {/*
+          Hero content now sits on top of a full-bleed photo banner (set as
+          the section's CSS background — see .dm-hero in <style> above)
+          instead of the previous centered layout with abstract orb/grid
+          background. A dark gradient overlay keeps the white/orange text
+          legible over the photo.
+        */}
+        <div className="dm-hero__inner">
+          <div className="dm-hero__content">
+            <div className="dm-hero__eyebrow" aria-hidden="true">
+              <span className="dm-hero__dot" />
+              Services · Digital Marketing &amp; SEO
+            </div>
+            <h1 className="dm-hero__h1" id="dm-hero-heading">
+              Marketing that drives<br />results, not just <em>clicks</em>
+            </h1>
+            <div className="dm-hero__rule" aria-hidden="true" />
+            <p className="dm-hero__sub">
+              From SEO and PPC to Meta Ads, content marketing, email automation,
+              and promotional video — we deliver data-driven strategies that grow
+              your traffic, leads, and revenue.
+            </p>
+            <a href="#services" className="dm-hero__cta" aria-label="Explore digital marketing and SEO services">
+              Explore Services
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
           </div>
-          <h1 className="dm-hero__h1" id="dm-hero-heading">
-            Marketing that drives<br />results, not just <em>clicks</em>
-          </h1>
-          <div className="dm-hero__rule" aria-hidden="true" />
-          <p className="dm-hero__sub">
-            From SEO and PPC to Meta Ads, content marketing, email automation,
-            and promotional video — we deliver data-driven strategies that grow
-            your traffic, leads, and revenue.
-          </p>
-          <a href="#services" className="dm-hero__cta" aria-label="Explore digital marketing and SEO services">
-            Explore Services
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
         </div>
       </section>
 

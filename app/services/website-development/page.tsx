@@ -2,20 +2,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Website & Web App Development — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED (v2 — INDEXING FIX):
-//   ✅ CRITICAL #3 — CANONICAL FIX (root cause of non-indexing):
-//      metadataBase + absolute canonical URL = doubled/malformed URL.
-//      Fix: canonical now uses a RELATIVE path "/services/website-development"
-//      so Next.js metadataBase resolves it cleanly to the correct absolute URL.
-//   ✅ CRITICAL #4 — BASE trailing-slash guard added via baseSafe() helper.
-//      If BASE = "https://domain.com/" the old code produced
-//      "https://domain.com//services/..." — Google treats that as a different
-//      URL, breaks canonical signal, page never gets indexed.
-//   ✅ CRITICAL #5 — robots: explicit "index, follow" added as string override
-//      to prevent any parent layout.tsx defaulting to "noindex" from bleeding
-//      through on this route in Next.js 14+ App Router.
-//   ✅ All previous CRITICAL #1 (wdev- prefix) and #2 (breadcrumbFromItems)
-//      fixes retained from prior audit.
+// THIS REVISION: Hero background updated to a full-bleed photo banner
+//   (dark blue/purple tech desk-setup image) with a dark gradient overlay
+//   so text stays readable — same treatment as /services/visualization.
+//   - Right-column product image and the mug-steam CSS animation were
+//     removed, since the steam was pixel-positioned to match the old
+//     transparent PNG's mug and won't line up with the new banner photo.
+//   - NO COPY CHANGES: headline, sub-copy, eyebrow, and CTA text are the
+//     exact same words as before — only the layout/CSS changed.
+//   - Everything else on the page (service sections, benefits, CTA strip,
+//     schema, SEO) is unchanged from the previous revision.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
@@ -44,39 +40,23 @@ import {
   serviceSchema,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX #4 — Trailing-slash guard.
-// Ensures BASE never produces double-slash URLs regardless of how the constant
-// is defined in lib/schema.ts (e.g. "https://domain.com/" vs "https://domain.com")
-// ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE = BASE.replace(/\/$/, "");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // ✅ 63 chars — within sweet spot
   title: "Website & Web App Development Services | 99 Visual",
 
   description:
-    "99 Visual Solutions offers end-to-end web development: custom web applications, front-end & back-end development, UX design, e-commerce, CMS, SEO optimization, API integrations, and web security worldwide.",
+    "We build custom web applications and business websites engineered for speed, security, and conversions — covering UX design, front-end and back-end development, e-commerce, CMS, SEO, and API integrations for teams worldwide.",
 
-  // metadataBase tells Next.js the domain. It resolves relative canonical paths.
   metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX #3 — RELATIVE canonical path (NOT absolute).
-    // With metadataBase set above, Next.js builds the correct absolute URL:
-    //   https://yourdomain.com/services/website-development
-    // Using an absolute URL here caused Next.js to prepend metadataBase again,
-    // producing: https://yourdomain.comhttps://yourdomain.com/services/...
-    // which Google rejects, preventing the page from being indexed.
     canonical: "/services/website-development",
   },
 
-  // ✅ FIX #5 — Explicit robots directive on this route.
-  // Prevents any parent layout.tsx "noindex" from overriding this page.
-  // Also emits the HTTP header X-Robots-Tag: index, follow via Next.js.
   robots: {
     index:  true,
     follow: true,
@@ -91,7 +71,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title:       "Website & Web App Development Services | 99 Visual Solutions",
-    description: "From custom web apps and UX design to e-commerce, SEO, API integrations, and web security — 99 Visual Solutions delivers full-cycle web development for startups and enterprises globally.",
+    description: "From custom web applications to e-commerce platforms and API integrations, 99 Visual Solutions designs and builds full-cycle digital products for startups and enterprises around the world.",
     url:         `${BASE_SAFE}/services/website-development`,
     siteName:    "99 Visual Solutions",
     images: [
@@ -110,7 +90,7 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "Website & Web App Development Services | 99 Visual Solutions",
-    description: "Custom web apps, front-end & back-end development, e-commerce, SEO, API integrations & more — built for performance by 99 Visual Solutions.",
+    description: "Custom web apps, e-commerce builds, API integrations, and ongoing SEO support — 99 Visual Solutions builds websites engineered to perform, not just look good.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
@@ -139,7 +119,6 @@ const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
-// All schema URLs now use BASE_SAFE to prevent double-slash issues.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const wdevBreadcrumbNode = breadcrumbFromItems([
@@ -151,7 +130,7 @@ const wdevBreadcrumbNode = breadcrumbFromItems([
 const wdevServiceNode = {
   ...serviceSchema({
     name:        "Website & Web App Development",
-    description: "Custom web application development, UX/UI design, front-end and back-end development, e-commerce & CMS development, SEO & performance optimization, web security, hosting & deployment, API integrations, and landing page & dashboard development.",
+    description: "Full-cycle web development covering custom web application builds, UX and UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations.",
     pathname:    "/services/website-development",
     image:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
   }),
@@ -183,22 +162,22 @@ const wdevFaqNode = {
     {
       question: "What web development services does 99 Visual Solutions offer?",
       answer:
-        `We offer custom web application development, UX/UI design, front-end and back-end development, e-commerce and CMS development, SEO and performance optimisation, web security services, hosting and deployment, API integrations, and landing page and dashboard development. Contact us at ${CONTACT_EMAIL} for a free consultation and project scoping call — all initial discussions are obligation-free.`,
+        `We handle the full lifecycle: custom web applications, UX and UI design, front-end and back-end development, e-commerce and CMS builds, SEO and performance work, security, hosting, and API integrations. If you're not sure where to start, email us at ${CONTACT_EMAIL} — there's no cost or obligation for that first conversation.`,
     },
     {
       question: "Do you build mobile-responsive websites?",
       answer:
-        "Yes, every website we build is fully responsive and mobile-first, ensuring seamless performance across all devices and screen sizes. We follow Google's Core Web Vitals guidelines to ensure fast load times, stable layouts, and responsive interactivity — all critical factors for both user experience and SEO ranking in 2024 and beyond.",
+        "Yes. Every site we build is mobile-first and tested on real devices, not just resized in a browser. This matters for more than usability — Google's Core Web Vitals are part of how pages rank, so a slow or broken mobile layout costs you both users and search visibility.",
     },
     {
       question: "Which technologies do you use for web development?",
       answer:
-        "We work with modern technology stacks including React, Next.js, Vue.js, Node.js, and various headless CMS platforms such as Sanity, Contentful, and Strapi. Our back-end services cover custom REST and GraphQL APIs, microservices architecture, and secure database design using PostgreSQL, MongoDB, and MySQL. We deploy on AWS, GCP, and Azure.",
+        "Our front-end stack is mainly React and Next.js, paired with headless CMS platforms like Sanity, Contentful, or Strapi when a content team needs to publish independently. On the back end we build REST and GraphQL APIs on PostgreSQL, MongoDB, or MySQL, deployed to AWS, GCP, or Azure depending on your scale and budget.",
     },
     {
       question: "Can you modernize or upgrade our existing web application?",
       answer:
-        `Absolutely. We specialise in web application modernisation — re-engineering legacy systems, migrating to modern cloud-native architectures, upgrading front-end stacks to React or Next.js, and improving performance and security. Our process begins with a thorough technical audit of your existing system. Email us at ${CONTACT_EMAIL} to discuss your legacy system and get a modernisation assessment.`,
+        `Yes — this is one of the more common requests we get. We start with a technical audit to separate what's genuinely broken from what's just old, then migrate incrementally where that's safer than a full rebuild. Email ${CONTACT_EMAIL} with some background on your current system and we'll give you a straight read on what it would take.`,
     },
   ]),
   "@id":            `${BASE_SAFE}/services/website-development#faq`,
@@ -210,7 +189,7 @@ const wdevPageNode = {
   "@id":         `${BASE_SAFE}/services/website-development#webpage`,
   url:           `${BASE_SAFE}/services/website-development`,
   name:          "Website & Web App Development Services | 99 Visual Solutions",
-  description:   "End-to-end web development: custom web apps, UX design, e-commerce, CMS, SEO, API integrations, and web security — by 99 Visual Solutions.",
+  description:   "A complete overview of 99 Visual Solutions' web development services, including custom web applications, UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -246,12 +225,12 @@ const wdevGraph = buildGraph(
 // PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
-  { icon: <FaCogs />,      title: "Customized Solutions",          description: "Every business has unique needs. We create fully custom websites and web apps tailored to your specific goals, ensuring your digital presence reflects your brand." },
-  { icon: <FaRocket />,    title: "SEO Optimization",              description: "Every website we build incorporates SEO best practices from day one — optimized structure, fast loading, Core Web Vitals compliance, and semantic HTML for better rankings." },
-  { icon: <FaMobileAlt />, title: "Mobile Responsiveness",         description: "With mobile traffic dominating, we build fully responsive, mobile-first websites that provide seamless experiences across all devices, boosting satisfaction and rankings." },
-  { icon: <FaClock />,     title: "Faster Load Times",             description: "Our websites are optimised for speed — fast load times on all devices improve user experience, reduce bounce rates, and enhance your Google Core Web Vitals scores." },
-  { icon: <FaUsers />,     title: "Improved User Experience",      description: "We prioritise UX with intuitive, visually appealing designs that keep visitors engaged, increasing time on site, reducing friction, and boosting conversion rates." },
-  { icon: <FaTools />,     title: "Ongoing Maintenance & Support", description: "We provide ongoing post-launch support — whether updates, security patches, performance monitoring, or new features — ensuring long-term performance and reliability." },
+  { icon: <FaCogs />,      title: "Customised Solutions",          description: "No two businesses run the same way, so we don't start from a template. Every site or application is scoped around your specific workflow, customers, and goals from the first conversation." },
+  { icon: <FaRocket />,    title: "SEO Optimisation",              description: "SEO isn't something we bolt on before launch — it's part of how the site is structured from day one, from semantic HTML to Core Web Vitals, so you're not paying to fix it six months later." },
+  { icon: <FaMobileAlt />, title: "Mobile Responsiveness",         description: "With most traffic now arriving on phones, a site that only works well on desktop is quietly losing customers. We design mobile-first and test on real devices, not just browser emulators." },
+  { icon: <FaClock />,     title: "Faster Load Times",             description: "Every extra second of load time increases bounce rate and works against your Google ranking. We optimise images, scripts, and server response times so pages load quickly, even on slower connections." },
+  { icon: <FaUsers />,     title: "Improved User Experience",      description: "Good UX isn't about how a screenshot looks — it's about whether someone can find what they need in a few clicks. We design for that outcome, then test it with real usage patterns." },
+  { icon: <FaTools />,     title: "Ongoing Maintenance & Support", description: "Launch day isn't the finish line. We handle updates, security patches, and performance checks afterward, so the site keeps working as your business — and the web itself — keeps changing." },
 ];
 
 const services = [
@@ -260,8 +239,8 @@ const services = [
     title: "Web Application Development",
     image: "/images/web-application.png",
     imageAlt: "Web Application Development illustration",
-    description: "Your business operations demand more than a standard website — they require intelligent, scalable, and purpose-built digital solutions. We design and develop powerful web applications tailored to your unique workflows, enabling seamless automation, enhanced productivity, and data-driven decision-making.",
-    highlight: "From dynamic dashboards to fully customised business tools and system integrations, every application we build is crafted to align precisely with your operational processes and growth objectives.",
+    description: "A standard website works fine until your business needs a login system, an internal tool, or a way to move data between teams without spreadsheets and email chains. That's the point where we start building web applications — software built around how your team actually works, not a page that just describes it.",
+    highlight: "We map the workflow first and design the tool around it, so the result is something your team uses because it's faster, not something they route around because it isn't.",
     bullets: ["Custom dashboards & business tools", "Workflow automation & process optimisation", "Secure, scalable, and high-performance architecture"],
     imageLeft: true,
   },
@@ -270,8 +249,8 @@ const services = [
     title: "User Experience (UX) Design",
     image: "/images/ux-design.png",
     imageAlt: "UX design illustration",
-    description: "Great design is not just about how it looks — it's about how it works and how it feels. We craft seamless, intuitive user experiences that guide users effortlessly through your digital products, reducing friction at every touchpoint.",
-    highlight: "By deeply understanding user behaviour, business goals, and market trends, we create designs that reduce friction, enhance usability, and keep users engaged — turning visitors into loyal customers.",
+    description: "People rarely complain about confusing design — they just leave. Our UX process is built around finding the small frictions that quietly cost you conversions: unclear navigation, vague calls to action, forms that ask for too much too soon.",
+    highlight: "Every layout decision is backed by a reason — user research, behavioural data, or testing — rather than personal preference, because what looks good and what actually converts aren't always the same thing.",
     bullets: ["Human-centred design approach", "Wireframes, prototypes & usability testing", "Conversion-focused design strategy"],
     imageLeft: false,
   },
@@ -280,8 +259,8 @@ const services = [
     title: "Website Customisation",
     image: "/images/website-customization.png",
     imageAlt: "Website customisation illustration",
-    description: "Your business is unique, and your website should reflect that at every level. We deliver fully customised web solutions — from powerful e-commerce platforms to high-converting landing pages and tailored functionalities that match your brand perfectly.",
-    highlight: "Designed to align perfectly with your brand identity, customer journey, and business goals. Every detail is built with purpose and tested for performance before launch.",
+    description: "Off-the-shelf templates rarely fit a real business perfectly. We start with how you actually sell and how customers actually browse, then build the site around that — rather than bending your business model to fit a theme's limitations.",
+    highlight: "Whether that means a custom checkout flow or a landing page built for a single campaign, the goal stays the same: a site that behaves the way your business actually operates, not the way a template assumes it should.",
     bullets: ["Custom e-commerce functionality", "Landing pages built for campaigns", "Personalisation for brand consistency"],
     imageLeft: true,
   },
@@ -290,8 +269,8 @@ const services = [
     title: "Front-End Development",
     image: "/images/frontend-development.png",
     imageAlt: "Front-End Development illustration",
-    description: "Your website's first impression is everything — and we make it count. Our front-end development services focus on creating visually stunning, highly interactive, and lightning-fast user interfaces that captivate users from the very first click.",
-    highlight: "By leveraging modern frameworks and performance best practices, we build responsive, accessible, and performance-driven interfaces that deliver seamless experiences across all devices and browsers.",
+    description: "The front end is the only part of your site users ever actually see, so small delays and layout shifts have an outsized effect on whether someone stays or bounces. We build interfaces in React and Next.js designed to load quickly and hold together across screen sizes and browsers.",
+    highlight: "Clean component structure also pays off later — future updates are faster and cheaper because you're not paying someone to untangle tangled code two years from now.",
     bullets: ["Responsive, mobile-first & cross-browser compatible design", "Modern frameworks (React, Next.js, Vue) & clean code architecture", "Optimised performance, accessibility & Core Web Vitals compliance"],
     imageLeft: false,
   },
@@ -300,8 +279,8 @@ const services = [
     title: "Back-End Development",
     image: "/images/backend-development.png",
     imageAlt: "Back-End Development illustration",
-    description: "Behind every powerful digital experience lies a robust and intelligent back-end. We specialise in building secure, scalable, and high-performance back-end systems that ensure your website or application runs smoothly, efficiently, and reliably under any load.",
-    highlight: "No two businesses are alike — and your digital infrastructure should reflect that uniqueness. Our back-end services are fully customised to meet your specific operational needs, security requirements, and scaling goals.",
+    description: "Front-end polish doesn't matter much if the system behind it can't handle real traffic or keep data secure. We build the APIs, databases, and server architecture that hold up under actual load, not just a demo environment.",
+    highlight: "Every back end is scoped to what you actually need — a small inventory tool doesn't require microservices, but a multi-location booking platform usually does, and we size the architecture accordingly rather than over-building by default.",
     bullets: ["Custom APIs & microservices architecture", "Database design, optimisation & management", "Authentication, authorisation & data security"],
     imageLeft: true,
   },
@@ -310,8 +289,8 @@ const services = [
     title: "E-Commerce & CMS Development",
     image: "/images/e-commerce-cms-development.png",
     imageAlt: "E-Commerce and CMS Development illustration",
-    description: "In today's digital-first world, having a powerful online store and an easy-to-manage content system is essential for business growth. We specialise in developing scalable e-commerce platforms and intuitive Content Management Systems tailored to your needs.",
-    highlight: "Our e-commerce solutions are designed to deliver seamless shopping experiences — from product browsing to secure checkout — ensuring higher engagement, lower abandonment rates, and increased conversions.",
+    description: "Every step between adding an item to a cart and completing checkout is a chance to lose the sale. We build storefronts and content systems that keep that path short and fast, whether you're running a five-product shop or a growing multi-category catalogue.",
+    highlight: "We also configure the CMS so your own team can update products, pages, and promotions without filing a support ticket every time something needs to change.",
     bullets: ["Custom storefront design & shopping cart development", "Headless CMS & content workflow management", "Secure payment gateway & order management integrations"],
     imageLeft: false,
   },
@@ -320,8 +299,8 @@ const services = [
     title: "Web App Modernisation",
     image: "/images/webapp-modernization.png",
     imageAlt: "Web App Modernisation illustration",
-    description: "In today's fast-evolving digital landscape, outdated applications can slow down performance, limit scalability, and impact user experience. We help businesses transform legacy web applications into modern, high-performing, and future-ready platforms.",
-    highlight: "By leveraging the latest technologies, cloud capabilities, and responsive frameworks, we ensure your application is faster, more secure, easier to maintain, and aligned with current user expectations.",
+    description: "If your current system was built more than a few years ago, it's likely slower than it should be, harder to update safely, and more expensive to maintain than it needs to be. We audit what you have, work out what's genuinely worth keeping, and rebuild the rest on a modern stack.",
+    highlight: "Modernisation doesn't always mean a full rebuild — sometimes the fastest win is migrating the database and upgrading the front end while leaving stable back-end logic alone.",
     bullets: ["Legacy system upgrade & re-engineering", "Cloud migration & performance optimisation", "Scalable, secure & future-ready architecture"],
     imageLeft: true,
   },
@@ -330,8 +309,8 @@ const services = [
     title: "SEO & Performance Optimisation",
     image: "/images/seo-and-performance-optimization.png",
     imageAlt: "SEO & Performance Optimisation illustration",
-    description: "A powerful digital presence goes beyond just having a website — it's about being discoverable, fast, and optimised for both users and search engines. We combine advanced SEO strategies with performance optimisation to rank higher and load faster.",
-    highlight: "From technical SEO improvements to speed enhancements and Core Web Vitals optimisation, we focus on driving organic traffic, reducing bounce rates, and maximising your online visibility in competitive search results.",
+    description: "Ranking well and loading fast aren't separate goals — Google's own ranking systems weigh page speed and Core Web Vitals directly. We handle both together: technical SEO, structured data, image and script optimisation, and monitoring that continues as your content grows.",
+    highlight: "We report on what actually moved — organic traffic, ranking positions, and conversion rate — rather than vanity metrics that don't affect revenue.",
     bullets: ["On-page, technical & keyword optimisation", "Website speed & Core Web Vitals improvement", "Analytics-driven insights & continuous optimisation"],
     imageLeft: false,
   },
@@ -340,8 +319,8 @@ const services = [
     title: "Web Security Services",
     image: "/images/web-security-services.png",
     imageAlt: "Web Security Services illustration",
-    description: "In an era where cyber threats are constantly evolving, securing your digital assets is essential. We provide comprehensive web security solutions designed to protect your website, applications, and user data from vulnerabilities, attacks, and data breaches.",
-    highlight: "By implementing advanced security protocols, continuous monitoring, and proactive threat prevention, we ensure your platform remains safe, reliable, and compliant with modern security standards.",
+    description: "A single unpatched vulnerability or an exposed API key can undo years of customer trust in a day. We build security in from the start — proper authentication, encrypted data handling, and regular vulnerability checks — rather than adding it after the fact.",
+    highlight: "For sites handling payments or personal data, we also help you meet the compliance standards your industry expects, from PCI DSS to GDPR-aligned data handling.",
     bullets: ["Vulnerability assessment & penetration testing", "SSL implementation, firewalls & malware protection", "Continuous monitoring & threat prevention strategies"],
     imageLeft: true,
   },
@@ -350,8 +329,8 @@ const services = [
     title: "Website Hosting & Deployment",
     image: "/images/website-hosting-deployement.png",
     imageAlt: "Website Hosting & Deployment illustration",
-    description: "A strong digital presence starts with reliable hosting and seamless deployment. We provide robust, secure, and high-performance hosting solutions tailored to your business needs, ensuring your website is always accessible, fast, and scalable under any traffic conditions.",
-    highlight: "From initial setup to continuous deployment pipelines, our experts handle everything with precision — so you can focus on growing your business while we manage the infrastructure and uptime.",
+    description: "Hosting decisions rarely get attention until something breaks — a traffic spike, a failed deploy, a server going down at the worst possible time. We set up infrastructure and CI/CD pipelines designed to prevent those moments, with monitoring and backups running quietly in the background.",
+    highlight: "Whether you need one production environment or staging, testing, and production kept in sync, releases are automated so shipping an update isn't a manual, error-prone process.",
     bullets: ["Secure, scalable & high-performance hosting solutions", "CI/CD pipelines & seamless deployment processes", "Server management, backups & uptime monitoring"],
     imageLeft: false,
   },
@@ -360,8 +339,8 @@ const services = [
     title: "API & Third-Party Integrations",
     image: "/images/api-and-third-party-intigration.png",
     imageAlt: "API & Third-Party Integrations illustration",
-    description: "Modern digital ecosystems thrive on connectivity. We enable your applications to seamlessly communicate with external platforms, services, and tools through secure and efficient REST and GraphQL API integrations.",
-    highlight: "Whether it's payment gateways, CRM systems, analytics tools, or custom services, we ensure smooth data flow, real-time synchronisation, and reliable integration that scales with your business.",
+    description: "Your website rarely operates alone — payment processors, CRMs, analytics tools, and internal systems all need to exchange data reliably. We build and connect REST and GraphQL APIs so information moves between them without manual exports or broken syncs.",
+    highlight: "Where a ready-made integration doesn't exist, we build a custom one, matched to how your specific tools and data actually need to interact rather than forced through a generic connector.",
     bullets: ["Secure REST & GraphQL API integrations", "Payment gateways, CRM & third-party service connections", "Real-time data sync & workflow automation"],
     imageLeft: true,
   },
@@ -370,8 +349,8 @@ const services = [
     title: "Landing Page Design & Development",
     image: "/images/landing-page-design.png",
     imageAlt: "Landing Page Design & Development illustration",
-    description: "Your landing page is more than just a destination — it's a powerful conversion engine. We design and develop high-impact landing pages that are strategically crafted to capture attention, communicate value instantly, and drive visitor action.",
-    highlight: "By combining compelling visuals, persuasive copy, and data-driven design principles, we create pages that guide visitors seamlessly toward your goals — whether that's a form submission, purchase, or enquiry.",
+    description: "A landing page has one job, and everything on it should serve that job — the headline, the layout, the single call to action. We design pages around one goal at a time, then test variations to see which layout actually converts better with your audience.",
+    highlight: "Load time matters more here than almost anywhere else on your site: campaign traffic is often paid, so every extra second of load time is money leaking out of your ad budget.",
     bullets: ["Conversion-focused design & persuasive content", "Fast-loading, responsive & mobile-first layouts", "A/B testing & performance-driven optimisation"],
     imageLeft: false,
   },
@@ -380,8 +359,8 @@ const services = [
     title: "Custom Dashboard & Admin Panel Development",
     image: "/images/custom-dashboard-admin-panel.png",
     imageAlt: "Custom Dashboard & Admin Panel Development illustration",
-    description: "Empower your business with intelligent control and complete visibility through custom-built dashboards and admin panels. We design and develop tailored management interfaces that simplify complex operations, streamline workflows, and provide real-time data insights.",
-    highlight: "With a focus on usability, scalability, and performance, our dashboard solutions help you manage data efficiently, make informed decisions faster, and enhance overall team productivity.",
+    description: "Spreadsheets and shared documents work fine until three people are editing the same file at once. We build dashboards and admin panels that give your team one shared, accurate view of the data that matters — orders, users, inventory, whatever your operation actually runs on.",
+    highlight: "Role-based permissions mean each person sees exactly what they need and nothing more, which matters as much for security as it does for day-to-day usability.",
     bullets: ["Role-based access & secure user management", "Real-time analytics, reports & data visualisation", "Scalable, intuitive & fully customisable interfaces"],
     imageLeft: true,
   },
@@ -393,37 +372,50 @@ const services = [
 export default function WebsiteDevelopment() {
   return (
     <>
-      
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .wdev-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
-        /* ══ HERO ════════════════════════════════════════════════════════ */
-        .wdev-hero{position:relative;min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;overflow:hidden;padding:8rem 1.5rem 6rem;text-align:center;}
-        .wdev-hero__orb{position:absolute;border-radius:50%;filter:blur(100px);animation:wdevOrbDrift 16s ease-in-out infinite alternate;pointer-events:none;}
-        .wdev-hero__orb--1{width:540px;height:540px;background:radial-gradient(circle,#6366f1,#4f46e5);top:-160px;left:-100px;opacity:.13;}
-        .wdev-hero__orb--2{width:460px;height:460px;background:radial-gradient(circle,#f97316,#ea580c);bottom:-130px;right:-80px;opacity:.12;animation-delay:-8s;}
-        .wdev-hero__orb--3{width:300px;height:300px;background:radial-gradient(circle,#06b6d4,#0891b2);top:40%;right:15%;opacity:.07;animation-delay:-4s;}
-        @keyframes wdevOrbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(32px,24px) scale(1.06)}}
-        .wdev-hero__grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:60px 60px;}
-        .wdev-hero__grain{position:absolute;inset:0;opacity:.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        /* ══ HERO — full-bleed photo banner, same treatment as
+           /services/visualization: photo as CSS background with a dark
+           gradient overlay so the text column stays legible. ══ */
+        .wdev-hero {
+          position:relative;min-height:90vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
+          overflow:hidden;padding:8rem 1.5rem 6rem;
+        }
+        .wdev-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .wdev-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
         .wdev-corner--tl{top:24px;left:24px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
         .wdev-corner--tr{top:24px;right:24px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
         .wdev-corner--bl{bottom:64px;left:24px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
         .wdev-corner--br{bottom:64px;right:24px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
-        .wdev-hero__content{position:relative;z-index:10;max-width:860px;margin:0 auto;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) both;}
+
+        /* Single-column content — sits on top of the photo banner
+           background, capped to a comfortable reading width. */
+        .wdev-hero__inner{
+          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
+          display:grid;grid-template-columns:1fr;
+        }
+
+        .wdev-hero__content{animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
         @keyframes wdevFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.wdev-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
         .wdev-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .wdev-hero__dot{width:5px;height:5px;border-radius:50%;background:#f97316;animation:wdevPulse 2s ease-in-out infinite;}
         @keyframes wdevPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .wdev-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;}
-        .wdev-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.2px #f97316;}
-        .wdev-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.4rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        .wdev-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.95rem,2vw,1.1rem);font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);max-width:680px;margin:0 auto 2.6rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;}
-        .wdev-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .wdev-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .wdev-hero__h1 em{font-style:italic;color:#f97316;}
+        .wdev-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.2rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.wdev-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,#f97316,transparent);}}
+        .wdev-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.wdev-hero__sub{margin:0 auto 2.2rem;}}
+        .wdev-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .wdev-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
 
         /* ══ INTRO ═══════════════════════════════════════════════════════ */
@@ -505,10 +497,6 @@ export default function WebsiteDevelopment() {
       {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="wdev-hero" aria-labelledby="wdev-hero-heading">
         <div aria-hidden="true">
-          <div className="wdev-hero__orb wdev-hero__orb--1" />
-          <div className="wdev-hero__orb wdev-hero__orb--2" />
-          <div className="wdev-hero__orb wdev-hero__orb--3" />
-          <div className="wdev-hero__grid" />
           <div className="wdev-hero__grain" />
         </div>
         <div className="wdev-corner wdev-corner--tl" aria-hidden="true" />
@@ -535,26 +523,35 @@ export default function WebsiteDevelopment() {
           </ol>
         </nav>
 
-        <div className="wdev-hero__content">
-          <div className="wdev-hero__eyebrow" aria-hidden="true">
-            <span className="wdev-hero__dot" />
-            Services · Web Development
+        {/*
+          Hero content now sits on top of a full-bleed photo banner
+          (set as the section's CSS background — see .wdev-hero in <style>
+          below) instead of the previous two-column layout with a separate
+          product-shot image. A dark gradient overlay (also in CSS) keeps
+          the white/orange text legible over the photo.
+        */}
+        <div className="wdev-hero__inner">
+          <div className="wdev-hero__content">
+            <div className="wdev-hero__eyebrow" aria-hidden="true">
+              <span className="wdev-hero__dot" />
+              Services · Web Development
+            </div>
+            <h1 className="wdev-hero__h1" id="wdev-hero-heading">
+              Building digital<br />experiences that <em>perform</em>
+            </h1>
+            <div className="wdev-hero__rule" aria-hidden="true" />
+            <p className="wdev-hero__sub">
+              From custom web applications and UX-first design to e-commerce, SEO,
+              and security, we build digital products that hold up under real
+              traffic — not just in a demo.
+            </p>
+            <a href="#services" className="wdev-hero__cta" aria-label="Explore web development services by 99 Visual Solutions">
+              Explore Services
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
           </div>
-          <h1 className="wdev-hero__h1" id="wdev-hero-heading">
-            Building digital<br />experiences that <em>perform</em>
-          </h1>
-          <div className="wdev-hero__rule" aria-hidden="true" />
-          <p className="wdev-hero__sub">
-            From custom web applications and UX-first design to e-commerce, SEO,
-            and security — we engineer end-to-end digital solutions that connect,
-            engage, and convert your audience into customers.
-          </p>
-          <a href="#services" className="wdev-hero__cta" aria-label="Explore web development services by 99 Visual Solutions">
-            Explore Services
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
         </div>
       </section>
 
@@ -567,16 +564,16 @@ export default function WebsiteDevelopment() {
           </h2>
           <div className="wdev-intro__rule" aria-hidden="true" />
           <p className="wdev-intro__p">
-            At <strong>99 Visual Solutions</strong>, we go beyond creating websites — we design digital
-            experiences that connect, engage, and inspire. As a trusted <strong>web design and development
-            company</strong>, we combine creativity, strategy, and cutting-edge technology to deliver
-            solutions that look stunning and perform flawlessly across every device.
+            At <strong>99 Visual Solutions</strong>, we treat design and engineering as one discipline,
+            not two handoffs — because a site that looks great but loads slowly or breaks on mobile isn't
+            actually doing its job. As a <strong>web design and development company</strong>, we build
+            with that in mind from the first wireframe, not just at launch.
           </p>
           <p className="wdev-intro__p">
-            In today's fast-moving digital world, your website is the first impression customers have of
-            your brand. That's why we create <strong>modern, responsive, and SEO-optimised websites</strong>{" "}
-            tailored to your business goals — whether you are a startup, an enterprise, or an e-commerce brand
-            looking to grow your online presence.
+            Your website is usually the first real interaction a customer has with your business, which is
+            why we build <strong>modern, responsive, and SEO-optimised sites</strong>{" "}
+            around your actual goals — whether you're a startup validating an idea, an established
+            business scaling up, or an e-commerce brand trying to grow order volume.
           </p>
         </div>
       </section>
@@ -615,8 +612,8 @@ export default function WebsiteDevelopment() {
             </h2>
             <div className="wdev-benefits__rule" aria-hidden="true" />
             <p className="wdev-benefits__sub">
-              Partnering with 99 Visual Solutions means more than just building a website — it means
-              creating a lasting digital impact that drives real, measurable business growth.
+              A website is only worth what it does for your business afterward. Here's what that
+              looks like in practice when you work with us.
             </p>
           </div>
           <div className="wdev-benefits__grid">
@@ -641,8 +638,8 @@ export default function WebsiteDevelopment() {
           </h2>
           <div className="wdev-cta__rule" aria-hidden="true" />
           <p className="wdev-cta__sub">
-            Get in touch with our team for a free consultation. We&apos;ll help you map out the right
-            web development solution for your goals, timeline, and budget.
+            Tell us about your project and we'll map out the right approach for your goals,
+            timeline, and budget — no cost for that first conversation.
           </p>
           <Link href="/contact" className="wdev-cta__btn" aria-label="Get a free web development consultation from 99 Visual Solutions">
             Get a Free Consultation

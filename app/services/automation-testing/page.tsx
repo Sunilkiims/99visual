@@ -1,4 +1,13 @@
 // app/services/automation-testing/page.tsx
+//
+// THIS REVISION: Hero background updated to a full-bleed photo banner with a
+//   dark gradient overlay so text stays readable — same treatment as the
+//   other service pages (visualization, website-development, it-consulting,
+//   digital-marketing-seo, cad-gis-photogrammetry). The hero was previously
+//   centered/single-column; it's now left-aligned to match. No copy, schema,
+//   or metadata changes.
+//   Save your banner image to: /public/images/services/automation-testing-hero-banner.jpg
+//
 import Image from "next/image";
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -295,36 +304,47 @@ export default function AutomationTestingPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
+        /* ══ HERO — full-bleed photo banner, same treatment as the other
+           service pages: photo as CSS background with a dark gradient
+           overlay so the text column stays legible. Previously
+           centered/single-column; now left-aligned to match. ══ */
         .qa-hero {
-          position:relative;min-height:90vh;display:flex;flex-direction:column;
-          align-items:center;justify-content:center;background:#080808;overflow:hidden;
-          padding:8rem 1.5rem 6rem;text-align:center;
+          position:relative;min-height:90vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/automation-testing-hero-banner.jpg') center center / cover no-repeat;
+          overflow:hidden;padding:8rem 1.5rem 6rem;
         }
-        .qa-hero__orb {
-          position:absolute;border-radius:50%;filter:blur(100px);
-          animation:qaOrbDrift 16s ease-in-out infinite alternate;pointer-events:none;
-        }
-        .qa-hero__orb--1{width:540px;height:540px;background:radial-gradient(circle,#6366f1,#4f46e5);top:-160px;left:-100px;opacity:.13;}
-        .qa-hero__orb--2{width:460px;height:460px;background:radial-gradient(circle,#f97316,#ea580c);bottom:-130px;right:-80px;opacity:.12;animation-delay:-8s;}
-        .qa-hero__orb--3{width:300px;height:300px;background:radial-gradient(circle,#06b6d4,#0891b2);top:40%;right:15%;opacity:.07;animation-delay:-4s;}
-        @keyframes qaOrbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(32px,24px) scale(1.06)}}
-        .qa-hero__grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:60px 60px;}
-        .qa-hero__grain{position:absolute;inset:0;opacity:.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .qa-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .qa-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
         .qa-corner--tl{top:24px;left:24px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
         .qa-corner--tr{top:24px;right:24px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
         .qa-corner--bl{bottom:64px;left:24px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
         .qa-corner--br{bottom:64px;right:24px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
-        .qa-hero__content{position:relative;z-index:10;max-width:860px;margin:0 auto;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) both;}
+
+        /* Single-column content — sits on top of the photo banner
+           background, left-aligned and capped to a comfortable reading
+           width, matching the other service-page heroes. */
+        .qa-hero__inner{
+          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
+          display:grid;grid-template-columns:1fr;
+        }
+
+        .qa-hero__content{animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
         @keyframes qaFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.qa-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
         .qa-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .qa-hero__dot{width:5px;height:5px;border-radius:50%;background:#f97316;animation:qaPulse 2s ease-in-out infinite;}
         @keyframes qaPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .qa-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;}
+        .qa-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .qa-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.2px #f97316;}
-        .qa-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.4rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        .qa-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.95rem,2vw,1.1rem);font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);max-width:680px;margin:0 auto 2.6rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;}
-        .qa-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .qa-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.2rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.qa-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,#f97316,transparent);}}
+        .qa-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.qa-hero__sub{margin:0 auto 2.2rem;}}
+        .qa-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .qa-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
 
         .qa-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;}
@@ -418,10 +438,6 @@ export default function AutomationTestingPage() {
 
       <section className="qa-hero" aria-labelledby="qa-hero-heading">
         <div aria-hidden="true">
-          <div className="qa-hero__orb qa-hero__orb--1" />
-          <div className="qa-hero__orb qa-hero__orb--2" />
-          <div className="qa-hero__orb qa-hero__orb--3" />
-          <div className="qa-hero__grid" />
           <div className="qa-hero__grain" />
         </div>
         <div className="qa-corner qa-corner--tl" aria-hidden="true" />
@@ -448,26 +464,35 @@ export default function AutomationTestingPage() {
           </ol>
         </nav>
 
-        <div className="qa-hero__content">
-          <div className="qa-hero__eyebrow" aria-hidden="true">
-            <span className="qa-hero__dot" />
-            Services · Agentic AI QA &amp; Automation Testing
+        {/*
+          Hero content now sits on top of a full-bleed photo banner (set as
+          the section's CSS background — see .qa-hero in <style> above)
+          instead of the previous centered layout with abstract orb/grid
+          background. A dark gradient overlay keeps the white/orange text
+          legible over the photo.
+        */}
+        <div className="qa-hero__inner">
+          <div className="qa-hero__content">
+            <div className="qa-hero__eyebrow" aria-hidden="true">
+              <span className="qa-hero__dot" />
+              Services · Agentic AI QA &amp; Automation Testing
+            </div>
+            <h1 className="qa-hero__h1" id="qa-hero-heading">
+              Intelligent quality engineering<br />powered by <em>Agentic AI</em>
+            </h1>
+            <div className="qa-hero__rule" aria-hidden="true" />
+            <p className="qa-hero__sub">
+              From AI-augmented manual testing and autonomous agent-driven automation to
+              LLM-assisted security testing and predictive performance engineering — we deliver
+              next-generation QA that helps you ship intelligent, bug-free software at scale.
+            </p>
+            <a href="#qa-services" className="qa-hero__cta" aria-label="Explore AI-powered QA and automation testing services">
+              Explore Services
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
           </div>
-          <h1 className="qa-hero__h1" id="qa-hero-heading">
-            Intelligent quality engineering<br />powered by <em>Agentic AI</em>
-          </h1>
-          <div className="qa-hero__rule" aria-hidden="true" />
-          <p className="qa-hero__sub">
-            From AI-augmented manual testing and autonomous agent-driven automation to
-            LLM-assisted security testing and predictive performance engineering — we deliver
-            next-generation QA that helps you ship intelligent, bug-free software at scale.
-          </p>
-          <a href="#qa-services" className="qa-hero__cta" aria-label="Explore AI-powered QA and automation testing services">
-            Explore Services
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
         </div>
       </section>
 

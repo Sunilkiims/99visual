@@ -1,4 +1,13 @@
 // app/services/page.tsx
+//
+// THIS REVISION: Hero background updated to a full-bleed photo banner with a
+//   dark gradient overlay so text stays readable — same treatment as the
+//   individual service pages (visualization, website-development,
+//   it-consulting, digital-marketing-seo, cad-gis-photogrammetry,
+//   automation-testing). The hero was previously centered/single-column;
+//   it's now left-aligned to match. No copy, schema, or metadata changes.
+//   Save your banner image to: /public/images/services/services-hub-hero-banner.jpg
+//
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -273,35 +282,52 @@ export default function ServicesPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ── HERO ──────────────────────────────────────────────────────── */
-        .sv-hero{position:relative;min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080808;overflow:hidden;padding:9rem 1.5rem 7rem;text-align:center;}
-        .sv-hero__orb{position:absolute;border-radius:50%;filter:blur(110px);animation:svOrbDrift 18s ease-in-out infinite alternate;pointer-events:none;}
-        .sv-hero__orb--1{width:600px;height:600px;background:radial-gradient(circle,#6366f1,#4f46e5);top:-200px;left:-140px;opacity:.11;}
-        .sv-hero__orb--2{width:500px;height:500px;background:radial-gradient(circle,#f97316,#ea580c);bottom:-160px;right:-100px;opacity:.10;animation-delay:-9s;}
-        .sv-hero__orb--3{width:340px;height:340px;background:radial-gradient(circle,#06b6d4,#0891b2);top:35%;right:12%;opacity:.065;animation-delay:-4.5s;}
-        .sv-hero__orb--4{width:280px;height:280px;background:radial-gradient(circle,#a855f7,#7c3aed);top:60%;left:8%;opacity:.06;animation-delay:-7s;}
-        @keyframes svOrbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(28px,20px) scale(1.07)}}
-        .sv-hero__grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:56px 56px;}
+        /* ── HERO — full-bleed photo banner, same treatment as the
+           individual service pages: photo as CSS background with a dark
+           gradient overlay so the text column stays legible. Previously
+           centered/single-column; now left-aligned to match. ──────────── */
+        .sv-hero {
+          position:relative;min-height:92vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/services-hub-hero-banner.jpg') center center / cover no-repeat;
+          overflow:hidden;padding:9rem 1.5rem 7rem;
+        }
         .sv-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .sv-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.18;pointer-events:none;}
         .sv-corner--tl{top:28px;left:28px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
         .sv-corner--tr{top:28px;right:28px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
         .sv-corner--bl{bottom:72px;left:28px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
         .sv-corner--br{bottom:72px;right:28px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
-        .sv-hero__content{position:relative;z-index:10;max-width:900px;margin:0 auto;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) both;}
+
+        /* Single-column content — sits on top of the photo banner
+           background, left-aligned and capped to a comfortable reading
+           width, matching the individual service-page heroes. */
+        .sv-hero__inner{
+          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
+          display:grid;grid-template-columns:1fr;
+        }
+
+        .sv-hero__content{animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
         @keyframes svFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.sv-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
         .sv-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .sv-hero__dot{width:5px;height:5px;border-radius:50%;background:#f97316;animation:svPulse 2s ease-in-out infinite;}
         @keyframes svPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .sv-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,6vw,4.2rem);font-weight:700;line-height:1.08;letter-spacing:-.025em;color:#fff;margin:0 0 1.2rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;}
+        .sv-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.4vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .sv-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.5px #f97316;}
-        .sv-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.6rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        .sv-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(1rem,2.2vw,1.15rem);font-weight:300;line-height:1.85;color:rgba(255,255,255,0.42);max-width:700px;margin:0 auto 3rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;}
-        .sv-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:center;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .sv-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.4rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.sv-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,#f97316,transparent);}}
+        .sv-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.sv-hero__sub{margin:0 auto 2.6rem;}}
+        .sv-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        @media(max-width:960px){.sv-hero__actions{justify-content:center;}}
         .sv-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 36px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;}
         .sv-hero__btn--primary:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 16px 40px rgba(249,115,22,.5);}
-        .sv-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.12);background:transparent;padding:13px 32px;border-radius:100px;text-decoration:none;transition:color .2s ease,border-color .2s ease;}
-        .sv-hero__btn--ghost:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+        .sv-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.15);backdrop-filter:blur(6px);padding:13px 32px;border-radius:100px;text-decoration:none;transition:color .2s ease,border-color .2s ease;}
+        .sv-hero__btn--ghost:hover{color:#fff;border-color:rgba(255,255,255,.45);}
 
         /* ── STATS STRIP ───────────────────────────────────────────────── */
         .sv-stats{background:#0a0a0a;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:2.8rem 1.5rem;}
@@ -398,11 +424,6 @@ export default function ServicesPage() {
       {/* ══ HERO ══════════════════════════════════════════════════════════ */}
       <section className="sv-hero" aria-labelledby="sv-hero-heading">
         <div aria-hidden="true">
-          <div className="sv-hero__orb sv-hero__orb--1" />
-          <div className="sv-hero__orb sv-hero__orb--2" />
-          <div className="sv-hero__orb sv-hero__orb--3" />
-          <div className="sv-hero__orb sv-hero__orb--4" />
-          <div className="sv-hero__grid" />
           <div className="sv-hero__grain" />
         </div>
         <div className="sv-corner sv-corner--tl" aria-hidden="true" />
@@ -423,30 +444,39 @@ export default function ServicesPage() {
           </ol>
         </nav>
 
-        <div className="sv-hero__content">
-          <div className="sv-hero__eyebrow" aria-hidden="true">
-            <span className="sv-hero__dot" />
-            What We Do
-          </div>
-          <h1 className="sv-hero__h1" id="sv-hero-heading">
-            End-to-end solutions<br />built for the <em>intelligent era</em>
-          </h1>
-          <div className="sv-hero__rule" aria-hidden="true" />
-          <p className="sv-hero__sub">
-            From pixel-perfect web experiences and AI-powered QA to data-driven
-            marketing, geospatial intelligence, and strategic IT consulting — 99 Visual
-            Solutions is your single partner for the full technology stack.
-          </p>
-          <div className="sv-hero__actions">
-            <a href="#sv-grid" className="sv-hero__btn--primary" aria-label="Browse all 99 Visual Solutions services">
-              Browse Services
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-            <Link href="/contact" className="sv-hero__btn--ghost" aria-label="Contact 99 Visual Solutions">
-              Get a Free Consultation
-            </Link>
+        {/*
+          Hero content now sits on top of a full-bleed photo banner (set as
+          the section's CSS background — see .sv-hero in <style> above)
+          instead of the previous centered layout with abstract orb/grid
+          background. A dark gradient overlay keeps the white/orange text
+          legible over the photo.
+        */}
+        <div className="sv-hero__inner">
+          <div className="sv-hero__content">
+            <div className="sv-hero__eyebrow" aria-hidden="true">
+              <span className="sv-hero__dot" />
+              What We Do
+            </div>
+            <h1 className="sv-hero__h1" id="sv-hero-heading">
+              End-to-end solutions<br />built for the <em>intelligent era</em>
+            </h1>
+            <div className="sv-hero__rule" aria-hidden="true" />
+            <p className="sv-hero__sub">
+              From pixel-perfect web experiences and AI-powered QA to data-driven
+              marketing, geospatial intelligence, and strategic IT consulting — 99 Visual
+              Solutions is your single partner for the full technology stack.
+            </p>
+            <div className="sv-hero__actions">
+              <a href="#sv-grid" className="sv-hero__btn--primary" aria-label="Browse all 99 Visual Solutions services">
+                Browse Services
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
+              <Link href="/contact" className="sv-hero__btn--ghost" aria-label="Contact 99 Visual Solutions">
+                Get a Free Consultation
+              </Link>
+            </div>
           </div>
         </div>
       </section>

@@ -2,27 +2,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 3D Visualization & Architectural Rendering — 99 Visual Solutions
 //
-// CONTENT REWRITE (this revision):
-//   This page is written as a fully standalone service page. It does not
-//   reference, cross-sell, or blend copy with any other 99 Visual Solutions
-//   service line (web development, SEO, digital marketing, CAD/GIS as a
-//   separate offering, QA, IT consulting, etc). CAD drafting, BIM, and LiDAR
-//   appear ONLY as sub-disciplines inside the visualization workflow itself
-//   (i.e. how a render gets built), not as separate businesses.
-//
-//   New sections added beyond the previous revision:
-//     - WhoSection      → who this service is actually built for
-//     - ProcessSection  → the real production workflow, stage by stage
-//     - BenefitsSection → business outcomes / ROI framed in operational terms
-//     - Expanded OfferingsSection copy (problem → solution → outcome)
-//     - Expanded FaqSection (7 questions, EEAT signals: process, revisions,
-//       file formats, software, ownership, turnaround, accuracy standards)
-//
-//   All previous SEO/indexing fixes (canonical, robots, breadcrumb schema,
-//   dateModified, FAQ schema/content parity) are preserved unchanged.
+// THIS REVISION: Hero background updated to a full-bleed photo banner
+//   (sunset villa/infinity-pool image) with a dark gradient overlay so
+//   text stays readable. Right-column product-shot image removed since
+//   the banner now carries the visual. Everything else (layout of other
+//   sections, image, other sections, schema, SEO, written content) is
+//   unchanged from the previous revision.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
+import Image          from "next/image";
 import Header         from "@/app/components/header";
 import Seriously      from "@/app/components/seriously";
 import Footer         from "@/app/components/footer";
@@ -388,10 +377,6 @@ function HeroSection() {
       id="viz-hero"
     >
       <div aria-hidden="true">
-        <div className="viz-hero__orb viz-hero__orb--1" />
-        <div className="viz-hero__orb viz-hero__orb--2" />
-        <div className="viz-hero__orb viz-hero__orb--3" />
-        <div className="viz-hero__grid" />
         <div className="viz-hero__grain" />
       </div>
 
@@ -423,41 +408,50 @@ function HeroSection() {
         </ol>
       </nav>
 
-      <div className="viz-hero__content">
-        <p className="viz-hero__eyebrow" aria-hidden="true">
-          <span className="viz-hero__dot" />
-          Architectural Rendering & 3D Visualization
-        </p>
+      {/*
+        Hero content now sits on top of a full-bleed photo banner
+        (set as the section's CSS background — see .viz-hero in <style>
+        below) instead of the previous two-column layout with a separate
+        product-shot image. A dark gradient overlay (also in CSS) keeps
+        the white/orange text legible over the photo.
+      */}
+      <div className="viz-hero__inner">
+        <div className="viz-hero__content">
+          <p className="viz-hero__eyebrow" aria-hidden="true">
+            <span className="viz-hero__dot" />
+            Architectural Rendering & 3D Visualization
+          </p>
 
-        <h1 className="viz-hero__h1" id="viz-hero-heading">
-          See it before<br />
-          it's <em>built</em>
-        </h1>
+          <h1 className="viz-hero__h1" id="viz-hero-heading">
+            See it before<br />
+            it's <em>built</em>
+          </h1>
 
-        <div className="viz-hero__rule" aria-hidden="true" />
+          <div className="viz-hero__rule" aria-hidden="true" />
 
-        <p className="viz-hero__sub">
-          Photorealistic architectural rendering, walkthrough animation, and
-          product visualization for teams who need buyers, planners, and
-          stakeholders to say yes before construction starts — not after.
-        </p>
+          <p className="viz-hero__sub">
+            Photorealistic architectural rendering, walkthrough animation, and
+            product visualization for teams who need buyers, planners, and
+            stakeholders to say yes before construction starts — not after.
+          </p>
 
-        <a
-          href="/contact"
-          className="viz-hero__cta"
-          aria-label="Request a project quote for 3D visualization services from 99 Visual Solutions"
-        >
-          Request a Project Quote
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path
-              d="M2 7h10M8 3l4 4-4 4"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </a>
+          <a
+            href="/contact"
+            className="viz-hero__cta"
+            aria-label="Request a project quote for 3D visualization services from 99 Visual Solutions"
+          >
+            Request a Project Quote
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M2 7h10M8 3l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -660,37 +654,49 @@ export default function VisualizationPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ══ HERO ════════════════════════════════════════════════════════ */
+        /* ══ HERO ════════════════════════════════════════════════════════
+           Full-bleed photo banner as the background, with a dark
+           left-to-right + top-to-bottom gradient overlay so the text
+           column stays legible over the photo. Swap the url() below for
+           your saved banner file path. */
         .viz-hero {
-          position:relative;min-height:90vh;display:flex;flex-direction:column;
-          align-items:center;justify-content:center;background:var(--c-bg);
-          overflow:hidden;padding:8rem 1.5rem 6rem;text-align:center;
+          position:relative;min-height:90vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/visualization-hero-banner.jpg') center center / cover no-repeat;
+          overflow:hidden;padding:8rem 1.5rem 6rem;
         }
-        .viz-hero__orb {
-          position:absolute;border-radius:50%;filter:blur(100px);
-          animation:vizOrbDrift 16s ease-in-out infinite alternate;pointer-events:none;
-        }
-        .viz-hero__orb--1{width:540px;height:540px;background:radial-gradient(circle,#6366f1,#4f46e5);top:-160px;left:-100px;opacity:.13;}
-        .viz-hero__orb--2{width:460px;height:460px;background:radial-gradient(circle,#f97316,#ea580c);bottom:-130px;right:-80px;opacity:.12;animation-delay:-8s;}
-        .viz-hero__orb--3{width:300px;height:300px;background:radial-gradient(circle,#06b6d4,#0891b2);top:40%;right:15%;opacity:.07;animation-delay:-4s;}
-        @keyframes vizOrbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(32px,24px) scale(1.06)}}
-        .viz-hero__grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:60px 60px;}
-        .viz-hero__grain{position:absolute;inset:0;opacity:.03;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .viz-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .viz-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
         .viz-corner--tl{top:24px;left:24px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
         .viz-corner--tr{top:24px;right:24px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
         .viz-corner--bl{bottom:64px;left:24px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
         .viz-corner--br{bottom:64px;right:24px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
-        .viz-hero__content{position:relative;z-index:10;max-width:860px;margin:0 auto;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) both;}
+
+        /* Hero content column — sits on top of the photo banner background.
+           Single column now (no right-side product image); text is capped
+           to a comfortable reading width so it doesn't stretch across the
+           whole photo. */
+        .viz-hero__inner{
+          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
+          display:grid;grid-template-columns:1fr;
+        }
+
+        .viz-hero__content{animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
         @keyframes vizFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.viz-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
         .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--c-orange);animation:vizPulse 2s ease-in-out infinite;}
         @keyframes vizPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .viz-hero__h1{font-family:var(--ff-serif);font-size:clamp(2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;}
-        .viz-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.2px var(--c-orange);}
-        .viz-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto 1.4rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        .viz-hero__sub{font-family:var(--ff-sans);font-size:clamp(.95rem,2vw,1.1rem);font-weight:300;line-height:1.85;color:var(--c-muted);max-width:680px;margin:0 auto 2.6rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;}
-        .viz-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .viz-hero__h1{font-family:var(--ff-serif);font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .viz-hero__h1 em{font-style:italic;color:var(--c-orange);}
+        .viz-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,var(--c-orange),transparent);margin:0 0 1.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.viz-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);}}
+        .viz-hero__sub{font-family:var(--ff-sans);font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.viz-hero__sub{margin:0 auto 2.2rem;}}
+        .viz-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-sans);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .viz-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
 
         /* ══ INTRO ═══════════════════════════════════════════════════════ */
