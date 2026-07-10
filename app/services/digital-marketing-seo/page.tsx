@@ -322,13 +322,44 @@ export default function DigitalMarketing() {
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
             linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
             url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
+          background-attachment:scroll;background-color:#080808;
           overflow:hidden;padding:8rem 1.5rem 6rem;
+        }
+        /* Modern browsers: use dynamic viewport height so mobile browser
+           chrome (address bar show/hide) doesn't cause the hero to jump
+           or leave a gap. Falls back silently on older browsers. */
+        @supports (min-height: 100svh) {
+          .dm-hero { min-height: 90svh; }
+        }
+        /* Tablet & mobile: the two-way horizontal gradient above is tuned
+           for a wide viewport with left-aligned text over a visible right
+           side of the photo. Below 960px the text column centers and can
+           span the full width, so swap to a more uniform top-to-bottom
+           overlay that keeps the whole banner legible behind centered
+           text at any crop position. */
+        @media(max-width:960px){
+          .dm-hero {
+            background:
+              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
+              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
+              url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
+            min-height:auto;
+            padding:7rem 1.25rem 4.5rem;
+          }
+        }
+        @media(max-width:640px){
+          .dm-hero { padding:6.5rem 1rem 4rem; }
+        }
+        @media(max-width:960px) and (orientation:landscape){
+          .dm-hero { min-height:100vh;padding-top:5.5rem;padding-bottom:3rem; }
         }
         .dm-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .dm-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
         .dm-corner--tl{top:24px;left:24px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
         .dm-corner--tr{top:24px;right:24px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
-        .dm-corner--bl{bottom:64px;left:24px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
+        /* nudged up from the standard bottom offset to clear a bottom-left chatbot launcher icon */
+        .dm-corner--bl{bottom:112px;left:260px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
+        @media(max-width:480px){ .dm-corner--bl{ left:24px; } }
         .dm-corner--br{bottom:64px;right:24px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
 
         /* Single-column content — sits on top of the photo banner
