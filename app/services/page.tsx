@@ -287,7 +287,7 @@ export default function ServicesPage() {
            gradient overlay so the text column stays legible. Previously
            centered/single-column; now left-aligned to match. ──────────── */
         .sv-hero {
-          position:relative;min-height:92vh;display:flex;align-items:center;
+          position:relative;min-height:100vh;display:flex;align-items:center;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
             linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
@@ -299,7 +299,7 @@ export default function ServicesPage() {
            chrome (address bar show/hide) doesn't cause the hero to jump
            or leave a gap. Falls back silently on older browsers. */
         @supports (min-height: 100svh) {
-          .sv-hero { min-height: 92svh; }
+          .sv-hero { min-height: 100svh; }
         }
         /* Tablet & mobile: the two-way horizontal gradient above is tuned
            for a wide viewport with left-aligned text over a visible right
@@ -313,7 +313,7 @@ export default function ServicesPage() {
               linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
               linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
               url('/images/services/services-hub-hero-banner.jpg') center center / cover no-repeat;
-            min-height:auto;
+            min-height:100vh;
             padding:7rem 1.25rem 4.5rem;
           }
         }
