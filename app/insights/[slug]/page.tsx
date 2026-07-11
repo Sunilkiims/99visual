@@ -5,7 +5,6 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
-// ─── NEW: import PostViewer so contact CTA popup works ────────────────────────
 import PostViewer from '@/app/components/PostViewer'
 
 interface Props {
@@ -47,6 +46,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+// ─── Signature element: a "reading meter" — ticks that visualize length ───
+// instead of stating minutes as bare text. Ties the agency's visual identity
+// (99 Visual Solutions) to a small piece of real information on the page.
+function ReadingMeter({ minutes, color }: { minutes: number; color: string }) {
+  const TOTAL = 8
+  const filled = Math.max(1, Math.min(minutes, TOTAL))
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex items-end gap-[3px]" aria-hidden="true">
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <span
+            key={i}
+            className="w-[3px] rounded-full transition-colors"
+            style={{
+              height: i === 0 ? 6 : 6 + i * 1.4,
+              backgroundColor: i < filled ? color : '#2a2d35',
+            }}
+          />
+        ))}
+      </div>
+      <span className="text-sm text-gray-400">
+        {minutes} min read
+      </span>
+    </div>
+  )
+}
+
 function ShareButtons({ slug, title }: { slug: string; title: string }) {
   const base = 'https://99visual.com/insights/'
   const url = base + slug
@@ -64,33 +90,31 @@ function ShareButtons({ slug, title }: { slug: string; title: string }) {
   const whatsappHref =
     'https://api.whatsapp.com/send?text=' +
     encodeURIComponent(title + ' ' + url)
-  const cls = 'flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-800 text-gray-300 rounded-xl text-sm transition-colors hover:border-gray-600'
+
+  const cls =
+    'group flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 border border-gray-800 text-gray-400 transition-all hover:border-orange-500/50 hover:text-orange-400 hover:-translate-y-0.5'
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      <a href={twitterHref} target="_blank" rel="noopener noreferrer" className={cls}>
+    <div className="flex items-center gap-2.5">
+      <a href={twitterHref} target="_blank" rel="noopener noreferrer" aria-label="Share on X" className={cls}>
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.632 5.905-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
         </svg>
-        X
       </a>
-      <a href={linkedinHref} target="_blank" rel="noopener noreferrer" className={cls}>
+      <a href={linkedinHref} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" className={cls}>
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
         </svg>
-        LinkedIn
       </a>
-      <a href={facebookHref} target="_blank" rel="noopener noreferrer" className={cls}>
+      <a href={facebookHref} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" className={cls}>
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
         </svg>
-        Facebook
       </a>
-      <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={cls}>
+      <a href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" className={cls}>
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
-        WhatsApp
       </a>
     </div>
   )
@@ -134,6 +158,8 @@ export default async function InsightPostPage({ params }: Props) {
     }),
   ])
 
+  const accent = post.category.color || '#f97316'
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -162,27 +188,27 @@ export default async function InsightPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="min-h-screen bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
 
             {/* Main Article */}
-            <article className="lg:col-span-3">
+            <article>
 
-              <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
+              <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
                 <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
-                <span>/</span>
+                <span className="text-gray-700">→</span>
                 <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
-                <span>/</span>
-                <span className="text-gray-400 truncate max-w-xs">{post.title}</span>
+                <span className="text-gray-700">→</span>
+                <span className="text-gray-500 truncate max-w-xs">{post.title}</span>
               </nav>
 
-              <div className="flex items-center gap-2 flex-wrap mb-6">
+              <div className="flex items-center gap-2 flex-wrap mb-7">
                 <Link
                   href={'/insights?category=' + post.category.slug}
-                  className="px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors"
                   style={{
-                    backgroundColor: (post.category.color || '#f97316') + '15',
-                    color: post.category.color || '#f97316',
+                    backgroundColor: accent + '18',
+                    color: accent,
                   }}
                 >
                   {post.category.name}
@@ -191,52 +217,64 @@ export default async function InsightPostPage({ params }: Props) {
                   <Link
                     key={tag.id}
                     href={'/insights?tag=' + tag.slug}
-                    className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                    className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-500 hover:text-white hover:border-gray-700 transition-colors"
                   >
-                    #{tag.name}
+                    {tag.name}
                   </Link>
                 ))}
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+              <h1
+                className="font-serif text-4xl md:text-[3.25rem] font-bold text-white mb-8 leading-[1.08] tracking-tight"
+                style={{ textWrap: 'balance' as any }}
+              >
                 {post.title}
               </h1>
 
-              <div className="flex items-center gap-4 text-sm text-gray-400 mb-8 pb-8 border-b border-gray-800 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
-                    <span className="text-orange-400 text-xs font-semibold">
-                      {post.author.name.charAt(0)}
-                    </span>
+              {/* thin accent rule — echoes the category color, quiet signature */}
+              <div
+                className="h-px w-full mb-8"
+                style={{ background: `linear-gradient(90deg, ${accent}, transparent 60%)` }}
+              />
+
+              <div className="flex items-center justify-between gap-6 mb-10 pb-8 border-b border-gray-800 flex-wrap">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
+                      <span className="text-orange-400 text-sm font-semibold">
+                        {post.author.name.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="leading-tight">
+                      <p className="text-white text-sm font-medium">{post.author.name}</p>
+                      {post.publishedAt && (
+                        <time dateTime={post.publishedAt.toISOString()} className="text-gray-500 text-xs">
+                          {new Date(post.publishedAt).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </time>
+                      )}
+                    </div>
                   </div>
-                  <span>{post.author.name}</span>
                 </div>
-                <span>·</span>
-                <span>{post.readingTime} min read</span>
-                {post.publishedAt && (
-                  <>
-                    <span>·</span>
-                    <time dateTime={post.publishedAt.toISOString()}>
-                      {new Date(post.publishedAt).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </time>
-                  </>
-                )}
-                <span>·</span>
-                <span>{post.viewCount} views</span>
+
+                <div className="flex items-center gap-5">
+                  <ReadingMeter minutes={post.readingTime} color={accent} />
+                  <span className="text-gray-700">·</span>
+                  <span className="text-sm text-gray-500">{post.viewCount.toLocaleString('en-IN')} views</span>
+                </div>
               </div>
 
               {post.featuredImage && (
-                <div className="relative w-full rounded-2xl overflow-hidden mb-10 bg-gray-900 flex items-center justify-center max-h-[500px]">
+                <div className="relative w-full rounded-3xl overflow-hidden mb-12 bg-gray-900 flex items-center justify-center max-h-[520px] border border-gray-800/60">
                   <Image
                     src={post.featuredImage.url}
                     alt={post.featuredImage.altText || post.title}
                     width={1200}
                     height={675}
-                    className="w-full h-auto max-h-[500px] object-contain"
+                    className="w-full h-auto max-h-[520px] object-contain"
                     priority
                   />
                 </div>
@@ -248,46 +286,57 @@ export default async function InsightPostPage({ params }: Props) {
                 postUrl={`/insights/${post.slug}`}
               />
               <style>{`
-                .article-content { color: #d1d5db; font-size: 1.05rem; line-height: 1.85; }
-                .article-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-                .article-content td, .article-content th { padding: 8px 12px; text-align: left; min-width: 80px; }
+                .article-content { color: #d1d5db; font-size: 1.09rem; line-height: 1.9; max-width: 68ch; }
+                .article-content > p:first-of-type::first-letter {
+                  font-family: ui-serif, Georgia, serif;
+                  float: left;
+                  font-size: 3.6rem;
+                  line-height: 0.85;
+                  font-weight: 700;
+                  color: ${accent};
+                  padding-right: 0.6rem;
+                  padding-top: 0.3rem;
+                }
+                .article-content table { border-collapse: collapse; width: 100%; margin: 1.5rem 0; }
+                .article-content td, .article-content th { padding: 10px 14px; text-align: left; min-width: 80px; border-bottom: 1px solid #1f2937; }
                 .article-content th { font-weight: 600; color: #f9fafb; }
                 .article-content td { color: #d1d5db; }
                 .article-content h1,
                 .article-content h2,
                 .article-content h3,
-                .article-content h4 { color: #ffffff; font-weight: 700; margin-top: 2rem; margin-bottom: 0.75rem; }
-                .article-content h2 { font-size: 1.5rem; }
-                .article-content h3 { font-size: 1.25rem; }
-                .article-content p { margin-bottom: 1.25rem; color: #d1d5db; }
-                .article-content a { color: #f97316; text-decoration: none; }
-                .article-content a:hover { color: #fb923c; }
+                .article-content h4 { font-family: ui-serif, Georgia, serif; color: #ffffff; font-weight: 700; margin-top: 2.75rem; margin-bottom: 1rem; letter-spacing: -0.01em; }
+                .article-content h2 { font-size: 1.6rem; }
+                .article-content h3 { font-size: 1.3rem; }
+                .article-content p { margin-bottom: 1.4rem; color: #d1d5db; }
+                .article-content a { color: ${accent}; text-decoration: none; border-bottom: 1px solid ${accent}55; }
+                .article-content a:hover { border-bottom-color: ${accent}; }
                 .article-content strong { color: #ffffff; font-weight: 600; }
                 .article-content ul,
-                .article-content ol { color: #d1d5db; padding-left: 1.5rem; margin-bottom: 1.25rem; }
-                .article-content li { margin-bottom: 0.5rem; }
-                .article-content blockquote { border-left: 3px solid #f97316; padding-left: 1rem; color: #9ca3af; margin: 1.5rem 0; }
-                .article-content code { color: #fb923c; background: #1f2937; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-                .article-content pre { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
-                .article-content img { border-radius: 12px; max-width: 100%; }
+                .article-content ol { color: #d1d5db; padding-left: 1.5rem; margin-bottom: 1.4rem; }
+                .article-content li { margin-bottom: 0.55rem; }
+                .article-content blockquote { border-left: 3px solid ${accent}; padding-left: 1.25rem; color: #9ca3af; font-style: italic; margin: 2rem 0; }
+                .article-content code { color: ${accent}; background: #1f2937; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+                .article-content pre { background: #14161b; border: 1px solid #262a33; border-radius: 12px; padding: 1.15rem; overflow-x: auto; margin-bottom: 1.4rem; }
+                .article-content img { border-radius: 14px; max-width: 100%; }
               `}</style>
 
-              <div className="mt-12 pt-8 border-t border-gray-800">
-                <p className="text-gray-400 text-sm mb-4">Share this article</p>
+              <div className="mt-16 pt-8 border-t border-gray-800 flex items-center justify-between flex-wrap gap-4">
+                <p className="text-gray-400 text-sm">Share this article</p>
                 <ShareButtons slug={post.slug} title={post.title} />
               </div>
 
               {post.author.bio && (
-                <div className="mt-10 p-6 bg-gray-900 border border-gray-800 rounded-2xl">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-orange-400 text-lg font-semibold">
+                <div className="mt-8 p-7 bg-gray-900/60 border border-gray-800 rounded-3xl">
+                  <div className="flex items-start gap-5">
+                    <div className="w-14 h-14 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-orange-400 text-xl font-semibold">
                         {post.author.name.charAt(0)}
                       </span>
                     </div>
                     <div>
-                      <p className="text-white font-semibold mb-1">{post.author.name}</p>
-                      <p className="text-gray-400 text-sm">{post.author.bio}</p>
+                      <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Written by</p>
+                      <p className="text-white font-semibold mb-1.5">{post.author.name}</p>
+                      <p className="text-gray-400 text-sm leading-relaxed">{post.author.bio}</p>
                     </div>
                   </div>
                 </div>
@@ -295,49 +344,49 @@ export default async function InsightPostPage({ params }: Props) {
             </article>
 
             {/* Sidebar */}
-            <aside className="lg:col-span-1 space-y-6 lg:pt-20">
+            <aside className="space-y-6 lg:pt-16">
 
-              <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 sticky top-8">
-                <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Categories</h3>
-                <div className="space-y-1">
+              <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6 sticky top-8">
+                <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Categories</h3>
+                <div className="space-y-0.5">
                   {allCategories.map((cat) => (
                     <Link
                       key={cat.id}
                       href={'/insights?category=' + cat.slug}
-                      className="flex items-center justify-between group py-2 border-b border-gray-800 last:border-0"
+                      className="flex items-center justify-between group py-2.5 border-b border-gray-800/70 last:border-0"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5">
                         <div
-                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                           style={{ backgroundColor: cat.color || '#f97316' }}
                         />
                         <span className="text-gray-400 group-hover:text-white text-sm transition-colors">
                           {cat.name}
                         </span>
                       </div>
-                      <span className="text-gray-600 text-xs">{cat._count.posts}</span>
+                      <span className="text-gray-600 text-xs tabular-nums">{cat._count.posts}</span>
                     </Link>
                   ))}
                 </div>
               </div>
 
               {relatedPosts.length > 0 && (
-                <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
-                  <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Related Articles</h3>
-                  <div className="space-y-4">
+                <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6">
+                  <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Related Articles</h3>
+                  <div className="space-y-5">
                     {relatedPosts.map((related) => (
                       <Link
                         key={related.id}
                         href={'/insights/' + related.slug}
                         className="group block"
                       >
-                        <div className="relative h-28 rounded-xl overflow-hidden mb-2 bg-gray-800">
+                        <div className="relative h-32 rounded-2xl overflow-hidden mb-3 bg-gray-800">
                           {related.featuredImage ? (
                             <Image
                               src={related.featuredImage.url}
                               alt={related.title}
                               fill
-                              className="object-cover"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -345,10 +394,10 @@ export default async function InsightPostPage({ params }: Props) {
                             </div>
                           )}
                         </div>
-                        <p className="text-gray-300 text-sm font-medium group-hover:text-orange-400 transition-colors line-clamp-2">
+                        <p className="text-gray-300 text-sm font-medium group-hover:text-orange-400 transition-colors line-clamp-2 leading-snug">
                           {related.title}
                         </p>
-                        <p className="text-gray-500 text-xs mt-1">{related.readingTime} min read</p>
+                        <p className="text-gray-600 text-xs mt-1.5">{related.readingTime} min read</p>
                       </Link>
                     ))}
                   </div>
