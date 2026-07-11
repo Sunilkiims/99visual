@@ -486,7 +486,7 @@ const Footer: React.FC = () => {
                 Newsletter
               </h3>
               <p className="ft__nl-desc">
-                Insights that drive innovation — delivered monthly.
+                Insights that drive innovation — delivered weekly.
               </p>
               <form
                 onSubmit={handleSubmit}
