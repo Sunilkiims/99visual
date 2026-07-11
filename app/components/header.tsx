@@ -236,6 +236,17 @@ const Header = () => {
           opacity: 1;
           animation-play-state: running;
         }
+        .view-all-ring {
+          opacity: 0;
+          animation: card-ring-spin 2s linear infinite;
+          animation-play-state: paused;
+          transition: opacity 0.3s ease;
+          z-index: 0;
+        }
+        .group:hover .view-all-ring {
+          opacity: 1;
+          animation-play-state: running;
+        }
         .svc-card-mask {
           position: absolute;
           inset: 1px;
@@ -478,20 +489,37 @@ const Header = () => {
                         })}
                       </div>
 
-                      <div className="mx-3 mb-3 mt-1">
+                      <div className="relative group mx-3 mb-3 mt-1 rounded-xl">
+                        {/* Spinning ring — same animation/technique as .svc-card-ring
+                            above, reusing the "view-all-ring" class defined in the
+                            shared <style> block near the top of this component. */}
+                        <div
+                          className="view-all-ring absolute inset-0 rounded-xl pointer-events-none"
+                          style={{
+                            background: `conic-gradient(
+                              transparent 0deg,
+                              transparent 160deg,
+                              #3b82f6ee 200deg,
+                              #3b82f655 225deg,
+                              transparent 265deg,
+                              transparent 360deg
+                            )`,
+                          }}
+                          aria-hidden="true"
+                        />
                         <Link
                           href="/services"
                           role="menuitem"
                           onClick={() => setServicesOpen(false)}
                           className={clsx(
-                            'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl',
-                            'bg-gradient-to-r from-orange-600 to-amber-500',
+                            'relative z-[1] m-[1px] flex items-center justify-center gap-2 w-[calc(100%-2px)] py-2.5 rounded-xl',
+                            'bg-gradient-to-r from-blue-600 to-sky-500',
                             'text-white text-[12px] font-bold tracking-wide uppercase',
-                            'shadow-[0_4px_20px_rgba(249,115,22,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]',
-                            'hover:shadow-[0_6px_28px_rgba(249,115,22,0.55),inset_0_1px_0_rgba(255,255,255,0.2)]',
+                            'shadow-[0_4px_20px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]',
+                            'hover:shadow-[0_6px_28px_rgba(37,99,235,0.55),inset_0_1px_0_rgba(255,255,255,0.2)]',
                             'hover:brightness-110 active:scale-[0.99]',
                             'transition-all duration-200',
-                            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300',
+                            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300',
                           )}
                         >
                           View All Services
