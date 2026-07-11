@@ -216,15 +216,25 @@ const Header = () => {
         }
         .svc-card-ring {
           position: absolute;
-          inset: -60%;
+          /* Tightened from -60% so corner cards (e.g. top-left "End-to-End
+             Solutions") don't get their glow clipped by the panel's own
+             rounded/overflow-hidden edge — that clipping was what made the
+             top-left card's ring look different from the interior cards. */
+          inset: -45%;
           opacity: 0;
           pointer-events: none;
+          will-change: transform, opacity;
           animation: card-ring-spin 2s linear infinite;
+          /* Paused while hidden so it doesn't keep spinning (and drifting out
+             of sync with other cards) in the background while the dropdown
+             is closed. */
+          animation-play-state: paused;
           transition: opacity 0.3s ease;
           z-index: 0;
         }
         .group:hover .svc-card-ring {
           opacity: 1;
+          animation-play-state: running;
         }
         .svc-card-mask {
           position: absolute;
@@ -351,7 +361,10 @@ const Header = () => {
                         <span className="text-[10px] text-white/20 tracking-wide">{SERVICE_ITEMS.length} services</span>
                       </div>
 
-                      <div className="px-3 pb-3 grid grid-cols-2 gap-1.5">
+                      {/* Extra top/left breathing room (px-4 pt-2 instead of px-3)
+                          so the top-row cards' ring glow has clearance before
+                          hitting the panel's rounded, overflow-hidden edge. */}
+                      <div className="px-4 pt-2 pb-3 grid grid-cols-2 gap-1.5">
                         {SERVICE_ITEMS.map((svc, idx) => {
                           const active  = pathname === svc.href;
                           const hovered = hoveredIdx === idx;
@@ -386,6 +399,16 @@ const Header = () => {
                                     transparent 265deg,
                                     transparent 360deg
                                   )`,
+                                  // Anchor every ring to the same wall-clock cycle
+                                  // instead of "time since this element mounted".
+                                  // Without this, cards that happen to paint on a
+                                  // later frame than their siblings (e.g. the
+                                  // very first hover right after a cold page
+                                  // load, while images/fonts are still loading)
+                                  // start their rotation out of phase — which is
+                                  // exactly what made one card's light look
+                                  // "different" from the rest.
+                                  animationDelay: `-${Date.now() % 2000}ms`,
                                 }}
                                 aria-hidden="true"
                               />
