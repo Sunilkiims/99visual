@@ -415,10 +415,22 @@ export default function DigitalMarketing() {
         }
         .dm-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
-        /* HERO */
+        /* HERO
+           Header is fixed + transparent + white text/logo until scrolled
+           past 10px (it's built to sit on a dark hero). This page's hero is
+           light, so a dark scrim band is added behind the header's own
+           height, fading into the paper background just below it — keeps
+           the Header untouched while restoring contrast at page load. */
         .dm-hero{position:relative;padding:9rem 1.5rem 5rem;overflow:hidden;background:
+          linear-gradient(180deg, var(--dm-ink) 0px, var(--dm-ink) 64px, rgba(18,20,26,.82) 100px, rgba(18,20,26,0) 200px),
           radial-gradient(1200px 500px at 85% -10%, rgba(46,92,255,.07), transparent 60%),
           var(--dm-paper);}
+        @media(max-width:768px){
+          .dm-hero{background:
+            linear-gradient(180deg, var(--dm-ink) 0px, var(--dm-ink) 56px, rgba(18,20,26,.82) 84px, rgba(18,20,26,0) 170px),
+            radial-gradient(1200px 500px at 85% -10%, rgba(46,92,255,.07), transparent 60%),
+            var(--dm-paper);}
+        }
         .dm-hero__inner{position:relative;z-index:2;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:3.5rem;align-items:center;}
         @media(max-width:960px){.dm-hero__inner{grid-template-columns:1fr;gap:2.5rem;}}
         .dm-hero__content{animation:dmFadeUp .8s cubic-bezier(.22,1,.36,1) both;}
