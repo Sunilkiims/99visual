@@ -296,7 +296,7 @@ const pipeline = [
 // grid; respects prefers-reduced-motion via the stylesheet below.
 // ─────────────────────────────────────────────────────────────────────────────
 function GeoScanCard() {
-  const dots = [];
+  const dots: { x: number; y: number }[] = [];
   for (let x = 14; x <= 206; x += 24) {
     for (let y = 20; y <= 150; y += 24) {
       dots.push({ x: x + ((y / 24) % 2 === 0 ? 0 : 12), y });
