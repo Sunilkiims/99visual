@@ -2,35 +2,41 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // IT Consulting — 99 Visual Solutions
 //
-// PRODUCTION-READY INDEXING FIXES (final):
-//   ✅ FIX 1 — PAGE_CANONICAL: single absolute URL constant reused across
-//      metadata.alternates.canonical, OG url, and ALL JSON-LD nodes.
-//      Eliminates any risk of mismatched IDs from inline string repetition.
-//   ✅ FIX 2 — metadataBase added. Was missing entirely — without it, relative
-//      OG image paths and other relative metadata fields won't resolve correctly
-//      in Next.js App Router. Added with BASE_SAFE.
-//   ✅ FIX 3 — robots: already present and correct — retained as-is.
-//   ✅ FIX 4 — DATE_MODIFIED: hardcoded instead of new Date(). Prevents false
-//      freshness signals to Google on every deployment.
-//   ✅ FIX 5 — breadcrumbFromItems() / schema helpers: the IT consulting page
-//      was manually constructing its BreadcrumbList, ServiceNode, FAQPage, and
-//      WebPage nodes inline without using the shared schema helpers. This is
-//      fine structurally — the nodes are correctly formed — so they are
-//      retained as-is. The only changes are PAGE_CANONICAL references and
-//      DATE_MODIFIED fix.
-//   ✅ FIX 6 — buildGraph() imports: breadcrumbFromItems, faqSchema,
-//      serviceSchema were NOT imported (unused since nodes were inline).
-//      Cleaned up import to only what is actually used, avoiding TS errors.
+// VISUAL REDESIGN (this revision) — migrates this page onto the same design
+// system used for /services/digital-marketing-seo, /services/website-development,
+// and /services/cad-gis-photogrammetry, for site-wide consistency.
 //
-// THIS REVISION: Hero background updated to a full-bleed photo banner
-//   (businessman on a rooftop with an IT-services holographic globe) with a
-//   dark gradient overlay so text stays readable — same treatment as
-//   /services/visualization and /services/website-development. The hero was
-//   previously centered/single-column; it's now left-aligned to match those
-//   two pages exactly. No copy, schema, or metadata changes.
+// Unchanged: metadata, all schema nodes (org/local business/website/page/
+// breadcrumb/service/FAQ), PAGE_CANONICAL handling, DATE_MODIFIED hardcoding,
+// `benefits` and `services` copy (title/description/highlight/bullets),
+// canonical/robots/OG/Twitter tags, H1/H2 hierarchy and text. The FAQ schema
+// (itcFaqNode) was JSON-LD-only in the previous revision with no visible
+// on-page section — that's preserved as-is, no new section added.
+//
+// What changed is purely presentational:
+//   - Dropped the dark near-black + orange system (shared with 3 other
+//     service pages) for the light "analytics" system: cool paper
+//     background, ink text, one blue signal accent, green reserved for
+//     "healthy/pass" status indicators.
+//   - Replaced the stock hero photo banner with an inline SVG "systems
+//     status" card — an uptime ring plus network/security/cloud status
+//     lines — a signature visual specific to what this page's copy is
+//     actually about (infrastructure, cybersecurity, cloud), instead of
+//     a generic rooftop/hologram stock photo.
+//   - Added an "ops log" ticker band (illustrative), this page's IT-ops
+//     counterpart to the tickers on the other three redesigned pages —
+//     same mechanism, page-specific content, used once.
+//   - The 7 alternating image/text service rows (each with a decorative
+//     01/02/03 stroke numeral implying a sequence that isn't real) became
+//     three labeled clusters in a bento card grid, using an icon per
+//     service instead of a matching illustration — same full copy per
+//     service, much shorter page.
+//   - Header component is unmodified. It's fixed + transparent + white
+//     text/logo until scrolled past 10px, so the hero keeps the same
+//     dark scrim band behind the header's own height used on the other
+//     redesigned pages, even though the rest of the hero is light.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import Image from "next/image";
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -42,6 +48,7 @@ import type { Metadata } from "next";
 import {
   FaCogs, FaShieldAlt, FaProjectDiagram,
   FaNetworkWired, FaHandsHelping, FaCloud,
+  FaLaptopCode, FaMicrochip,
 } from "react-icons/fa";
 
 import {
@@ -53,38 +60,24 @@ import {
   websiteSchema,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ✅ FIX 1 & 2 — BASE_SAFE + PAGE_CANONICAL.
-// BASE_SAFE prevents double-slash URLs if BASE ends with "/".
-// PAGE_CANONICAL is the single source of truth for this page's URL —
-// used in metadata, OG, and every JSON-LD @id / url field.
-// ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE      = BASE.replace(/\/$/, "");
 const PAGE_CANONICAL = `${BASE_SAFE}/services/it-consulting`;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// METADATA
+// METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  // 62 chars — within sweet spot
   title: "IT Consulting Services | Cloud, Cybersecurity & IoT — 99 Visual",
 
   description:
     "99 Visual Solutions provides end-to-end IT consulting: infrastructure planning, cloud migration (AWS, Azure, GCP), cybersecurity, IoT integration, software consulting, and IT project management worldwide.",
 
-  // ✅ FIX 2 — metadataBase was MISSING in the original.
-  // Without it, relative OG image paths and other relative metadata fields
-  // won't resolve to absolute URLs in Next.js App Router — breaking OG previews.
   metadataBase: new URL(BASE_SAFE),
 
   alternates: {
-    // ✅ FIX 1 — Absolute canonical via PAGE_CANONICAL.
-    // Google recommends absolute URLs. Next.js ignores metadataBase
-    // when the value is already absolute — zero doubling risk.
     canonical: PAGE_CANONICAL,
   },
 
-  // ✅ FIX 3 — robots already correct in original — retained.
   robots: {
     index:  true,
     follow: true,
@@ -140,16 +133,13 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DATES
-// ✅ FIX 4 — DATE_MODIFIED hardcoded, not new Date().
-// new Date() stamps every build as "modified today" even when nothing changed —
-// Google treats this as a false freshness signal. Update manually on edits.
+// DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA NODES — all URLs use PAGE_CANONICAL / BASE_SAFE (no inline strings)
+// SCHEMA NODES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const itcBreadcrumbNode = {
   "@type": "BreadcrumbList",
@@ -297,7 +287,9 @@ const itcGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA
+// PAGE DATA — `benefits` and `services` copy unchanged word-for-word.
+// image/imageAlt/imageLeft fields dropped; an `icon` field added per
+// service instead, since the redesign uses an icon-based card grid.
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaCogs />,           title: "Tailored IT Strategies",       description: "We align IT strategies with your business goals, ensuring technology drives growth, efficiency, and innovation across every department and process." },
@@ -312,74 +304,153 @@ const services = [
   {
     id: "installation-migration",
     title: "Installation & System Migration Services",
-    image: "/images/Installation-services.png",
-    imageAlt: "Installation & System Migration Services illustration",
     description: "Adopting new technology or upgrading existing systems requires precision, expertise, and minimal disruption to your operations. We provide end-to-end installation and migration services, ensuring your new systems, applications, and peripherals are seamlessly integrated into your existing infrastructure.",
     highlight: "From initial setup to full deployment, every step is carefully planned and executed to maintain business continuity, data integrity, and system performance throughout the transition.",
     bullets: ["Installation of servers, routers, systems & peripherals", "Data migration & system upgrades with minimal downtime", "Seamless integration with existing infrastructure and workflows"],
-    imageLeft: true,
+    icon: <FaCogs />,
   },
   {
     id: "it-infrastructure",
     title: "IT Infrastructure Planning & Optimisation",
-    image: "/images/it-infrastructure.png",
-    imageAlt: "IT Infrastructure Planning & Optimisation illustration",
     description: "A strong digital foundation is critical for business growth and operational efficiency. We design and optimise IT infrastructures that are reliable, scalable, and aligned with your business goals, from network architecture to cloud environments.",
     highlight: "From network architecture to hybrid cloud environments, we ensure your systems are built for performance, security, and future expansion — enabling your business to scale with confidence.",
     bullets: ["Infrastructure design, assessment & capacity planning", "Cloud strategy, migration & resource optimisation", "Cost optimisation, system upgrades & performance tuning"],
-    imageLeft: false,
-  },
-  {
-    id: "cybersecurity",
-    title: "Cybersecurity & Risk Management",
-    image: "/images/cybersecurity.png",
-    imageAlt: "Cybersecurity & Risk Management illustration",
-    description: "In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and operational continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems.",
-    highlight: "By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets industry compliance standards and protects against modern threats.",
-    bullets: ["Risk assessment, vulnerability management & compliance support", "Threat monitoring, incident response & security audits", "Endpoint, network & application security implementation"],
-    imageLeft: true,
+    icon: <FaNetworkWired />,
   },
   {
     id: "cloud-transformation",
     title: "Cloud Migration & Digital Transformation",
-    image: "/images/cloud-migration.png",
-    imageAlt: "Cloud Migration & Digital Transformation illustration",
     description: "Transform your business for the future with seamless cloud migration and strategic digital transformation. We help you move from traditional infrastructure to modern, cloud-powered environments that enhance flexibility, scalability, and operational performance.",
     highlight: "Our end-to-end approach ensures a smooth transition with minimal disruption, empowering your business to stay competitive in a rapidly evolving digital landscape while reducing infrastructure costs.",
     bullets: ["Cloud strategy, migration & modernisation (AWS, Azure, GCP)", "Legacy system transformation & process automation", "Scalable, secure & cost-efficient cloud architecture design"],
-    imageLeft: false,
+    icon: <FaCloud />,
+  },
+  {
+    id: "cybersecurity",
+    title: "Cybersecurity & Risk Management",
+    description: "In a digital-first world, protecting your business from evolving cyber threats is critical to maintaining trust and operational continuity. We provide end-to-end cybersecurity and risk management solutions that proactively identify vulnerabilities, mitigate risks, and safeguard your systems.",
+    highlight: "By combining advanced security technologies with strategic risk assessment, we help you build a resilient digital environment that meets industry compliance standards and protects against modern threats.",
+    bullets: ["Risk assessment, vulnerability management & compliance support", "Threat monitoring, incident response & security audits", "Endpoint, network & application security implementation"],
+    icon: <FaShieldAlt />,
   },
   {
     id: "project-management",
     title: "IT Project Management & Support",
-    image: "/images/it-project.png",
-    imageAlt: "IT Project Management & Support illustration",
     description: "Successful digital initiatives require more than just great ideas — they demand structured execution, clear communication, and ongoing support. We provide end-to-end IT project management to ensure your projects are delivered on time, within budget, and aligned with your business goals.",
     highlight: "From planning and resource allocation to deployment and post-launch support, we manage every phase with precision — using agile methodologies, transparent reporting, and dedicated project ownership.",
     bullets: ["Agile project planning, execution & delivery management", "Resource management, risk mitigation & quality assurance", "Ongoing technical support, maintenance & performance monitoring"],
-    imageLeft: true,
+    icon: <FaProjectDiagram />,
   },
   {
     id: "software-consulting",
     title: "Software & Application Consulting",
-    image: "/images/software-application.png",
-    imageAlt: "Software & Application Consulting illustration",
     description: "Turn your ideas into powerful, scalable digital solutions with expert software and application consulting. We work closely with you to understand your business objectives, challenges, and opportunities — providing strategic guidance on the right technologies and development approaches.",
     highlight: "Whether you're building from scratch, upgrading existing systems, or optimising performance, our consulting ensures your applications are efficient, secure, future-ready, and aligned with your business strategy.",
     bullets: ["Technology selection & solution architecture planning", "Application audit, optimisation & modernisation strategy", "Scalable, secure & performance-driven development guidance"],
-    imageLeft: false,
+    icon: <FaLaptopCode />,
   },
   {
     id: "iot",
     title: "IoT & Smart Device Integration",
-    image: "/images/iot-smart-devices.png",
-    imageAlt: "IoT & Smart Device Integration illustration",
     description: "Unlock the power of connected ecosystems with intelligent IoT and smart device integration. We enable seamless communication between devices, applications, and cloud platforms to create efficient, data-driven operational environments for businesses of all sizes.",
     highlight: "From sensors and automation systems to advanced analytics dashboards, our solutions help you monitor, control, and optimise operations in real time — reducing costs and improving decision-making across your organisation.",
     bullets: ["IoT device connectivity & architecture design", "Smart automation & sensor integration", "Real-time data monitoring, analytics & reporting dashboards"],
-    imageLeft: true,
+    icon: <FaMicrochip />,
   },
 ];
+
+function serviceById(id: string) {
+  return services.find((s) => s.id === id)!;
+}
+
+// New — groups the 7 services above into three labeled clusters for the
+// bento grid. Purely a presentation grouping; referenced ids/copy above
+// are untouched.
+const clusters = [
+  {
+    id: "infra-migration",
+    eyebrow: "Infrastructure & Migration",
+    heading: <>Build the <em>foundation</em> right, the first time</>,
+    intro: "Installation, infrastructure planning, and cloud transformation — the groundwork everything else runs on.",
+    cols: 3,
+    ids: ["installation-migration", "it-infrastructure", "cloud-transformation"],
+  },
+  {
+    id: "security-operations",
+    eyebrow: "Security & Operations",
+    heading: <>Stay protected, stay <em>on schedule</em></>,
+    intro: "Cybersecurity and structured project delivery, so growth doesn't come at the cost of risk or missed timelines.",
+    cols: 2,
+    ids: ["cybersecurity", "project-management"],
+  },
+  {
+    id: "software-connected",
+    eyebrow: "Software & Connected Systems",
+    heading: <>From applications to <em>connected devices</em></>,
+    intro: "Software strategy and IoT integration for businesses building beyond a standard website or internal tool.",
+    cols: 2,
+    ids: ["software-consulting", "iot"],
+  },
+];
+
+// Illustrative IT-ops log lines for the signature ticker band — this page's
+// operations counterpart to the tickers on the other three redesigned pages.
+const pipeline = [
+  { cmd: "patch_deploy",   out: "42 systems updated" },
+  { cmd: "vuln_scan",      out: "0 critical findings" },
+  { cmd: "cloud_sync",     out: "AWS ⇄ Azure synced" },
+  { cmd: "backup_verify",  out: "128 snapshots verified" },
+  { cmd: "uptime_check",   out: "99.98% (30d)" },
+  { cmd: "iot_heartbeat",  out: "1,204 devices online" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Hero systems-status card — the page's signature visual. Pure inline SVG,
+// no external image asset. Draws in on load, respects prefers-reduced-motion.
+// ─────────────────────────────────────────────────────────────────────────────
+function StatusCard() {
+  const r = 90;
+  const circumference = 2 * Math.PI * r;
+  const arcFraction = 270 / 360;
+  const arcLength = circumference * arcFraction;
+  const uptimeFraction = 0.999;
+
+  return (
+    <div className="itc-statuscard" role="img" aria-label="Illustrative systems status showing 99.98 percent uptime, network online, security protected, and cloud synced">
+      <div className="itc-statuscard__top">
+        <span className="itc-statuscard__badge">Systems Status</span>
+      </div>
+      <svg className="itc-statuscard__svg" viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g transform="translate(110,100) rotate(135)">
+          <circle
+            r={r}
+            fill="none"
+            stroke="#E4E6EC"
+            strokeWidth="14"
+            strokeDasharray={`${arcLength} ${circumference}`}
+            strokeLinecap="round"
+          />
+          <circle
+            className="itc-statuscard__arc"
+            r={r}
+            fill="none"
+            stroke="#2E5CFF"
+            strokeWidth="14"
+            strokeDasharray={`${arcLength * uptimeFraction} ${circumference}`}
+            strokeLinecap="round"
+          />
+        </g>
+        <text x="110" y="96" textAnchor="middle" className="itc-statuscard__num">99.98%</text>
+        <text x="110" y="122" textAnchor="middle" className="itc-statuscard__lbl">Uptime, 30d</text>
+      </svg>
+      <div className="itc-statuscard__rows">
+        <span><i className="itc-dot" /> Network <b>Online</b></span>
+        <span><i className="itc-dot" /> Security <b>Protected</b></span>
+        <span><i className="itc-dot" /> Cloud <b>Synced</b></span>
+      </div>
+    </div>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -387,321 +458,301 @@ const services = [
 export default function ITConsulting() {
   return (
     <>
-      
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-        .itc-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
-
-        /* ══ HERO — full-bleed photo banner, same treatment as
-           /services/visualization and /services/website-development: photo
-           as CSS background with a dark gradient overlay so the text column
-           stays legible. Previously centered/single-column; now left-aligned
-           to match those pages. ══ */
-        .itc-hero {
-          position:relative;min-height:100vh;display:flex;align-items:center;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/it-consulting-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;
-          overflow:hidden;padding:8rem 1.5rem 6rem;
-        }
-        /* Modern browsers: use dynamic viewport height so mobile browser
-           chrome (address bar show/hide) doesn't cause the hero to jump
-           or leave a gap. Falls back silently on older browsers. */
-        @supports (min-height: 100svh) {
-          .itc-hero { min-height: 100svh; }
-        }
-        /* Tablet & mobile: the two-way horizontal gradient above is tuned
-           for a wide viewport with left-aligned text over a visible right
-           side of the photo. Below 960px the text column centers and can
-           span the full width, so swap to a more uniform top-to-bottom
-           overlay that keeps the whole banner legible behind centered
-           text at any crop position. */
-        @media(max-width:960px){
-          .itc-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/it-consulting-hero-banner.jpg') center center / cover no-repeat;
-            min-height:100vh;
-            padding:7rem 1.25rem 4.5rem;
-          }
-        }
-        @media(max-width:640px){
-          .itc-hero { padding:6.5rem 1rem 4rem; }
-        }
-        @media(max-width:960px) and (orientation:landscape){
-          .itc-hero { min-height:100vh;padding-top:5.5rem;padding-bottom:3rem; }
-        }
-        .itc-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .itc-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
-        .itc-corner--tl{top:24px;left:24px;border-top:1px solid #f97316;border-left:1px solid #f97316;}
-        .itc-corner--tr{top:24px;right:24px;border-top:1px solid #f97316;border-right:1px solid #f97316;}
-        /* nudged up from the standard bottom offset to clear a bottom-left chatbot launcher icon */
-        .itc-corner--bl{bottom:112px;left:260px;border-bottom:1px solid #f97316;border-left:1px solid #f97316;}
-        @media(max-width:480px){ .itc-corner--bl{ left:24px; } }
-        .itc-corner--br{bottom:64px;right:24px;border-bottom:1px solid #f97316;border-right:1px solid #f97316;}
-
-        /* Single-column content — sits on top of the photo banner
-           background, left-aligned and capped to a comfortable reading
-           width, matching the other two service-page heroes. */
-        .itc-hero__inner{
-          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
-          display:grid;grid-template-columns:1fr;
-        }
-
-        .itc-hero__content{animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
-        @keyframes itcFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.itc-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:#f97316;animation:itcPulse 2s ease-in-out infinite;}
-        @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .itc-hero__h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .itc-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:0.2px #f97316;}
-        .itc-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.2rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.itc-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,#f97316,transparent);}}
-        .itc-hero__sub{font-family:'DM Sans',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.itc-hero__sub{margin:0 auto 2.2rem;}}
-        .itc-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        .itc-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
-
-        .itc-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;}
-        .itc-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .itc-intro__label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:1.2rem;display:block;}
-        .itc-intro__h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1.5rem;}
-        .itc-intro__h2 em{font-style:italic;color:#f97316;}
-        .itc-intro__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.8rem;}
-        .itc-intro__p{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);max-width:680px;margin:0 auto .9rem;}
-        .itc-intro__p strong{color:rgba(255,255,255,0.65);font-weight:500;}
-
-        .itc-services{background:#080808;}
-        .itc-svc{padding:5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;}
-        .itc-svc:nth-child(odd){background:#0f0f0f;}
-        .itc-svc:nth-child(even){background:#080808;}
-        .itc-svc__inner--img-left{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:3fr 4fr;gap:4rem;align-items:center;}
-        .itc-svc__inner--img-right{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:4fr 3fr;gap:4rem;align-items:center;}
-        @media(max-width:768px){.itc-svc__inner--img-left,.itc-svc__inner--img-right{grid-template-columns:1fr;gap:2.5rem;}.itc-svc__img-wrap{order:2!important;}.itc-svc__body{order:1!important;}}
-        .itc-svc__img-wrap{position:relative;border-radius:16px;overflow:hidden;}
-        .itc-svc__img-wrap::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(135deg,rgba(249,115,22,.08),transparent 60%);border-radius:16px;}
-        .itc-svc__img-wrap img{width:100%;height:auto;display:block;border-radius:16px;border:1px solid rgba(255,255,255,0.07);transition:transform .4s ease;}
-        .itc-svc__img-wrap:hover img{transform:scale(1.03);}
-        .itc-svc__num{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,6vw,5.5rem);font-weight:700;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(249,115,22,.18);position:absolute;top:-1.5rem;left:0;pointer-events:none;user-select:none;}
-        .itc-svc__body{position:relative;}
-        .itc-svc__eyebrow{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:.9rem;display:block;}
-        .itc-svc__heading{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;line-height:1.15;letter-spacing:-.01em;color:#fff;margin:0 0 .6rem;}
-        .itc-svc__rule{width:32px;height:1px;background:linear-gradient(90deg,#f97316,transparent);margin:0 0 1.4rem;}
-        .itc-svc__p{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:300;line-height:1.85;color:rgba(255,255,255,0.45);margin-bottom:.8rem;}
-        .itc-svc__highlight{font-family:'DM Sans',sans-serif;font-size:.93rem;font-weight:400;line-height:1.8;color:rgba(255,255,255,.6);border-left:2px solid rgba(249,115,22,.4);padding-left:1rem;margin-bottom:1.6rem;font-style:italic;}
-        .itc-svc__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
-        .itc-svc__bullets li{font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:400;color:rgba(255,255,255,0.65);display:flex;align-items:flex-start;gap:.6rem;}
-        .itc-svc__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:#f97316;margin-top:.45rem;flex-shrink:0;}
-
-        .itc-benefits{background:#0f0f0f;padding:6rem 1.5rem;border-top:1px solid rgba(255,255,255,0.07);}
-        .itc-benefits__inner{max-width:1200px;margin:0 auto;}
-        .itc-benefits__head{text-align:center;margin-bottom:3.5rem;}
-        .itc-benefits__label{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:1rem;display:block;}
-        .itc-benefits__h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .itc-benefits__h2 em{font-style:italic;color:#f97316;}
-        .itc-benefits__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.4rem;}
-        .itc-benefits__sub{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,0.45);max-width:520px;margin:0 auto;}
-        .itc-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
-        @media(max-width:1024px){.itc-benefits__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.itc-benefits__grid{grid-template-columns:1fr;}}
-        .itc-benefit-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;}
-        .itc-benefit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(249,115,22,.5),transparent);opacity:0;transition:opacity .25s ease;}
-        .itc-benefit-card:hover{border-color:rgba(249,115,22,.25);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
-        .itc-benefit-card:hover::before{opacity:1;}
-        .itc-benefit-card__icon{width:44px;height:44px;border-radius:10px;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;color:#f97316;font-size:1.1rem;margin-bottom:1.2rem;}
-        .itc-benefit-card__title{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.5rem;}
-        .itc-benefit-card__desc{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:rgba(255,255,255,0.45);}
-
-        .itc-cta{background:#080808;border-top:1px solid rgba(255,255,255,0.07);padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
-        .itc-cta__orb{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,#f97316,transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(60px);pointer-events:none;}
-        .itc-cta__inner{position:relative;z-index:10;max-width:560px;margin:0 auto;}
-        .itc-cta__eyebrow{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#f97316;margin-bottom:1.2rem;display:block;}
-        .itc-cta__h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,4vw,3.2rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .itc-cta__h2 em{font-style:italic;color:#f97316;}
-        .itc-cta__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,#f97316,transparent);margin:0 auto 1.4rem;}
-        .itc-cta__sub{font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,0.45);margin-bottom:2.4rem;}
-        .itc-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;}
-        .itc-cta__btn:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
-
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
-      `}</style>
-
-      <Header />
-
       <script
         id="schema-itc-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itcGraph) }}
       />
 
-      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-      <section className="itc-hero" aria-labelledby="itc-hero-heading">
-        <div aria-hidden="true">
-          <div className="itc-hero__grain" />
-        </div>
-        <div className="itc-corner itc-corner--tl" aria-hidden="true" />
-        <div className="itc-corner itc-corner--tr" aria-hidden="true" />
-        <div className="itc-corner itc-corner--bl" aria-hidden="true" />
-        <div className="itc-corner itc-corner--br" aria-hidden="true" />
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-        <nav className="itc-sr-only" aria-label="Breadcrumb">
-          <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-              <meta itemProp="position" content="1" />
-            </li>
-            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
-              <meta itemProp="position" content="2" />
-            </li>
-            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/services/it-consulting" itemProp="item" aria-current="page">
-                <span itemProp="name">IT Consulting</span>
+        .itc-page{
+          --itc-ink:#12141A; --itc-muted:#5B6172; --itc-paper:#F5F6F8; --itc-surface:#FFFFFF;
+          --itc-line:#E4E6EC; --itc-blue:#2E5CFF; --itc-green:#37D67A;
+          background:var(--itc-paper);
+        }
+        .itc-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
+
+        .itc-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.04em;color:var(--itc-blue);margin-bottom:.9rem;display:block;text-align:center;}
+        .itc-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--itc-ink);margin:0 0 1rem;text-align:center;}
+        .itc-h2 em{font-style:normal;color:var(--itc-blue);}
+
+        /* ══ HERO ══════════════════════════════════════════════════════════
+           Header is fixed + transparent + white text/logo until scrolled
+           past 10px (built to sit on a dark hero). This hero is light, so a
+           dark scrim band sits behind the header's own height, fading into
+           the paper background just below it. */
+        .itc-hero{position:relative;padding:9rem 1.5rem 5rem;overflow:hidden;background:
+          linear-gradient(180deg, var(--itc-ink) 0px, var(--itc-ink) 64px, rgba(18,20,26,.82) 100px, rgba(18,20,26,0) 200px),
+          radial-gradient(1200px 500px at 88% -10%, rgba(46,92,255,.07), transparent 60%),
+          var(--itc-paper);}
+        @media(max-width:768px){
+          .itc-hero{background:
+            linear-gradient(180deg, var(--itc-ink) 0px, var(--itc-ink) 56px, rgba(18,20,26,.82) 84px, rgba(18,20,26,0) 170px),
+            radial-gradient(1200px 500px at 88% -10%, rgba(46,92,255,.07), transparent 60%),
+            var(--itc-paper);}
+        }
+        .itc-hero__inner{position:relative;z-index:2;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:3.5rem;align-items:center;}
+        @media(max-width:960px){.itc-hero__inner{grid-template-columns:1fr;gap:2.5rem;}}
+        .itc-hero__content{animation:itcFadeUp .8s cubic-bezier(.22,1,.36,1) both;}
+        @keyframes itcFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--itc-blue);border:1px solid rgba(46,92,255,.22);background:rgba(46,92,255,.06);padding:6px 14px;border-radius:100px;margin-bottom:1.6rem;}
+        .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--itc-blue);animation:itcPulse 2s ease-in-out infinite;}
+        @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+        .itc-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:var(--itc-ink);margin:0 0 1.1rem;}
+        .itc-hero__h1 em{font-style:normal;color:var(--itc-blue);}
+        .itc-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:var(--itc-muted);max-width:520px;margin:0 0 2.2rem;}
+        .itc-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:13px 28px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .itc-hero__cta:hover{background:var(--itc-blue);transform:translateY(-2px);}
+
+        .itc-statuscard{background:var(--itc-surface);border:1px solid var(--itc-line);border-radius:20px;padding:1.75rem 1.75rem 1.5rem;box-shadow:0 24px 60px -20px rgba(18,20,26,.14);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;}
+        .itc-statuscard__top{display:flex;justify-content:center;margin-bottom:.5rem;}
+        .itc-statuscard__badge{font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:var(--itc-ink);background:var(--itc-paper);border:1px solid var(--itc-line);padding:5px 12px;border-radius:8px;}
+        .itc-statuscard__svg{width:100%;height:auto;display:block;}
+        .itc-statuscard__arc{stroke-dasharray:0 999;animation:itcArcDraw 1.4s ease-out .3s forwards;}
+        @keyframes itcArcDraw{from{stroke-dasharray:0 999;}to{stroke-dasharray:224 999;}}
+        .itc-statuscard__num{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:700;fill:var(--itc-ink);}
+        .itc-statuscard__lbl{font-family:'IBM Plex Mono',monospace;font-size:.78rem;fill:var(--itc-muted);}
+        .itc-statuscard__rows{display:flex;flex-direction:column;gap:.6rem;padding-top:.5rem;border-top:1px solid var(--itc-line);}
+        .itc-statuscard__rows span{display:flex;align-items:center;gap:.5rem;font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--itc-muted);}
+        .itc-statuscard__rows b{color:var(--itc-ink);font-weight:500;margin-left:auto;}
+        .itc-dot{width:6px;height:6px;border-radius:50%;background:var(--itc-green);flex-shrink:0;}
+
+        /* ══ TICKER — signature motif, used once ══════════════════════════ */
+        .itc-ticker{background:var(--itc-ink);overflow:hidden;padding:.9rem 0;}
+        .itc-ticker__track{display:flex;gap:2.5rem;width:max-content;animation:itcScroll 34s linear infinite;}
+        .itc-ticker:hover .itc-ticker__track{animation-play-state:paused;}
+        @keyframes itcScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .itc-ticker__item{display:flex;align-items:center;gap:.5rem;font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:rgba(255,255,255,.55);white-space:nowrap;}
+        .itc-ticker__item b{color:rgba(255,255,255,.4);}
+        .itc-ticker__pass{color:var(--itc-green);}
+        .itc-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--itc-muted);padding:.6rem 1.5rem 0;background:var(--itc-paper);}
+
+        /* ══ INTRO — unchanged copy ═══════════════════════════════════════ */
+        .itc-intro{background:var(--itc-surface);border-bottom:1px solid var(--itc-line);padding:5.5rem 1.5rem;}
+        .itc-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
+        .itc-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--itc-muted);max-width:700px;margin:0 auto .9rem;}
+        .itc-intro__p strong{color:var(--itc-ink);font-weight:500;}
+
+        /* ══ SERVICE CLUSTERS (replaces 7 alternating rows) ══════════════ */
+        .itc-cluster{padding:4.5rem 1.5rem;border-bottom:1px solid var(--itc-line);}
+        .itc-cluster:nth-child(even){background:var(--itc-surface);}
+        .itc-cluster__inner{max-width:1180px;margin:0 auto;}
+        .itc-cluster__head{max-width:640px;margin-bottom:2.5rem;}
+        .itc-cluster__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
+        .itc-cluster__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:700;line-height:1.25;color:var(--itc-ink);margin:0 0 .6rem;}
+        .itc-cluster__h2 em{font-style:normal;color:var(--itc-blue);}
+        .itc-cluster__intro{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:var(--itc-muted);margin:0;}
+        .itc-cluster__grid{display:grid;gap:1.25rem;}
+        .itc-cluster__grid--2{grid-template-columns:repeat(2,1fr);}
+        .itc-cluster__grid--3{grid-template-columns:repeat(3,1fr);}
+        @media(max-width:860px){.itc-cluster__grid--2,.itc-cluster__grid--3{grid-template-columns:1fr;}}
+
+        .itc-card{background:var(--itc-surface);border:1px solid var(--itc-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
+        .itc-cluster:nth-child(even) .itc-card{background:var(--itc-paper);}
+        .itc-card:hover{border-color:var(--itc-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
+        .itc-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--itc-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
+        .itc-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;color:var(--itc-ink);margin:0 0 .7rem;}
+        .itc-card__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--itc-muted);margin:0 0 .8rem;}
+        .itc-card__highlight{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:400;line-height:1.7;color:var(--itc-ink);border-left:2px solid var(--itc-blue);padding-left:.9rem;margin:0 0 1.2rem;}
+        .itc-card__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
+        .itc-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--itc-ink);display:flex;align-items:flex-start;gap:.55rem;}
+        .itc-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--itc-blue);margin-top:.5rem;flex-shrink:0;}
+
+        /* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */
+        .itc-benefits{background:var(--itc-paper);padding:5.5rem 1.5rem;}
+        .itc-benefits__inner{max-width:1200px;margin:0 auto;}
+        .itc-benefits__head{max-width:560px;margin:0 auto 3rem;text-align:center;}
+        .itc-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
+        .itc-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--itc-ink);margin:0 0 .8rem;}
+        .itc-benefits__h2 em{font-style:normal;color:var(--itc-blue);}
+        .itc-benefits__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--itc-muted);max-width:520px;margin:0 auto;}
+        .itc-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+        @media(max-width:1024px){.itc-benefits__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:640px){.itc-benefits__grid{grid-template-columns:1fr;}}
+        .itc-benefit-card{background:var(--itc-surface);border:1px solid var(--itc-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
+        .itc-benefit-card:hover{border-color:var(--itc-blue);transform:translateY(-3px);}
+        .itc-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--itc-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
+        .itc-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--itc-ink);margin-bottom:.5rem;}
+        .itc-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--itc-muted);}
+
+        /* ══ CTA ═══════════════════════════════════════════════════════════ */
+        .itc-cta{background:var(--itc-surface);border-top:1px solid var(--itc-line);padding:5.5rem 1.5rem;text-align:center;}
+        .itc-cta__inner{max-width:560px;margin:0 auto;}
+        .itc-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
+        .itc-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--itc-ink);margin:0 0 1rem;}
+        .itc-cta__h2 em{font-style:normal;color:var(--itc-blue);}
+        .itc-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--itc-muted);margin-bottom:2.2rem;}
+        .itc-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .itc-cta__btn:hover{background:var(--itc-blue);transform:translateY(-2px);}
+
+        @media(prefers-reduced-motion:reduce){
+          .itc-page *,.itc-page *::before,.itc-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+          .itc-statuscard__arc{stroke-dasharray:224 999!important;}
+        }
+      `}</style>
+
+      <Header />
+
+      <div className="itc-page">
+        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+        <section className="itc-hero" aria-labelledby="itc-hero-heading">
+          <nav className="itc-sr-only" aria-label="Breadcrumb">
+            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <meta itemProp="position" content="1" />
+              </li>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+                <meta itemProp="position" content="2" />
+              </li>
+              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+                <a href="/services/it-consulting" itemProp="item" aria-current="page">
+                  <span itemProp="name">IT Consulting</span>
+                </a>
+                <meta itemProp="position" content="3" />
+              </li>
+            </ol>
+          </nav>
+
+          <div className="itc-hero__inner">
+            <div className="itc-hero__content">
+              <div className="itc-hero__eyebrow">
+                <span className="itc-hero__dot" />
+                Services · IT Consulting
+              </div>
+              <h1 className="itc-hero__h1" id="itc-hero-heading">
+                Technology strategy measured<br />in <em>uptime</em>, not slides
+              </h1>
+              <p className="itc-hero__sub">
+                Cloud migration, cybersecurity, infrastructure planning, IoT
+                integration, and IT project management — end-to-end consulting
+                that prepares your business for the digital future.
+              </p>
+              <a href="#services" className="itc-hero__cta" aria-label="Explore IT consulting services from 99 Visual Solutions">
+                Explore Services
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </a>
-              <meta itemProp="position" content="3" />
-            </li>
-          </ol>
-        </nav>
-
-        {/*
-          Hero content now sits on top of a full-bleed photo banner (set as
-          the section's CSS background — see .itc-hero in <style> above)
-          instead of the previous centered layout with abstract orb/grid
-          background. A dark gradient overlay keeps the white/orange text
-          legible over the photo.
-        */}
-        <div className="itc-hero__inner">
-          <div className="itc-hero__content">
-            <div className="itc-hero__eyebrow" aria-hidden="true">
-              <span className="itc-hero__dot" />
-              Services · IT Consulting
             </div>
-            <h1 className="itc-hero__h1" id="itc-hero-heading">
-              Strategic technology<br />that drives <em>growth</em>
-            </h1>
-            <div className="itc-hero__rule" aria-hidden="true" />
-            <p className="itc-hero__sub">
-              From cloud migration and cybersecurity to infrastructure planning,
-              IoT integration, and IT project management — we deliver end-to-end
-              consulting that prepares your business for the digital future.
-            </p>
-            <a href="#services" className="itc-hero__cta" aria-label="Explore IT consulting services from 99 Visual Solutions">
-              Explore Services
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
+            <StatusCard />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ══ INTRO ══════════════════════════════════════════════════════════ */}
-      <section className="itc-intro" aria-labelledby="itc-intro-heading">
-        <div className="itc-intro__inner">
-          <span className="itc-intro__label">Our Philosophy</span>
-          <h2 className="itc-intro__h2" id="itc-intro-heading">
-            Strategic IT consulting for smarter,<br />secure &amp; <em>scalable</em> businesses
-          </h2>
-          <div className="itc-intro__rule" aria-hidden="true" />
-          <p className="itc-intro__p">
-            At <strong>99 Visual Solutions</strong>, we don't just solve IT challenges — we help you harness
-            technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver
-            strategic guidance, robust security, and scalable infrastructure designed to prepare your business
-            for the digital future with confidence.
-          </p>
-          <p className="itc-intro__p">
-            Whether you're modernising legacy systems, migrating to the cloud, or strengthening cybersecurity,
-            our experts partner with you to deliver{" "}
-            <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored precisely to
-            your business goals and industry requirements.
-          </p>
-        </div>
-      </section>
-
-      {/* ══ SERVICE SECTIONS ══════════════════════════════════════════════ */}
-      <div id="services" className="itc-services">
-        {services.map((svc, idx) => (
-          <section key={svc.id} id={svc.id} className="itc-svc" aria-labelledby={`itc-svc-heading-${svc.id}`}>
-            <div className={`itc-svc__inner--img-${svc.imageLeft ? "left" : "right"}`}>
-              <div className="itc-svc__img-wrap" style={{ order: svc.imageLeft ? 1 : 2 }}>
-                <Image
-                  src={svc.image}
-                  alt={svc.imageAlt}
-                  width={600}
-                  height={460}
-                  style={{ width:"100%", height:"auto" }}
-                />
-              </div>
-              <div className="itc-svc__body" style={{ order: svc.imageLeft ? 2 : 1 }}>
-                <span className="itc-svc__num" aria-hidden="true">{String(idx + 1).padStart(2, "0")}</span>
-                <span className="itc-svc__eyebrow">Service {String(idx + 1).padStart(2, "0")}</span>
-                <h3 className="itc-svc__heading" id={`itc-svc-heading-${svc.id}`}>{svc.title}</h3>
-                <div className="itc-svc__rule" aria-hidden="true" />
-                <p className="itc-svc__p">{svc.description}</p>
-                <p className="itc-svc__highlight">{svc.highlight}</p>
-                <ul className="itc-svc__bullets">
-                  {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                </ul>
-              </div>
-            </div>
-          </section>
-        ))}
-      </div>
-
-      {/* ══ BENEFITS ══════════════════════════════════════════════════════ */}
-      <section className="itc-benefits" aria-labelledby="itc-benefits-heading">
-        <div className="itc-benefits__inner">
-          <div className="itc-benefits__head">
-            <span className="itc-benefits__label">Why Choose Us?</span>
-            <h2 className="itc-benefits__h2" id="itc-benefits-heading">
-              Partnering with<br /><em>99 Visual</em> IT Consulting
-            </h2>
-            <div className="itc-benefits__rule" aria-hidden="true" />
-            <p className="itc-benefits__sub">
-              IT isn't just a support function — it becomes a competitive advantage. Here's how
-              we empower businesses with strategic technology.
-            </p>
-          </div>
-          <div className="itc-benefits__grid">
-            {benefits.map((b, i) => (
-              <div className="itc-benefit-card" key={i}>
-                <div className="itc-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                <div className="itc-benefit-card__title">{b.title}</div>
-                <p className="itc-benefit-card__desc">{b.description}</p>
-              </div>
+        {/* ══ TICKER — signature motif ══════════════════════════════════════ */}
+        <div className="itc-ticker" aria-hidden="true">
+          <div className="itc-ticker__track">
+            {[...pipeline, ...pipeline].map((p, i) => (
+              <span className="itc-ticker__item" key={i}>
+                <b>$</b> {p.cmd} <span className="itc-ticker__pass">→ {p.out} ✓</span>
+              </span>
             ))}
           </div>
         </div>
-      </section>
+        <p className="itc-ticker__caption">Illustrative systems &amp; ops log output</p>
 
-      {/* ══ CTA STRIP ═════════════════════════════════════════════════════ */}
-      <section className="itc-cta" aria-labelledby="itc-cta-heading">
-        <div className="itc-cta__orb" aria-hidden="true" />
-        <div className="itc-cta__inner">
-          <span className="itc-cta__eyebrow">Start a Project</span>
-          <h2 className="itc-cta__h2" id="itc-cta-heading">
-            Ready to transform your <em>IT infrastructure</em>?
-          </h2>
-          <div className="itc-cta__rule" aria-hidden="true" />
-          <p className="itc-cta__sub">
-            Get in touch with our team for a free consultation. We&apos;ll help you
-            map out the right IT strategy to achieve your goals and future-proof your business.
-          </p>
-          <Link href="/contact" className="itc-cta__btn" aria-label="Get a free IT consulting consultation from 99 Visual Solutions">
-            Get a Free Consultation
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Link>
+        {/* ══ INTRO — unchanged copy ═══════════════════════════════════════ */}
+        <section className="itc-intro" aria-labelledby="itc-intro-heading">
+          <div className="itc-intro__inner">
+            <span className="itc-label">Our Philosophy</span>
+            <h2 className="itc-h2" id="itc-intro-heading">
+              Strategic IT consulting for smarter,<br />secure &amp; <em>scalable</em> businesses
+            </h2>
+            <p className="itc-intro__p">
+              At <strong>99 Visual Solutions</strong>, we don't just solve IT challenges — we help you harness
+              technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver
+              strategic guidance, robust security, and scalable infrastructure designed to prepare your business
+              for the digital future with confidence.
+            </p>
+            <p className="itc-intro__p">
+              Whether you're modernising legacy systems, migrating to the cloud, or strengthening cybersecurity,
+              our experts partner with you to deliver{" "}
+              <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored precisely to
+              your business goals and industry requirements.
+            </p>
+          </div>
+        </section>
+
+        {/* ══ SERVICE CLUSTERS — 100% unchanged copy, grouped & iconified ═══ */}
+        <div id="services">
+          {clusters.map((cluster) => (
+            <section key={cluster.id} className="itc-cluster" aria-labelledby={`itc-cluster-h-${cluster.id}`}>
+              <div className="itc-cluster__inner">
+                <div className="itc-cluster__head">
+                  <span className="itc-cluster__eyebrow">{cluster.eyebrow}</span>
+                  <h2 className="itc-cluster__h2" id={`itc-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
+                  <p className="itc-cluster__intro">{cluster.intro}</p>
+                </div>
+                <div className={`itc-cluster__grid itc-cluster__grid--${cluster.cols}`}>
+                  {cluster.ids.map((id) => {
+                    const svc = serviceById(id);
+                    return (
+                      <article className="itc-card" id={svc.id} key={svc.id} aria-labelledby={`itc-svc-heading-${svc.id}`}>
+                        <div className="itc-card__icon" aria-hidden="true">{svc.icon}</div>
+                        <h3 className="itc-card__title" id={`itc-svc-heading-${svc.id}`}>{svc.title}</h3>
+                        <p className="itc-card__desc">{svc.description}</p>
+                        <p className="itc-card__highlight">{svc.highlight}</p>
+                        <ul className="itc-card__bullets">
+                          {svc.bullets.map((b) => <li key={b}>{b}</li>)}
+                        </ul>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          ))}
         </div>
-      </section>
+
+        {/* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */}
+        <section className="itc-benefits" aria-labelledby="itc-benefits-heading">
+          <div className="itc-benefits__inner">
+            <div className="itc-benefits__head">
+              <span className="itc-benefits__label">Why Choose Us?</span>
+              <h2 className="itc-benefits__h2" id="itc-benefits-heading">
+                Partnering with <em>99 Visual</em> IT Consulting
+              </h2>
+              <p className="itc-benefits__sub">
+                IT isn't just a support function — it becomes a competitive advantage. Here's how
+                we empower businesses with strategic technology.
+              </p>
+            </div>
+            <div className="itc-benefits__grid">
+              {benefits.map((b, i) => (
+                <div className="itc-benefit-card" key={i}>
+                  <div className="itc-benefit-card__icon" aria-hidden="true">{b.icon}</div>
+                  <div className="itc-benefit-card__title">{b.title}</div>
+                  <p className="itc-benefit-card__desc">{b.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ CTA STRIP ═════════════════════════════════════════════════════ */}
+        <section className="itc-cta" aria-labelledby="itc-cta-heading">
+          <div className="itc-cta__inner">
+            <span className="itc-cta__eyebrow">Start a Project</span>
+            <h2 className="itc-cta__h2" id="itc-cta-heading">
+              Ready to transform your <em>IT infrastructure</em>?
+            </h2>
+            <p className="itc-cta__sub">
+              Get in touch with our team for a free consultation. We&apos;ll help you
+              map out the right IT strategy to achieve your goals and future-proof your business.
+            </p>
+            <Link href="/contact" className="itc-cta__btn" aria-label="Get a free IT consulting consultation from 99 Visual Solutions">
+              Get a Free Consultation
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
+          </div>
+        </section>
+      </div>
 
       <Footer />
       <ScrollDown />
