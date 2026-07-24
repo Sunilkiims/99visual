@@ -82,33 +82,6 @@ const SERVICE_ITEMS = [
 
 const serviceRoutes = SERVICE_ITEMS.map((s) => s.href);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Routes whose hero section is light (the redesigned "analytics" system:
-// cool paper background, ink text) rather than the dark photo-banner hero
-// the rest of the site uses. The header is fixed + transparent + renders
-// white text/logo by default, on the assumption that whatever's behind it
-// is dark — true for the photo-banner heroes, false for these routes.
-//
-// Previously this was patched around per-page with a dark scrim band
-// painted into each light hero's own background, sized to guess the
-// header's height. That's fragile (easy to get the height wrong, has to
-// be re-added on every new light page) and duplicated the same fix five
-// times. Fixing it here instead: on these routes the header switches to
-// its dark-text/dark-logo scheme immediately, the same scheme it already
-// uses once you scroll past 10px anywhere else. The scrim-band CSS left
-// in those pages' heroes is harmless (just an extra bit of depth right
-// under the header) but is no longer load-bearing for contrast.
-//
-// Add a route here any time a new page ships with a light hero.
-// ─────────────────────────────────────────────────────────────────────────────
-const LIGHT_HERO_ROUTES = [
-  '/services/digital-marketing-seo',
-  '/services/website-development',
-  '/services/cad-gis-photogrammetry',
-  '/services/it-consulting',
-  '/services/automation-testing',
-] as const;
-
 const SOCIAL_LINKS = [
   { href: 'https://www.facebook.com/profile.php?id=100093639888151', icon: <FaFacebookF />,  label: 'Facebook'  },
   { href: 'https://x.com/99VisualSoluti1',                           icon: <FaXTwitter />,   label: 'Twitter'   },
@@ -173,19 +146,6 @@ const Header = () => {
   const dropdownId   = 'header-services-dropdown';
 
   const { progress, scrolled } = useScrollProgress();
-
-  // True on routes whose hero is light. On these routes the header should
-  // render its dark-text/dark-logo scheme from the start, not just after
-  // scrolling — there's no dark photo banner behind it to give white text
-  // contrast.
-  const isLightHeroPage = LIGHT_HERO_ROUTES.some((r) => pathname === r || pathname.startsWith(r + '/'));
-
-  // Drives text/logo color only. The header's own background pill and the
-  // scroll-progress bar stay tied to the real `scrolled` value — a
-  // transparent header with dark text sitting directly on a light hero
-  // looks correct with no pill needed, exactly like a dark-text header
-  // would look floating over a light photo.
-  const useDarkScheme = scrolled || isLightHeroPage;
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -314,7 +274,7 @@ const Header = () => {
             <Link href="/" aria-label="99 Visual Solutions — home">
               <div className="relative w-[150px] h-[45px]">
                 <Image
-                  src={useDarkScheme ? '/logo-dark.png' : '/logo.png'}
+                  src={scrolled ? '/logo-dark.png' : '/logo.png'}
                   alt="99 Visual Solutions"
                   fill
                   sizes="180px"
@@ -327,7 +287,7 @@ const Header = () => {
             <nav
               className={clsx(
                 'hidden md:flex items-center gap-6 lg:gap-8 font-medium transition-colors duration-300',
-                useDarkScheme ? 'text-gray-800' : 'text-white'
+                scrolled ? 'text-gray-800' : 'text-white'
               )}
               aria-label="Primary navigation"
             >
@@ -533,7 +493,7 @@ const Header = () => {
           <div
             className={clsx(
               'hidden md:flex items-center space-x-4',
-              useDarkScheme ? 'text-gray-700' : 'text-white'
+              scrolled ? 'text-gray-700' : 'text-white'
             )}
             aria-label="Social media links"
           >
