@@ -24,7 +24,6 @@ import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 
-
 import type { Metadata } from "next";
 import {
   FaCogs, FaRocket, FaMobileAlt,
@@ -1266,7 +1265,7 @@ export default function WebsiteDevelopment() {
 
       <Footer />
       <ScrollDown />
-     
+      
     </>
   );
 }
