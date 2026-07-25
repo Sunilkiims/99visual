@@ -2,16 +2,29 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 3D Visualization & Architectural Rendering — 99 Visual Solutions
 //
-// THIS REVISION: Hero background updated to a full-bleed photo banner
-//   (sunset villa/infinity-pool image) with a dark gradient overlay so
-//   text stays readable. Right-column product-shot image removed since
-//   the banner now carries the visual. Everything else (layout of other
-//   sections, image, other sections, schema, SEO, written content) is
-//   unchanged from the previous revision.
+// THIS REVISION: The hero's full-bleed photo banner (established on this
+//   page and since matched on /services/website-development,
+//   /services/it-consulting, /services/digital-marketing-seo,
+//   /services/cad-gis-photogrammetry, and /services/automation-testing) now
+//   also picks up the "docked ticker" mechanism those pages added afterward:
+//   an illustrative "production log" ticker band sits as a flex child
+//   pinned to the bottom edge of the hero itself (not a separate section
+//   below it), so it always renders inside the first screen regardless of
+//   viewport height. The hero switched from min-height:100vh to a fixed
+//   height:100vh (with dvh/svh refinements) so it can never grow taller
+//   than one screen and push that ticker below the fold. A sticky mobile
+//   CTA bar was also added to match the other redesigned service pages.
+//
+//   Everything else — the photo banner itself, gradient overlay, grain
+//   texture, corner brackets, single left-aligned hero column, the dark
+//   near-black + orange design system used across the rest of the page,
+//   all section layouts, schema, SEO, and written content — is unchanged
+//   from the previous revision.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
 import Image          from "next/image";
+import Link           from "next/link";
 import Header         from "@/app/components/header";
 import Seriously      from "@/app/components/seriously";
 import Footer         from "@/app/components/footer";
@@ -364,6 +377,19 @@ const benefits = [
   },
 ];
 
+// Illustrative production-log lines for the signature ticker band — this
+// page's rendering/production counterpart to the tickers now used on the
+// other five redesigned service pages. Docked to the bottom edge of the
+// hero itself, same mechanism as those pages.
+const pipeline = [
+  { cmd: "render_export",   out: "4K H.264 ready" },
+  { cmd: "lidar_import",    out: "18.2M points aligned" },
+  { cmd: "bim_clash_check", out: "0 conflicts flagged" },
+  { cmd: "material_pass",   out: "V-Ray final render" },
+  { cmd: "revision_round",  out: "2 of 2 included" },
+  { cmd: "delivery_package",out: "DWG + RVT + MP4" },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // HERO SECTION
 // ─────────────────────────────────────────────────────────────────────────────
@@ -407,11 +433,12 @@ function HeroSection() {
       </nav>
 
       {/*
-        Hero content now sits on top of a full-bleed photo banner
-        (set as the section's CSS background — see .viz-hero in <style>
-        below) instead of the previous two-column layout with a separate
-        product-shot image. A dark gradient overlay (also in CSS) keeps
-        the white/orange text legible over the photo.
+        Hero content sits on top of the full-bleed photo banner (set as the
+        section's CSS background — see .viz-hero in <style> below). The
+        hero is now a fixed-height flex column so the ticker docked at the
+        bottom (see .viz-hero__ticker-bar) always renders inside the first
+        screen, the same mechanism used on the other redesigned service
+        pages.
       */}
       <div className="viz-hero__inner">
         <div className="viz-hero__content">
@@ -450,6 +477,27 @@ function HeroSection() {
             </svg>
           </a>
         </div>
+      </div>
+
+      {/*
+        Ticker docks to the bottom edge of the hero itself (not a separate
+        section below it), so the scrolling production-log line and the
+        photo banner render together as a single full-screen unit on every
+        screen size — the same mechanism used on the other redesigned
+        service pages. A soft gradient behind it keeps the text legible
+        over the photo without a hard color break.
+      */}
+      <div className="viz-hero__ticker-bar" aria-hidden="true">
+        <div className="viz-ticker">
+          <div className="viz-ticker__track">
+            {[...pipeline, ...pipeline].map((p, i) => (
+              <span className="viz-ticker__item" key={i}>
+                <b>$</b> {p.cmd} <span className="viz-ticker__pass">→ {p.out} ✓</span>
+              </span>
+            ))}
+          </div>
+        </div>
+        <p className="viz-ticker__caption">Illustrative production-log output</p>
       </div>
     </section>
   );
@@ -656,43 +704,32 @@ export default function VisualizationPage() {
            Full-bleed photo banner as the background, with a dark
            left-to-right + top-to-bottom gradient overlay so the text
            column stays legible over the photo. Swap the url() below for
-           your saved banner file path. */
+           your saved banner file path.
+           Fixed (not min-) height + flex column, so the section can never
+           grow taller than one screen and push the ticker bar (docked at
+           the bottom, see .viz-hero__ticker-bar) below the fold — same
+           mechanism used on the other redesigned service pages. */
         .viz-hero {
-          position:relative;min-height:100vh;display:flex;align-items:center;
+          position:relative;height:100vh;width:100%;
+          display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
             linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
             url('/images/services/visualization-hero-banner.jpg') center center / cover no-repeat;
           background-attachment:scroll;background-color:#080808;
-          overflow:hidden;padding:8rem 1.5rem 6rem;
+          overflow:hidden;
         }
-        /* Modern browsers: use dynamic viewport height so mobile browser
-           chrome (address bar show/hide) doesn't cause the hero to jump
-           or leave a gap. Falls back silently on older browsers. */
-        @supports (min-height: 100svh) {
-          .viz-hero { min-height: 100svh; }
-        }
-        /* Tablet & mobile: the two-way horizontal gradient above is tuned
-           for a wide viewport with left-aligned text over a visible right
-           side of the photo. Below 960px the text column centers and can
-           span the full width, so swap to a more uniform top-to-bottom
-           overlay that keeps the whole banner legible behind centered
-           text at any crop position. */
+        /* dvh/svh account for mobile browser chrome so the banner never
+           shows a gap or clips; falls back to 100vh. */
+        @supports (height: 100svh) { .viz-hero { height: 100svh; } }
+        @supports (height: 100dvh) { .viz-hero { height: 100dvh; } }
         @media(max-width:960px){
           .viz-hero {
             background:
               linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
               linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
               url('/images/services/visualization-hero-banner.jpg') center center / cover no-repeat;
-            min-height:100vh;
-            padding:7rem 1.25rem 4.5rem;
           }
-        }
-        @media(max-width:640px){
-          .viz-hero { padding:6.5rem 1rem 4rem; }
-        }
-        @media(max-width:960px) and (orientation:landscape){
-          .viz-hero { min-height:100vh;padding-top:5.5rem;padding-bottom:3rem; }
         }
         .viz-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .viz-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
@@ -706,10 +743,30 @@ export default function VisualizationPage() {
         /* Hero content column — sits on top of the photo banner background.
            Single column now (no right-side product image); text is capped
            to a comfortable reading width so it doesn't stretch across the
-           whole photo. */
+           whole photo. Now a flex child that fills the space above the
+           docked ticker and centers vertically within it, so header
+           clearance and gutters live here rather than on the fixed-height
+           section — the ticker's own height is never squeezed out. */
         .viz-hero__inner{
-          position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;
-          display:grid;grid-template-columns:1fr;
+          position:relative;z-index:10;flex:1 1 auto;min-height:0;
+          display:flex;align-items:center;overflow:hidden;
+          max-width:1280px;margin:0 auto;width:100%;
+          padding:8rem 1.5rem 1.5rem;
+          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
+          box-sizing:border-box;
+        }
+        @media(max-width:960px){ .viz-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
+        @media(max-width:640px){ .viz-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
+        @media(max-width:380px){ .viz-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        /* Short screens (landscape phones, small laptop windows with
+           browser chrome): trim vertical rhythm so everything still fits
+           above the ticker without scrolling. */
+        @media(max-height:520px){
+          .viz-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .viz-hero__eyebrow{ margin-bottom:1rem; }
+          .viz-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.3rem,4.2vh,2.2rem); }
+          .viz-hero__rule{ margin-bottom:.7rem; }
+          .viz-hero__sub{ margin-bottom:1rem; }
         }
 
         .viz-hero__content{animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
@@ -727,6 +784,37 @@ export default function VisualizationPage() {
         @media(max-width:960px){.viz-hero__sub{margin:0 auto 2.2rem;}}
         .viz-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-sans);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         .viz-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
+
+        /* ══ TICKER — docked as a normal flex child at the bottom of the
+           fixed-height hero (not position:absolute), so it can never end
+           up below the fold regardless of how tall the content above it
+           is — it always renders inside the first screen. Same mechanism
+           as the tickers on the other redesigned service pages, restyled
+           to this page's orange accent. ═══════════════════════════════ */
+        .viz-hero__ticker-bar{
+          position:relative;z-index:12;flex:0 0 auto;
+          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
+          padding-top:1.5rem;
+          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
+        }
+        .viz-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
+        .viz-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:vizScroll 34s linear infinite;}
+        .viz-hero__ticker-bar:hover .viz-ticker__track{animation-play-state:paused;}
+        @media(max-width:640px){ .viz-ticker__track{ animation-duration:22s; } }
+        @keyframes vizScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .viz-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:var(--ff-sans);font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .viz-ticker__item b{color:rgba(255,255,255,.45);}
+        .viz-ticker__pass{color:var(--c-orange);}
+        .viz-ticker__caption{text-align:center;font-family:var(--ff-sans);font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
+        @media(max-height:520px){
+          .viz-hero__ticker-bar{ padding-top:.75rem; }
+          .viz-ticker__caption{ display:none; }
+        }
+
+        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
+        .viz-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(8,8,8,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.08);}
+        @media(max-width:760px){.viz-sticky-cta{display:flex;justify-content:center;}}
+        .viz-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:var(--ff-sans);font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:13px 20px;border-radius:100px;text-decoration:none;}
 
         /* ══ INTRO ═══════════════════════════════════════════════════════ */
         .viz-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5.5rem 1.5rem;}
@@ -848,7 +936,11 @@ export default function VisualizationPage() {
       <ContactCTA />
       <Footer />
       <ScrollDown />
-    
+
+      {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
+      <div className="viz-sticky-cta">
+        <Link href="/contact" className="viz-sticky-cta__btn">Request a Quote</Link>
+      </div>
     </>
   );
 }
