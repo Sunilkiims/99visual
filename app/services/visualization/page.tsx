@@ -18,8 +18,6 @@ import Footer         from "@/app/components/footer";
 import Services       from "@/app/components/services";
 import ContactCTA     from "@/app/components/Contactcta";
 import ScrollDown     from "@/app/components/scrolldown";
-import Chatbot        from "@/app/components/chatbot";
-import Whatsappbutton from "@/app/components/wahtsappbutton";
 
 import {
   BASE,
@@ -850,8 +848,7 @@ export default function VisualizationPage() {
       <ContactCTA />
       <Footer />
       <ScrollDown />
-      <Chatbot />
-      <Whatsappbutton />
+    
     </>
   );
 }
