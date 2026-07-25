@@ -2,46 +2,21 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Website & Web App Development — 99 Visual Solutions
 //
-// VISUAL REDESIGN (this revision) — migrates this page onto the same design
-// system used for /services/digital-marketing-seo, for site-wide consistency.
-// Everything that affects SEO/conversion logic from the previous revision is
-// UNCHANGED:
-//   - metadata object, all schema nodes, canonical/robots/OG/Twitter: identical
-//   - `services`, `benefits`, `painPoints`, `processSteps`, `deliverables`,
-//     `industries`, `techStack`, `faqItems` COPY: identical word-for-word
-//   - H1/H2/H3 hierarchy, FAQ accordion behaviour, animated stat counters:
-//     identical (same class names/selectors, same vanilla-JS block)
-//   - sticky mobile CTA, TODO(SS) metrics placeholder flag: unchanged
+// THIS REVISION: Hero redesigned to match the full-bleed photo banner
+//   treatment used on /services/visualization and /services (the hub
+//   page) — photo as CSS background with a dark gradient overlay, grain
+//   texture, and corner brackets, single left-aligned text column.
+//   Replaces the previous two-column hero (text + inline SVG "Performance
+//   Score" gauge card). The gauge component has been removed since it's
+//   no longer rendered anywhere on the page.
+//   Save your banner image to:
+//   /public/images/services/website-development-hero-banner.jpg
 //
-// What changed is purely presentational:
-//   - Dropped the dark near-black + orange system (shared with 2 other
-//     service pages) for the light "analytics" system: cool paper
-//     background, ink text, one blue signal accent, green used only for
-//     "pass/positive" indicators (Core Web Vitals, before/after checks).
-//   - Replaced the stock hero photo banner with an inline SVG "Performance
-//     Score" gauge card (score + Core Web Vitals chips) — a signature
-//     visual specific to what this page's copy repeatedly emphasises
-//     (speed, Core Web Vitals), instead of decoration with no connection
-//     to the content.
-//   - Added a "build & QA pipeline" ticker band (illustrative), this
-//     page's engineering-flavoured counterpart to the ranking ticker on
-//     the marketing page — same mechanism, different, page-specific
-//     content, used once.
-//   - The 13 near-identical alternating image/text service rows (each
-//     needing its own illustration) became four labeled clusters in a
-//     bento card grid using the icon each service already had — no
-//     images required, much shorter page, same full copy per service.
-//   - Kept the "Solution overview" quick-jump grid, restyled, since it's
-//     still useful now that services are grouped rather than a single
-//     scroll.
-//   - Restyled (not restructured) process timeline, deliverables,
-//     before/after, industries, tech stack, metrics, and FAQ sections —
-//     their class names, structure, and the JS that drives the FAQ
-//     accordion and animated counters are untouched.
-//   - Header component is unmodified. It's fixed + transparent + white
-//     text/logo until scrolled past 10px, so the hero keeps a dark scrim
-//     band behind the header's own height (same fix applied on the
-//     marketing page) even though the rest of the hero is light.
+//   Nothing else on the page has changed: all copy (services, benefits,
+//   pain points, process, deliverables, industries, tech stack, FAQ),
+//   schema, metadata, the ticker band, sticky mobile CTA, and the
+//   interaction script (FAQ accordion + animated counters) are identical
+//   to the previous revision.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
@@ -266,10 +241,7 @@ const wdevGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA — `benefits` copy is unchanged word-for-word. `services` copy
-// (title/description/highlight/bullets) is unchanged; only the unused
-// image/imageAlt/imageLeft fields were dropped since the redesign uses each
-// service's existing `icon` instead of a matching illustration.
+// PAGE DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaCogs />,      title: "Customised Solutions",          description: "No two businesses run the same way, so we don't start from a template. Every site or application is scoped around your specific workflow, customers, and goals from the first conversation." },
@@ -387,9 +359,9 @@ const services = [
   },
 ];
 
-// New — groups the 13 services above into four labeled clusters for the
-// bento grid. Purely a presentation grouping; referenced ids/copy above
-// are untouched.
+// Groups the 13 services above into four labeled clusters for the bento
+// grid. Purely a presentation grouping; referenced ids/copy above are
+// untouched.
 const clusters = [
   {
     id: "product-ux",
@@ -430,8 +402,7 @@ function serviceById(id: string) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NEW SUPPORTING CONTENT (not SEO copy — additive marketing content only,
-// unchanged from the previous revision)
+// SUPPORTING CONTENT — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 
 const painPoints = [
@@ -520,8 +491,6 @@ const faqItems = [
 ];
 
 // Illustrative build/QA pipeline lines for the signature ticker band.
-// This page's engineering-flavoured counterpart to the keyword-ranking
-// ticker on the digital-marketing-seo page.
 const pipeline = [
   { cmd: "next build",          out: "compiled successfully" },
   { cmd: "lighthouse ci",       out: "98/100 performance" },
@@ -530,55 +499,6 @@ const pipeline = [
   { cmd: "deploy production",   out: "live in 42s" },
   { cmd: "axe-core audit",      out: "0 critical issues" },
 ];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Hero performance gauge — the page's signature visual. Pure inline SVG,
-// no external image asset. Draws in on load, respects prefers-reduced-motion.
-// ─────────────────────────────────────────────────────────────────────────────
-function PerformanceGauge() {
-  // Arc geometry: 270° gauge, radius 90, stroke drawn from -135° to +135°.
-  const r = 90;
-  const circumference = 2 * Math.PI * r;
-  const arcFraction = 270 / 360;
-  const arcLength = circumference * arcFraction;
-  const scoreFraction = 0.96;
-
-  return (
-    <div className="wdev-gaugecard" role="img" aria-label="Illustrative Core Web Vitals performance score of 96 out of 100">
-      <div className="wdev-gaugecard__top">
-        <span className="wdev-gaugecard__badge">Lighthouse Audit</span>
-      </div>
-      <svg className="wdev-gaugecard__svg" viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <g transform="translate(110,100) rotate(135)">
-          <circle
-            r={r}
-            fill="none"
-            stroke="#E4E6EC"
-            strokeWidth="14"
-            strokeDasharray={`${arcLength} ${circumference}`}
-            strokeLinecap="round"
-          />
-          <circle
-            className="wdev-gaugecard__arc"
-            r={r}
-            fill="none"
-            stroke="#2E5CFF"
-            strokeWidth="14"
-            strokeDasharray={`${arcLength * scoreFraction} ${circumference}`}
-            strokeLinecap="round"
-          />
-        </g>
-        <text x="110" y="96" textAnchor="middle" className="wdev-gaugecard__num">96</text>
-        <text x="110" y="122" textAnchor="middle" className="wdev-gaugecard__lbl">Performance</text>
-      </svg>
-      <div className="wdev-gaugecard__vitals">
-        <span><b>LCP</b> 1.1s <i>✓</i></span>
-        <span><b>INP</b> 38ms <i>✓</i></span>
-        <span><b>CLS</b> 0.01 <i>✓</i></span>
-      </div>
-    </div>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -602,55 +522,68 @@ export default function WebsiteDevelopment() {
         .wdev-h2 em{font-style:normal;color:var(--wdev-blue);}
         .wdev-sub{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);max-width:580px;margin:0 auto;text-align:center;}
 
-        /* ══ HERO ══════════════════════════════════════════════════════════
-           Header is fixed + transparent + white text/logo until scrolled
-           past 10px (built to sit on a dark hero). This hero is light, so a
-           dark scrim band sits behind the header's own height, fading into
-           the paper background just below it. */
-        .wdev-hero{position:relative;padding:9rem 1.5rem 5rem;overflow:hidden;background:
-          linear-gradient(180deg, var(--wdev-ink) 0px, var(--wdev-ink) 64px, rgba(18,20,26,.82) 100px, rgba(18,20,26,0) 200px),
-          radial-gradient(1200px 500px at 88% -10%, rgba(46,92,255,.07), transparent 60%),
-          var(--wdev-paper);}
-        @media(max-width:768px){
-          .wdev-hero{background:
-            linear-gradient(180deg, var(--wdev-ink) 0px, var(--wdev-ink) 56px, rgba(18,20,26,.82) 84px, rgba(18,20,26,0) 170px),
-            radial-gradient(1200px 500px at 88% -10%, rgba(46,92,255,.07), transparent 60%),
-            var(--wdev-paper);}
+        /* ══ HERO — full-bleed photo banner, same treatment as the
+           visualization and services hub pages: photo as CSS background
+           with a dark gradient overlay so the text column stays legible.
+           Save your banner image to:
+           /public/images/services/website-development-hero-banner.jpg ── */
+        .wdev-hero{
+          position:relative;min-height:100vh;display:flex;align-items:center;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
+          background-attachment:scroll;background-color:#080808;
+          overflow:hidden;padding:8rem 1.5rem 6rem;
         }
-        .wdev-hero__inner{position:relative;z-index:2;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:3.5rem;align-items:center;}
-        @media(max-width:960px){.wdev-hero__inner{grid-template-columns:1fr;gap:2.5rem;}}
-        .wdev-hero__content{animation:wdevFadeUp .8s cubic-bezier(.22,1,.36,1) both;}
-        @keyframes wdevFadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+        @supports (min-height: 100svh) { .wdev-hero { min-height: 100svh; } }
+        @media(max-width:960px){
+          .wdev-hero{
+            background:
+              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
+              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
+              url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
+            min-height:100vh;
+            padding:7rem 1.25rem 4.5rem;
+          }
+        }
+        @media(max-width:640px){ .wdev-hero{ padding:6.5rem 1rem 4rem; } }
+        @media(max-width:960px) and (orientation:landscape){ .wdev-hero{ min-height:100vh;padding-top:5.5rem;padding-bottom:3rem; } }
 
-        .wdev-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--wdev-blue);border:1px solid rgba(46,92,255,.22);background:rgba(46,92,255,.06);padding:6px 14px;border-radius:100px;margin-bottom:1.6rem;}
+        .wdev-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .wdev-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
+        .wdev-corner--tl{top:24px;left:24px;border-top:1px solid var(--wdev-blue);border-left:1px solid var(--wdev-blue);}
+        .wdev-corner--tr{top:24px;right:24px;border-top:1px solid var(--wdev-blue);border-right:1px solid var(--wdev-blue);}
+        .wdev-corner--bl{bottom:24px;left:24px;border-bottom:1px solid var(--wdev-blue);border-left:1px solid var(--wdev-blue);}
+        .wdev-corner--br{bottom:24px;right:24px;border-bottom:1px solid var(--wdev-blue);border-right:1px solid var(--wdev-blue);}
+
+        /* Single-column content — sits on top of the photo banner
+           background, left-aligned and capped to a comfortable reading
+           width, matching the visualization/services hero layout. */
+        .wdev-hero__inner{position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr;}
+        .wdev-hero__content{animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;max-width:640px;}
+        @keyframes wdevFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.wdev-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
+        .wdev-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--wdev-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.6rem;backdrop-filter:blur(8px);}
         .wdev-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--wdev-blue);animation:wdevPulse 2s ease-in-out infinite;}
         @keyframes wdevPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .wdev-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:var(--wdev-ink);margin:0 0 1.1rem;}
+        .wdev-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:#fff;margin:0 0 1.1rem;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .wdev-hero__h1 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:var(--wdev-muted);max-width:520px;margin:0 0 2rem;}
+        .wdev-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:rgba(255,255,255,0.78);max-width:520px;margin:0 0 2rem;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.wdev-hero__sub{margin:0 auto 2rem;}}
 
         .wdev-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem;margin-bottom:2rem;}
-        .wdev-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:var(--wdev-ink);padding:13px 26px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
-        .wdev-hero__cta:hover{background:var(--wdev-blue);transform:translateY(-2px);}
-        .wdev-hero__cta--ghost{color:var(--wdev-ink);background:transparent;border:1px solid var(--wdev-line);}
-        .wdev-hero__cta--ghost:hover{background:var(--wdev-surface);border-color:var(--wdev-blue);color:var(--wdev-blue);}
+        @media(max-width:960px){.wdev-hero__actions{justify-content:center;}}
+        .wdev-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--wdev-blue));padding:13px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .wdev-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
+        .wdev-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);}
+        .wdev-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
 
         .wdev-hero__badges{display:flex;flex-wrap:wrap;gap:1.5rem;}
-        .wdev-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:var(--wdev-muted);}
+        @media(max-width:960px){.wdev-hero__badges{justify-content:center;}}
+        .wdev-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:rgba(255,255,255,0.65);}
         .wdev-hero__badge svg{color:var(--wdev-blue);flex-shrink:0;}
-
-        .wdev-gaugecard{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:20px;padding:1.75rem 1.75rem 1.5rem;box-shadow:0 24px 60px -20px rgba(18,20,26,.14);animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;}
-        .wdev-gaugecard__top{display:flex;justify-content:center;margin-bottom:.5rem;}
-        .wdev-gaugecard__badge{font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:var(--wdev-ink);background:var(--wdev-paper);border:1px solid var(--wdev-line);padding:5px 12px;border-radius:8px;}
-        .wdev-gaugecard__svg{width:100%;height:auto;display:block;}
-        .wdev-gaugecard__arc{stroke-dasharray:0 999;animation:wdevArcDraw 1.4s ease-out .3s forwards;}
-        @keyframes wdevArcDraw{from{stroke-dasharray:0 999;}to{stroke-dasharray:216 999;}}
-        .wdev-gaugecard__num{font-family:'Space Grotesk',sans-serif;font-size:2.6rem;font-weight:700;fill:var(--wdev-ink);}
-        .wdev-gaugecard__lbl{font-family:'IBM Plex Mono',monospace;font-size:.78rem;fill:var(--wdev-muted);}
-        .wdev-gaugecard__vitals{display:flex;justify-content:space-between;gap:.5rem;padding-top:.5rem;border-top:1px solid var(--wdev-line);}
-        .wdev-gaugecard__vitals span{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--wdev-muted);}
-        .wdev-gaugecard__vitals b{color:var(--wdev-ink);font-weight:500;}
-        .wdev-gaugecard__vitals i{font-style:normal;color:var(--wdev-green);}
 
         /* ══ TICKER — signature motif, used once ══════════════════════════ */
         .wdev-ticker{background:var(--wdev-ink);overflow:hidden;padding:.9rem 0;}
@@ -840,7 +773,6 @@ export default function WebsiteDevelopment() {
 
         @media(prefers-reduced-motion:reduce){
           .wdev-page *,.wdev-page *::before,.wdev-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-          .wdev-gaugecard__arc{stroke-dasharray:216 999!important;}
         }
       `}</style>
 
@@ -855,6 +787,14 @@ export default function WebsiteDevelopment() {
       <div className="wdev-page">
         {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section className="wdev-hero" aria-labelledby="wdev-hero-heading">
+          <div aria-hidden="true">
+            <div className="wdev-hero__grain" />
+          </div>
+          <div className="wdev-corner wdev-corner--tl" aria-hidden="true" />
+          <div className="wdev-corner wdev-corner--tr" aria-hidden="true" />
+          <div className="wdev-corner wdev-corner--bl" aria-hidden="true" />
+          <div className="wdev-corner wdev-corner--br" aria-hidden="true" />
+
           <nav className="wdev-sr-only" aria-label="Breadcrumb">
             <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -874,6 +814,13 @@ export default function WebsiteDevelopment() {
             </ol>
           </nav>
 
+          {/*
+            Hero content now sits on top of a full-bleed photo banner (set
+            as the section's CSS background — see .wdev-hero in <style>
+            above) instead of the previous two-column layout with an inline
+            SVG "Performance Score" gauge card. A dark gradient overlay
+            keeps the white/blue text legible over the photo.
+          */}
           <div className="wdev-hero__inner">
             <div className="wdev-hero__content">
               <div className="wdev-hero__eyebrow">
@@ -904,7 +851,6 @@ export default function WebsiteDevelopment() {
                 <span className="wdev-hero__badge"><FaClock /> No-cost first consultation</span>
               </div>
             </div>
-            <PerformanceGauge />
           </div>
         </section>
 
