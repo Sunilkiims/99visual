@@ -24,6 +24,7 @@ import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 
+
 import type { Metadata } from "next";
 import {
   FaCogs, FaRocket, FaMobileAlt,
@@ -526,46 +527,55 @@ export default function WebsiteDevelopment() {
            Save your banner image to:
            /public/images/services/website-development-hero-banner.jpg ── */
         .wdev-hero{
-          position:relative;min-height:100vh;width:100%;display:flex;align-items:center;
+          position:relative;height:100vh;width:100%;
+          display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
             linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
             url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
-          padding:8rem 1.5rem 6rem;
-          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
-          box-sizing:border-box;
         }
-        /* Real full-screen height on every device: dvh/svh account for
-           mobile browser chrome (address bar) so the banner never shows
-           a gap or clips; falls back to 100vh on older browsers. */
-        @supports (min-height: 100svh) { .wdev-hero { min-height: 100svh; } }
-        @supports (min-height: 100dvh) { .wdev-hero { min-height: 100dvh; } }
+        /* Fixed (not min-) height, so the section can never grow taller
+           than one screen and push the ticker bar below the fold — that
+           was the bug. dvh/svh account for mobile browser chrome so the
+           banner never shows a gap or clips; falls back to 100vh. */
+        @supports (height: 100svh) { .wdev-hero { height: 100svh; } }
+        @supports (height: 100dvh) { .wdev-hero { height: 100dvh; } }
         @media(max-width:960px){
           .wdev-hero{
             background:
               linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
               linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
               url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
-            padding:7rem 1.25rem 4.5rem;
-            padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem));
           }
         }
-        @media(max-width:640px){
-          .wdev-hero{ padding:6.5rem 1rem 4rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); }
+
+        /* Main hero content: fills the remaining space above the ticker
+           and centers vertically within it. Header clearance and the
+           left/right gutters live here now (not on the fixed-height
+           section) so the ticker's own height is never squeezed out. */
+        .wdev-hero__inner{
+          position:relative;z-index:10;flex:1 1 auto;min-height:0;
+          display:flex;align-items:center;overflow:hidden;
+          max-width:1280px;margin:0 auto;width:100%;
+          padding:8rem 1.5rem 1.5rem;
+          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
+          box-sizing:border-box;
         }
-        @media(max-width:380px){
-          .wdev-hero{ padding:5.75rem .85rem 3.5rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); }
-        }
-        @media(max-width:960px) and (orientation:landscape){
-          .wdev-hero{ min-height:100vh;padding-top:5.5rem;padding-bottom:3rem; }
-        }
-        @supports (min-height: 100svh) {
-          @media(max-width:960px) and (orientation:landscape){ .wdev-hero{ min-height:100svh; } }
-        }
-        @supports (min-height: 100dvh) {
-          @media(max-width:960px) and (orientation:landscape){ .wdev-hero{ min-height:100dvh; } }
+        @media(max-width:960px){ .wdev-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
+        @media(max-width:640px){ .wdev-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
+        @media(max-width:380px){ .wdev-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        /* Short screens (landscape phones, small laptop windows with
+           browser chrome): trim vertical rhythm and drop the badge row
+           so everything still fits above the ticker without scrolling. */
+        @media(max-height:520px){
+          .wdev-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .wdev-hero__eyebrow{ margin-bottom:.7rem; }
+          .wdev-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .wdev-hero__sub{ margin-bottom:.9rem; }
+          .wdev-hero__actions{ margin-bottom:0; }
+          .wdev-hero__badges{ display:none; }
         }
 
         .wdev-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
@@ -575,10 +585,6 @@ export default function WebsiteDevelopment() {
         .wdev-corner--bl{bottom:24px;left:24px;border-bottom:1px solid var(--wdev-blue);border-left:1px solid var(--wdev-blue);}
         .wdev-corner--br{bottom:24px;right:24px;border-bottom:1px solid var(--wdev-blue);border-right:1px solid var(--wdev-blue);}
 
-        /* Single-column content — sits on top of the photo banner
-           background, left-aligned and capped to a comfortable reading
-           width, matching the visualization/services hero layout. */
-        .wdev-hero__inner{position:relative;z-index:10;max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr;}
         .wdev-hero__content{animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;max-width:640px;}
         @keyframes wdevFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.wdev-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
@@ -603,16 +609,30 @@ export default function WebsiteDevelopment() {
         .wdev-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:rgba(255,255,255,0.65);}
         .wdev-hero__badge svg{color:var(--wdev-blue);flex-shrink:0;}
 
-        /* ══ TICKER — signature motif, used once ══════════════════════════ */
-        .wdev-ticker{background:var(--wdev-ink);overflow:hidden;width:100%;padding:clamp(.65rem,1.6vw,.9rem) 0;}
+        /* ══ TICKER — a normal flex child pinned to the bottom of the
+           fixed-height hero (not position:absolute), so it can never end
+           up below the fold regardless of how tall the content above it
+           is — it always renders inside the first screen. ═══════════════ */
+        .wdev-hero__ticker-bar{
+          position:relative;z-index:12;flex:0 0 auto;
+          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
+          padding-top:1.5rem;
+          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
+        }
+        .wdev-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
         .wdev-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:wdevScroll 34s linear infinite;}
-        .wdev-ticker:hover .wdev-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .wdev-ticker__track{ animation-duration:24s; } }
+        .wdev-hero__ticker-bar:hover .wdev-ticker__track{animation-play-state:paused;}
+        @media(max-width:640px){ .wdev-ticker__track{ animation-duration:22s; } }
         @keyframes wdevScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .wdev-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.55);white-space:nowrap;}
-        .wdev-ticker__item b{color:rgba(255,255,255,.4);}
+        .wdev-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .wdev-ticker__item b{color:rgba(255,255,255,.45);}
         .wdev-ticker__pass{color:var(--wdev-green);}
-        .wdev-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.62rem,1.6vw,.68rem);color:var(--wdev-muted);padding:.6rem 1rem 0;background:var(--wdev-paper);}
+        .wdev-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
+        @media(max-height:520px){
+          .wdev-hero__ticker-bar{ padding-top:.75rem; }
+          .wdev-ticker__caption{ display:none; }
+        }
+
 
         /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
         .wdev-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--wdev-line);}
@@ -871,19 +891,27 @@ export default function WebsiteDevelopment() {
               </div>
             </div>
           </div>
-        </section>
 
-        {/* ══ TICKER — signature motif ══════════════════════════════════════ */}
-        <div className="wdev-ticker" aria-hidden="true">
-          <div className="wdev-ticker__track">
-            {[...pipeline, ...pipeline].map((p, i) => (
-              <span className="wdev-ticker__item" key={i}>
-                <b>$</b> {p.cmd} <span className="wdev-ticker__pass">→ {p.out} ✓</span>
-              </span>
-            ))}
+          {/*
+            Ticker now docks to the bottom edge of the hero itself (not a
+            separate section below it), so the scrolling build/QA line and
+            the photo banner render together as a single full-screen unit
+            on every screen size. A soft gradient behind it keeps the text
+            legible over the photo without a hard color break.
+          */}
+          <div className="wdev-hero__ticker-bar" aria-hidden="true">
+            <div className="wdev-ticker">
+              <div className="wdev-ticker__track">
+                {[...pipeline, ...pipeline].map((p, i) => (
+                  <span className="wdev-ticker__item" key={i}>
+                    <b>$</b> {p.cmd} <span className="wdev-ticker__pass">→ {p.out} ✓</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="wdev-ticker__caption">Illustrative build &amp; QA pipeline output</p>
           </div>
-        </div>
-        <p className="wdev-ticker__caption">Illustrative build &amp; QA pipeline output</p>
+        </section>
 
         {/* ══ CLIENT PAIN — unchanged copy ══════════════════════════════════ */}
         <section className="wdev-pain" aria-labelledby="wdev-pain-heading">
