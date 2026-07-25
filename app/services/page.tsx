@@ -12,8 +12,7 @@ import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
-import Chatbot        from "@/app/components/chatbot";
-import Whatsappbutton from "@/app/components/wahtsappbutton";
+
 
 
 import {
@@ -650,8 +649,7 @@ export default function ServicesPage() {
 
       <Footer />
       <ScrollDown />
-      <Chatbot />
-      <Whatsappbutton />
+      
     </>
   );
 }
