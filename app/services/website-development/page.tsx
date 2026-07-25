@@ -908,9 +908,7 @@ export default function WebsiteDevelopment() {
                   </span>
                 ))}
               </div>
-            </div>
-            <p className="wdev-ticker__caption">Illustrative build &amp; QA pipeline output</p>
-          </div>
+          
         </section>
 
         {/* ══ CLIENT PAIN — unchanged copy ══════════════════════════════════ */}
