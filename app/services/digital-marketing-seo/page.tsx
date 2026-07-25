@@ -372,14 +372,14 @@ export default function DigitalMarketing() {
            website-development / it-consulting pages: photo as CSS
            background with a dark gradient overlay so the text column
            stays legible. Save your banner image to:
-           /public/images/services/digital-marketing-seo-hero-banner.jpg ── */
+           /public/images/services/digital-marketing-hero-banner.jpg ── */
         .dm-hero{
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
             linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/digital-marketing-seo-hero-banner.jpg') center center / cover no-repeat;
+            url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
@@ -394,7 +394,7 @@ export default function DigitalMarketing() {
             background:
               linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
               linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/digital-marketing-seo-hero-banner.jpg') center center / cover no-repeat;
+              url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
           }
         }
 
