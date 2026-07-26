@@ -2,6 +2,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Digital Marketing & SEO — 99 Visual Solutions
 //
+<<<<<<< HEAD
 // VISUAL REDESIGN (this revision):
 //   All indexing/schema fixes from prior revisions are RETAINED UNCHANGED:
 //   canonical/base handling, robots block, hardcoded dateModified, FAQ
@@ -30,14 +31,38 @@
 //   - Restyled benefits grid and final CTA to match the new system.
 //   All FAQ, service, and benefit COPY is unchanged from the previous
 //   revision -- only how it's laid out and iconified changed.
+=======
+// THIS REVISION: Hero redesigned to match the full-bleed photo banner
+//   treatment now used on /services/website-development, /services/it-consulting,
+//   /services/visualization, and /services (the hub page) — photo as CSS
+//   background with a dark gradient overlay, grain texture, and corner
+//   brackets, single left-aligned text column. Replaces the previous
+//   two-column hero (text + inline SVG "rank-climb" chart card). The chart
+//   component has been removed since it's no longer rendered anywhere on
+//   the page. The "ranking ticker" marquee that used to sit in its own
+//   dark strip below the hero now docks to the bottom edge of the hero
+//   itself, same mechanism as the tickers on the other redesigned pages.
+//   Save your banner image to:
+//   /public/images/services/digital-marketing-seo-hero-banner.jpg
+//
+//   All indexing/schema fixes from prior revisions are RETAINED UNCHANGED:
+//   canonical/base handling, robots block, hardcoded dateModified, FAQ
+//   schema/content parity via the shared `dmFaqs` array + <FaqSection />,
+//   breadcrumbFromItems(), CONTACT_EMAIL, dm- CSS prefix, sr-only breadcrumb.
+//   No metadata, schema, routing, or Header changes.
+//
+//   Everything else on the page — intro/stats, the four service clusters,
+//   the MindTrick.io spotlight, benefits grid, FAQ, and CTA strip — is
+//   unchanged from the previous revision. A sticky mobile CTA bar was added
+//   to match the other redesigned service pages.
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
-import Chatbot        from "@/app/components/chatbot";
-import Whatsappbutton from "@/app/components/wahtsappbutton";
+
 
 import type { Metadata } from "next";
 import {
@@ -315,7 +340,14 @@ const clusters = [
   },
 ];
 
+<<<<<<< HEAD
 const ticker = [
+=======
+// Illustrative keyword ranking movements for the signature ticker band —
+// now docked to the bottom edge of the hero itself, same mechanism as the
+// tickers on the other redesigned service pages.
+const pipeline = [
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
   { term: "plumbers near me", from: "#38", to: "#4" },
   { term: "roof repair houston", from: "#52", to: "#6" },
   { term: "best seo agency", from: "#21", to: "#2" },
@@ -415,6 +447,7 @@ export default function DigitalMarketing() {
         }
         .dm-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
 
+<<<<<<< HEAD
         /* HERO
            Header is fixed + transparent + white text/logo until scrolled
            past 10px (it's built to sit on a dark hero). This page's hero is
@@ -470,6 +503,127 @@ export default function DigitalMarketing() {
 
         /* INTRO / DEFINITION */
         .dm-intro{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+=======
+        /* ══ HERO — full-bleed photo banner, same treatment as the
+           website-development / it-consulting pages: photo as CSS
+           background with a dark gradient overlay so the text column
+           stays legible. Save your banner image to:
+           /public/images/services/digital-marketing-hero-banner.jpg ── */
+        .dm-hero{
+          position:relative;height:100vh;width:100%;
+          display:flex;flex-direction:column;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
+          background-attachment:scroll;background-color:#080808;background-size:cover;
+          overflow:hidden;
+        }
+        /* Fixed (not min-) height, so the section can never grow taller
+           than one screen and push the ticker bar below the fold. dvh/svh
+           account for mobile browser chrome so the banner never shows a
+           gap or clips; falls back to 100vh. */
+        @supports (height: 100svh) { .dm-hero { height: 100svh; } }
+        @supports (height: 100dvh) { .dm-hero { height: 100dvh; } }
+        @media(max-width:960px){
+          .dm-hero{
+            background:
+              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
+              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
+              url('/images/services/digital-marketing-hero-banner.jpg') center center / cover no-repeat;
+          }
+        }
+
+        /* Main hero content: fills the remaining space above the ticker
+           and centers vertically within it. Header clearance and the
+           left/right gutters live here (not on the fixed-height section)
+           so the ticker's own height is never squeezed out. */
+        .dm-hero__inner{
+          position:relative;z-index:10;flex:1 1 auto;min-height:0;
+          display:flex;align-items:center;overflow:hidden;
+          max-width:1280px;margin:0 auto;width:100%;
+          padding:8rem 1.5rem 1.5rem;
+          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
+          box-sizing:border-box;
+        }
+        @media(max-width:960px){ .dm-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
+        @media(max-width:640px){ .dm-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
+        @media(max-width:380px){ .dm-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        /* Short screens (landscape phones, small laptop windows with
+           browser chrome): trim vertical rhythm and drop the badge row
+           so everything still fits above the ticker without scrolling. */
+        @media(max-height:520px){
+          .dm-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .dm-hero__eyebrow{ margin-bottom:.7rem; }
+          .dm-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .dm-hero__sub{ margin-bottom:.9rem; }
+          .dm-hero__ctas{ margin-bottom:0; }
+          .dm-hero__badges{ display:none; }
+        }
+
+        .dm-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .dm-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
+        .dm-corner--tl{top:24px;left:24px;border-top:1px solid var(--dm-blue);border-left:1px solid var(--dm-blue);}
+        .dm-corner--tr{top:24px;right:24px;border-top:1px solid var(--dm-blue);border-right:1px solid var(--dm-blue);}
+        .dm-corner--bl{bottom:24px;left:24px;border-bottom:1px solid var(--dm-blue);border-left:1px solid var(--dm-blue);}
+        .dm-corner--br{bottom:24px;right:24px;border-bottom:1px solid var(--dm-blue);border-right:1px solid var(--dm-blue);}
+
+        .dm-hero__content{animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;max-width:640px;}
+        @keyframes dmFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.dm-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
+        .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--dm-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.6rem;backdrop-filter:blur(8px);}
+        .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--dm-blue);animation:dmPulse 2s ease-in-out infinite;}
+        @keyframes dmPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+        .dm-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:#fff;margin:0 0 1.1rem;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .dm-hero__h1 em{font-style:normal;color:var(--dm-blue);}
+        .dm-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:rgba(255,255,255,0.78);max-width:520px;margin:0 0 2rem;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.dm-hero__sub{margin:0 auto 2rem;}}
+
+        .dm-hero__ctas{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem;margin-bottom:2rem;}
+        @media(max-width:960px){.dm-hero__ctas{justify-content:center;}}
+        .dm-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--dm-blue));padding:13px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .dm-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
+        .dm-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);}
+        .dm-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
+
+        .dm-hero__badges{display:flex;flex-wrap:wrap;gap:1.5rem;}
+        @media(max-width:960px){.dm-hero__badges{justify-content:center;}}
+        .dm-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:rgba(255,255,255,0.65);}
+        .dm-hero__badge svg{color:var(--dm-blue);flex-shrink:0;}
+
+        /* ══ TICKER — docked as a normal flex child at the bottom of the
+           fixed-height hero (not position:absolute), so it can never end
+           up below the fold regardless of how tall the content above it
+           is — it always renders inside the first screen. ═══════════════ */
+        .dm-hero__ticker-bar{
+          position:relative;z-index:12;flex:0 0 auto;
+          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
+          padding-top:1.5rem;
+          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
+        }
+        .dm-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
+        .dm-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:dmScroll 32s linear infinite;}
+        .dm-hero__ticker-bar:hover .dm-ticker__track{animation-play-state:paused;}
+        @media(max-width:640px){ .dm-ticker__track{ animation-duration:20s; } }
+        @keyframes dmScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .dm-ticker__item{display:flex;align-items:center;gap:.5rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .dm-ticker__item b{color:rgba(255,255,255,.85);font-weight:500;}
+        .dm-ticker__up{color:var(--dm-green);}
+        .dm-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
+        @media(max-height:520px){
+          .dm-hero__ticker-bar{ padding-top:.75rem; }
+          .dm-ticker__caption{ display:none; }
+        }
+
+        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
+        .dm-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--dm-line);}
+        @media(max-width:760px){.dm-sticky-cta{display:flex;justify-content:center;}}
+        .dm-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--dm-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
+
+        /* INTRO / DEFINITION */
+        .dm-intro{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);background:var(--dm-surface);}
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
         .dm-intro__inner{max-width:920px;margin:0 auto;}
         .dm-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--dm-blue);margin-bottom:1rem;display:block;}
         .dm-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0 0 1.2rem;max-width:640px;}
@@ -477,7 +631,11 @@ export default function DigitalMarketing() {
         .dm-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--dm-muted);max-width:680px;margin:0 0 2.5rem;}
         .dm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
         @media(max-width:768px){.dm-stats{grid-template-columns:1fr;}}
+<<<<<<< HEAD
         .dm-stat{background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:14px;padding:1.4rem 1.5rem;}
+=======
+        .dm-stat{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:14px;padding:1.4rem 1.5rem;}
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
         .dm-stat__num{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--dm-ink);}
         .dm-stat__label{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--dm-muted);margin-top:.3rem;}
 
@@ -553,7 +711,11 @@ export default function DigitalMarketing() {
         .dm-faq-item__a{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin:0;}
 
         /* CTA */
+<<<<<<< HEAD
         .dm-cta{padding:5.5rem 1.5rem;text-align:center;}
+=======
+        .dm-cta{padding:5.5rem 1.5rem;text-align:center;background:var(--dm-surface);border-top:1px solid var(--dm-line);}
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
         .dm-cta__inner{max-width:560px;margin:0 auto;}
         .dm-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
         .dm-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0 0 1rem;}
@@ -564,7 +726,10 @@ export default function DigitalMarketing() {
 
         @media(prefers-reduced-motion:reduce){
           .dm-page *,.dm-page *::before,.dm-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+<<<<<<< HEAD
           .dm-rankcard__line,.dm-rankcard__area{opacity:1!important;stroke-dashoffset:0!important;}
+=======
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
         }
       `}</style>
 
@@ -577,8 +742,27 @@ export default function DigitalMarketing() {
       />
 
       <div className="dm-page">
+<<<<<<< HEAD
         {/* HERO */}
         <section className="dm-hero" aria-labelledby="dm-hero-heading">
+=======
+        {/* ══ HERO ══════════════════════════════════════════════════════════
+            Full-bleed photo banner (set as the section's CSS background —
+            see .dm-hero in <style> above), same treatment as the
+            website-development and it-consulting pages, replacing the
+            previous two-column layout with the inline SVG "rank-climb"
+            chart card. A dark gradient overlay keeps the white/blue text
+            legible over the photo. */}
+        <section className="dm-hero" aria-labelledby="dm-hero-heading">
+          <div aria-hidden="true">
+            <div className="dm-hero__grain" />
+          </div>
+          <div className="dm-corner dm-corner--tl" aria-hidden="true" />
+          <div className="dm-corner dm-corner--tr" aria-hidden="true" />
+          <div className="dm-corner dm-corner--bl" aria-hidden="true" />
+          <div className="dm-corner dm-corner--br" aria-hidden="true" />
+
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
           <nav className="dm-sr-only" aria-label="Breadcrumb">
             <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
@@ -612,6 +796,10 @@ export default function DigitalMarketing() {
                 one connected system, reported against the numbers that actually
                 move your business.
               </p>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
               <div className="dm-hero__ctas">
                 <a href="#services" className="dm-hero__cta" aria-label="Explore digital marketing and SEO services">
                   Explore Services
@@ -619,6 +807,7 @@ export default function DigitalMarketing() {
                 <Link href="/contact" className="dm-hero__cta dm-hero__cta--ghost" aria-label="Get a free digital marketing consultation">
                   Get a Free Consultation
                 </Link>
+<<<<<<< HEAD
               </div>
             </div>
             <RankChart />
@@ -697,6 +886,100 @@ export default function DigitalMarketing() {
             </section>
           ))}
 
+=======
+              </div>
+
+              <div className="dm-hero__badges" aria-hidden="true">
+                <span className="dm-hero__badge"><FaSearch /> Search-first strategy</span>
+                <span className="dm-hero__badge"><FaChartLine /> Reported against ROI</span>
+                <span className="dm-hero__badge"><FaBullhorn /> Full-funnel campaigns</span>
+              </div>
+            </div>
+          </div>
+
+          {/*
+            Ticker docks to the bottom edge of the hero itself (not a
+            separate section below it), so the scrolling ranking-movement
+            line and the photo banner render together as a single
+            full-screen unit on every screen size. A soft gradient behind
+            it keeps the text legible over the photo without a hard color
+            break.
+          */}
+          <div className="dm-hero__ticker-bar" aria-hidden="true">
+            <div className="dm-ticker">
+              <div className="dm-ticker__track">
+                {[...pipeline, ...pipeline].map((t, i) => (
+                  <span className="dm-ticker__item" key={i}>
+                    <b>{t.term}</b> {t.from} <span className="dm-ticker__up">{"->"} {t.to} ▲</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="dm-ticker__caption">Illustrative keyword ranking movements</p>
+          </div>
+        </section>
+
+        {/* INTRO / DEFINITION (GEO-ready clear answer) */}
+        <section className="dm-intro" aria-labelledby="dm-intro-heading">
+          <div className="dm-intro__inner">
+            <span className="dm-intro__label">What we do</span>
+            <h2 className="dm-intro__h2" id="dm-intro-heading">
+              Full-funnel marketing, <em>run like a product</em>
+            </h2>
+            <p className="dm-intro__p">
+              99 Visual Solutions is a digital marketing and SEO partner that plans,
+              builds, and manages search, paid, social, content, and email programs
+              under a single strategy — so every channel compounds the others
+              instead of competing with them for budget and attention.
+            </p>
+            <div className="dm-stats">
+              <div className="dm-stat">
+                <div className="dm-stat__num">12</div>
+                <div className="dm-stat__label">Disciplines under one roof</div>
+              </div>
+              <div className="dm-stat">
+                <div className="dm-stat__num">1</div>
+                <div className="dm-stat__label">Reporting dashboard, full visibility</div>
+              </div>
+              <div className="dm-stat">
+                <div className="dm-stat__num">100%</div>
+                <div className="dm-stat__label">Decisions backed by data, not guesses</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SERVICE CLUSTERS */}
+        <div id="services">
+          {clusters.map((cluster) => (
+            <section key={cluster.id} className="dm-cluster" aria-labelledby={`dm-cluster-h-${cluster.id}`}>
+              <div className="dm-cluster__inner">
+                <div className="dm-cluster__head">
+                  <span className="dm-cluster__eyebrow">{cluster.eyebrow}</span>
+                  <h2 className="dm-cluster__h2" id={`dm-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
+                  <p className="dm-cluster__intro">{cluster.intro}</p>
+                </div>
+                <div className={`dm-cluster__grid dm-cluster__grid--${cluster.cols}`}>
+                  {cluster.ids.map((id) => {
+                    const svc = serviceById(id);
+                    return (
+                      <article className="dm-card" id={svc.id} key={svc.id} aria-labelledby={`dm-card-h-${svc.id}`}>
+                        <div className="dm-card__icon" aria-hidden="true">{svc.icon}</div>
+                        <h3 className="dm-card__title" id={`dm-card-h-${svc.id}`}>{svc.title}</h3>
+                        <p className="dm-card__desc">{svc.description}</p>
+                        <p className="dm-card__highlight">{svc.highlight}</p>
+                        <ul className="dm-card__bullets">
+                          {svc.bullets.map((b) => <li key={b}>{b}</li>)}
+                        </ul>
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          ))}
+
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
           {/* MINDTRICK SPOTLIGHT -- structurally distinct, so it gets its own layout */}
           {(() => {
             const mt = serviceById("mindtrick");
@@ -780,12 +1063,19 @@ export default function DigitalMarketing() {
             </Link>
           </div>
         </section>
+<<<<<<< HEAD
+=======
+
+        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
+        <div className="dm-sticky-cta">
+          <Link href="/contact" className="dm-sticky-cta__btn">Get a Free Quote</Link>
+        </div>
+>>>>>>> 29685a8b3bee362cb8edc925f2336e4b37bda704
       </div>
 
       <Footer />
       <ScrollDown />
-      <Chatbot />
-      <Whatsappbutton />
+     
     </>
   );
 }

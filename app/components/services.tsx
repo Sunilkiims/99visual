@@ -1,4 +1,17 @@
 'use client';
+// app/components/visualization-client.tsx (or wherever this is mounted)
+//
+// THIS REVISION: Recolored from the dark near-black + orange + serif system
+//   to the light "analytics" system shared by the rest of the site
+//   (website-development, it-consulting, digital-marketing-seo,
+//   cad-gis-photogrammetry, automation-testing, and the /services hub):
+//   cool paper background, ink text, Space Grotesk / Inter / IBM Plex Mono
+//   typefaces, one blue signal accent. Tokens remain scoped to a
+//   `.vs-scope` wrapper (not the bare `:root`) so they don't leak into
+//   other components on the same page.
+//
+//   No copy, layout, structure, or behavior changes — only color and
+//   typography tokens.
 import { useState } from "react";
 import Image from "next/image";
 import VideoShowcase from "@/app/components/videoshowcase";
@@ -14,32 +27,37 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 /* =====================================================
-   DESIGN TOKENS — injected once at the top
+   DESIGN TOKENS — injected once at the top.
+   Scoped to .vs-scope (not :root) so these custom
+   properties don't leak into other components rendered
+   on the same page. Matches the light "analytics" system
+   used across the rest of the site.
 ===================================================== */
 const GLOBAL_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-  :root {
-    --c-bg:         #080808;
-    --c-surface:    #0f0f0f;
-    --c-surface2:   #141414;
-    --c-border:     rgba(255,255,255,0.07);
-    --c-orange:     #f97316;
-    --c-orange-dim: rgba(249,115,22,0.12);
-    --c-muted:      rgba(255,255,255,0.45);
-    --c-muted2:     rgba(255,255,255,0.65);
-    --ff-serif:     'Cormorant Garamond', serif;
-    --ff-sans:      'DM Sans', sans-serif;
+  .vs-scope {
+    --vs-ink:      #12141A;
+    --vs-muted:    #5B6172;
+    --vs-paper:    #F5F6F8;
+    --vs-surface:  #FFFFFF;
+    --vs-line:     #E4E6EC;
+    --vs-blue:     #2E5CFF;
+    --vs-blue-dim: rgba(46,92,255,0.08);
+    --vs-green:    #37D67A;
+    --ff-heading:  'Space Grotesk', sans-serif;
+    --ff-sans:     'Inter', sans-serif;
+    --ff-mono:     'IBM Plex Mono', monospace;
   }
 
   /* ── SERVICE SECTION ── */
   .vs-section {
     padding: 5rem 1.5rem;
-    border-bottom: 1px solid var(--c-border);
+    border-bottom: 1px solid var(--vs-line);
     position: relative;
   }
-  .vs-section:nth-child(odd)  { background: var(--c-surface); }
-  .vs-section:nth-child(even) { background: var(--c-bg); }
+  .vs-section:nth-child(odd)  { background: var(--vs-surface); }
+  .vs-section:nth-child(even) { background: var(--vs-paper); }
 
   /* Normal: media(3fr) left | content(4fr) right */
   .vs-section__inner {
@@ -66,135 +84,135 @@ const GLOBAL_STYLES = `
   /* ── MEDIA WRAPPER ── */
   .vs-media {
     position: relative; border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--c-border);
+    border: 1px solid var(--vs-line);
   }
   .vs-media::before {
     content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: linear-gradient(135deg, rgba(249,115,22,.08), transparent 60%);
+    background: linear-gradient(135deg, rgba(46,92,255,.08), transparent 60%);
     border-radius: 16px;
   }
 
   /* ── SWIPER OVERRIDES ── */
   .vs-swiper .swiper-button-next,
   .vs-swiper .swiper-button-prev {
-    color: var(--c-orange) !important;
+    color: var(--vs-blue) !important;
   }
   .vs-swiper .swiper-pagination-bullet-active {
-    background: var(--c-orange) !important;
+    background: var(--vs-blue) !important;
   }
   .vs-swiper .swiper-pagination-bullet {
-    background: rgba(255,255,255,0.3) !important;
+    background: rgba(18,20,26,0.18) !important;
   }
 
   /* ── TEXT BLOCK ── */
   .vs-text { position: relative; }
 
   .vs-text__num {
-    font-family: var(--ff-serif);
+    font-family: var(--ff-heading);
     font-size: clamp(3.5rem, 6vw, 5.5rem);
     font-weight: 700; line-height: 1;
-    color: transparent; -webkit-text-stroke: 1px rgba(249,115,22,.18);
+    color: transparent; -webkit-text-stroke: 1px rgba(46,92,255,.16);
     position: absolute; top: -1.5rem; left: 0;
     pointer-events: none; user-select: none;
   }
   .vs-text__eyebrow {
-    font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
-    letter-spacing: .22em; text-transform: uppercase;
-    color: var(--c-orange); margin-bottom: .9rem; display: block;
+    font-family: var(--ff-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--vs-blue); margin-bottom: .9rem; display: block;
   }
   .vs-text__h2 {
-    font-family: var(--ff-serif);
+    font-family: var(--ff-heading);
     font-size: clamp(1.6rem, 3vw, 2.4rem);
-    font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
-    color: #fff; margin: 0 0 .6rem;
+    font-weight: 700; line-height: 1.2; letter-spacing: -.01em;
+    color: var(--vs-ink); margin: 0 0 .6rem;
   }
   .vs-text__rule {
     width: 32px; height: 1px;
-    background: linear-gradient(90deg, var(--c-orange), transparent);
+    background: linear-gradient(90deg, var(--vs-blue), transparent);
     margin: 0 0 1.4rem;
   }
   .vs-text__p {
     font-family: var(--ff-sans); font-size: .95rem;
-    font-weight: 300; line-height: 1.85; color: var(--c-muted);
+    font-weight: 300; line-height: 1.85; color: var(--vs-muted);
     margin-bottom: .8rem;
   }
   .vs-text__btn {
     display: inline-flex; align-items: center; gap: 8px;
-    font-family: var(--ff-sans); font-size: 10px; font-weight: 600;
-    letter-spacing: .14em; text-transform: uppercase; color: #080808;
-    background: linear-gradient(135deg, #fb923c, #f97316);
-    padding: 12px 28px; border-radius: 100px; border: none; cursor: pointer;
-    box-shadow: 0 8px 24px rgba(249,115,22,.3);
+    font-family: var(--ff-sans); font-size: .82rem; font-weight: 600;
+    letter-spacing: .02em; color: #080808;
+    background: linear-gradient(135deg, #6a8bff, var(--vs-blue));
+    padding: 12px 28px; border-radius: 10px; border: none; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(46,92,255,.28);
     transition: transform .2s ease, box-shadow .2s ease;
     margin-top: .5rem;
   }
   .vs-text__btn:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 14px 36px rgba(249,115,22,.5);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(46,92,255,.4);
   }
 
   /* ── MODAL ── */
   .vs-modal-backdrop {
     position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+    background: rgba(18,20,26,.55); backdrop-filter: blur(8px);
     display: flex; align-items: center; justify-content: center;
   }
   .vs-modal {
     position: relative; z-index: 10;
-    background: var(--c-surface2);
-    border: 1px solid var(--c-border);
+    background: var(--vs-surface);
+    border: 1px solid var(--vs-line);
     max-width: 720px; width: 100%; margin: 1rem;
     padding: 2.5rem; border-radius: 20px;
-    box-shadow: 0 40px 80px rgba(0,0,0,.6);
+    box-shadow: 0 40px 80px -20px rgba(18,20,26,.35);
     max-height: 90vh; overflow-y: auto;
   }
   .vs-modal__close {
     position: absolute; top: 1.2rem; right: 1.4rem;
     background: none; border: none; cursor: pointer;
-    color: var(--c-muted); font-size: 1.1rem; line-height: 1;
+    color: var(--vs-muted); font-size: 1.1rem; line-height: 1;
     transition: color .2s;
   }
-  .vs-modal__close:hover { color: #fff; }
+  .vs-modal__close:hover { color: var(--vs-ink); }
   .vs-modal__title {
-    font-family: var(--ff-serif);
+    font-family: var(--ff-heading);
     font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 700; line-height: 1.15; color: #fff;
+    font-weight: 700; line-height: 1.2; color: var(--vs-ink);
     margin: 0 0 .5rem;
   }
   .vs-modal__rule {
     width: 32px; height: 1px;
-    background: linear-gradient(90deg, var(--c-orange), transparent);
+    background: linear-gradient(90deg, var(--vs-blue), transparent);
     margin: 0 0 1.4rem;
   }
   .vs-modal__intro {
     font-family: var(--ff-sans); font-size: .95rem;
-    font-weight: 300; line-height: 1.85; color: var(--c-muted);
+    font-weight: 300; line-height: 1.85; color: var(--vs-muted);
     margin-bottom: .7rem;
   }
   .vs-modal__divider {
     width: 100%; height: 1px;
-    background: var(--c-border);
+    background: var(--vs-line);
     margin: 1.5rem 0;
   }
   .vs-modal__heading {
-    font-family: var(--ff-serif);
+    font-family: var(--ff-heading);
     font-size: 1.25rem; font-weight: 700;
-    color: #fff; margin: 1.4rem 0 .5rem;
+    color: var(--vs-ink); margin: 1.4rem 0 .5rem;
   }
   .vs-modal__text {
     font-family: var(--ff-sans); font-size: .9rem;
-    font-weight: 300; line-height: 1.8; color: var(--c-muted);
+    font-weight: 300; line-height: 1.8; color: var(--vs-muted);
     margin-bottom: .5rem;
   }
   .vs-modal__service {
     font-family: var(--ff-sans); font-size: .88rem;
-    font-weight: 400; color: var(--c-muted2);
+    font-weight: 400; color: var(--vs-ink);
     display: flex; align-items: flex-start; gap: .6rem;
     margin-bottom: .4rem;
   }
   .vs-modal__service::before {
     content: ''; width: 5px; height: 5px; border-radius: 50%;
-    background: var(--c-orange); margin-top: .5rem; flex-shrink: 0;
+    background: var(--vs-blue); margin-top: .5rem; flex-shrink: 0;
   }
 `;
 
@@ -203,12 +221,12 @@ const GLOBAL_STYLES = `
 ===================================================== */
 export default function VisualizationClient() {
   return (
-    <>
+    <div className="vs-scope">
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
       {SERVICE_SECTIONS.map((service, idx) => (
         <ServiceSection key={service.id} index={idx} {...service} />
       ))}
-    </>
+    </div>
   );
 }
 
