@@ -2,24 +2,26 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // 3D Visualization & Architectural Rendering — 99 Visual Solutions
 //
-// THIS REVISION: The hero's full-bleed photo banner (established on this
-//   page and since matched on /services/website-development,
-//   /services/it-consulting, /services/digital-marketing-seo,
-//   /services/cad-gis-photogrammetry, and /services/automation-testing) now
-//   also picks up the "docked ticker" mechanism those pages added afterward:
-//   an illustrative "production log" ticker band sits as a flex child
-//   pinned to the bottom edge of the hero itself (not a separate section
-//   below it), so it always renders inside the first screen regardless of
-//   viewport height. The hero switched from min-height:100vh to a fixed
-//   height:100vh (with dvh/svh refinements) so it can never grow taller
-//   than one screen and push that ticker below the fold. A sticky mobile
-//   CTA bar was also added to match the other redesigned service pages.
+// THIS REVISION: Recolored from the dark near-black + orange + serif system
+//   to the light "analytics" system shared by every other redesigned page
+//   (website-development, it-consulting, digital-marketing-seo,
+//   cad-gis-photogrammetry, automation-testing, and the /services hub):
+//   cool paper background, ink text, Space Grotesk / Inter / IBM Plex Mono
+//   typefaces, one blue signal accent. This resolves the last remaining
+//   inconsistency — the "Services" component rendered inside this page
+//   (app/components/services.tsx) was already converted to this same blue
+//   system, so this page's own sections now match it instead of clashing.
 //
-//   Everything else — the photo banner itself, gradient overlay, grain
-//   texture, corner brackets, single left-aligned hero column, the dark
-//   near-black + orange design system used across the rest of the page,
-//   all section layouts, schema, SEO, and written content — is unchanged
-//   from the previous revision.
+//   The hero keeps the full-bleed photo banner + dark gradient overlay
+//   treatment used everywhere else (a dark banner sits fine on top of a
+//   light page, same as on website-development, it-consulting, etc.) —
+//   only its accent color moved from orange to blue. Custom properties
+//   are now scoped to a `.viz-page` wrapper class instead of the bare
+//   `:root`, matching the scoping convention used on every other
+//   redesigned page.
+//
+//   No copy, schema, metadata, layout, or section structure changed —
+//   only color and typography tokens.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -378,9 +380,9 @@ const benefits = [
 ];
 
 // Illustrative production-log lines for the signature ticker band — this
-// page's rendering/production counterpart to the tickers now used on the
-// other five redesigned service pages. Docked to the bottom edge of the
-// hero itself, same mechanism as those pages.
+// page's rendering/production counterpart to the tickers used on the other
+// five redesigned service pages. Docked to the bottom edge of the hero
+// itself, same mechanism as those pages.
 const pipeline = [
   { cmd: "render_export",   out: "4K H.264 ready" },
   { cmd: "lidar_import",    out: "18.2M points aligned" },
@@ -435,10 +437,10 @@ function HeroSection() {
       {/*
         Hero content sits on top of the full-bleed photo banner (set as the
         section's CSS background — see .viz-hero in <style> below). The
-        hero is now a fixed-height flex column so the ticker docked at the
-        bottom (see .viz-hero__ticker-bar) always renders inside the first
-        screen, the same mechanism used on the other redesigned service
-        pages.
+        dark gradient overlay + white text is unchanged from before — a
+        dark hero on top of a light page is exactly how every other
+        redesigned service page works too. Only the accent color moved
+        from orange to blue.
       */}
       <div className="viz-hero__inner">
         <div className="viz-hero__content">
@@ -682,16 +684,12 @@ export default function VisualizationPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-        :root {
-          --c-bg:      #080808;
-          --c-surface: #0f0f0f;
-          --c-border:  rgba(255,255,255,0.07);
-          --c-orange:  #f97316;
-          --c-muted:   rgba(255,255,255,0.45);
-          --ff-serif:  'Cormorant Garamond', serif;
-          --ff-sans:   'DM Sans', sans-serif;
+        .viz-page{
+          --viz-ink:#12141A; --viz-muted:#5B6172; --viz-paper:#F5F6F8; --viz-surface:#FFFFFF;
+          --viz-line:#E4E6EC; --viz-blue:#2E5CFF; --viz-green:#37D67A;
+          background:var(--viz-paper);
         }
 
         .viz-sr-only {
@@ -703,12 +701,12 @@ export default function VisualizationPage() {
         /* ══ HERO ════════════════════════════════════════════════════════
            Full-bleed photo banner as the background, with a dark
            left-to-right + top-to-bottom gradient overlay so the text
-           column stays legible over the photo. Swap the url() below for
-           your saved banner file path.
+           column stays legible over the photo — same dark-on-light-page
+           hero treatment used on every other redesigned service page.
+           Swap the url() below for your saved banner file path.
            Fixed (not min-) height + flex column, so the section can never
            grow taller than one screen and push the ticker bar (docked at
-           the bottom, see .viz-hero__ticker-bar) below the fold — same
-           mechanism used on the other redesigned service pages. */
+           the bottom, see .viz-hero__ticker-bar) below the fold. */
         .viz-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
@@ -733,20 +731,19 @@ export default function VisualizationPage() {
         }
         .viz-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .viz-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
-        .viz-corner--tl{top:24px;left:24px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .viz-corner--tr{top:24px;right:24px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
+        .viz-corner--tl{top:24px;left:24px;border-top:1px solid var(--viz-blue);border-left:1px solid var(--viz-blue);}
+        .viz-corner--tr{top:24px;right:24px;border-top:1px solid var(--viz-blue);border-right:1px solid var(--viz-blue);}
         /* nudged up from the standard bottom offset to clear a bottom-left chatbot launcher icon */
-        .viz-corner--bl{bottom:112px;left:260px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
+        .viz-corner--bl{bottom:112px;left:260px;border-bottom:1px solid var(--viz-blue);border-left:1px solid var(--viz-blue);}
         @media(max-width:480px){ .viz-corner--bl{ left:24px; } }
-        .viz-corner--br{bottom:64px;right:24px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
+        .viz-corner--br{bottom:64px;right:24px;border-bottom:1px solid var(--viz-blue);border-right:1px solid var(--viz-blue);}
 
         /* Hero content column — sits on top of the photo banner background.
-           Single column now (no right-side product image); text is capped
-           to a comfortable reading width so it doesn't stretch across the
-           whole photo. Now a flex child that fills the space above the
-           docked ticker and centers vertically within it, so header
-           clearance and gutters live here rather than on the fixed-height
-           section — the ticker's own height is never squeezed out. */
+           Single column, left-aligned, capped to a comfortable reading
+           width. Flex child that fills the space above the docked ticker
+           and centers vertically within it, so header clearance and
+           gutters live here rather than on the fixed-height section — the
+           ticker's own height is never squeezed out. */
         .viz-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
           display:flex;align-items:center;overflow:hidden;
@@ -773,24 +770,24 @@ export default function VisualizationPage() {
         @keyframes vizFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.viz-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--c-orange);animation:vizPulse 2s ease-in-out infinite;}
+        .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--viz-blue);animation:vizPulse 2s ease-in-out infinite;}
         @keyframes vizPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .viz-hero__h1{font-family:var(--ff-serif);font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .viz-hero__h1 em{font-style:italic;color:var(--c-orange);}
-        .viz-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,var(--c-orange),transparent);margin:0 0 1.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.viz-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);}}
-        .viz-hero__sub{font-family:var(--ff-sans);font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        .viz-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .viz-hero__h1 em{font-style:normal;color:var(--viz-blue);}
+        .viz-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,var(--viz-blue),transparent);margin:0 0 1.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.viz-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);}}
+        .viz-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
         @media(max-width:960px){.viz-hero__sub{margin:0 auto 2.2rem;}}
-        .viz-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-sans);font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:12px 28px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        .viz-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.5);}
+        .viz-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--viz-blue));padding:12px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .viz-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
 
         /* ══ TICKER — docked as a normal flex child at the bottom of the
            fixed-height hero (not position:absolute), so it can never end
            up below the fold regardless of how tall the content above it
            is — it always renders inside the first screen. Same mechanism
            as the tickers on the other redesigned service pages, restyled
-           to this page's orange accent. ═══════════════════════════════ */
+           to the shared blue accent. ═══════════════════════════════════ */
         .viz-hero__ticker-bar{
           position:relative;z-index:12;flex:0 0 auto;
           background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
@@ -802,108 +799,110 @@ export default function VisualizationPage() {
         .viz-hero__ticker-bar:hover .viz-ticker__track{animation-play-state:paused;}
         @media(max-width:640px){ .viz-ticker__track{ animation-duration:22s; } }
         @keyframes vizScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .viz-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:var(--ff-sans);font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .viz-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
         .viz-ticker__item b{color:rgba(255,255,255,.45);}
-        .viz-ticker__pass{color:var(--c-orange);}
-        .viz-ticker__caption{text-align:center;font-family:var(--ff-sans);font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
+        .viz-ticker__pass{color:var(--viz-green);}
+        .viz-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
         @media(max-height:520px){
           .viz-hero__ticker-bar{ padding-top:.75rem; }
           .viz-ticker__caption{ display:none; }
         }
 
         /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .viz-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(8,8,8,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,0.08);}
+        .viz-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--viz-line);}
         @media(max-width:760px){.viz-sticky-cta{display:flex;justify-content:center;}}
-        .viz-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:var(--ff-sans);font-size:.8rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:13px 20px;border-radius:100px;text-decoration:none;}
+        .viz-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--viz-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
 
         /* ══ INTRO ═══════════════════════════════════════════════════════ */
-        .viz-intro{background:#0f0f0f;border-bottom:1px solid rgba(255,255,255,0.07);padding:5.5rem 1.5rem;}
+        .viz-intro{background:var(--viz-surface);border-bottom:1px solid var(--viz-line);padding:5.5rem 1.5rem;}
         .viz-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .viz-intro__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1.2rem;display:block;}
-        .viz-intro__h2{font-family:var(--ff-serif);font-size:clamp(1.9rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1.5rem;}
-        .viz-intro__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-intro__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto 1.8rem;}
-        .viz-intro__p{font-family:var(--ff-sans);font-size:1rem;font-weight:300;line-height:1.85;color:var(--c-muted);max-width:680px;margin:0 auto .9rem;}
-        .viz-intro__p strong{color:rgba(255,255,255,0.65);font-weight:500;}
-        .viz-intro__p em{color:var(--c-orange);font-style:italic;}
+        .viz-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1.2rem;display:block;}
+        .viz-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1.5rem;}
+        .viz-intro__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-intro__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto 1.8rem;}
+        .viz-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--viz-muted);max-width:680px;margin:0 auto .9rem;}
+        .viz-intro__p strong{color:var(--viz-ink);font-weight:500;}
+        .viz-intro__p em{color:var(--viz-blue);font-style:normal;}
 
         /* ══ WHO ═════════════════════════════════════════════════════════ */
-        .viz-who{background:#080808;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-who{background:var(--viz-paper);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
         .viz-who__inner{max-width:1200px;margin:0 auto;}
         .viz-who__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-who__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
-        .viz-who__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .viz-who__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-who__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-who__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
+        .viz-who__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
+        .viz-who__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-who__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
         .viz-who__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
         @media(max-width:1024px){.viz-who__grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:640px){.viz-who__grid{grid-template-columns:1fr;}}
-        .viz-who-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease;}
-        .viz-who-card:hover{border-color:rgba(249,115,22,.25);transform:translateY(-4px);}
-        .viz-who-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
-        .viz-who-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
+        .viz-who-card{background:var(--viz-surface);border:1px solid var(--viz-line);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease;}
+        .viz-who-card:hover{border-color:rgba(46,92,255,.3);transform:translateY(-4px);}
+        .viz-who-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
+        .viz-who-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
 
         /* ══ OFFERINGS ═══════════════════════════════════════════════════ */
-        .viz-offerings{background:#0f0f0f;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-offerings{background:var(--viz-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
         .viz-offerings__inner{max-width:1200px;margin:0 auto;}
         .viz-offerings__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-offerings__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
-        .viz-offerings__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .viz-offerings__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-offerings__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-offerings__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
+        .viz-offerings__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
+        .viz-offerings__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-offerings__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
         .viz-offerings__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
         @media(max-width:1024px){.viz-offerings__grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:640px){.viz-offerings__grid{grid-template-columns:1fr;}}
-        .viz-offering-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;}
-        .viz-offering-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(249,115,22,.5),transparent);opacity:0;transition:opacity .25s ease;}
-        .viz-offering-card:hover{border-color:rgba(249,115,22,.25);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+        .viz-offering-card{background:var(--viz-paper);border:1px solid var(--viz-line);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;}
+        .viz-offering-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(46,92,255,.5),transparent);opacity:0;transition:opacity .25s ease;}
+        .viz-offering-card:hover{border-color:rgba(46,92,255,.3);transform:translateY(-4px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
         .viz-offering-card:hover::before{opacity:1;}
-        .viz-offering-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
-        .viz-offering-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
+        .viz-offering-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
+        .viz-offering-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
 
         /* ══ PROCESS ═════════════════════════════════════════════════════ */
-        .viz-process{background:#080808;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-process{background:var(--viz-paper);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
         .viz-process__inner{max-width:820px;margin:0 auto;}
         .viz-process__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-process__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
-        .viz-process__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .viz-process__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-process__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-process__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
+        .viz-process__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
+        .viz-process__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-process__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
         .viz-process__list{display:flex;flex-direction:column;gap:0;}
-        .viz-process-item{display:flex;gap:1.75rem;padding:1.75rem 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-process-item{display:flex;gap:1.75rem;padding:1.75rem 0;border-bottom:1px solid var(--viz-line);}
         .viz-process-item:last-child{border-bottom:none;}
-        .viz-process-item__num{font-family:var(--ff-serif);font-size:1.8rem;font-weight:700;color:var(--c-orange);opacity:.55;min-width:44px;flex-shrink:0;}
-        .viz-process-item__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin:0 0 .5rem;}
-        .viz-process-item__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);margin:0;}
+        .viz-process-item__num{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:var(--viz-blue);opacity:.55;min-width:44px;flex-shrink:0;}
+        .viz-process-item__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin:0 0 .5rem;}
+        .viz-process-item__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);margin:0;}
 
         /* ══ BENEFITS ════════════════════════════════════════════════════ */
-        .viz-benefits{background:#0f0f0f;padding:6rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .viz-benefits{background:var(--viz-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
         .viz-benefits__inner{max-width:1100px;margin:0 auto;}
         .viz-benefits__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-benefits__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
-        .viz-benefits__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.15;letter-spacing:-.015em;color:#fff;margin:0 0 1rem;}
-        .viz-benefits__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-benefits__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
+        .viz-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
+        .viz-benefits__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-benefits__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
         .viz-benefits__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
         @media(max-width:768px){.viz-benefits__grid{grid-template-columns:1fr;}}
-        .viz-benefit-card{background:#141414;border:1px solid rgba(255,255,255,0.07);border-left:2px solid var(--c-orange);border-radius:12px;padding:1.75rem;}
-        .viz-benefit-card__title{font-family:var(--ff-sans);font-size:.95rem;font-weight:600;color:#fff;margin-bottom:.6rem;}
-        .viz-benefit-card__desc{font-family:var(--ff-sans);font-size:.85rem;font-weight:300;line-height:1.75;color:var(--c-muted);}
+        .viz-benefit-card{background:var(--viz-paper);border:1px solid var(--viz-line);border-left:2px solid var(--viz-blue);border-radius:12px;padding:1.75rem;}
+        .viz-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
+        .viz-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
 
         /* ══ FAQ ═════════════════════════════════════════════════════════ */
-        .viz-faq{background:#080808;border-bottom:1px solid rgba(255,255,255,0.07);padding:6rem 1.5rem;}
+        .viz-faq{background:var(--viz-paper);border-bottom:1px solid var(--viz-line);padding:6rem 1.5rem;}
         .viz-faq__inner{max-width:820px;margin:0 auto;}
         .viz-faq__head{text-align:center;margin-bottom:3rem;}
-        .viz-faq__label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:1rem;display:block;}
-        .viz-faq__h2{font-family:var(--ff-serif);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.15;color:#fff;margin:0 0 1rem;}
-        .viz-faq__h2 em{font-style:italic;color:var(--c-orange);}
-        .viz-faq__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 auto;}
+        .viz-faq__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
+        .viz-faq__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.2;color:var(--viz-ink);margin:0 0 1rem;}
+        .viz-faq__h2 em{font-style:normal;color:var(--viz-blue);}
+        .viz-faq__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
         .viz-faq__list{display:flex;flex-direction:column;gap:1.25rem;}
-        .viz-faq-item{background:#141414;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.6rem 1.8rem;}
-        .viz-faq-item__q{font-family:var(--ff-sans);font-size:.98rem;font-weight:600;color:#fff;margin:0 0 .7rem;}
-        .viz-faq-item__a{font-family:var(--ff-sans);font-size:.88rem;font-weight:300;line-height:1.8;color:var(--c-muted);margin:0;}
+        .viz-faq-item{background:var(--viz-surface);border:1px solid var(--viz-line);border-radius:14px;padding:1.6rem 1.8rem;}
+        .viz-faq-item__q{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--viz-ink);margin:0 0 .7rem;}
+        .viz-faq-item__a{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:300;line-height:1.8;color:var(--viz-muted);margin:0;}
 
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
+        @media(prefers-reduced-motion:reduce){
+          .viz-page *,.viz-page *::before,.viz-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+        }
       `}</style>
 
       <Header />
@@ -914,33 +913,35 @@ export default function VisualizationPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(vizGraph) }}
       />
 
-      <HeroSection />
+      <div className="viz-page">
+        <HeroSection />
 
-      <IntroSection />
+        <IntroSection />
 
-      <WhoSection />
+        <WhoSection />
 
-      <OfferingsSection />
+        <OfferingsSection />
 
-      <div id="services">
-        <Services />
+        <div id="services">
+          <Services />
+        </div>
+
+        <ProcessSection />
+
+        <BenefitsSection />
+
+        <FaqSection />
+
+        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
+        <div className="viz-sticky-cta">
+          <Link href="/contact" className="viz-sticky-cta__btn">Request a Quote</Link>
+        </div>
       </div>
-
-      <ProcessSection />
-
-      <BenefitsSection />
-
-      <FaqSection />
 
       <Seriously />
       <ContactCTA />
       <Footer />
       <ScrollDown />
-
-      {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-      <div className="viz-sticky-cta">
-        <Link href="/contact" className="viz-sticky-cta__btn">Request a Quote</Link>
-      </div>
     </>
   );
 }
