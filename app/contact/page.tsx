@@ -21,8 +21,7 @@ import ContactPageClient from "../components/ContactPageClient";
 import Header         from "../components/header";
 import Footer         from "../components/footer";
 import ScrollDown     from "../components/scrolldown";
-import Chatbot        from "../components/chatbot";
-import Whatsappbutton from "../components/wahtsappbutton";
+
 
 import ContactForm    from "../components/contactform";
 
@@ -456,8 +455,6 @@ export default function ContactPage() {
 
       <Footer />
       <ScrollDown />
-      <Chatbot />
-      <Whatsappbutton />
-    </>
+      </>
   );
 }

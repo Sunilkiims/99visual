@@ -1,36 +1,36 @@
 // app/careers/page.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Production-grade Careers page — 99 Visual Solutions
+// Careers page — 99 Visual Solutions
 //
-// AUDIT FIXES APPLIED (v2):
-//   ✅ CRITICAL — Removed ALL microdata from FAQ <section> and every child
-//      element (<details itemProp="mainEntity">, <summary itemProp="name">,
-//      <div itemProp="acceptedAnswer">, <p itemProp="text">).
-//      careersFaqNode in the JSON-LD graph is the SOLE FAQPage source.
-//      Duplicate structured-data suppresses Google rich results.
-//   ✅ CRITICAL — Removed ALL microdata from breadcrumb <nav>
-//      (<ol itemScope>, <li itemProp="itemListElement">, etc.).
-//      careersBreadcrumbNode in JSON-LD is the SOLE BreadcrumbList source.
-//   ✅ FIX — <dl> wrapping <details> in FAQ replaced with <div>.
-//      <dl> requires dt/dd children; using it for <details> is invalid HTML.
-//   ✅ FIX — Removed `headline` from careersPageNode. `headline` is an
-//      Article property; WebPage does not use it.
-//   ✅ FIX — Removed `mainEntity` from careersPageNode. The page already
-//      has careersFaqNode pointing back via mainEntityOfPage. Declaring
-//      mainEntity: joblist on the WebPage node creates a conflicting dual
-//      primary-subject relationship. ItemList is discoverable via the @graph.
-//   ✅ FIX — primaryImageOfPage given "@id" for graph node coherence.
-//   ✅ FIX — streetAddress added to jobAddress (required by JobPosting schema).
-//   ✅ All prior datetime, duplicate-FAQPage, and breadcrumb fixes retained.
+// THIS REVISION — brings Hero + CTA in line with the Services page design
+// system (app/services/page.tsx), matching the treatment already applied to
+// app/about/page.tsx and app/partner/page.tsx:
+//   1. Hero rebuilt on the Services mechanism: full-bleed photo banner,
+//      fixed 100vh/100dvh/100svh, single left-aligned column, corner
+//      brackets, grain texture, docked ticker bar on the hero's bottom edge.
+//   2. Recolored to the shared Space Grotesk / Inter / IBM Plex Mono system
+//      with the one blue signal accent (--cr-blue); orange eyebrow retained.
+//   3. CTA rebuilt to match Services' .sv-cta exactly (light surface, radial
+//      orb, Space Grotesk heading), wired through <ConsultationCTA/> so the
+//      "talk to us" intent behaves identically across Services/About/
+//      Partner/Careers, plus a sticky mobile CTA bar. The "Apply Now" /
+//      "View Open Positions" CTAs stay as real navigation (Link/anchor)
+//      since those are job-application actions, not consultation requests.
+//   4. Career Areas, Why Us, Open Roles, and FAQ sections (content + JSON-LD)
+//      are UNCHANGED. .cr-hero__h1 / .cr-hero__sub class names are kept so
+//      the existing `speakable.cssSelector` entries in careersPageNode keep
+//      working.
+//
+//   Save your banner image to: /public/images/careers/careers-hero-banner.jpg
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import Header         from "@/app/components/header";
-import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
-import Chatbot        from "@/app/components/chatbot";
-import Whatsappbutton from "@/app/components/wahtsappbutton";
+import Header           from "@/app/components/header";
+import Footer           from "@/app/components/footer";
+import ScrollDown       from "@/app/components/scrolldown";
+
+import ConsultationCTA  from "@/app/components/ConsultationCTA";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
 
 import {
@@ -44,7 +44,7 @@ import {
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// METADATA
+// METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
@@ -117,7 +117,7 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DATES
+// DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED    = "2023-01-01T00:00:00+05:30";
 const DATE_MODIFIED     = new Date().toISOString();
@@ -127,7 +127,7 @@ const JOB_VALID_THROUGH = new Date(
 ).toISOString();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// JOB POSTING HELPER
+// JOB POSTING HELPER — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const jobAddress = {
   "@type":         "PostalAddress",
@@ -208,7 +208,7 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA
+// FAQ DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
@@ -249,9 +249,8 @@ const faqItems = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA
+// SCHEMA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
-
 const careersBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",    url: "/" },
   { name: "Careers", url: "/careers" },
@@ -460,14 +459,29 @@ const openRoles = [
   { title: "3D Visualization Artist",      dept: "Innovation",  type: "Full-time", loc: "India" },
 ];
 
+// Illustrative ticker, mirrors the mechanism on Services/About/Partner.
+const pipeline = [
+  { cmd: "open_roles",       out: "4 hiring now" },
+  { cmd: "web_developer",    out: "react · next.js" },
+  { cmd: "ui_ux_designer",   out: "figma · systems" },
+  { cmd: "3d_artist",        out: "3ds max · blender" },
+  { cmd: "marketing_lead",   out: "seo · paid media" },
+  { cmd: "team_culture",     out: "mentorship built-in" },
+];
+
+const stats = [
+  { value: "4",    label: "Open Roles" },
+  { value: "500+", label: "Projects Delivered" },
+  { value: "5+",   label: "Years Active" },
+  { value: "50+",  label: "Team Members" },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function CareersPage() {
   return (
     <>
-     
-
       <script
         id="schema-careers-graph"
         type="application/ld+json"
@@ -475,14 +489,12 @@ export default function CareersPage() {
       />
 
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-        .cr-hero,
-        .c-areas,
-        .c-why,
-        .c-roles,
-        .c-faq,
-        .c-cta {
+        .cr-page{
+          --cr-ink:#12141A; --cr-muted:#5B6172; --cr-paper:#F5F6F8; --cr-surface:#FFFFFF;
+          --cr-line:#E4E6EC; --cr-blue:#2E5CFF; --cr-green:#37D67A; --cr-orange:#F97316;
           --c-bg:      #080808;
           --c-surface: #0f0f0f;
           --c-border:  rgba(255,255,255,0.07);
@@ -493,84 +505,104 @@ export default function CareersPage() {
           --ff-sans:   'DM Sans', sans-serif;
         }
 
-        .sr-only {
+        .cr-sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ══ HERO ══════════════════════════════════════════════════════════ */
+        /* ══ HERO — same mechanism as Services/About/Partner ═══════════════ */
         .cr-hero {
-          position:relative;min-height:92vh;display:flex;flex-direction:row;
-          align-items:center;background:var(--c-bg);overflow:hidden;
+          position:relative;height:100vh;width:100%;
+          display:flex;flex-direction:column;
+          background:
+            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
+            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
+            url('/images/careers/careers-hero-banner.jpg') center center / cover no-repeat;
+          background-attachment:scroll;background-color:#080808;background-size:cover;
+          overflow:hidden;
         }
-        .cr-hero__grid {
-          position:absolute;inset:0;pointer-events:none;
-          background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-          background-size:52px 52px;
+        @supports (height: 100svh) { .cr-hero { height: 100svh; } }
+        @supports (height: 100dvh) { .cr-hero { height: 100dvh; } }
+        @media(max-width:960px){
+          .cr-hero {
+            background:
+              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
+              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
+              url('/images/careers/careers-hero-banner.jpg') center center / cover no-repeat;
+          }
         }
-        .cr-hero__left {
-          position:relative;z-index:10;flex:1 1 340px;padding:6rem 3rem 6rem 6rem;
-          display:flex;flex-direction:column;align-items:flex-start;
-        }
-        .cr-hero__eyebrow {
-          display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);
-          font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;
-          color:var(--c-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.07);
-          padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);
-          animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) both;
-        }
-        .cr-hero__dot {
-          width:5px;height:5px;border-radius:50%;background:var(--c-orange);
-          animation:crPulse 2s ease-in-out infinite;
-        }
-        @keyframes crPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .cr-hero__h1 {
-          font-family:var(--ff-serif);font-size:clamp(2rem,4.5vw,3.8rem);font-weight:700;
-          line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;
-          animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;
-        }
-        .cr-hero__h1 em{font-style:italic;color:transparent;-webkit-text-stroke:.2px var(--c-orange);}
-        .cr-hero__rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--c-orange),transparent);margin:0 0 1.4rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .22s both;}
-        .cr-hero__sub{font-family:var(--ff-sans);font-size:clamp(.95rem,1.8vw,1.1rem);font-weight:300;line-height:1.78;color:var(--c-muted);max-width:420px;margin:0 0 2rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;}
-        .cr-hero__stats{display:flex;gap:0;list-style:none;padding:0;margin:0 0 2.4rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .38s both;}
-        .cr-hero__stat{padding:0 2rem 0 0;margin-right:2rem;border-right:1px solid rgba(255,255,255,.1);}
-        .cr-hero__stat:last-child{border-right:none;margin-right:0;padding-right:0;}
-        .cr-hero__stat-num{font-family:var(--ff-serif);font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:600;color:var(--c-orange);line-height:1;margin-bottom:4px;display:block;}
-        .cr-hero__stat-label{font-family:var(--ff-sans);font-size:9px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.35);display:block;}
-        .cr-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#080808;background:linear-gradient(135deg,#fb923c,#f97316);padding:14px 34px;border-radius:100px;text-decoration:none;box-shadow:0 8px 32px rgba(249,115,22,.35);transition:transform .22s ease,box-shadow .22s ease;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        .cr-hero__cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 40px rgba(249,115,22,.52);}
-        @keyframes crFadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+        .cr-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .cr-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
+        .cr-corner--tl{top:28px;left:28px;border-top:1px solid var(--cr-blue);border-left:1px solid var(--cr-blue);}
+        .cr-corner--tr{top:28px;right:28px;border-top:1px solid var(--cr-blue);border-right:1px solid var(--cr-blue);}
+        .cr-corner--bl{bottom:120px;left:28px;border-bottom:1px solid var(--cr-blue);border-left:1px solid var(--cr-blue);}
+        .cr-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--cr-blue);border-right:1px solid var(--cr-blue);}
 
-        .cr-hero__right{flex:0 0 460px;height:92vh;min-height:560px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-        .cr-anim{position:relative;width:340px;height:420px;pointer-events:none;}
-        .cr-anim__badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(249,115,22,.18),rgba(99,102,241,.18));border:1.5px solid rgba(249,115,22,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 0 40px rgba(249,115,22,.15),0 0 80px rgba(99,102,241,.08),inset 0 1px 0 rgba(255,255,255,.06);animation:crBadgePulse 3s ease-in-out infinite;z-index:10;}
-        @keyframes crBadgePulse{0%,100%{box-shadow:0 0 40px rgba(249,115,22,.15),0 0 80px rgba(99,102,241,.08),inset 0 1px 0 rgba(255,255,255,.06)}50%{box-shadow:0 0 60px rgba(249,115,22,.30),0 0 100px rgba(99,102,241,.15),inset 0 1px 0 rgba(255,255,255,.06)}}
-        .cr-anim__badge-label{font-family:var(--ff-sans);font-size:8px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--c-orange);}
-        .cr-anim__badge-num{font-family:var(--ff-serif);font-size:2rem;font-weight:700;color:#fff;line-height:1;}
-        .cr-anim__badge-sub{font-family:var(--ff-sans);font-size:7px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--c-muted);}
-        .cr-anim__ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:1px dashed rgba(249,115,22,.18);animation:crRingSpin 18s linear infinite;}
-        .cr-anim__ring--2{width:280px;height:280px;border-color:rgba(99,102,241,.12);animation:crRingSpin 28s linear infinite reverse;border-style:solid;border-width:1px;}
-        @keyframes crRingSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-        .cr-card{position:absolute;display:flex;align-items:center;gap:10px;background:rgba(15,15,15,.9);border:1px solid var(--c-border);border-radius:12px;padding:10px 14px;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.4);white-space:nowrap;}
-        .cr-card__icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-        .cr-card__title{font-family:var(--ff-sans);font-size:.72rem;font-weight:500;color:#fff;line-height:1.3;}
-        .cr-card__tag{font-family:var(--ff-sans);font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--c-orange);opacity:.75;}
-        .cr-card--1{top:8%;left:-8%;animation:crFloat1 6s ease-in-out infinite;}
-        .cr-card--2{top:14%;right:-4%;animation:crFloat2 7s ease-in-out infinite;}
-        .cr-card--3{bottom:28%;left:-10%;animation:crFloat3 5.5s ease-in-out infinite;}
-        .cr-card--4{bottom:10%;right:-6%;animation:crFloat4 6.5s ease-in-out infinite;}
-        @keyframes crFloat1{0%,100%{transform:translateY(0px) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
-        @keyframes crFloat2{0%,100%{transform:translateY(0px) rotate(1deg)}50%{transform:translateY(-14px) rotate(-1deg)}}
-        @keyframes crFloat3{0%,100%{transform:translateY(0px) rotate(.5deg)}50%{transform:translateY(-8px) rotate(-1.5deg)}}
-        @keyframes crFloat4{0%,100%{transform:translateY(0px) rotate(-1.5deg)}50%{transform:translateY(-12px) rotate(1deg)}}
-        .cr-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.18;pointer-events:none;}
-        .cr-corner--tl{top:22px;left:22px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .cr-corner--tr{top:22px;right:22px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
-        .cr-corner--bl{bottom:22px;left:22px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .cr-corner--br{bottom:22px;right:22px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
+        .cr-hero__inner{
+          position:relative;z-index:10;flex:1 1 auto;min-height:0;
+          display:flex;align-items:center;overflow:hidden;
+          max-width:1280px;margin:0 auto;width:100%;
+          padding:9rem 1.5rem 1.5rem;
+          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
+          box-sizing:border-box;
+        }
+        @media(max-width:960px){ .cr-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
+        @media(max-width:640px){ .cr-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
+        @media(max-width:380px){ .cr-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        @media(max-height:520px){
+          .cr-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .cr-hero__eyebrow{ margin-bottom:1.1rem; }
+          .cr-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .cr-hero__rule{ margin-bottom:.8rem; }
+          .cr-hero__sub{ margin-bottom:1.2rem; }
+        }
 
-        /* ══ SECTIONS ══════════════════════════════════════════════════════ */
+        .cr-hero__content{animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
+        @keyframes crFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.cr-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
+
+        .cr-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cr-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .cr-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cr-orange);animation:crPulse 2s ease-in-out infinite;}
+        @keyframes crPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+        .cr-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .cr-hero__h1 em{font-style:normal;color:var(--cr-blue);}
+        .cr-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--cr-blue),transparent);margin:0 0 1.4rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.cr-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--cr-blue),transparent);}}
+        .cr-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.cr-hero__sub{margin:0 auto 2.6rem;}}
+        .cr-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        @media(max-width:960px){.cr-hero__actions{justify-content:center;}}
+        .cr-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--cr-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .cr-hero__btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
+        .cr-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;border:none;cursor:pointer;}
+        .cr-hero__btn--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
+
+        .cr-hero__ticker-bar{
+          position:relative;z-index:12;flex:0 0 auto;
+          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
+          padding-top:1.5rem;
+          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
+        }
+        .cr-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
+        .cr-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:crScroll 34s linear infinite;}
+        .cr-hero__ticker-bar:hover .cr-ticker__track{animation-play-state:paused;}
+        @media(max-width:640px){ .cr-ticker__track{ animation-duration:22s; } }
+        @keyframes crScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .cr-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .cr-ticker__item b{color:rgba(255,255,255,.45);}
+        .cr-ticker__pass{color:var(--cr-green);}
+        @media(max-height:520px){ .cr-hero__ticker-bar{ padding-top:.75rem; } }
+
+        /* ══ STATS STRIP ═════════════════════════════════════════════════ */
+        .cr-stats{background:var(--cr-surface);border-top:1px solid var(--cr-line);border-bottom:1px solid var(--cr-line);padding:2.8rem 1.5rem;}
+        .cr-stats__inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;}
+        @media(max-width:640px){.cr-stats__inner{grid-template-columns:repeat(2,1fr);}}
+        .cr-stat__val{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.4vw,2.4rem);font-weight:700;line-height:1;color:var(--cr-ink);margin-bottom:.3rem;}
+        .cr-stat__val span{color:var(--cr-blue);}
+        .cr-stat__lbl{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:400;color:var(--cr-muted);}
+
+        /* ══ EXISTING DARK CONTENT SECTIONS — unchanged ════════════════════ */
         .c-areas{background:var(--c-surface);padding:6rem 1.5rem;border-top:1px solid var(--c-border);}
         .c-section-label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);margin-bottom:.8rem;display:block;}
         .c-section-h2{font-family:var(--ff-serif);font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.1;letter-spacing:-.015em;color:#fff;margin-bottom:1rem;}
@@ -617,7 +649,7 @@ export default function CareersPage() {
         .c-role-row__apply{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;border:1px solid rgba(249,115,22,.3);background:rgba(249,115,22,.07);backdrop-filter:blur(8px);padding:10px 22px;border-radius:100px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s ease;}
         .c-role-row__apply:hover{background:var(--c-orange);color:#080808;border-color:var(--c-orange);transform:translateY(-1px);}
 
-        /* ══ FAQ ════════════════════════════════════════════════════════════ */
+        /* ══ FAQ — unchanged ════════════════════════════════════════════════ */
         .c-faq{background:var(--c-bg);padding:6rem 1.5rem;border-top:1px solid var(--c-border);}
         .c-faq__inner{max-width:800px;margin:0 auto;}
         .c-faq__header{text-align:center;margin-bottom:3.5rem;}
@@ -635,288 +667,262 @@ export default function CareersPage() {
         @keyframes crFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         .cr-faq__a p{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--c-muted);margin:0;}
 
-        /* ══ CTA ════════════════════════════════════════════════════════════ */
-        .c-cta{position:relative;background:var(--c-surface);padding:7rem 1.5rem;text-align:center;overflow:hidden;border-top:1px solid var(--c-border);}
-        .c-cta__orb{position:absolute;width:600px;height:600px;border-radius:50%;filter:blur(110px);opacity:.12;background:radial-gradient(circle,#f97316,transparent);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
-        .c-cta__content{position:relative;z-index:10;max-width:640px;margin:0 auto;}
-        .c-cta__h2{font-family:var(--ff-serif);font-size:clamp(2.2rem,5vw,4rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;color:#fff;margin-bottom:1.2rem;}
-        .c-cta__h2 em{font-style:italic;color:var(--c-orange);}
-        .c-cta__sub{font-family:var(--ff-sans);font-size:.95rem;font-weight:300;line-height:1.7;color:var(--c-muted);margin-bottom:2.4rem;}
-        .c-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#fff;border:1px solid rgba(249,115,22,.4);background:rgba(249,115,22,.1);backdrop-filter:blur(12px);padding:14px 34px;border-radius:100px;text-decoration:none;transition:all .2s ease;}
-        .c-cta__btn:hover{background:var(--c-orange);color:#080808;border-color:var(--c-orange);transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.4);}
+        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
+        .cr-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--cr-line);}
+        @media(max-width:760px){.cr-sticky-cta{display:flex;justify-content:center;}}
+        .cr-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--cr-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;display:block;}
 
-        /* ══ RESPONSIVE ════════════════════════════════════════════════════ */
-        @media(max-width:900px){.cr-hero__left{padding:5rem 2.5rem 5rem 3rem;}.cr-hero__right{flex:0 0 340px;}.cr-anim{width:260px;height:340px;}}
-        @media(max-width:768px){
-          .cr-hero{flex-direction:column;min-height:auto;}
-          .cr-hero__left{order:2;flex:none;width:100%;padding:2rem 1.5rem 3rem;align-items:center;text-align:center;}
-          .cr-hero__sub{max-width:100%;}.cr-hero__stats{justify-content:center;}
-          .cr-hero__right{order:1;flex:none;width:100%;height:300px;min-height:300px;overflow:visible;padding:0 24px;}
-          .cr-anim{width:240px;height:220px;}
-          .cr-anim__ring{width:150px;height:150px;}.cr-anim__ring--2{width:210px;height:210px;}
-          .cr-anim__badge{width:86px;height:86px;}.cr-anim__badge-num{font-size:1.55rem;}.cr-anim__badge-label{font-size:7px;}.cr-anim__badge-sub{font-size:6px;}
-          .cr-card--1{top:-20px;left:-70px;}.cr-card--2{top:-20px;right:-70px;}.cr-card--3{bottom:8px;left:-66px;}.cr-card--4{bottom:8px;right:-66px;}
-          .cr-card{padding:8px 12px;border-radius:10px;gap:8px;}.cr-card__icon{width:28px;height:28px;font-size:.78rem;}.cr-card__title{font-size:.68rem;}.cr-card__tag{font-size:7px;}
-          .cr-hero__cta{width:100%;max-width:280px;justify-content:center;}
-        }
-        @media(max-width:600px){.cr-faq__q{padding:1.25rem;}.cr-faq__a{padding:0 1.25rem 1.25rem;}}
-        @media(max-width:480px){
-          .cr-hero__right{height:280px;min-height:280px;}
-          .cr-card--1{top:-18px;left:-58px;}.cr-card--2{top:-18px;right:-58px;}.cr-card--3{bottom:6px;left:-54px;}.cr-card--4{bottom:6px;right:-54px;}
-          .cr-hero__stat{padding:0 1.2rem 0 0;margin-right:1.2rem;}
-        }
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
+        /* ══ CTA STRIP — matches Services .sv-cta exactly ══════════════ */
+        .cr-cta{background:var(--cr-surface);border-top:1px solid var(--cr-line);padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+        .cr-cta__orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--cr-blue),transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(70px);pointer-events:none;}
+        .cr-cta__inner{position:relative;z-index:10;max-width:580px;margin:0 auto;}
+        .cr-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--cr-blue);margin-bottom:1.2rem;display:block;}
+        .cr-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--cr-ink);margin:0 0 1rem;}
+        .cr-cta__h2 em{font-style:normal;color:var(--cr-blue);}
+        .cr-cta__sub{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--cr-muted);margin-bottom:2.6rem;}
+        .cr-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--cr-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .cr-cta__btn:hover{background:var(--cr-blue);transform:translateY(-2px);}
+
+        @media(max-width:480px){.cr-hero__actions{flex-direction:column;align-items:stretch;}.cr-hero__btn--primary,.cr-hero__btn--ghost{justify-content:center;}}
+        @media(prefers-reduced-motion:reduce){.cr-page *,.cr-page *::before,.cr-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
       `}</style>
 
       <Header />
 
-      {/* ══ HERO ════════════════════════════════════════════════════════════ */}
-      <section className="cr-hero" aria-labelledby="cr-hero-heading" id="careers-hero">
-        <div className="cr-hero__grid" aria-hidden="true" />
-        <div className="cr-corner cr-corner--tl" aria-hidden="true" />
-        <div className="cr-corner cr-corner--tr" aria-hidden="true" />
-        <div className="cr-corner cr-corner--bl" aria-hidden="true" />
-        <div className="cr-corner cr-corner--br" aria-hidden="true" />
+      <div className="cr-page">
+        {/* ══ HERO ════════════════════════════════════════════════════════════ */}
+        <section className="cr-hero" aria-labelledby="cr-hero-heading" id="careers-hero">
+          <div aria-hidden="true">
+            <div className="cr-hero__grain" />
+          </div>
+          <div className="cr-corner cr-corner--tl" aria-hidden="true" />
+          <div className="cr-corner cr-corner--tr" aria-hidden="true" />
+          <div className="cr-corner cr-corner--bl" aria-hidden="true" />
+          <div className="cr-corner cr-corner--br" aria-hidden="true" />
 
-        <div className="cr-hero__left">
-          <nav className="sr-only" aria-label="Breadcrumb">
+          <nav className="cr-sr-only" aria-label="Breadcrumb">
             <ol>
               <li><a href="/">Home</a></li>
               <li><a href="/careers" aria-current="page">Careers</a></li>
             </ol>
           </nav>
 
-          <p className="cr-hero__eyebrow" aria-hidden="true">
-            <span className="cr-hero__dot" />
-            Now Hiring · Bangalore &amp; Beyond
-          </p>
-
-          <h1 className="cr-hero__h1" id="cr-hero-heading">
-            Build your <em>future</em><br />with 99 Visual Solutions
-          </h1>
-
-          <div className="cr-hero__rule" aria-hidden="true" />
-
-          <p className="cr-hero__sub">
-            Join a team of innovators, creators, and problem-solvers who shape
-            the future of digital experiences together.
-          </p>
-
-          <dl className="cr-hero__stats" aria-label="Company highlights">
-            <div className="cr-hero__stat">
-              <dt className="cr-hero__stat-label">Open Roles</dt>
-              <dd className="cr-hero__stat-num">4</dd>
-            </div>
-            <div className="cr-hero__stat">
-              <dt className="cr-hero__stat-label">Projects Done</dt>
-              <dd className="cr-hero__stat-num">500+</dd>
-            </div>
-            <div className="cr-hero__stat">
-              <dt className="cr-hero__stat-label">Years Active</dt>
-              <dd className="cr-hero__stat-num">5+</dd>
-            </div>
-          </dl>
-
-          <a href="#open-roles" className="cr-hero__cta" aria-label="View open positions at 99 Visual Solutions Bangalore">
-            View Open Positions
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-        </div>
-
-        <div className="cr-hero__right" aria-hidden="true">
-          <div className="cr-anim">
-            <div className="cr-anim__ring" />
-            <div className="cr-anim__ring cr-anim__ring--2" />
-            <div className="cr-anim__badge">
-              <span className="cr-anim__badge-label">We&apos;re</span>
-              <span className="cr-anim__badge-num">4</span>
-              <span className="cr-anim__badge-sub">Roles Open</span>
-            </div>
-            <div className="cr-card cr-card--1">
-              <div className="cr-card__icon" style={{ background:"rgba(99,102,241,.15)",color:"#6366f1" }}><FaLaptopCode /></div>
-              <div><div className="cr-card__title">Web Developer</div><div className="cr-card__tag">Full-time · India</div></div>
-            </div>
-            <div className="cr-card cr-card--2">
-              <div className="cr-card__icon" style={{ background:"rgba(34,211,238,.12)",color:"#22d3ee" }}><FaUsers /></div>
-              <div><div className="cr-card__title">UI/UX Designer</div><div className="cr-card__tag">Full-time · India</div></div>
-            </div>
-            <div className="cr-card cr-card--3">
-              <div className="cr-card__icon" style={{ background:"rgba(251,191,36,.12)",color:"#fbbf24" }}><FaLightbulb /></div>
-              <div><div className="cr-card__title">3D Visualization Artist</div><div className="cr-card__tag">Full-time · India</div></div>
-            </div>
-            <div className="cr-card cr-card--4">
-              <div className="cr-card__icon" style={{ background:"rgba(249,115,22,.15)",color:"#f97316" }}><FaRocket /></div>
-              <div><div className="cr-card__title">Digital Marketing</div><div className="cr-card__tag">Full-time · India</div></div>
+          <div className="cr-hero__inner">
+            <div className="cr-hero__content">
+              <div className="cr-hero__eyebrow" aria-hidden="true">
+                <span className="cr-hero__dot" />
+                Now Hiring · Bangalore &amp; Beyond
+              </div>
+              <h1 className="cr-hero__h1" id="cr-hero-heading">
+                Build your <em>future</em><br />with 99 Visual Solutions
+              </h1>
+              <div className="cr-hero__rule" aria-hidden="true" />
+              <p className="cr-hero__sub">
+                Join a team of innovators, creators, and problem-solvers who
+                shape the future of digital experiences together.
+              </p>
+              <div className="cr-hero__actions">
+                <a href="#open-roles" className="cr-hero__btn--primary" aria-label="View open positions at 99 Visual Solutions Bangalore">
+                  View Open Positions
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </a>
+                <ConsultationCTA className="cr-hero__btn--ghost" ariaLabel="Ask 99 Visual Solutions about working here">
+                  Ask Us Anything
+                </ConsultationCTA>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ══ CAREER AREAS ════════════════════════════════════════════════════ */}
-      <section id="careers" className="c-areas" aria-labelledby="c-areas-heading">
-        <div className="c-areas__header">
-          <span className="c-section-label">What we do</span>
-          <h2 className="c-section-h2" id="c-areas-heading">Career Opportunities</h2>
-          <p className="c-section-sub" style={{ margin:"0 auto" }}>
-            Four disciplines, one shared mission — craft exceptional digital experiences
-            that move the world forward.
-          </p>
-        </div>
-        <div className="c-areas__grid" role="list">
-          {careerAreas.map(({ icon: Icon, accent, label, jobTitle, desc }) => (
-            <article className="c-area-card" key={label} role="listitem" aria-label={label}>
-              <div className="c-area-card__icon-wrap" style={{ color: accent }} aria-hidden="true"><Icon /></div>
-              <h3 className="c-area-card__title">{label}</h3>
-              <div className="c-area-card__job">Role: {jobTitle}</div>
-              <p className="c-area-card__desc">{desc}</p>
-              <div className="c-area-card__line" style={{ background:`linear-gradient(90deg, ${accent}, transparent)` }} aria-hidden="true" />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ══ WHY WORK WITH US ════════════════════════════════════════════════ */}
-      <section className="c-why" aria-labelledby="c-why-heading">
-        <div className="c-why__inner">
-          <div className="c-why__layout">
-            <div>
-              <span className="c-section-label">Why us</span>
-              <h2 className="c-section-h2" id="c-why-heading" style={{ marginBottom:"2.5rem" }}>
-                Why build your career<br />at 99 Visual Solutions?
-              </h2>
-              <div className="c-why__items">
-                {whyItems.map(({ num, title, desc }) => (
-                  <div className="c-why__item" key={num}>
-                    <span className="c-why__num" aria-hidden="true">{num}</span>
-                    <div>
-                      <h3 className="c-why__item-title">{title}</h3>
-                      <p className="c-why__item-desc">{desc}</p>
-                    </div>
-                  </div>
+          <div className="cr-hero__ticker-bar" aria-hidden="true">
+            <div className="cr-ticker">
+              <div className="cr-ticker__track">
+                {[...pipeline, ...pipeline].map((p, i) => (
+                  <span className="cr-ticker__item" key={i}>
+                    <b>$</b> {p.cmd} <span className="cr-ticker__pass">→ {p.out} ✓</span>
+                  </span>
                 ))}
               </div>
             </div>
-            <dl className="c-why__visual" aria-label="99 Visual Solutions — company highlights">
-              <div className="c-why__stat"><dt className="c-why__stat-label">Years of expertise</dt><dd className="c-why__stat-num">5+</dd></div>
-              <div className="c-why__divider" aria-hidden="true" />
-              <div className="c-why__stat"><dt className="c-why__stat-label">Projects delivered</dt><dd className="c-why__stat-num">500+</dd></div>
-              <div className="c-why__divider" aria-hidden="true" />
-              <div className="c-why__stat"><dt className="c-why__stat-label">Team members globally</dt><dd className="c-why__stat-num">50+</dd></div>
-              <div className="c-why__divider" aria-hidden="true" />
-              <div className="c-why__stat"><dt className="c-why__stat-label">Core service domains</dt><dd className="c-why__stat-num">6</dd></div>
-            </dl>
+          </div>
+        </section>
+
+        {/* ══ STATS STRIP ═════════════════════════════════════════════════ */}
+        <div className="cr-stats" aria-label="Company statistics">
+          <div className="cr-stats__inner">
+            {stats.map((s) => (
+              <div key={s.label}>
+                <div className="cr-stat__val">
+                  {s.value.includes("+")
+                    ? <>{s.value.replace("+", "")}<span>+</span></>
+                    : s.value}
+                </div>
+                <div className="cr-stat__lbl">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
 
-      {/* ══ OPEN ROLES ══════════════════════════════════════════════════════ */}
-      <section id="open-roles" className="c-roles" aria-labelledby="c-roles-heading">
-        <div className="c-roles__inner">
-          <div className="c-roles__header">
-            <span className="c-section-label">Open positions</span>
-            <h2 className="c-section-h2" id="c-roles-heading">Current Job Openings in Bangalore</h2>
+        {/* ══ CAREER AREAS — unchanged ════════════════════════════════════ */}
+        <section id="careers" className="c-areas" aria-labelledby="c-areas-heading">
+          <div className="c-areas__header">
+            <span className="c-section-label">What we do</span>
+            <h2 className="c-section-h2" id="c-areas-heading">Career Opportunities</h2>
             <p className="c-section-sub" style={{ margin:"0 auto" }}>
-              We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit?
-              Apply anyway — we&apos;re always interested in exceptional talent.
+              Four disciplines, one shared mission — craft exceptional digital experiences
+              that move the world forward.
             </p>
           </div>
-          <ul className="c-roles__list" aria-label="Open job listings at 99 Visual Solutions Bangalore">
-            {openRoles.map(({ title, dept, type, loc }) => (
-              <li className="c-role-row" key={title}>
-                <div className="c-role-row__left">
-                  <h3 className="c-role-row__title">{title}</h3>
-                  <div className="c-role-row__meta">
-                    <span className="c-role-row__tag c-role-row__tag--open">Now Hiring</span>
-                    <span className="c-role-row__tag">{dept}</span>
-                    <span className="c-role-row__tag">{type}</span>
-                    <span className="c-role-row__tag">{loc}</span>
+          <div className="c-areas__grid" role="list">
+            {careerAreas.map(({ icon: Icon, accent, label, jobTitle, desc }) => (
+              <article className="c-area-card" key={label} role="listitem" aria-label={label}>
+                <div className="c-area-card__icon-wrap" style={{ color: accent }} aria-hidden="true"><Icon /></div>
+                <h3 className="c-area-card__title">{label}</h3>
+                <div className="c-area-card__job">Role: {jobTitle}</div>
+                <p className="c-area-card__desc">{desc}</p>
+                <div className="c-area-card__line" style={{ background:`linear-gradient(90deg, ${accent}, transparent)` }} aria-hidden="true" />
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ══ WHY WORK WITH US — unchanged ═════════════════════════════════ */}
+        <section className="c-why" aria-labelledby="c-why-heading">
+          <div className="c-why__inner">
+            <div className="c-why__layout">
+              <div>
+                <span className="c-section-label">Why us</span>
+                <h2 className="c-section-h2" id="c-why-heading" style={{ marginBottom:"2.5rem" }}>
+                  Why build your career<br />at 99 Visual Solutions?
+                </h2>
+                <div className="c-why__items">
+                  {whyItems.map(({ num, title, desc }) => (
+                    <div className="c-why__item" key={num}>
+                      <span className="c-why__num" aria-hidden="true">{num}</span>
+                      <div>
+                        <h3 className="c-why__item-title">{title}</h3>
+                        <p className="c-why__item-desc">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <dl className="c-why__visual" aria-label="99 Visual Solutions — company highlights">
+                <div className="c-why__stat"><dt className="c-why__stat-label">Years of expertise</dt><dd className="c-why__stat-num">5+</dd></div>
+                <div className="c-why__divider" aria-hidden="true" />
+                <div className="c-why__stat"><dt className="c-why__stat-label">Projects delivered</dt><dd className="c-why__stat-num">500+</dd></div>
+                <div className="c-why__divider" aria-hidden="true" />
+                <div className="c-why__stat"><dt className="c-why__stat-label">Team members globally</dt><dd className="c-why__stat-num">50+</dd></div>
+                <div className="c-why__divider" aria-hidden="true" />
+                <div className="c-why__stat"><dt className="c-why__stat-label">Core service domains</dt><dd className="c-why__stat-num">6</dd></div>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ OPEN ROLES — unchanged ═══════════════════════════════════════ */}
+        <section id="open-roles" className="c-roles" aria-labelledby="c-roles-heading">
+          <div className="c-roles__inner">
+            <div className="c-roles__header">
+              <span className="c-section-label">Open positions</span>
+              <h2 className="c-section-h2" id="c-roles-heading">Current Job Openings in Bangalore</h2>
+              <p className="c-section-sub" style={{ margin:"0 auto" }}>
+                We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit?
+                Apply anyway — we&apos;re always interested in exceptional talent.
+              </p>
+            </div>
+            <ul className="c-roles__list" aria-label="Open job listings at 99 Visual Solutions Bangalore">
+              {openRoles.map(({ title, dept, type, loc }) => (
+                <li className="c-role-row" key={title}>
+                  <div className="c-role-row__left">
+                    <h3 className="c-role-row__title">{title}</h3>
+                    <div className="c-role-row__meta">
+                      <span className="c-role-row__tag c-role-row__tag--open">Now Hiring</span>
+                      <span className="c-role-row__tag">{dept}</span>
+                      <span className="c-role-row__tag">{type}</span>
+                      <span className="c-role-row__tag">{loc}</span>
+                    </div>
                   </div>
-                </div>
-                <Link href="/contact" className="c-role-row__apply" aria-label={`Apply for ${title} position at 99 Visual Solutions, ${loc}`}>
-                  Apply Now
-                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ══ FAQ ══════════════════════════════════════════════════════════════
-        ✅ JSON-LD ONLY — zero microdata on this section or any child element.
-        careersFaqNode in the <script> above is the SOLE FAQPage source.
-        ✅ <section> has no itemScope/itemType.
-        ✅ <details> has no itemProp/itemScope/itemType.
-        ✅ <summary> has no itemProp.
-        ✅ <div> answer wrapper has no itemProp/itemScope/itemType.
-        ✅ <p> text has no itemProp.
-        ✅ Container changed from <dl> to <div> — valid HTML for <details> children.
-      ════════════════════════════════════════════════════════════════════ */}
-      <section className="c-faq" aria-labelledby="c-faq-heading">
-        <div className="c-faq__inner">
-          <div className="c-faq__header">
-            <span className="c-section-label">Common questions</span>
-            <h2 className="c-section-h2" id="c-faq-heading">Frequently Asked Questions</h2>
-            <p className="c-section-sub" style={{ margin:"0 auto" }}>
-              Everything you need to know about working at 99 Visual Solutions.
-            </p>
-          </div>
-
-          <div className="cr-faq__list">
-            {faqItems.map(({ question, answer }, i) => (
-              <details key={i} className="cr-faq__item">
-                <summary className="cr-faq__q">
-                  <span className="cr-faq__q-text">{question}</span>
-                  <span className="cr-faq__chevron" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <path
-                        d="M4.5 6.75L9 11.25L13.5 6.75"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                  <Link href="/contact" className="c-role-row__apply" aria-label={`Apply for ${title} position at 99 Visual Solutions, ${loc}`}>
+                    Apply Now
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                  </span>
-                </summary>
-                <div className="cr-faq__a">
-                  <p>{answer}</p>
-                </div>
-              </details>
-            ))}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ══ CTA ═════════════════════════════════════════════════════════════ */}
-      <section className="c-cta" aria-labelledby="c-cta-heading">
-        <div className="c-cta__orb" aria-hidden="true" />
-        <div className="c-cta__content">
-          <h2 className="c-cta__h2" id="c-cta-heading">
-            Ready to shape the<br /><em>future</em> together?
-          </h2>
-          <p className="c-cta__sub">
-            Join a team that thrives on innovation, creativity, and delivering excellence across
-            web development, design, and digital marketing. We invest in people who are curious,
-            driven, and bold.
-          </p>
-          <Link href="/contact" className="c-cta__btn" aria-label="Apply for a job at 99 Visual Solutions Bangalore">
-            Join Our Team
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Link>
+        {/* ══ FAQ — unchanged, JSON-LD only, no microdata ══════════════════ */}
+        <section className="c-faq" aria-labelledby="c-faq-heading">
+          <div className="c-faq__inner">
+            <div className="c-faq__header">
+              <span className="c-section-label">Common questions</span>
+              <h2 className="c-section-h2" id="c-faq-heading">Frequently Asked Questions</h2>
+              <p className="c-section-sub" style={{ margin:"0 auto" }}>
+                Everything you need to know about working at 99 Visual Solutions.
+              </p>
+            </div>
+
+            <div className="cr-faq__list">
+              {faqItems.map(({ question, answer }, i) => (
+                <details key={i} className="cr-faq__item">
+                  <summary className="cr-faq__q">
+                    <span className="cr-faq__q-text">{question}</span>
+                    <span className="cr-faq__chevron" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path
+                          d="M4.5 6.75L9 11.25L13.5 6.75"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </summary>
+                  <div className="cr-faq__a">
+                    <p>{answer}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══ CTA ═════════════════════════════════════════════════════════════ */}
+        <section className="cr-cta" aria-labelledby="cr-cta-heading">
+          <div className="cr-cta__orb" aria-hidden="true" />
+          <div className="cr-cta__inner">
+            <span className="cr-cta__eyebrow">Join Our Team</span>
+            <h2 className="cr-cta__h2" id="cr-cta-heading">
+              Ready to shape the<br /><em>future together?</em>
+            </h2>
+            <p className="cr-cta__sub">
+              Join a team that thrives on innovation, creativity, and delivering
+              excellence across web development, design, and digital marketing.
+              We invest in people who are curious, driven, and bold.
+            </p>
+            <Link href="/contact" className="cr-cta__btn" aria-label="Apply for a job at 99 Visual Solutions Bangalore">
+              Join Our Team
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
+          </div>
+        </section>
+
+        {/* ══ STICKY MOBILE CTA ═══════════════════════════════════════════ */}
+        <div className="cr-sticky-cta">
+          <Link href="/contact" className="cr-sticky-cta__btn">Apply Now</Link>
         </div>
-      </section>
+      </div>
 
       <Footer />
       <ScrollDown />
-      <Chatbot />
-      <Whatsappbutton />
-    </>
+      </>
   );
 }

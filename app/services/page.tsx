@@ -17,6 +17,16 @@
 //      height:100vh (with dvh/svh refinements) so it can never grow taller
 //      than one screen and push that ticker below the fold.
 //   3. Added a sticky mobile CTA bar, matching the other redesigned pages.
+//   4. FIX: all "contact us" intent CTAs (hero, Why Us, CTA strip, sticky
+//      mobile) now open the ContactPopup modal via the ConsultationCTA
+//      client wrapper instead of navigating to /contact. Updated the
+//      import to point at components/ConsultationCTA.tsx (renamed from
+//      Contactcta.tsx) and removed a stray, prop-less <CotactCTA />
+//      that was accidentally left before <Footer />.
+//   5. The hero "What We Do" eyebrow badge (and its pulsing dot) is now
+//      orange instead of blue, matching the EST. 2020 · BANGALORE, INDIA
+//      badge reference — everything else in the blue accent system
+//      (rule, buttons, corners, cards, stats, etc.) is unchanged.
 //
 //   The full-bleed photo banner, gradient overlay, grain texture, corner
 //   brackets, and single left-aligned hero column (all added in the prior
@@ -24,9 +34,10 @@
 //   Save your banner image to: /public/images/services/services-hub-hero-banner.jpg
 //
 import Link from "next/link";
-import Header         from "@/app/components/header";
-import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
+import Header           from "@/app/components/header";
+import Footer           from "@/app/components/footer";
+import ScrollDown       from "@/app/components/scrolldown";
+import ConsultationCTA  from "@/app/components/ConsultationCTA";
 
 
 
@@ -59,11 +70,7 @@ export const metadata: Metadata = {
   description:
     "Explore 99 Visual Solutions' full range of services: custom web development, AI-powered QA & automation testing, digital marketing & SEO, IT consulting, 3D visualization, and CAD/GIS. Trusted worldwide.",
 
-  // ✅ REMOVED — already set in root layout.tsx, no need to repeat per page
-  // metadataBase: new URL(BASE_SAFE),
-
   alternates: {
-    // ✅ FIXED — clean absolute canonical using BASE_SAFE
     canonical: `${BASE_SAFE}/services`,
   },
 
@@ -114,7 +121,6 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
   },
-  // ✅ FIXED — BASE_SAFE used for authors url
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -126,12 +132,6 @@ export const metadata: Metadata = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DATES
-// ✅ FIX — DATE_MODIFIED is now hardcoded, NOT `new Date()`.
-// The previous version stamped this page as "modified today" on every single
-// build/deploy, even when nothing on the page changed. This is a false
-// freshness signal to Google and contradicts the real dateModified used on
-// sibling pages like /services/visualization. Update this string manually
-// only when the page's actual content changes.
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
 const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
@@ -304,7 +304,7 @@ export default function ServicesPage() {
 
         .sv-page{
           --sv-ink:#12141A; --sv-muted:#5B6172; --sv-paper:#F5F6F8; --sv-surface:#FFFFFF;
-          --sv-line:#E4E6EC; --sv-blue:#2E5CFF; --sv-green:#37D67A;
+          --sv-line:#E4E6EC; --sv-blue:#2E5CFF; --sv-green:#37D67A; --sv-orange:#F97316;
           background:var(--sv-paper);
         }
         .sv-sr-only {
@@ -313,13 +313,6 @@ export default function ServicesPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ── HERO — full-bleed photo banner, same treatment as the
-           individual service pages: photo as CSS background with a dark
-           gradient overlay so the text column stays legible, restyled to
-           the shared blue accent instead of orange. Fixed (not min-)
-           height + flex column, so the section can never grow taller than
-           one screen and push the ticker bar (docked at the bottom, see
-           .sv-hero__ticker-bar) below the fold. ──────────────────────── */
         .sv-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
@@ -330,8 +323,6 @@ export default function ServicesPage() {
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
-        /* dvh/svh account for mobile browser chrome so the banner never
-           shows a gap or clips; falls back to 100vh. */
         @supports (height: 100svh) { .sv-hero { height: 100svh; } }
         @supports (height: 100dvh) { .sv-hero { height: 100dvh; } }
         @media(max-width:960px){
@@ -346,15 +337,10 @@ export default function ServicesPage() {
         .sv-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
         .sv-corner--tl{top:28px;left:28px;border-top:1px solid var(--sv-blue);border-left:1px solid var(--sv-blue);}
         .sv-corner--tr{top:28px;right:28px;border-top:1px solid var(--sv-blue);border-right:1px solid var(--sv-blue);}
-        /* nudged up from the standard bottom offset to clear a bottom-left chatbot launcher icon */
         .sv-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--sv-blue);border-left:1px solid var(--sv-blue);}
         @media(max-width:480px){ .sv-corner--bl{ left:28px; } }
         .sv-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--sv-blue);border-right:1px solid var(--sv-blue);}
 
-        /* Main hero content: fills the remaining space above the ticker
-           and centers vertically within it. Header clearance and the
-           left/right gutters live here (not on the fixed-height section)
-           so the ticker's own height is never squeezed out. */
         .sv-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
           display:flex;align-items:center;overflow:hidden;
@@ -366,9 +352,6 @@ export default function ServicesPage() {
         @media(max-width:960px){ .sv-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
         @media(max-width:640px){ .sv-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
         @media(max-width:380px){ .sv-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        /* Short screens (landscape phones, small laptop windows with
-           browser chrome): trim vertical rhythm so everything still fits
-           above the ticker without scrolling. */
         @media(max-height:520px){
           .sv-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
           .sv-hero__eyebrow{ margin-bottom:1.1rem; }
@@ -377,17 +360,14 @@ export default function ServicesPage() {
           .sv-hero__sub{ margin-bottom:1.2rem; }
         }
 
-        /* Single-column content — sits on top of the photo banner
-           background, left-aligned and capped to a comfortable reading
-           width, matching the individual service-page heroes. */
         .sv-hero__content{animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
         @keyframes svFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.sv-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .sv-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .sv-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--sv-blue);animation:svPulse 2s ease-in-out infinite;}
+        .sv-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--sv-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .sv-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--sv-orange);animation:svPulse 2s ease-in-out infinite;}
         @keyframes svPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .sv-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4.4vw,3.6rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .sv-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .sv-hero__h1 em{font-style:normal;color:var(--sv-blue);}
         .sv-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--sv-blue),transparent);margin:0 0 1.4rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
         @media(max-width:960px){.sv-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--sv-blue),transparent);}}
@@ -397,14 +377,9 @@ export default function ServicesPage() {
         @media(max-width:960px){.sv-hero__actions{justify-content:center;}}
         .sv-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--sv-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
         .sv-hero__btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .sv-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;}
+        .sv-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;cursor:pointer;}
         .sv-hero__btn--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
 
-        /* ══ TICKER — docked as a normal flex child at the bottom of the
-           fixed-height hero (not position:absolute), so it can never end
-           up below the fold regardless of how tall the content above it
-           is — it always renders inside the first screen. Same mechanism
-           as the tickers on the individual service pages. ══════════════ */
         .sv-hero__ticker-bar{
           position:relative;z-index:12;flex:0 0 auto;
           background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
@@ -425,12 +400,10 @@ export default function ServicesPage() {
           .sv-ticker__caption{ display:none; }
         }
 
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
         .sv-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--sv-line);}
         @media(max-width:760px){.sv-sticky-cta{display:flex;justify-content:center;}}
-        .sv-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
+        .sv-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
 
-        /* ── STATS STRIP ───────────────────────────────────────────────── */
         .sv-stats{background:var(--sv-surface);border-top:1px solid var(--sv-line);border-bottom:1px solid var(--sv-line);padding:2.8rem 1.5rem;}
         .sv-stats__inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;}
         @media(max-width:640px){.sv-stats__inner{grid-template-columns:repeat(2,1fr);}}
@@ -438,7 +411,6 @@ export default function ServicesPage() {
         .sv-stat__val span{color:var(--sv-blue);}
         .sv-stat__lbl{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:400;color:var(--sv-muted);}
 
-        /* ── INTRO ─────────────────────────────────────────────────────── */
         .sv-intro{background:var(--sv-paper);border-bottom:1px solid var(--sv-line);padding:5.5rem 1.5rem;}
         .sv-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
         .sv-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);margin-bottom:1.2rem;display:block;}
@@ -447,7 +419,6 @@ export default function ServicesPage() {
         .sv-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--sv-muted);max-width:660px;margin:0 auto .9rem;}
         .sv-intro__p strong{color:var(--sv-ink);font-weight:500;}
 
-        /* ── SERVICES GRID ─────────────────────────────────────────────── */
         .sv-services{background:var(--sv-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--sv-line);}
         .sv-services__inner{max-width:1240px;margin:0 auto;}
         .sv-services__head{text-align:center;margin-bottom:4rem;}
@@ -479,7 +450,6 @@ export default function ServicesPage() {
         .sv-card__link svg{transition:transform .2s ease;}
         .sv-card:hover .sv-card__link svg{transform:translateX(3px);}
 
-        /* ── WHY US ─────────────────────────────────────────────────────── */
         .sv-why{background:var(--sv-paper);border-top:1px solid var(--sv-line);padding:6rem 1.5rem;}
         .sv-why__inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
         @media(max-width:860px){.sv-why__inner{grid-template-columns:1fr;gap:3rem;}}
@@ -487,7 +457,7 @@ export default function ServicesPage() {
         .sv-why__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:700;line-height:1.22;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1.2rem;}
         .sv-why__h2 em{font-style:normal;color:var(--sv-blue);}
         .sv-why__p{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.85;color:var(--sv-muted);margin-bottom:2rem;}
-        .sv-why__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .sv-why__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
         .sv-why__cta:hover{background:var(--sv-blue);transform:translateY(-2px);}
         .sv-why__list{display:flex;flex-direction:column;gap:.9rem;}
         .sv-why__item{display:flex;align-items:flex-start;gap:.9rem;padding:1.1rem 1.3rem;background:var(--sv-surface);border:1px solid var(--sv-line);border-radius:12px;transition:border-color .2s ease,transform .2s ease;}
@@ -495,7 +465,6 @@ export default function ServicesPage() {
         .sv-why__item-icon{color:var(--sv-blue);font-size:1rem;flex-shrink:0;margin-top:.15rem;}
         .sv-why__item-text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:400;line-height:1.6;color:var(--sv-ink);}
 
-        /* ── CTA STRIP ─────────────────────────────────────────────────── */
         .sv-cta{background:var(--sv-surface);border-top:1px solid var(--sv-line);padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
         .sv-cta__orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--sv-blue),transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(70px);pointer-events:none;}
         .sv-cta__inner{position:relative;z-index:10;max-width:580px;margin:0 auto;}
@@ -503,7 +472,7 @@ export default function ServicesPage() {
         .sv-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1rem;}
         .sv-cta__h2 em{font-style:normal;color:var(--sv-blue);}
         .sv-cta__sub{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--sv-muted);margin-bottom:2.6rem;}
-        .sv-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .sv-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
         .sv-cta__btn:hover{background:var(--sv-blue);transform:translateY(-2px);}
 
         @media(max-width:480px){.sv-hero__actions{flex-direction:column;align-items:stretch;}.sv-hero__btn--primary,.sv-hero__btn--ghost{justify-content:center;}}
@@ -544,12 +513,6 @@ export default function ServicesPage() {
             </ol>
           </nav>
 
-          {/*
-            Hero content sits on top of the full-bleed photo banner (set as
-            the section's CSS background — see .sv-hero in <style> above).
-            A dark gradient overlay keeps the white/blue text legible over
-            the photo.
-          */}
           <div className="sv-hero__inner">
             <div className="sv-hero__content">
               <div className="sv-hero__eyebrow" aria-hidden="true">
@@ -572,20 +535,13 @@ export default function ServicesPage() {
                     <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </a>
-                <Link href="/contact" className="sv-hero__btn--ghost" aria-label="Contact 99 Visual Solutions">
+                <ConsultationCTA className="sv-hero__btn--ghost" ariaLabel="Contact 99 Visual Solutions">
                   Get a Free Consultation
-                </Link>
+                </ConsultationCTA>
               </div>
             </div>
           </div>
 
-          {/*
-            Ticker docks to the bottom edge of the hero itself (not a
-            separate section below it), so the scrolling service-catalog
-            line and the photo banner render together as a single
-            full-screen unit on every screen size — same mechanism used on
-            the individual service pages.
-          */}
           <div className="sv-hero__ticker-bar" aria-hidden="true">
             <div className="sv-ticker">
               <div className="sv-ticker__track">
@@ -596,7 +552,6 @@ export default function ServicesPage() {
                 ))}
               </div>
             </div>
-            <p className="sv-ticker__caption">Illustrative service-catalog output</p>
           </div>
         </section>
 
@@ -692,12 +647,12 @@ export default function ServicesPage() {
                 execution to turn complex requirements into elegant, high-performing solutions
                 — on time and within budget.
               </p>
-              <Link href="/contact" className="sv-why__cta" aria-label="Start a project with 99 Visual Solutions">
+              <ConsultationCTA className="sv-why__cta" ariaLabel="Start a project with 99 Visual Solutions">
                 Start a Project
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-              </Link>
+              </ConsultationCTA>
             </div>
             <ul className="sv-why__list" aria-label="Reasons to choose 99 Visual Solutions">
               {whyUs.map((item) => (
@@ -723,24 +678,23 @@ export default function ServicesPage() {
               help you choose the right services, scope your project, and map a clear
               path to launch.
             </p>
-            <Link href="/contact" className="sv-cta__btn" aria-label="Get a free consultation from 99 Visual Solutions">
+            <ConsultationCTA className="sv-cta__btn" ariaLabel="Get a free consultation from 99 Visual Solutions">
               Get a Free Consultation
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </Link>
+            </ConsultationCTA>
           </div>
         </section>
 
         {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
         <div className="sv-sticky-cta">
-          <Link href="/contact" className="sv-sticky-cta__btn">Get a Free Quote</Link>
+          <ConsultationCTA className="sv-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
         </div>
       </div>
 
       <Footer />
       <ScrollDown />
-      
     </>
   );
 }

@@ -1,46 +1,35 @@
 // app/contact/ContactPageClient.tsx  — CLIENT COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-// FIX: Duplicate field "FAQPage"
-//   BEFORE: <section className="ct-faq"> had itemScope + itemType="FAQPage"
-//           which created a second FAQPage declaration alongside the JSON-LD
-//           graph node in page.tsx — Google flagged the duplicate.
-//   AFTER:  FAQ section REMOVED entirely from this client component.
-//           FAQ is now rendered server-side in page.tsx, BELOW <ContactForm />.
-//           The JSON-LD in page.tsx is the sole authoritative FAQPage source.
+// THIS REVISION — brings Hero + CTA in line with the Services page design
+// system (app/services/page.tsx), matching the treatment already applied to
+// app/about/page.tsx, app/partner/page.tsx, and app/careers/page.tsx:
+//   1. Hero rebuilt on the Services mechanism: full-bleed photo banner,
+//      fixed 100vh/100dvh/100svh, single left-aligned column, corner
+//      brackets, grain texture, docked ticker bar on the hero's bottom edge.
+//      The previous bespoke "flying letter → mailbox" SVG animation has been
+//      retired in favour of this shared mechanism — every other page now
+//      uses the same hero, and this was the last holdout.
+//   2. Recolored to the shared Space Grotesk / Inter / IBM Plex Mono system
+//      with the one blue signal accent (--ct-blue); orange eyebrow retained.
+//   3. CTA rebuilt to match Services' .sv-cta exactly (light surface, radial
+//      orb, Space Grotesk heading). The button still anchors to #contact-form
+//      (we're already on the Contact page — no need to open the consultation
+//      modal here), matching its prior behaviour.
+//   4. Proof strip (animated stat counters), Reach + Testimonials (carousel,
+//      progress bar, avatar fallback logic) are UNCHANGED — same hooks, same
+//      markup, same CSS. FAQ remains excluded per the existing page.tsx split.
+//   5. .ct-hero__h1 / .ct-hero__sub class names are kept so the
+//      `speakable.cssSelector` entries in contactPageNode (page.tsx) and the
+//      itemScope/itemType="ContactPage" microdata keep working.
 //
-// FIX: Client Voices / Testimonials section
-//   BEFORE: .ct-testi__stage used flex:1 but all cards were position:absolute
-//           inset:0 — stage collapsed to 0px height in many browsers. Progress
-//           bar was position:absolute bottom:0 inside the stage, visually
-//           overlapping the footer. Mobile author-col reset was incomplete —
-//           writing-mode reset on vertical flex caused misalignment. No slide
-//           direction encoding on transitions.
-//   AFTER:  Stage uses CSS Grid (display:grid; grid-template-rows:1fr) so it
-//           stretches naturally. Cards use grid-row/column stacking instead of
-//           absolute positioning. Progress bar moved into the footer as a
-//           proper child (position:absolute top:0). dirRef encodes slide
-//           direction so next slides in from the right and prev from the left.
-//           Mobile author-col fully switches to flex-direction:row with all
-//           writing-mode resets applied correctly.
-//
-// UPDATE: Client avatar images
-//   BEFORE: Author sidebar showed a coloured monogram plate (letter initial
-//           inside a rounded square).
-//   AFTER:  Replaced with a circular <img> element. Image paths follow the
-//           convention /images/clientvoice/<slug>.jpg where <slug> is derived
-//           from each testimonial entry's `imgSlug` field. The coloured ring
-//           border still uses each testimonial's palette.border colour so the
-//           per-card accent is preserved. A fallback <span> with the initial
-//           is rendered when the image fails to load (onerror swap).
-//
-// CHANGE: FAQ section removed — now rendered in page.tsx below ContactForm.
+//   Save your banner image to: /public/images/contact/contact-hero-banner.jpg
 // ─────────────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TESTIMONIALS DATA
+// TESTIMONIALS DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const testimonials = [
   {
@@ -106,7 +95,7 @@ const testimonials = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STATS DATA
+// STATS DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const STATS = [
   { value: 150, suffix: "+",   label: "Projects delivered" },
@@ -116,14 +105,26 @@ const STATS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS
+// HERO TICKER — new, mirrors the mechanism on Services/About/Partner/Careers
+// ─────────────────────────────────────────────────────────────────────────────
+const pipeline = [
+  { cmd: "response_time", out: "< 24h" },
+  { cmd: "consultation",  out: "100% free" },
+  { cmd: "global_reach",  out: "india · usa · uk · uae · au" },
+  { cmd: "contact_form",  out: "instant confirmation" },
+  { cmd: "whatsapp",      out: "reply within minutes" },
+  { cmd: "commitment",    out: "zero obligation" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const INTERVAL = 4000;
 const TICK     = 50;
 const total    = testimonials.length;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ANIMATED COUNTER HOOK
+// ANIMATED COUNTER HOOK — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 function useCounter(target: number, duration: number, active: boolean) {
   const [count, setCount] = useState(0);
@@ -206,6 +207,7 @@ export default function ContactPageClient() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
 
         .ct-hero,
@@ -226,6 +228,15 @@ export default function ContactPageClient() {
           --ff-sans:    'DM Sans', sans-serif;
         }
 
+        .ct-hero {
+          --ct-ink:#12141A; --ct-muted:#5B6172; --ct-paper:#F5F6F8; --ct-surface:#FFFFFF;
+          --ct-line:#E4E6EC; --ct-blue:#2E5CFF; --ct-green:#37D67A;
+        }
+        .ct-cta {
+          --ct-ink:#12141A; --ct-muted:#5B6172; --ct-surface:#FFFFFF;
+          --ct-line:#E4E6EC; --ct-blue:#2E5CFF;
+        }
+
         .sr-only {
           position:absolute!important;width:1px!important;height:1px!important;
           padding:0!important;margin:-1px!important;overflow:hidden!important;
@@ -238,195 +249,93 @@ export default function ContactPageClient() {
           background-repeat:repeat;background-size:128px;
         }
 
-        /* ══ HERO ══════════════════════════════════════════════════════════ */
+        /* ══ HERO — same mechanism as Services/About/Partner/Careers ══════ */
         .ct-hero {
-          position:relative;min-height:100vh;
-          background:var(--c-bg);overflow:hidden;
-          width:100%;
+          position:relative;height:100vh;width:100%;
+          display:flex;flex-direction:column;
+          background:
+            linear-gradient(90deg, rgba(6,6,8,.94) 0%, rgba(6,6,8,.78) 38%, rgba(6,6,8,.42) 64%, rgba(6,6,8,.18) 100%),
+            linear-gradient(180deg, rgba(6,6,8,.20) 0%, rgba(6,6,8,.10) 40%, rgba(6,6,8,.55) 100%),
+            url('/images/contact/contact-hero-banner.jpg') center center / cover no-repeat;
+          background-attachment:scroll;background-color:#060608;background-size:cover;
+          overflow:hidden;
         }
-        .ct-hero__inner {
-          display:flex;flex-direction:row;align-items:center;
-          max-width:1440px;margin:0 auto;min-height:100vh;
-          position:relative;z-index:1;
+        @supports (height: 100svh) { .ct-hero { height: 100svh; } }
+        @supports (height: 100dvh) { .ct-hero { height: 100dvh; } }
+        @media(max-width:960px){
+          .ct-hero {
+            background:
+              linear-gradient(180deg, rgba(6,6,8,.60) 0%, rgba(6,6,8,.38) 38%, rgba(6,6,8,.82) 100%),
+              linear-gradient(0deg, rgba(6,6,8,.30), rgba(6,6,8,.30)),
+              url('/images/contact/contact-hero-banner.jpg') center center / cover no-repeat;
+          }
         }
-        .ct-hero__grid {
-          position:absolute;inset:0;pointer-events:none;
-          background-image:linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
-          background-size:60px 60px;
+        .ct-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .ct-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
+        .ct-corner--tl{top:28px;left:28px;border-top:1px solid var(--ct-blue);border-left:1px solid var(--ct-blue);}
+        .ct-corner--tr{top:28px;right:28px;border-top:1px solid var(--ct-blue);border-right:1px solid var(--ct-blue);}
+        .ct-corner--bl{bottom:120px;left:28px;border-bottom:1px solid var(--ct-blue);border-left:1px solid var(--ct-blue);}
+        .ct-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--ct-blue);border-right:1px solid var(--ct-blue);}
+
+        .ct-hero__inner{
+          position:relative;z-index:10;flex:1 1 auto;min-height:0;
+          display:flex;align-items:center;overflow:hidden;
+          max-width:1280px;margin:0 auto;width:100%;
+          padding:9rem 1.5rem 1.5rem;
+          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
+          box-sizing:border-box;
         }
-        .ct-hero__orb {
-          position:absolute;bottom:-180px;right:-100px;width:640px;height:640px;border-radius:50%;
-          background:radial-gradient(circle at 42% 42%,rgba(99,102,241,.18) 0%,rgba(249,115,22,.10) 38%,transparent 70%);
-          filter:blur(72px);pointer-events:none;animation:ctOrbDrift 12s ease-in-out infinite alternate;
-        }
-        @keyframes ctOrbDrift {
-          0%  {transform:translate(0,0) scale(1);}
-          50% {transform:translate(-40px,-28px) scale(1.06);}
-          100%{transform:translate(20px,18px) scale(.96);}
-        }
-        .ct-hero__orb2 {
-          position:absolute;top:-120px;left:-80px;width:480px;height:480px;border-radius:50%;
-          background:radial-gradient(circle at 50% 50%,rgba(249,115,22,.09) 0%,transparent 65%);
-          filter:blur(60px);pointer-events:none;animation:ctOrbDrift2 16s ease-in-out infinite alternate;
-        }
-        @keyframes ctOrbDrift2 {
-          0%  {transform:translate(0,0) scale(1);}
-          100%{transform:translate(30px,40px) scale(1.08);}
-        }
-        .ct-hero__hairline {
-          position:absolute;left:0;right:0;bottom:0;height:1px;
-          background:linear-gradient(90deg,transparent,rgba(249,115,22,.22) 30%,rgba(99,102,241,.22) 70%,transparent);
-          pointer-events:none;
+        @media(max-width:960px){ .ct-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
+        @media(max-width:640px){ .ct-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
+        @media(max-width:380px){ .ct-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        @media(max-height:520px){
+          .ct-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .ct-hero__eyebrow{ margin-bottom:1.1rem; }
+          .ct-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .ct-hero__rule{ margin-bottom:.8rem; }
+          .ct-hero__sub{ margin-bottom:1.2rem; }
         }
 
-        /* left column */
-        .ct-hero__left {
-          position:relative;z-index:10;flex:1 1 360px;
-          padding:7rem 3rem 7rem 7rem;display:flex;flex-direction:column;align-items:flex-start;
-        }
-        .ct-hero__eyebrow {
-          display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:9.5px;
-          font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--c-orange);
-          border:1px solid rgba(249,115,22,.24);background:rgba(249,115,22,.06);padding:7px 18px;
-          border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(12px);
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) both;
-        }
-        .ct-hero__dot {
-          width:5px;height:5px;border-radius:50%;background:var(--c-orange);
-          animation:ctPulse 2s ease-in-out infinite;
-        }
-        @keyframes ctPulse {
-          0%,100%{opacity:1;transform:scale(1);}
-          50%{opacity:.3;transform:scale(.6);}
-        }
-        .ct-hero__h1 {
-          font-family:var(--ff-serif);font-size:clamp(2rem,4.5vw,3.8rem);font-weight:700;
-          line-height:1.1;letter-spacing:-.02em;color:#fff;margin:0 0 1rem;
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .12s both;
-        }
-        .ct-hero__h1 em {font-style:italic;font-weight:300;color:var(--c-orange);-webkit-text-stroke:0;}
-        .ct-hero__h1 strong {font-weight:inherit;color:inherit;}
-        .ct-hero__rule {
-          display:flex;align-items:center;gap:12px;margin:0 0 1.6rem;
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .22s both;
-        }
-        .ct-hero__rule-line {width:56px;height:1px;background:linear-gradient(90deg,var(--c-orange),transparent);}
-        .ct-hero__rule-diamond {width:5px;height:5px;background:var(--c-orange);transform:rotate(45deg);opacity:.6;}
-        .ct-hero__sub {
-          font-family:var(--ff-sans);font-size:clamp(.95rem,1.7vw,1.08rem);font-weight:300;
-          line-height:1.85;color:var(--c-muted);max-width:400px;margin:0 0 2.8rem;
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .32s both;
-        }
-        .ct-hero__cta {
-          display:inline-flex;align-items:center;gap:12px;font-family:var(--ff-sans);
-          font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-          color:#060608;background:linear-gradient(135deg,#fb923c 0%,#f97316 60%,#ea580c 100%);
-          padding:15px 38px;border-radius:100px;text-decoration:none;
-          box-shadow:0 8px 40px rgba(249,115,22,.38),0 2px 8px rgba(0,0,0,.4);
-          transition:transform .24s ease,box-shadow .24s ease;
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;
-          position:relative;overflow:hidden;
-        }
-        .ct-hero__cta::before {
-          content:'';position:absolute;inset:0;
-          background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);
-          border-radius:inherit;opacity:0;transition:opacity .24s ease;
-        }
-        .ct-hero__cta:hover::before {opacity:1;}
-        .ct-hero__cta:hover {transform:translateY(-3px) scale(1.03);box-shadow:0 18px 52px rgba(249,115,22,.55),0 4px 12px rgba(0,0,0,.4);}
-        .ct-hero__link {
-          margin-top:1.2rem;font-family:var(--ff-sans);font-size:11px;font-weight:400;
-          letter-spacing:.08em;color:var(--c-muted2);text-decoration:none;
-          display:inline-flex;align-items:center;gap:6px;transition:color .2s ease;
-          animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .56s both;
-        }
-        .ct-hero__link:hover {color:rgba(255,255,255,.6);}
-        .ct-hero__link svg {transition:transform .2s ease;}
-        .ct-hero__link:hover svg {transform:translateX(3px);}
-        @keyframes ctFadeUp {
-          from{opacity:0;transform:translateY(28px);}
-          to{opacity:1;transform:translateY(0);}
-        }
+        .ct-hero__content{animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
+        @keyframes ctFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:960px){.ct-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        /* right column */
-        .ct-hero__right {
-          flex:0 0 480px;height:100vh;min-height:580px;position:relative;
-          display:flex;align-items:center;justify-content:center;overflow:visible;
+        .ct-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--c-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .ct-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--c-orange);animation:ctPulse 2s ease-in-out infinite;}
+        @keyframes ctPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+        .ct-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        .ct-hero__h1 em{font-style:normal;color:var(--ct-blue);}
+        .ct-hero__h1 strong{font-weight:inherit;color:inherit;}
+        .ct-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--ct-blue),transparent);margin:0 0 1.4rem;animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.ct-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--ct-blue),transparent);}}
+        .ct-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.ct-hero__sub{margin:0 auto 2.6rem;}}
+        .ct-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        @media(max-width:960px){.ct-hero__actions{justify-content:center;}}
+        .ct-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#060608;background:linear-gradient(135deg,#6a8bff,var(--ct-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .ct-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
+        .ct-hero__link{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;}
+        .ct-hero__link:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
+        .ct-hero__link svg{transition:transform .2s ease;}
+        .ct-hero__link:hover svg{transform:translateX(3px);}
+
+        .ct-hero__ticker-bar{
+          position:relative;z-index:12;flex:0 0 auto;
+          background:linear-gradient(180deg, rgba(6,6,8,0) 0%, rgba(6,6,8,.55) 45%, rgba(6,6,8,.9) 100%);
+          padding-top:1.5rem;
+          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
         }
-        .ct-hero__right::before {
-          content:'';position:absolute;left:0;top:15%;bottom:15%;width:1px;
-          background:linear-gradient(to bottom,transparent,rgba(255,255,255,.06) 30%,rgba(255,255,255,.06) 70%,transparent);
-          pointer-events:none;
-        }
-        .ct-anim {position:relative;width:360px;height:440px;pointer-events:none;}
+        .ct-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
+        .ct-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:ctScroll 34s linear infinite;}
+        .ct-hero__ticker-bar:hover .ct-ticker__track{animation-play-state:paused;}
+        @media(max-width:640px){ .ct-ticker__track{ animation-duration:22s; } }
+        @keyframes ctScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+        .ct-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
+        .ct-ticker__item b{color:rgba(255,255,255,.45);}
+        .ct-ticker__pass{color:var(--ct-green);}
+        @media(max-height:520px){ .ct-hero__ticker-bar{ padding-top:.75rem; } }
 
-        /* letter animation */
-        .ct-letter {
-          position:absolute;top:30px;left:40px;width:72px;height:55px;
-          transform-origin:center center;animation:ctLetterFly 3.2s cubic-bezier(.45,0,.2,1) infinite;
-        }
-        @keyframes ctLetterFly {
-          0%  {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-          6%  {opacity:1;}
-          32% {transform:translate(220px,-50px) rotate(14deg) scale(1.08);opacity:1;}
-          64% {transform:translate(136px,220px) rotate(-5deg) scale(.94);opacity:1;}
-          76% {transform:translate(112px,262px) rotate(-1deg) scale(.52);opacity:.8;}
-          86% {transform:translate(112px,282px) rotate(0deg) scale(.18);opacity:0;}
-          87% {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-          100%{transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-        }
-        .ct-letter svg {width:100%;height:100%;animation:ctLetterGlow 3.2s ease-in-out infinite;}
-        @keyframes ctLetterGlow {
-          0%,100%{filter:drop-shadow(0 0 9px rgba(249,115,22,.62)) drop-shadow(0 0 22px rgba(249,115,22,.28));}
-          32%    {filter:drop-shadow(0 0 20px rgba(249,115,22,1)) drop-shadow(0 0 48px rgba(249,115,22,.6));}
-          76%    {filter:drop-shadow(0 0 13px rgba(99,102,241,.9)) drop-shadow(0 0 32px rgba(99,102,241,.5));}
-        }
-
-        /* trail dots */
-        .ct-trail {position:absolute;top:56px;left:74px;border-radius:50%;background:var(--c-orange);pointer-events:none;}
-        .ct-trail-1{width:4px;height:4px;animation:ctTr1 3.2s ease-in-out infinite;opacity:0;}
-        .ct-trail-2{width:3px;height:3px;animation:ctTr2 3.2s ease-in-out infinite;opacity:0;animation-delay:.06s;}
-        .ct-trail-3{width:2px;height:2px;animation:ctTr3 3.2s ease-in-out infinite;opacity:0;animation-delay:.12s;}
-        .ct-trail-4{width:2px;height:2px;animation:ctTr4 3.2s ease-in-out infinite;opacity:0;animation-delay:.18s;background:rgba(249,115,22,.5);}
-        @keyframes ctTr1{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(178px,-52px);opacity:.85}60%{transform:translate(98px,190px);opacity:.4}74%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr2{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(145px,-42px);opacity:.65}60%{transform:translate(78px,172px);opacity:.28}72%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr3{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(110px,-30px);opacity:.45}60%{transform:translate(58px,150px);opacity:.18}70%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr4{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(74px,-16px);opacity:.3}60%{transform:translate(38px,126px);opacity:.1}68%{opacity:0}100%{opacity:0}}
-
-        /* mailbox */
-        .ct-mailbox{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;}
-        .ct-mailbox__glow{position:absolute;top:-18px;left:-16px;right:-16px;bottom:-34px;border-radius:16px;border:1.5px solid transparent;pointer-events:none;animation:ctMbGlow 3.2s ease-in-out infinite;}
-        @keyframes ctMbGlow{0%,64%{border-color:transparent;box-shadow:none}80%{border-color:rgba(99,102,241,.72);box-shadow:0 0 36px rgba(99,102,241,.38),0 0 72px rgba(99,102,241,.16)}100%{border-color:transparent;box-shadow:none}}
-        .ct-mailbox__roof{width:0;height:0;border-left:63px solid transparent;border-right:63px solid transparent;border-bottom:25px solid #1a1a2e;filter:drop-shadow(0 -1px 0 rgba(99,102,241,.42));}
-        .ct-mailbox__body{width:126px;height:82px;background:linear-gradient(160deg,#1e1e2e 50%,#12122a);border:1.5px solid rgba(99,102,241,.58);border-radius:10px 10px 6px 6px;position:relative;box-shadow:0 0 32px rgba(99,102,241,.2),inset 0 1px 0 rgba(255,255,255,.06);}
-        .ct-mailbox__slot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62px;height:7px;background:#000;border-radius:3.5px;box-shadow:inset 0 2px 6px rgba(0,0,0,1);}
-        .ct-mailbox__slot::after{content:'';position:absolute;top:0;left:5px;right:5px;height:1px;background:rgba(99,102,241,.35);border-radius:1px;}
-        .ct-mailbox__icon{position:absolute;bottom:9px;right:11px;opacity:.22;}
-        .ct-mailbox__post{width:12px;height:34px;background:linear-gradient(to right,#1a1a2e,#242440);border:1px solid rgba(99,102,241,.22);border-top:none;border-radius:0 0 4px 4px;}
-
-        /* sparks */
-        .ct-spark{position:absolute;border-radius:50%;bottom:100px;left:50%;opacity:0;}
-        .ct-spark-1{width:4px;height:4px;background:#6366f1;animation:ctSp1 3.2s ease-out infinite;}
-        .ct-spark-2{width:4px;height:4px;background:#f97316;animation:ctSp2 3.2s ease-out infinite;}
-        .ct-spark-3{width:3px;height:3px;background:#a78bfa;animation:ctSp3 3.2s ease-out infinite;}
-        .ct-spark-4{width:3px;height:3px;background:#6366f1;animation:ctSp4 3.2s ease-out infinite;}
-        .ct-spark-5{width:2px;height:2px;background:#fbbf24;animation:ctSp5 3.2s ease-out infinite;}
-        .ct-spark-6{width:2px;height:2px;background:#f97316;animation:ctSp6 3.2s ease-out infinite;}
-        @keyframes ctSp1{0%,72%{opacity:0;transform:translate(0,0) scale(1)}78%{opacity:1;transform:translate(-24px,-20px) scale(1.5)}96%{opacity:0;transform:translate(-36px,-7px) scale(.3)}100%{opacity:0}}
-        @keyframes ctSp2{0%,73%{opacity:0;transform:translate(0,0) scale(1)}79%{opacity:1;transform:translate(22px,-24px) scale(1.5)}96%{opacity:0;transform:translate(34px,-8px) scale(.3)}100%{opacity:0}}
-        @keyframes ctSp3{0%,71%{opacity:0;transform:translate(0,0) scale(1)}77%{opacity:1;transform:translate(-10px,-30px) scale(1.4)}96%{opacity:0;transform:translate(-16px,-9px) scale(.3)}100%{opacity:0}}
-        @keyframes ctSp4{0%,74%{opacity:0;transform:translate(0,0)}80%{opacity:1;transform:translate(16px,-16px)}96%{opacity:0;transform:translate(24px,2px)}100%{opacity:0}}
-        @keyframes ctSp5{0%,75%{opacity:0;transform:translate(0,0)}81%{opacity:1;transform:translate(-18px,-12px)}96%{opacity:0;transform:translate(-28px,4px)}100%{opacity:0}}
-        @keyframes ctSp6{0%,76%{opacity:0;transform:translate(0,0)}82%{opacity:1;transform:translate(8px,-26px)}96%{opacity:0;transform:translate(12px,-8px)}100%{opacity:0}}
-
-        /* corner brackets */
-        .ct-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.14;pointer-events:none;}
-        .ct-corner--tl{top:22px;left:22px;border-top:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .ct-corner--tr{top:22px;right:22px;border-top:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
-        .ct-corner--bl{bottom:22px;left:22px;border-bottom:1px solid var(--c-orange);border-left:1px solid var(--c-orange);}
-        .ct-corner--br{bottom:22px;right:22px;border-bottom:1px solid var(--c-orange);border-right:1px solid var(--c-orange);}
-
-        /* ══ PROOF STRIP ════════════════════════════════════════════════════ */
+        /* ══ PROOF STRIP — unchanged ════════════════════════════════════════ */
         .ct-proof {
           position:relative;background:var(--c-surface);
           border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border);overflow:hidden;
@@ -466,7 +375,7 @@ export default function ContactPageClient() {
         .ct-proof__tagline-text{font-family:var(--ff-serif);font-size:1.4rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.65);line-height:1.5;margin-bottom:.8rem;}
         .ct-proof__tagline-sub{font-family:var(--ff-sans);font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-orange);}
 
-        /* ══ REACH SECTION ══════════════════════════════════════════════════ */
+        /* ══ REACH SECTION — unchanged ══════════════════════════════════════ */
         .ct-reach {position:relative;background:var(--c-bg);padding:6rem 0;overflow:hidden;}
         .ct-reach::before {
           content:'';position:absolute;inset:0;
@@ -481,7 +390,7 @@ export default function ContactPageClient() {
         .ct-reach__rule{width:1px;height:60px;background:linear-gradient(to bottom,var(--c-orange),transparent);flex-shrink:0;opacity:.5;}
         .ct-reach__layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:stretch;}
 
-        /* ══ TESTIMONIALS ══════════════════════════════════════════════════ */
+        /* ══ TESTIMONIALS — unchanged ═══════════════════════════════════════ */
         .ct-testi {
           position:relative;overflow:hidden;display:flex;flex-direction:column;
           background:#09090c;border:1px solid rgba(255,255,255,0.07);border-radius:20px;
@@ -648,7 +557,7 @@ export default function ContactPageClient() {
           background:rgba(249,115,22,.08);
         }
 
-        /* ══ RIGHT HALF ═════════════════════════════════════════════════════ */
+        /* ══ RIGHT HALF — unchanged ═════════════════════════════════════════ */
         .ct-reach__right{display:flex;flex-direction:column;gap:1.5rem;}
         .ct-reach__strip {
           display:flex;align-items:stretch;
@@ -705,40 +614,16 @@ export default function ContactPageClient() {
         .ct-reach__location-text{font-family:var(--ff-sans);font-size:.8rem;color:var(--c-muted2);line-height:1.5;}
         .ct-reach__location-text strong{color:rgba(255,255,255,.7);font-weight:500;}
 
-        /* ══ CTA SECTION ════════════════════════════════════════════════════ */
-        .ct-cta{
-          position:relative;background:var(--c-surface);
-          padding:7rem 1.5rem;text-align:center;overflow:hidden;
-          border-top:1px solid var(--c-border);
-        }
-        .ct-cta__orb{
-          position:absolute;width:600px;height:600px;border-radius:50%;
-          filter:blur(110px);opacity:.12;
-          background:radial-gradient(circle,#f97316,transparent);
-          top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
-        }
-        .ct-cta__content{position:relative;z-index:10;max-width:640px;margin:0 auto;}
-        .ct-cta__h2{
-          font-family:var(--ff-serif);font-size:clamp(2.2rem,5vw,4rem);
-          font-weight:700;line-height:1.05;letter-spacing:-.02em;
-          color:#fff;margin-bottom:1.2rem;
-        }
-        .ct-cta__h2 em{font-style:italic;color:var(--c-orange);}
-        .ct-cta__sub{
-          font-family:var(--ff-sans);font-size:.95rem;font-weight:300;
-          line-height:1.7;color:var(--c-muted);margin-bottom:2.4rem;
-        }
-        .ct-cta__btn{
-          display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-sans);
-          font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-          color:#fff;border:1px solid rgba(249,115,22,.4);background:rgba(249,115,22,.1);
-          backdrop-filter:blur(12px);padding:14px 34px;border-radius:100px;
-          text-decoration:none;transition:all .2s ease;
-        }
-        .ct-cta__btn:hover{
-          background:var(--c-orange);color:#060608;border-color:var(--c-orange);
-          transform:translateY(-2px);box-shadow:0 12px 36px rgba(249,115,22,.4);
-        }
+        /* ══ CTA SECTION — matches Services .sv-cta exactly ════════════════ */
+        .ct-cta{background:var(--ct-surface);border-top:1px solid var(--ct-line);padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+        .ct-cta__orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--ct-blue),transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(70px);pointer-events:none;}
+        .ct-cta__content{position:relative;z-index:10;max-width:580px;margin:0 auto;}
+        .ct-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--ct-blue);margin-bottom:1.2rem;display:block;}
+        .ct-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--ct-ink);margin:0 0 1rem;}
+        .ct-cta__h2 em{font-style:normal;color:var(--ct-blue);}
+        .ct-cta__sub{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--ct-muted);margin-bottom:2.6rem;}
+        .ct-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--ct-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .ct-cta__btn:hover{background:var(--ct-blue);transform:translateY(-2px);}
 
         /* ══ RESPONSIVE ════════════════════════════════════════════════════ */
         @media (max-width:1000px) {
@@ -746,9 +631,6 @@ export default function ContactPageClient() {
           .ct-proof__inner{grid-template-columns:1fr;padding:0 2rem;}
         }
         @media (max-width:900px) {
-          .ct-hero__left{padding:5.5rem 2.5rem 5.5rem 3.5rem;}
-          .ct-hero__right{flex:0 0 360px;}
-          .ct-anim{width:280px;height:360px;}
           .ct-proof__stats{grid-template-columns:repeat(2,1fr);padding:2rem 0;}
           .ct-proof__stat{border-right:none;border-bottom:1px solid var(--c-border);padding:1.6rem 1.4rem;}
           .ct-proof__stat:nth-child(odd){border-right:1px solid var(--c-border);}
@@ -757,19 +639,6 @@ export default function ContactPageClient() {
           .ct-reach__inner{padding:0 2.5rem;}
         }
         @media (max-width:768px) {
-          .ct-hero__inner{flex-direction:column;min-height:auto;}
-          .ct-hero__right{order:1;flex:none;width:100%;height:280px;min-height:280px;overflow:visible;display:flex;align-items:center;justify-content:center;}
-          .ct-hero__right::before{display:none;}
-          .ct-anim{width:200px;height:260px;}
-          .ct-letter{top:22px;left:24px;width:56px;height:43px;animation-name:ctLetterFlyMd;}
-          .ct-trail{top:42px;left:52px;}
-          .ct-trail-1{animation-name:ctTr1Md;}
-          .ct-trail-2{animation-name:ctTr2Md;}
-          .ct-trail-3{animation-name:ctTr3Md;}
-          .ct-trail-4{animation-name:ctTr4Md;}
-          .ct-hero__left{order:2;flex:none;width:100%;padding:1.5rem 1.8rem 4rem;align-items:center;text-align:center;}
-          .ct-hero__sub{max-width:100%;}
-          .ct-hero__link{justify-content:center;}
           .ct-reach__header{flex-direction:column;align-items:flex-start;}
           .ct-reach__rule{display:none;}
           .ct-reach__inner{padding:0 1.5rem;}
@@ -824,44 +693,8 @@ export default function ContactPageClient() {
 
           .ct-reach__strip{flex-direction:column;}
           .ct-reach__strip-divider{width:auto;height:1px;}
-          .ct-cta{padding:5rem 1.5rem;}
         }
-        @keyframes ctLetterFlyMd {
-          0%  {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}6%{opacity:1;}
-          32% {transform:translate(120px,-30px) rotate(14deg) scale(1.07);opacity:1;}
-          64% {transform:translate(76px,186px) rotate(-5deg) scale(.94);opacity:1;}
-          76% {transform:translate(62px,218px) rotate(-1deg) scale(.50);opacity:.8;}
-          86% {transform:translate(62px,234px) rotate(0deg) scale(.16);opacity:0;}
-          87% {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-          100%{transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-        }
-        @keyframes ctTr1Md{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(96px,-24px);opacity:.85}60%{transform:translate(54px,156px);opacity:.4}74%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr2Md{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(78px,-19px);opacity:.65}60%{transform:translate(43px,140px);opacity:.28}72%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr3Md{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(58px,-13px);opacity:.45}60%{transform:translate(31px,122px);opacity:.18}70%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr4Md{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(39px,-7px);opacity:.3}60%{transform:translate(20px,102px);opacity:.1}68%{opacity:0}100%{opacity:0}}
-        @media (max-width:400px) {
-          .ct-hero__right{height:240px;min-height:240px;}
-          .ct-anim{width:170px;height:220px;}
-          .ct-letter{top:18px;left:20px;width:46px;height:36px;animation-name:ctLetterFlySm;}
-          .ct-trail{top:34px;left:42px;}
-          .ct-trail-1{animation-name:ctTr1Sm;}
-          .ct-trail-2{animation-name:ctTr2Sm;}
-          .ct-trail-3{animation-name:ctTr3Sm;}
-          .ct-trail-4{animation-name:ctTr4Sm;}
-        }
-        @keyframes ctLetterFlySm {
-          0%  {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}6%{opacity:1;}
-          32% {transform:translate(100px,-24px) rotate(14deg) scale(1.05);opacity:1;}
-          64% {transform:translate(62px,156px) rotate(-5deg) scale(.93);opacity:1;}
-          76% {transform:translate(50px,182px) rotate(-1deg) scale(.46);opacity:.8;}
-          86% {transform:translate(50px,196px) rotate(0deg) scale(.13);opacity:0;}
-          87% {transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-          100%{transform:translate(0,0) rotate(-18deg) scale(.88);opacity:0;}
-        }
-        @keyframes ctTr1Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(80px,-20px);opacity:.85}60%{transform:translate(44px,130px);opacity:.4}74%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr2Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(64px,-16px);opacity:.65}60%{transform:translate(34px,116px);opacity:.28}72%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr3Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(48px,-11px);opacity:.45}60%{transform:translate(24px,100px);opacity:.18}70%{opacity:0}100%{opacity:0}}
-        @keyframes ctTr4Sm{0%,6%{transform:translate(0,0);opacity:0}28%{transform:translate(32px,-7px);opacity:.3}60%{transform:translate(15px,84px);opacity:.1}68%{opacity:0}100%{opacity:0}}
+        @media(max-width:480px){.ct-hero__actions{flex-direction:column;align-items:stretch;}.ct-hero__cta,.ct-hero__link{justify-content:center;}}
 
         @media (prefers-reduced-motion:reduce) {
           *,*::before,*::after{
@@ -880,109 +713,74 @@ export default function ContactPageClient() {
         itemScope
         itemType="https://schema.org/ContactPage"
       >
-        <div className="ct-hero__grid"     aria-hidden="true" />
-        <div className="ct-hero__orb"      aria-hidden="true" />
-        <div className="ct-hero__orb2"     aria-hidden="true" />
-        <div className="ct-hero__hairline" aria-hidden="true" />
+        <div aria-hidden="true">
+          <div className="ct-hero__grain" />
+        </div>
         <div className="ct-corner ct-corner--tl" aria-hidden="true" />
         <div className="ct-corner ct-corner--tr" aria-hidden="true" />
         <div className="ct-corner ct-corner--bl" aria-hidden="true" />
         <div className="ct-corner ct-corner--br" aria-hidden="true" />
 
-        <div className="ct-hero__inner">
-          <div className="ct-hero__left">
-            <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
-              <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
-                <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                  <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                  <meta itemProp="position" content="1" />
-                </li>
-                <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                  <a href="/contact" itemProp="item" aria-current="page"><span itemProp="name">Contact</span></a>
-                  <meta itemProp="position" content="2" />
-                </li>
-              </ol>
-            </nav>
+        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+          <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+              <meta itemProp="position" content="1" />
+            </li>
+            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
+              <a href="/contact" itemProp="item" aria-current="page"><span itemProp="name">Contact</span></a>
+              <meta itemProp="position" content="2" />
+            </li>
+          </ol>
+        </nav>
 
-            <p className="ct-hero__eyebrow" aria-hidden="true">
+        <div className="ct-hero__inner">
+          <div className="ct-hero__content">
+            <div className="ct-hero__eyebrow" aria-hidden="true">
               <span className="ct-hero__dot" />
               Free Consultation · No Commitment
-            </p>
-
+            </div>
             <h1 className="ct-hero__h1" id="ct-hero-heading" itemProp="name">
               Your vision deserves a<br />
               <em>digital partner</em> who delivers.
             </h1>
-
-            <div className="ct-hero__rule" aria-hidden="true">
-              <div className="ct-hero__rule-line" />
-              <div className="ct-hero__rule-diamond" />
-            </div>
-
+            <div className="ct-hero__rule" aria-hidden="true" />
             <p className="ct-hero__sub" itemProp="description">
               Tell us about your project — we respond within 24 hours with a
-              clear plan, honest pricing, and zero fluff. Bangalore&apos;s most trusted
-              web, 3D &amp; marketing studio is one message away.
+              clear plan, honest pricing, and zero fluff. Bangalore&apos;s most
+              trusted web, 3D &amp; marketing studio is one message away.
             </p>
-
-            <a href="#contact-form" className="ct-hero__cta" aria-label="Get your free quote — scroll to the contact form">
-              Get Your Free Quote
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
-
-            <a href="mailto:info@99visual.com" className="ct-hero__link">
-              Or email us directly — info@99visual.com
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
-          </div>
-
-          <div className="ct-hero__right" aria-hidden="true">
-            <div className="ct-anim">
-              <div className="ct-trail ct-trail-1" />
-              <div className="ct-trail ct-trail-2" />
-              <div className="ct-trail ct-trail-3" />
-              <div className="ct-trail ct-trail-4" />
-              <div className="ct-letter">
-                <svg viewBox="0 0 72 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="1" y="1" width="70" height="53" rx="5" fill="#1e1032" stroke="#f97316" strokeWidth="1.4" />
-                  <rect x="7" y="6" width="58" height="36" rx="2.5" fill="#fff" opacity="0.07" />
-                  <line x1="13" y1="17" x2="59" y2="17" stroke="#f97316" strokeWidth=".9" opacity=".45" />
-                  <line x1="13" y1="25" x2="52" y2="25" stroke="#f97316" strokeWidth=".9" opacity=".32" />
-                  <line x1="13" y1="33" x2="44" y2="33" stroke="#f97316" strokeWidth=".9" opacity=".22" />
-                  <path d="M1 7 L36 32 L71 7" stroke="#f97316" strokeWidth="1.2" opacity=".65" fill="none" />
-                  <circle cx="36" cy="30" r="7" fill="#f97316" opacity=".75" />
-                  <circle cx="36" cy="30" r="4" fill="#fde68a" opacity=".95" />
-                  <rect x="3" y="2" width="66" height="4" rx="2" fill="white" opacity=".04" />
+            <div className="ct-hero__actions">
+              <a href="#contact-form" className="ct-hero__cta" aria-label="Get your free quote — scroll to the contact form">
+                Get Your Free Quote
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </div>
-              <div className="ct-mailbox">
-                <div className="ct-mailbox__glow" />
-                <div className="ct-mailbox__roof" />
-                <div className="ct-mailbox__body">
-                  <div className="ct-mailbox__slot" />
-                  <svg className="ct-mailbox__icon" width="18" height="13" viewBox="0 0 18 13" fill="none" aria-hidden="true">
-                    <rect x=".5" y=".5" width="17" height="12" rx="2" stroke="white" strokeWidth="1" />
-                    <path d="M.5 1.5 L9 8 L17.5 1.5" stroke="white" strokeWidth="1" fill="none" />
-                  </svg>
-                </div>
-                <div className="ct-mailbox__post" />
-                <div className="ct-spark ct-spark-1" />
-                <div className="ct-spark ct-spark-2" />
-                <div className="ct-spark ct-spark-3" />
-                <div className="ct-spark ct-spark-4" />
-                <div className="ct-spark ct-spark-5" />
-                <div className="ct-spark ct-spark-6" />
-              </div>
+              </a>
+              <a href="mailto:info@99visual.com" className="ct-hero__link">
+                Email us directly
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="ct-hero__ticker-bar" aria-hidden="true">
+          <div className="ct-ticker">
+            <div className="ct-ticker__track">
+              {[...pipeline, ...pipeline].map((p, i) => (
+                <span className="ct-ticker__item" key={i}>
+                  <b>$</b> {p.cmd} <span className="ct-ticker__pass">→ {p.out} ✓</span>
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ══ PROOF STRIP ═════════════════════════════════════════════════════ */}
+      {/* ══ PROOF STRIP — unchanged ═════════════════════════════════════════ */}
       <section className="ct-proof" aria-label="Company highlights" ref={proofRef}>
         <div className="ct-proof__inner">
           <dl className="ct-proof__stats" aria-label="Key company statistics">
@@ -997,7 +795,7 @@ export default function ContactPageClient() {
         </div>
       </section>
 
-      {/* ══ REACH + TESTIMONIALS ════════════════════════════════════════════ */}
+      {/* ══ REACH + TESTIMONIALS — unchanged ════════════════════════════════ */}
       <section className="ct-reach" aria-label="Contact information and client testimonials">
         <div className="ct-reach__inner">
           <div className="ct-reach__header">
@@ -1216,12 +1014,14 @@ export default function ContactPageClient() {
       <section className="ct-cta" aria-labelledby="ct-cta-heading">
         <div className="ct-cta__orb" aria-hidden="true" />
         <div className="ct-cta__content">
+          <span className="ct-cta__eyebrow">Let's Talk</span>
           <h2 className="ct-cta__h2" id="ct-cta-heading">
             Ready to start your<br /><em>next project?</em>
           </h2>
           <p className="ct-cta__sub">
-            From a quick website refresh to a full digital transformation — our team is
-            ready to listen, plan, and deliver. No fluff, no long contracts, just results.
+            From a quick website refresh to a full digital transformation — our
+            team is ready to listen, plan, and deliver. No fluff, no long
+            contracts, just results.
           </p>
           <a
             href="#contact-form"

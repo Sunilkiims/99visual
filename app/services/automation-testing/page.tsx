@@ -1,54 +1,32 @@
 // app/services/automation-testing/page.tsx
 //
-// THIS REVISION: Hero redesigned to match the full-bleed photo banner
-//   treatment now used on /services/website-development, /services/it-consulting,
-//   /services/digital-marketing-seo, /services/cad-gis-photogrammetry, and
-//   /services (the hub page) — photo as CSS background with a dark
-//   gradient overlay, grain texture, and corner brackets, single
-//   left-aligned text column. Replaces the previous two-column hero (text
-//   + inline SVG "test suite status" card). The status-card component has
-//   been removed since it's no longer rendered anywhere on the page. The
-//   "test run" ticker band that used to sit in its own dark strip below
-//   the hero now docks to the bottom edge of the hero itself, same
-//   mechanism as the tickers on the other redesigned pages.
-//   Save your banner image to:
-//   /public/images/services/automation-testing-hero-banner.jpg
+// THIS REVISION: Hero fully aligned to the /services (hub) page hero, which
+//   is now the shared master template across all service pages — same
+//   layout, spacing, typography (Space Grotesk / Inter / IBM Plex Mono
+//   scales and clamp() values), corner bracket positions, eyebrow/rule/sub
+//   treatment, button styling, ticker mechanics, and responsive breakpoints
+//   (desktop/tablet/mobile/small-mobile/short-screen). Only the hero
+//   heading, description, artwork (banner image), and ticker content stay
+//   page-specific — everything else (CSS values, structure, animations)
+//   now matches the hub page exactly. The previous badge row has been
+//   removed since the hub template's hero has no equivalent row.
 //
-// VISUAL REDESIGN (prior revision, retained) — migrates this page onto the
-// same design system used for /services/digital-marketing-seo,
-// /services/website-development, /services/cad-gis-photogrammetry, and
-// /services/it-consulting, for site-wide consistency.
+//   All hero-area and page-wide "contact us" CTAs (hero primary, CTA
+//   strip, sticky mobile CTA) now open the ContactPopup modal via the
+//   shared ConsultationCTA client wrapper instead of navigating to
+//   /contact, matching the hub page's CTA implementation.
 //
 // Unchanged: metadata, all schema nodes (org/local business/website/page/
 // breadcrumb/service/FAQ), FAQ_ITEMS copy, benefits copy, services copy
 // (title/description/highlight/bullets), canonical/robots/OG/Twitter tags,
 // H1/H2 hierarchy and text, the FAQ's native <details>/<summary> markup
-// (no JS involved, so nothing to break).
-//
-// What changed is purely presentational:
-//   - Dropped the dark near-black + orange system (shared with 4 other
-//     service pages) for the light "analytics" system: cool paper
-//     background, ink text, one blue signal accent, green reserved for
-//     "pass/healthy" indicators.
-//   - Replaced the inline SVG "test suite status" card hero with a
-//     full-bleed photo banner (matching the other redesigned pages), with
-//     badges reflecting the same coverage/self-healing/security themes
-//     the card used to show.
-//   - "Test run" ticker band (illustrative), this page's QA counterpart to
-//     the tickers on the other redesigned pages, now docks to the bottom
-//     edge of the hero.
-//   - The 6 alternating image/text service rows (each with a decorative
-//     01/02/03 stroke numeral implying a sequence that isn't real) became
-//     three labeled clusters in a bento card grid, using an icon per
-//     service instead of a matching illustration — same full copy per
-//     service, much shorter page.
-//   - Added a sticky mobile CTA bar, matching the other redesigned pages.
-//   - Header component is unmodified.
+// (no JS involved, so nothing to break), Header component.
 //
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
+import ConsultationCTA from "@/app/components/ConsultationCTA";
 
 
 import {
@@ -255,10 +233,6 @@ const benefits = [
   { icon: <FaTools />,     title: "Continuous AI-Driven QA",     description: "From code commit to production, our AI agents monitor, test, and validate continuously — providing real-time quality intelligence at every stage of your SDLC." },
 ];
 
-// Service copy (title/description/highlight/bullets) is unchanged from the
-// previous revision. image/imageAlt/imageLeft fields were dropped since the
-// redesign uses an icon-based card grid instead of six matching
-// illustrations; an `icon` field was added instead.
 const services = [
   {
     id: "manual-testing",
@@ -314,9 +288,6 @@ function serviceById(id: string) {
   return services.find((s) => s.id === id)!;
 }
 
-// New — groups the 6 services above into three labeled clusters for the
-// bento grid. Purely a presentation grouping; referenced ids/copy above
-// are untouched.
 const clusters = [
   {
     id: "human-ai-testing",
@@ -344,9 +315,7 @@ const clusters = [
   },
 ];
 
-// Illustrative test-run log lines for the signature ticker band — this
-// page's QA counterpart to the tickers on the other redesigned service
-// pages. Now docked to the bottom edge of the hero itself.
+// Illustrative test-run log lines for the signature ticker band.
 const pipeline = [
   { cmd: "playwright_run",  out: "1,842 passed, 0 failed" },
   { cmd: "self_heal",       out: "12 selectors adapted" },
@@ -379,9 +348,7 @@ export default function AutomationTestingPage() {
         .qa-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--qa-ink);margin:0 0 1rem;text-align:center;}
         .qa-h2 em{font-style:normal;color:var(--qa-blue);}
 
-        /* ══ HERO — full-bleed photo banner, same treatment as the other
-           redesigned service pages: photo as CSS background with a dark
-           gradient overlay so the text column stays legible.
+        /* ══ HERO — matched exactly to the /services hub page hero.
            Save your banner image to:
            /public/images/services/automation-testing-hero-banner.jpg ── */
         .qa-hero{
@@ -394,10 +361,6 @@ export default function AutomationTestingPage() {
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
-        /* Fixed (not min-) height, so the section can never grow taller
-           than one screen and push the ticker bar below the fold. dvh/svh
-           account for mobile browser chrome so the banner never shows a
-           gap or clips; falls back to 100vh. */
         @supports (height: 100svh) { .qa-hero { height: 100svh; } }
         @supports (height: 100dvh) { .qa-hero { height: 100dvh; } }
         @media(max-width:960px){
@@ -409,68 +372,54 @@ export default function AutomationTestingPage() {
           }
         }
 
-        /* Main hero content: fills the remaining space above the ticker
-           and centers vertically within it. Header clearance and the
-           left/right gutters live here (not on the fixed-height section)
-           so the ticker's own height is never squeezed out. */
         .qa-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
           display:flex;align-items:center;overflow:hidden;
           max-width:1280px;margin:0 auto;width:100%;
-          padding:8rem 1.5rem 1.5rem;
-          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
+          padding:9rem 1.5rem 1.5rem;
+          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
           box-sizing:border-box;
         }
         @media(max-width:960px){ .qa-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
         @media(max-width:640px){ .qa-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
         @media(max-width:380px){ .qa-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        /* Short screens (landscape phones, small laptop windows with
-           browser chrome): trim vertical rhythm and drop the badge row
-           so everything still fits above the ticker without scrolling. */
         @media(max-height:520px){
           .qa-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .qa-hero__eyebrow{ margin-bottom:.7rem; }
-          .qa-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .qa-hero__sub{ margin-bottom:.9rem; }
-          .qa-hero__actions{ margin-bottom:0; }
-          .qa-hero__badges{ display:none; }
+          .qa-hero__eyebrow{ margin-bottom:1.1rem; }
+          .qa-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .qa-hero__rule{ margin-bottom:.8rem; }
+          .qa-hero__sub{ margin-bottom:1.2rem; }
         }
 
-        .qa-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .qa-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
-        .qa-corner--tl{top:24px;left:24px;border-top:1px solid var(--qa-blue);border-left:1px solid var(--qa-blue);}
-        .qa-corner--tr{top:24px;right:24px;border-top:1px solid var(--qa-blue);border-right:1px solid var(--qa-blue);}
-        .qa-corner--bl{bottom:24px;left:24px;border-bottom:1px solid var(--qa-blue);border-left:1px solid var(--qa-blue);}
-        .qa-corner--br{bottom:24px;right:24px;border-bottom:1px solid var(--qa-blue);border-right:1px solid var(--qa-blue);}
+        .qa-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .qa-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
+        .qa-corner--tl{top:28px;left:28px;border-top:1px solid var(--qa-blue);border-left:1px solid var(--qa-blue);}
+        .qa-corner--tr{top:28px;right:28px;border-top:1px solid var(--qa-blue);border-right:1px solid var(--qa-blue);}
+        .qa-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--qa-blue);border-left:1px solid var(--qa-blue);}
+        @media(max-width:480px){ .qa-corner--bl{ left:28px; } }
+        .qa-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--qa-blue);border-right:1px solid var(--qa-blue);}
 
-        .qa-hero__content{animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;max-width:640px;}
-        @keyframes qaFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        .qa-hero__content{animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
+        @keyframes qaFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.qa-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .qa-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--qa-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.6rem;backdrop-filter:blur(8px);}
+        .qa-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--qa-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .qa-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--qa-blue);animation:qaPulse 2s ease-in-out infinite;}
-        @keyframes qaPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .qa-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:#fff;margin:0 0 1.1rem;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        @keyframes qaPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+        .qa-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .qa-hero__h1 em{font-style:normal;color:var(--qa-blue);}
-        .qa-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:rgba(255,255,255,0.78);max-width:520px;margin:0 0 2rem;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.qa-hero__sub{margin:0 auto 2rem;}}
+        .qa-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--qa-blue),transparent);margin:0 0 1.4rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.qa-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--qa-blue),transparent);}}
+        .qa-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.qa-hero__sub{margin:0 auto 2.6rem;}}
 
-        .qa-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem;margin-bottom:2rem;}
+        .qa-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:qaFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         @media(max-width:960px){.qa-hero__actions{justify-content:center;}}
-        .qa-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--qa-blue));padding:13px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .qa-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--qa-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
         .qa-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .qa-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);}
-        .qa-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
+        .qa-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
+        .qa-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
 
-        .qa-hero__badges{display:flex;flex-wrap:wrap;gap:1.5rem;}
-        @media(max-width:960px){.qa-hero__badges{justify-content:center;}}
-        .qa-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:rgba(255,255,255,0.65);}
-        .qa-hero__badge svg{color:var(--qa-blue);flex-shrink:0;}
-
-        /* ══ TICKER — docked as a normal flex child at the bottom of the
-           fixed-height hero (not position:absolute), so it can never end
-           up below the fold regardless of how tall the content above it
-           is — it always renders inside the first screen. ═══════════════ */
         .qa-hero__ticker-bar{
           position:relative;z-index:12;flex:0 0 auto;
           background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
@@ -485,16 +434,14 @@ export default function AutomationTestingPage() {
         .qa-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
         .qa-ticker__item b{color:rgba(255,255,255,.45);}
         .qa-ticker__pass{color:var(--qa-green);}
-        .qa-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
         @media(max-height:520px){
           .qa-hero__ticker-bar{ padding-top:.75rem; }
-          .qa-ticker__caption{ display:none; }
         }
 
         /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
         .qa-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--qa-line);}
         @media(max-width:760px){.qa-sticky-cta{display:flex;justify-content:center;}}
-        .qa-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--qa-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
+        .qa-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--qa-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
 
         /* ══ INTRO — unchanged copy ═══════════════════════════════════════ */
         .qa-intro{background:var(--qa-surface);border-bottom:1px solid var(--qa-line);padding:5.5rem 1.5rem;}
@@ -568,7 +515,7 @@ export default function AutomationTestingPage() {
         .qa-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--qa-ink);margin:0 0 1rem;}
         .qa-cta__h2 em{font-style:normal;color:var(--qa-blue);}
         .qa-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--qa-muted);margin-bottom:2.2rem;}
-        .qa-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--qa-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .qa-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--qa-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
         .qa-cta__btn:hover{background:var(--qa-blue);transform:translateY(-2px);}
 
         @media(max-width:600px){.qa-faq__q{padding:1.25rem;}.qa-faq__a{padding:0 1.25rem 1.25rem;}}
@@ -580,12 +527,7 @@ export default function AutomationTestingPage() {
       <Header />
 
       <div className="qa-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════
-            Full-bleed photo banner (set as the section's CSS background —
-            see .qa-hero in <style> above), same treatment as the other
-            redesigned service pages, replacing the previous two-column
-            layout with the inline SVG "test suite status" card. A dark
-            gradient overlay keeps the white/blue text legible over the photo. */}
+        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section className="qa-hero" aria-labelledby="qa-hero-heading">
           <div aria-hidden="true">
             <div className="qa-hero__grain" />
@@ -623,6 +565,7 @@ export default function AutomationTestingPage() {
               <h1 className="qa-hero__h1" id="qa-hero-heading">
                 Quality engineering measured<br />in <em>coverage</em>, not vibes
               </h1>
+              <div className="qa-hero__rule" aria-hidden="true" />
               <p className="qa-hero__sub">
                 AI-augmented manual testing, autonomous agent-driven automation,
                 LLM-assisted security testing, and predictive performance
@@ -630,29 +573,16 @@ export default function AutomationTestingPage() {
               </p>
 
               <div className="qa-hero__actions">
-                <Link href="/contact" className="qa-hero__cta" aria-label="Get a free AI-powered QA quote from 99 Visual Solutions">
+                <ConsultationCTA className="qa-hero__cta" ariaLabel="Get a free AI-powered QA quote from 99 Visual Solutions">
                   Get a Free Quote
-                </Link>
+                </ConsultationCTA>
                 <a href="#qa-services" className="qa-hero__cta qa-hero__cta--ghost" aria-label="Explore AI-powered QA and automation testing services">
                   Explore Services
                 </a>
               </div>
-
-              <div className="qa-hero__badges" aria-hidden="true">
-                <span className="qa-hero__badge"><FaChartLine /> 94% test coverage</span>
-                <span className="qa-hero__badge"><FaCogs /> Self-healing automation</span>
-                <span className="qa-hero__badge"><FaShieldAlt /> Security scans, clean</span>
-              </div>
             </div>
           </div>
 
-          {/*
-            Ticker docks to the bottom edge of the hero itself (not a
-            separate section below it), so the scrolling test-run line and
-            the photo banner render together as a single full-screen unit
-            on every screen size. A soft gradient behind it keeps the text
-            legible over the photo without a hard color break.
-          */}
           <div className="qa-hero__ticker-bar" aria-hidden="true">
             <div className="qa-ticker">
               <div className="qa-ticker__track">
@@ -663,7 +593,6 @@ export default function AutomationTestingPage() {
                 ))}
               </div>
             </div>
-            <p className="qa-ticker__caption">Illustrative test-run log output</p>
           </div>
         </section>
 
@@ -785,24 +714,24 @@ export default function AutomationTestingPage() {
               Talk to our Agentic AI QA specialists for a free strategy consultation. We&apos;ll
               design an intelligent testing architecture tailored to your stack, team, and release velocity.
             </p>
-            <Link href="/contact" className="qa-cta__btn" aria-label="Get a free AI-powered QA consultation from 99 Visual Solutions">
+            <ConsultationCTA className="qa-cta__btn" ariaLabel="Get a free AI-powered QA consultation from 99 Visual Solutions">
               Get a Free Consultation
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </Link>
+            </ConsultationCTA>
           </div>
         </section>
 
         {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
         <div className="qa-sticky-cta">
-          <Link href="/contact" className="qa-sticky-cta__btn">Get a Free Quote</Link>
+          <ConsultationCTA className="qa-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
         </div>
       </div>
 
       <Footer />
       <ScrollDown />
-     
+
     </>
   );
 }

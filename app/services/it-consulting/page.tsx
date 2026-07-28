@@ -2,55 +2,35 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // IT Consulting — 99 Visual Solutions
 //
-// VISUAL REDESIGN (this revision) — migrates this page onto the same design
-// system used for /services/digital-marketing-seo, /services/website-development,
-// and /services/cad-gis-photogrammetry, for site-wide consistency.
+// THIS REVISION: Hero fully aligned to the /services (hub) page hero, which
+//   is now the shared master template across all service pages — same
+//   layout, spacing, typography (Space Grotesk / Inter / IBM Plex Mono
+//   scales and clamp() values), corner bracket positions, eyebrow/rule/sub
+//   treatment, button styling, ticker mechanics, and responsive breakpoints
+//   (desktop/tablet/mobile/small-mobile/short-screen). Only the hero
+//   heading, description, artwork (banner image), and ticker content stay
+//   page-specific — everything else (CSS values, structure, animations)
+//   now matches the hub page exactly. The previous badge row (network/
+//   security/cloud) has been removed since the hub template's hero has no
+//   equivalent row.
 //
-// THIS REVISION: hero further updated to match the full-bleed photo banner
-//   treatment now used on /services/website-development, /services/visualization,
-//   and /services (the hub page) — photo as CSS background with a dark
-//   gradient overlay, grain texture, and corner brackets, single
-//   left-aligned text column. Replaces the previous two-column hero (text +
-//   inline SVG "Systems Status" gauge card). The gauge component has been
-//   removed since it's no longer rendered anywhere on the page. The
-//   standalone "ops log" ticker band that used to sit in its own strip below
-//   the hero now docks to the bottom edge of the hero itself, same mechanism
-//   as the ticker on the website-development page.
-//   Save your banner image to:
-//   /public/images/services/it-consulting-hero-banner.jpg
+//   All hero-area and page-wide "contact us" CTAs (hero primary, CTA
+//   strip, sticky mobile CTA) now open the ContactPopup modal via the
+//   shared ConsultationCTA client wrapper instead of navigating to
+//   /contact, matching the hub page's CTA implementation.
 //
 // Unchanged: metadata, all schema nodes (org/local business/website/page/
 // breadcrumb/service/FAQ), PAGE_CANONICAL handling, DATE_MODIFIED hardcoding,
 // `benefits` and `services` copy (title/description/highlight/bullets),
-// canonical/robots/OG/Twitter tags, H1/H2 hierarchy and text. The FAQ schema
-// (itcFaqNode) was JSON-LD-only in the previous revision with no visible
-// on-page section — that's preserved as-is, no new section added.
-//
-// What changed is purely presentational:
-//   - Dropped the dark near-black + orange system (shared with 3 other
-//     service pages) for the light "analytics" system: cool paper
-//     background, ink text, one blue signal accent, green reserved for
-//     "healthy/pass" status indicators.
-//   - Replaced the inline SVG "systems status" card hero with a full-bleed
-//     photo banner hero (matching website-development), with badges
-//     reflecting the same network/security/cloud themes the card used to
-//     show.
-//   - Ops log ticker band (illustrative) now docked to the bottom edge of
-//     the hero, this page's IT-ops counterpart to the ticker on the
-//     website-development page — same mechanism, page-specific content.
-//   - The 7 alternating image/text service rows (each with a decorative
-//     01/02/03 stroke numeral implying a sequence that isn't real) became
-//     three labeled clusters in a bento card grid, using an icon per
-//     service instead of a matching illustration — same full copy per
-//     service, much shorter page.
-//   - Added a sticky mobile CTA bar, matching website-development.
-//   - Header component is unmodified.
+// canonical/robots/OG/Twitter tags, H1/H2 hierarchy and text, sections below
+// the hero, Header component.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
+import ConsultationCTA from "@/app/components/ConsultationCTA";
 
 
 import type { Metadata } from "next";
@@ -296,9 +276,7 @@ const itcGraph = buildGraph(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA — `benefits` and `services` copy unchanged word-for-word.
-// image/imageAlt/imageLeft fields dropped; an `icon` field added per
-// service instead, since the redesign uses an icon-based card grid.
+// PAGE DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
   { icon: <FaCogs />,           title: "Tailored IT Strategies",       description: "We align IT strategies with your business goals, ensuring technology drives growth, efficiency, and innovation across every department and process." },
@@ -372,9 +350,6 @@ function serviceById(id: string) {
   return services.find((s) => s.id === id)!;
 }
 
-// New — groups the 7 services above into three labeled clusters for the
-// bento grid. Purely a presentation grouping; referenced ids/copy above
-// are untouched.
 const clusters = [
   {
     id: "infra-migration",
@@ -402,10 +377,7 @@ const clusters = [
   },
 ];
 
-// Illustrative IT-ops log lines for the signature ticker band — this page's
-// operations counterpart to the ticker on the website-development page.
-// Now docked to the bottom edge of the hero itself, same mechanism as
-// website-development's build/QA ticker.
+// Illustrative IT-ops log lines for the signature ticker band.
 const pipeline = [
   { cmd: "patch_deploy",   out: "42 systems updated" },
   { cmd: "vuln_scan",      out: "0 critical findings" },
@@ -441,9 +413,7 @@ export default function ITConsulting() {
         .itc-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--itc-ink);margin:0 0 1rem;text-align:center;}
         .itc-h2 em{font-style:normal;color:var(--itc-blue);}
 
-        /* ══ HERO — full-bleed photo banner, same treatment as the
-           website-development page: photo as CSS background with a dark
-           gradient overlay so the text column stays legible.
+        /* ══ HERO — matched exactly to the /services hub page hero.
            Save your banner image to:
            /public/images/services/it-consulting-hero-banner.jpg ── */
         .itc-hero{
@@ -456,10 +426,6 @@ export default function ITConsulting() {
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
-        /* Fixed (not min-) height, so the section can never grow taller
-           than one screen and push the ticker bar below the fold. dvh/svh
-           account for mobile browser chrome so the banner never shows a
-           gap or clips; falls back to 100vh. */
         @supports (height: 100svh) { .itc-hero { height: 100svh; } }
         @supports (height: 100dvh) { .itc-hero { height: 100dvh; } }
         @media(max-width:960px){
@@ -471,68 +437,54 @@ export default function ITConsulting() {
           }
         }
 
-        /* Main hero content: fills the remaining space above the ticker
-           and centers vertically within it. Header clearance and the
-           left/right gutters live here (not on the fixed-height section)
-           so the ticker's own height is never squeezed out. */
         .itc-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
           display:flex;align-items:center;overflow:hidden;
           max-width:1280px;margin:0 auto;width:100%;
-          padding:8rem 1.5rem 1.5rem;
-          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
+          padding:9rem 1.5rem 1.5rem;
+          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
           box-sizing:border-box;
         }
         @media(max-width:960px){ .itc-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
         @media(max-width:640px){ .itc-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
         @media(max-width:380px){ .itc-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        /* Short screens (landscape phones, small laptop windows with
-           browser chrome): trim vertical rhythm and drop the badge row
-           so everything still fits above the ticker without scrolling. */
         @media(max-height:520px){
           .itc-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .itc-hero__eyebrow{ margin-bottom:.7rem; }
-          .itc-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .itc-hero__sub{ margin-bottom:.9rem; }
-          .itc-hero__actions{ margin-bottom:0; }
-          .itc-hero__badges{ display:none; }
+          .itc-hero__eyebrow{ margin-bottom:1.1rem; }
+          .itc-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
+          .itc-hero__rule{ margin-bottom:.8rem; }
+          .itc-hero__sub{ margin-bottom:1.2rem; }
         }
 
-        .itc-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .itc-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
-        .itc-corner--tl{top:24px;left:24px;border-top:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
-        .itc-corner--tr{top:24px;right:24px;border-top:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
-        .itc-corner--bl{bottom:24px;left:24px;border-bottom:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
-        .itc-corner--br{bottom:24px;right:24px;border-bottom:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
+        .itc-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
+        .itc-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
+        .itc-corner--tl{top:28px;left:28px;border-top:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
+        .itc-corner--tr{top:28px;right:28px;border-top:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
+        .itc-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
+        @media(max-width:480px){ .itc-corner--bl{ left:28px; } }
+        .itc-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
 
-        .itc-hero__content{animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;max-width:640px;}
-        @keyframes itcFadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        .itc-hero__content{animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
+        @keyframes itcFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.itc-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--itc-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.6rem;backdrop-filter:blur(8px);}
+        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--itc-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--itc-blue);animation:itcPulse 2s ease-in-out infinite;}
-        @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .itc-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.1rem,4.4vw,3.4rem);font-weight:700;line-height:1.12;letter-spacing:-.015em;color:#fff;margin:0 0 1.1rem;text-shadow:0 2px 24px rgba(0,0,0,.45);}
+        @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+        .itc-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .itc-hero__h1 em{font-style:normal;color:var(--itc-blue);}
-        .itc-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.98rem,1.3vw,1.08rem);font-weight:300;line-height:1.7;color:rgba(255,255,255,0.78);max-width:520px;margin:0 0 2rem;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.itc-hero__sub{margin:0 auto 2rem;}}
+        .itc-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--itc-blue),transparent);margin:0 0 1.4rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
+        @media(max-width:960px){.itc-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--itc-blue),transparent);}}
+        .itc-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
+        @media(max-width:960px){.itc-hero__sub{margin:0 auto 2.6rem;}}
 
-        .itc-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:.9rem;margin-bottom:2rem;}
+        .itc-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         @media(max-width:960px){.itc-hero__actions{justify-content:center;}}
-        .itc-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--itc-blue));padding:13px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
+        .itc-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--itc-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
         .itc-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .itc-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);}
-        .itc-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
+        .itc-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
+        .itc-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
 
-        .itc-hero__badges{display:flex;flex-wrap:wrap;gap:1.5rem;}
-        @media(max-width:960px){.itc-hero__badges{justify-content:center;}}
-        .itc-hero__badge{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:500;color:rgba(255,255,255,0.65);}
-        .itc-hero__badge svg{color:var(--itc-blue);flex-shrink:0;}
-
-        /* ══ TICKER — docked as a normal flex child at the bottom of the
-           fixed-height hero (not position:absolute), so it can never end
-           up below the fold regardless of how tall the content above it
-           is — it always renders inside the first screen. ═══════════════ */
         .itc-hero__ticker-bar{
           position:relative;z-index:12;flex:0 0 auto;
           background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
@@ -547,16 +499,14 @@ export default function ITConsulting() {
         .itc-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
         .itc-ticker__item b{color:rgba(255,255,255,.45);}
         .itc-ticker__pass{color:var(--itc-green);}
-        .itc-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
         @media(max-height:520px){
           .itc-hero__ticker-bar{ padding-top:.75rem; }
-          .itc-ticker__caption{ display:none; }
         }
 
         /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
         .itc-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--itc-line);}
         @media(max-width:760px){.itc-sticky-cta{display:flex;justify-content:center;}}
-        .itc-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
+        .itc-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
 
         /* ══ INTRO — unchanged copy ═══════════════════════════════════════ */
         .itc-intro{background:var(--itc-surface);border-bottom:1px solid var(--itc-line);padding:5.5rem 1.5rem;}
@@ -613,7 +563,7 @@ export default function ITConsulting() {
         .itc-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--itc-ink);margin:0 0 1rem;}
         .itc-cta__h2 em{font-style:normal;color:var(--itc-blue);}
         .itc-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--itc-muted);margin-bottom:2.2rem;}
-        .itc-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;}
+        .itc-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
         .itc-cta__btn:hover{background:var(--itc-blue);transform:translateY(-2px);}
 
         @media(prefers-reduced-motion:reduce){
@@ -624,12 +574,7 @@ export default function ITConsulting() {
       <Header />
 
       <div className="itc-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════
-            Full-bleed photo banner (set as the section's CSS background —
-            see .itc-hero in <style> above), same treatment as the
-            website-development page, replacing the previous two-column
-            layout with the inline SVG "Systems Status" gauge card. A dark
-            gradient overlay keeps the white/blue text legible over the photo. */}
+        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section className="itc-hero" aria-labelledby="itc-hero-heading">
           <div aria-hidden="true">
             <div className="itc-hero__grain" />
@@ -667,6 +612,7 @@ export default function ITConsulting() {
               <h1 className="itc-hero__h1" id="itc-hero-heading">
                 Technology strategy measured<br />in <em>uptime</em>, not slides
               </h1>
+              <div className="itc-hero__rule" aria-hidden="true" />
               <p className="itc-hero__sub">
                 Cloud migration, cybersecurity, infrastructure planning, IoT
                 integration, and IT project management — end-to-end consulting
@@ -674,29 +620,16 @@ export default function ITConsulting() {
               </p>
 
               <div className="itc-hero__actions">
-                <Link href="/contact" className="itc-hero__cta" aria-label="Get a free IT consulting quote from 99 Visual Solutions">
+                <ConsultationCTA className="itc-hero__cta" ariaLabel="Get a free IT consulting quote from 99 Visual Solutions">
                   Get a Free Quote
-                </Link>
+                </ConsultationCTA>
                 <a href="#services" className="itc-hero__cta itc-hero__cta--ghost" aria-label="Explore IT consulting services from 99 Visual Solutions">
                   Explore Services
                 </a>
               </div>
-
-              <div className="itc-hero__badges" aria-hidden="true">
-                <span className="itc-hero__badge"><FaNetworkWired /> Network monitored, always on</span>
-                <span className="itc-hero__badge"><FaShieldAlt /> Security-first infrastructure</span>
-                <span className="itc-hero__badge"><FaCloud /> Multi-cloud, AWS · Azure · GCP</span>
-              </div>
             </div>
           </div>
 
-          {/*
-            Ticker docks to the bottom edge of the hero itself (not a
-            separate section below it), so the scrolling ops-log line and
-            the photo banner render together as a single full-screen unit
-            on every screen size. A soft gradient behind it keeps the text
-            legible over the photo without a hard color break.
-          */}
           <div className="itc-hero__ticker-bar" aria-hidden="true">
             <div className="itc-ticker">
               <div className="itc-ticker__track">
@@ -707,7 +640,6 @@ export default function ITConsulting() {
                 ))}
               </div>
             </div>
-            <p className="itc-ticker__caption">Illustrative systems &amp; ops log output</p>
           </div>
         </section>
 
@@ -800,24 +732,24 @@ export default function ITConsulting() {
               Get in touch with our team for a free consultation. We&apos;ll help you
               map out the right IT strategy to achieve your goals and future-proof your business.
             </p>
-            <Link href="/contact" className="itc-cta__btn" aria-label="Get a free IT consulting consultation from 99 Visual Solutions">
+            <ConsultationCTA className="itc-cta__btn" ariaLabel="Get a free IT consulting consultation from 99 Visual Solutions">
               Get a Free Consultation
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </Link>
+            </ConsultationCTA>
           </div>
         </section>
 
         {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
         <div className="itc-sticky-cta">
-          <Link href="/contact" className="itc-sticky-cta__btn">Get a Free Quote</Link>
+          <ConsultationCTA className="itc-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
         </div>
       </div>
 
       <Footer />
       <ScrollDown />
-     
+
     </>
   );
 }

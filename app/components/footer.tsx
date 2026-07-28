@@ -5,9 +5,10 @@
 // Footer — 99 Visual Solutions
 // Theme  : Crisp white + Indigo (#4F46E5)
 // Fonts  : Playfair Display (display) + Inter (body)
+// Newsletter now requires OTP email verification before subscribing.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { FormEvent, useState, useEffect, useRef } from 'react';
+import React, { FormEvent, useState, useEffect, useRef, KeyboardEvent, ClipboardEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -55,13 +56,23 @@ const SOCIALS = [
   { label: 'LinkedIn',    href: 'https://www.linkedin.com/company/99-visual-solutions/',    Icon: FaLinkedinIn },
 ];
 
+const OTP_LENGTH = 6;
+const RESEND_SECONDS = 30;
+
+type NlStep = 'email' | 'otp' | 'done';
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const Footer: React.FC = () => {
+  // Newsletter / OTP flow state
+  const [step,      setStep]      = useState<NlStep>('email');
   const [email,     setEmail]     = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [otp,       setOtp]       = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [loading,   setLoading]   = useState(false);
   const [error,     setError]     = useState('');
+  const [resendIn,  setResendIn]  = useState(0);
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+
   const [visible,   setVisible]   = useState(false);
   const footerRef = useRef<HTMLElement>(null);
 
@@ -76,13 +87,31 @@ const Footer: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  // Countdown for "resend code"
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
 
+  // Auto-reset back to the email step a few seconds after success
+  useEffect(() => {
+    if (step !== 'done') return;
+    const t = setTimeout(() => {
+      setStep('email');
+      setEmail('');
+      setOtp(Array(OTP_LENGTH).fill(''));
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [step]);
+
+  // ── Step 1: request a code for this email ──────────────────────────────────
+  const handleRequestOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
-      const res    = await fetch('/api/subscribe', {
+      const res    = await fetch('/api/subscribe/request-otp', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email }),
@@ -90,17 +119,109 @@ const Footer: React.FC = () => {
       const result = await res.json();
 
       if (res.ok) {
-        setSubmitted(true);
-        setEmail('');
-        setTimeout(() => setSubmitted(false), 4000);
+        setStep('otp');
+        setOtp(Array(OTP_LENGTH).fill(''));
+        setResendIn(RESEND_SECONDS);
+        setTimeout(() => otpRefs.current[0]?.focus(), 50);
       } else {
-        setError(result.message || 'Something went wrong. Please try again.');
+        setError(result.message || 'Could not send a verification code. Please try again.');
       }
     } catch {
       setError('Network error — please try again later.');
     } finally {
       setLoading(false);
     }
+  };
+
+  // ── Step 2: verify the code ─────────────────────────────────────────────────
+  const handleVerifyOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    const code = otp.join('');
+    if (code.length !== OTP_LENGTH) {
+      setError(`Enter the ${OTP_LENGTH}-digit code.`);
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      const res    = await fetch('/api/subscribe/verify-otp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, otp: code }),
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        setStep('done');
+      } else {
+        setError(result.message || 'That code is incorrect or has expired.');
+      }
+    } catch {
+      setError('Network error — please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (resendIn > 0 || loading) return;
+    setError('');
+    setLoading(true);
+    try {
+      const res    = await fetch('/api/subscribe/request-otp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email }),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setResendIn(RESEND_SECONDS);
+        setOtp(Array(OTP_LENGTH).fill(''));
+        otpRefs.current[0]?.focus();
+      } else {
+        setError(result.message || 'Could not resend the code.');
+      }
+    } catch {
+      setError('Network error — please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangeEmail = () => {
+    setStep('email');
+    setOtp(Array(OTP_LENGTH).fill(''));
+    setError('');
+  };
+
+  // ── OTP box handlers ─────────────────────────────────────────────────────
+  const handleOtpChange = (index: number, value: string) => {
+    const digit = value.replace(/\D/g, '').slice(-1);
+    setOtp((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < OTP_LENGTH - 1) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
+    if (!pasted) return;
+    e.preventDefault();
+    const next = Array(OTP_LENGTH).fill('');
+    pasted.split('').forEach((d, i) => { next[i] = d; });
+    setOtp(next);
+    const lastIndex = Math.min(pasted.length, OTP_LENGTH) - 1;
+    otpRefs.current[lastIndex]?.focus();
   };
 
   return (
@@ -343,6 +464,44 @@ const Footer: React.FC = () => {
         }
         @keyframes ftSpin { to { transform: rotate(360deg); } }
 
+        /* ── OTP step ────────────────────────────────────────────────── */
+        .ft__nl-sentto {
+          font-family: var(--sans); font-size: .75rem; font-weight: 400;
+          color: var(--text-secondary); margin-bottom: .8rem; line-height: 1.6;
+        }
+        .ft__nl-sentto strong { color: var(--text-primary); font-weight: 600; }
+
+        .ft__otp-row { display: flex; gap: .4rem; margin-bottom: .6rem; }
+        .ft__otp-box {
+          width: 100%; aspect-ratio: 1 / 1; text-align: center;
+          background: var(--surface); border: 1px solid var(--border-strong);
+          border-radius: 7px; font-family: var(--sans); font-size: .95rem;
+          font-weight: 600; color: var(--text-primary); outline: none;
+          transition: border-color .2s, box-shadow .2s;
+        }
+        .ft__otp-box:focus {
+          border-color: var(--indigo);
+          box-shadow: 0 0 0 3px rgba(79,70,229,.08);
+        }
+
+        .ft__nl-links {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-top: .55rem;
+        }
+        .ft__nl-textbtn {
+          font-family: var(--sans); font-size: .7rem; font-weight: 500;
+          color: var(--indigo); background: none; border: none; padding: 0;
+          cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+        }
+        .ft__nl-textbtn:disabled {
+          color: var(--text-muted); cursor: not-allowed; text-decoration: none;
+        }
+        .ft__nl-changeemail {
+          font-family: var(--sans); font-size: .7rem; font-weight: 400;
+          color: var(--text-muted); background: none; border: none; padding: 0;
+          cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+        }
+
         /* ── Ticker ──────────────────────────────────────────────────── */
         .ft__ticker-wrap {
           width: 100%;
@@ -479,71 +638,132 @@ const Footer: React.FC = () => {
               </ul>
             </nav>
 
-            {/* Newsletter */}
+            {/* Newsletter — email → OTP → done */}
             <div className="ft__col">
               <h3 className="ft__nav-heading">
                 <span className="ft__nav-heading-num">03</span>
                 Newsletter
               </h3>
-              <p className="ft__nl-desc">
-                Insights that drive innovation — delivered weekly.
-              </p>
-              <form
-                onSubmit={handleSubmit}
-                aria-label="Newsletter subscription form"
-                noValidate
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="your@email.com"
-                  className="ft__nl-input"
-                  aria-label="Email address for newsletter"
-                  autoComplete="email"
-                  disabled={loading}
-                />
-                <button
-                  type="submit"
-                  className="ft__nl-btn"
-                  disabled={loading || submitted}
-                  aria-label={loading ? 'Subscribing…' : 'Subscribe to newsletter'}
-                >
-                  {loading ? (
-                    <>
-                      <span className="ft__spinner" aria-hidden="true" />
-                      Subscribing…
-                    </>
-                  ) : submitted ? (
-                    <>
-                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                        <path d="M2 6.5L5.2 9.5L11 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Subscribed!
-                    </>
-                  ) : (
-                    <>
-                      Subscribe
-                      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </>
-                  )}
-                </button>
 
-                {submitted && !loading && (
-                  <p className="ft__nl-status ft__nl-status--ok" role="status" aria-live="polite">
-                    You&apos;re on the list — welcome aboard.
+              {step === 'email' && (
+                <>
+                  <p className="ft__nl-desc">
+                    Insights that drive innovation — delivered weekly.
                   </p>
-                )}
-                {error && (
-                  <p className="ft__nl-status ft__nl-status--error" role="alert" aria-live="assertive">
-                    {error}
+                  <form onSubmit={handleRequestOtp} aria-label="Newsletter subscription form" noValidate>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="your@email.com"
+                      className="ft__nl-input"
+                      aria-label="Email address for newsletter"
+                      autoComplete="email"
+                      disabled={loading}
+                    />
+                    <button
+                      type="submit"
+                      className="ft__nl-btn"
+                      disabled={loading}
+                      aria-label={loading ? 'Sending code…' : 'Send verification code'}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="ft__spinner" aria-hidden="true" />
+                          Sending code…
+                        </>
+                      ) : (
+                        <>
+                          Verify Email
+                          <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                            <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </>
+                      )}
+                    </button>
+                    {error && (
+                      <p className="ft__nl-status ft__nl-status--error" role="alert" aria-live="assertive">
+                        {error}
+                      </p>
+                    )}
+                  </form>
+                  <p className="ft__nl-note">We&apos;ll email you a 6-digit code to confirm it&apos;s really you.</p>
+                </>
+              )}
+
+              {step === 'otp' && (
+                <>
+                  <p className="ft__nl-sentto">
+                    Code sent to <strong>{email}</strong>. Enter it below to confirm your subscription.
                   </p>
-                )}
-              </form>
-              <p className="ft__nl-note">Unsubscribe anytime.</p>
+                  <form onSubmit={handleVerifyOtp} aria-label="One-time code verification form" noValidate>
+                    <div className="ft__otp-row" role="group" aria-label="6 digit verification code">
+                      {otp.map((digit, i) => (
+                        <input
+                          key={i}
+                          ref={(el) => { otpRefs.current[i] = el; }}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(i, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                          onPaste={handleOtpPaste}
+                          className="ft__otp-box"
+                          aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
+                          disabled={loading}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      type="submit"
+                      className="ft__nl-btn"
+                      disabled={loading}
+                      aria-label={loading ? 'Verifying…' : 'Verify code and subscribe'}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="ft__spinner" aria-hidden="true" />
+                          Verifying…
+                        </>
+                      ) : (
+                        'Confirm Subscription'
+                      )}
+                    </button>
+
+                    <div className="ft__nl-links">
+                      <button
+                        type="button"
+                        className="ft__nl-textbtn"
+                        onClick={handleResend}
+                        disabled={resendIn > 0 || loading}
+                      >
+                        {resendIn > 0 ? `Resend code (${resendIn}s)` : 'Resend code'}
+                      </button>
+                      <button type="button" className="ft__nl-changeemail" onClick={handleChangeEmail}>
+                        Change email
+                      </button>
+                    </div>
+
+                    {error && (
+                      <p className="ft__nl-status ft__nl-status--error" role="alert" aria-live="assertive">
+                        {error}
+                      </p>
+                    )}
+                  </form>
+                </>
+              )}
+
+              {step === 'done' && (
+                <p className="ft__nl-status ft__nl-status--ok" role="status" aria-live="polite">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" style={{ marginRight: 6, verticalAlign: '-2px' }}>
+                    <path d="M2 6.5L5.2 9.5L11 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Email verified — you&apos;re on the list. Welcome aboard!
+                </p>
+              )}
             </div>
 
           </div>
