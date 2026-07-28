@@ -126,14 +126,17 @@ export default function CompanyTabs() {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         :root {
-          --c-bg:          #080808;
-          --c-surface:     #0f0f0f;
-          --c-surface2:    #141414;
-          --c-border:      rgba(255,255,255,0.07);
-          --c-orange:      #f97316;
-          --c-orange-dim:  rgba(249,115,22,0.12);
-          --c-muted:       rgba(255,255,255,0.45);
-          --c-muted2:      rgba(255,255,255,0.65);
+          --c-bg:          #030712;
+          --c-surface:     #0a1120;
+          --c-surface2:    rgba(17,24,39,0.75);
+          --c-border:      rgba(255,255,255,0.08);
+          --c-primary:     #2563EB;
+          --c-secondary:   #3B82F6;
+          --c-accent:      #60A5FA;
+          --c-highlight:   #38BDF8;
+          --c-primary-dim: rgba(37,99,235,0.14);
+          --c-muted:       rgba(203,213,225,0.55);
+          --c-muted2:      rgba(203,213,225,0.82);
           --ff-serif:      'Cormorant Garamond', serif;
           --ff-sans:       'DM Sans', sans-serif;
         }
@@ -148,12 +151,12 @@ export default function CompanyTabs() {
           border-bottom: 1px solid var(--c-border);
         }
 
-        /* background grid + grain */
+        /* background grid + grain + aurora mesh */
         .ct-section__grid {
           position: absolute; inset: 0; pointer-events: none;
           background-image:
-            linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+            linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
           background-size: 60px 60px;
         }
         .ct-section__grain {
@@ -161,19 +164,42 @@ export default function CompanyTabs() {
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 180px 180px;
         }
+        .ct-section__mesh {
+          position: absolute; inset: 0; pointer-events: none;
+          background:
+            radial-gradient(ellipse 60% 50% at 15% 10%, rgba(37,99,235,.16), transparent 60%),
+            radial-gradient(ellipse 50% 45% at 85% 90%, rgba(56,189,248,.12), transparent 60%),
+            radial-gradient(ellipse 40% 35% at 50% 50%, rgba(96,165,250,.06), transparent 70%);
+        }
         .ct-section__orb {
-          position: absolute; border-radius: 50%; filter: blur(100px);
+          position: absolute; border-radius: 50%; filter: blur(110px);
           pointer-events: none;
         }
         .ct-section__orb--1 {
-          width: 380px; height: 380px;
-          background: radial-gradient(circle, #f97316, transparent 70%);
-          top: -140px; right: -80px; opacity: .06;
+          width: 420px; height: 420px;
+          background: radial-gradient(circle, #2563EB, transparent 70%);
+          top: -160px; right: -100px; opacity: .16;
+          animation: ctDrift1 16s ease-in-out infinite;
         }
         .ct-section__orb--2 {
-          width: 300px; height: 300px;
-          background: radial-gradient(circle, #6366f1, transparent 70%);
-          bottom: -100px; left: -60px; opacity: .05;
+          width: 340px; height: 340px;
+          background: radial-gradient(circle, #38BDF8, transparent 70%);
+          bottom: -120px; left: -70px; opacity: .13;
+          animation: ctDrift2 20s ease-in-out infinite;
+        }
+        .ct-section__orb--3 {
+          width: 260px; height: 260px;
+          background: radial-gradient(circle, #60A5FA, transparent 70%);
+          top: 40%; left: 55%; opacity: .08;
+          animation: ctDrift1 24s ease-in-out infinite reverse;
+        }
+        @keyframes ctDrift1 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50%       { transform: translate(-24px, 30px) scale(1.06); }
+        }
+        @keyframes ctDrift2 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50%       { transform: translate(28px, -22px) scale(1.05); }
         }
 
         .ct-section__inner {
@@ -190,16 +216,16 @@ export default function CompanyTabs() {
           display: inline-flex; align-items: center; gap: 8px;
           font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
-          color: var(--c-orange);
-          border: 1px solid rgba(249,115,22,.28);
-          background: rgba(249,115,22,.07);
+          color: var(--c-accent);
+          border: 1px solid rgba(37,99,235,.32);
+          background: rgba(37,99,235,.08);
           padding: 6px 16px; border-radius: 100px;
           margin-bottom: 1.6rem;
           backdrop-filter: blur(8px);
         }
         .ct-header__dot {
           width: 5px; height: 5px; border-radius: 50%;
-          background: var(--c-orange);
+          background: var(--c-accent);
           animation: ctPulse 2s ease-in-out infinite;
         }
         @keyframes ctPulse {
@@ -213,11 +239,15 @@ export default function CompanyTabs() {
           color: #fff; margin: 0 0 1rem;
         }
         .ct-header__h2 em {
-          font-style: italic; color: var(--c-orange);
+          font-style: italic;
+          background: linear-gradient(135deg, var(--c-primary), var(--c-highlight));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
         }
         .ct-header__rule {
           width: 40px; height: 1px;
-          background: linear-gradient(90deg, transparent, var(--c-orange), transparent);
+          background: linear-gradient(90deg, transparent, var(--c-accent), transparent);
           margin: 0 auto;
         }
 
@@ -232,9 +262,11 @@ export default function CompanyTabs() {
             gap: 0;
             margin-bottom: 3.5rem;
             border: 1px solid var(--c-border);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             background: var(--c-surface2);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
@@ -266,8 +298,9 @@ export default function CompanyTabs() {
         .ct-tab-indicator {
           position: absolute;
           top: 0; bottom: 0;
-          background: linear-gradient(135deg, rgba(249,115,22,.22), rgba(249,115,22,.08));
-          border-bottom: 2px solid var(--c-orange);
+          background: linear-gradient(135deg, rgba(37,99,235,.28), rgba(56,189,248,.1));
+          border-bottom: 2px solid var(--c-accent);
+          box-shadow: 0 0 20px -4px rgba(37,99,235,.5);
           z-index: 1;
         }
 
@@ -297,16 +330,17 @@ export default function CompanyTabs() {
         }
 
         .ct-img-wrap {
-          position: relative; border-radius: 16px; overflow: hidden;
+          position: relative; border-radius: 20px; overflow: hidden;
+          box-shadow: 0 20px 60px -20px rgba(37,99,235,.35);
         }
         .ct-img-wrap::before {
           content: ''; position: absolute; inset: 0; z-index: 1;
-          background: linear-gradient(135deg, rgba(249,115,22,.1), transparent 60%);
-          border-radius: 16px; pointer-events: none;
+          background: linear-gradient(135deg, rgba(37,99,235,.14), transparent 60%);
+          border-radius: 20px; pointer-events: none;
         }
         .ct-img-wrap img {
           width: 100%; height: auto; display: block;
-          border-radius: 16px;
+          border-radius: 20px;
           border: 1px solid var(--c-border);
           transition: transform .5s cubic-bezier(.22,1,.36,1);
         }
@@ -318,7 +352,7 @@ export default function CompanyTabs() {
           font-size: clamp(5rem, 10vw, 9rem);
           font-weight: 700; line-height: 1;
           color: transparent;
-          -webkit-text-stroke: 1px rgba(249,115,22,.1);
+          -webkit-text-stroke: 1px rgba(37,99,235,.14);
           position: absolute; top: -2.5rem; left: -1rem;
           pointer-events: none; user-select: none;
         }
@@ -328,7 +362,7 @@ export default function CompanyTabs() {
         .ct-content-eyebrow {
           font-family: var(--ff-sans); font-size: 9px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
-          color: var(--c-orange); margin-bottom: .9rem; display: block;
+          color: var(--c-accent); margin-bottom: .9rem; display: block;
         }
         .ct-content-h3 {
           font-family: var(--ff-serif);
@@ -338,7 +372,7 @@ export default function CompanyTabs() {
         }
         .ct-content-rule {
           width: 32px; height: 1px;
-          background: linear-gradient(90deg, var(--c-orange), transparent);
+          background: linear-gradient(90deg, var(--c-accent), transparent);
           margin: 0 0 1.4rem;
         }
         .ct-content-p {
@@ -350,15 +384,16 @@ export default function CompanyTabs() {
           display: inline-flex; align-items: center; gap: 8px;
           font-family: var(--ff-sans); font-size: 10px; font-weight: 600;
           letter-spacing: .14em; text-transform: uppercase;
-          color: var(--c-orange);
-          background: var(--c-orange-dim);
-          border: 1px solid rgba(249,115,22,.28);
+          color: #fff;
+          background: linear-gradient(135deg, var(--c-primary), var(--c-secondary));
+          border: 1px solid rgba(96,165,250,.4);
           padding: 10px 22px; border-radius: 100px;
-          cursor: pointer; transition: background .2s ease, transform .2s ease;
+          cursor: pointer; transition: box-shadow .25s ease, transform .2s ease;
           text-decoration: none;
+          box-shadow: 0 4px 18px -6px rgba(37,99,235,.55);
         }
         .ct-read-btn:hover {
-          background: rgba(249,115,22,.2);
+          box-shadow: 0 6px 26px -6px rgba(37,99,235,.75), 0 0 0 1px rgba(96,165,250,.3);
           transform: translateY(-1px);
         }
         .ct-read-btn svg { transition: transform .2s ease; }
@@ -376,7 +411,7 @@ export default function CompanyTabs() {
         }
         .ct-full-rule {
           width: 40px; height: 1px;
-          background: linear-gradient(90deg, var(--c-orange), transparent);
+          background: linear-gradient(90deg, var(--c-accent), transparent);
           margin: 0 0 2rem;
         }
         .ct-full-text {
@@ -399,8 +434,8 @@ export default function CompanyTabs() {
           text-decoration: none;
         }
         .ct-back-btn:hover {
-          border-color: rgba(249,115,22,.35);
-          color: var(--c-orange);
+          border-color: rgba(96,165,250,.4);
+          color: var(--c-accent);
           transform: translateY(-1px);
         }
         .ct-back-btn svg { transition: transform .2s ease; }
@@ -416,14 +451,16 @@ export default function CompanyTabs() {
 
         .ct-accord-item {
           border: 1px solid var(--c-border);
-          border-radius: 12px;
+          border-radius: 14px;
           background: var(--c-surface2);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           overflow: hidden;
           transition: border-color .3s ease, box-shadow .3s ease;
         }
         .ct-accord-item--open {
-          border-color: rgba(249,115,22,.3);
-          box-shadow: 0 8px 24px -12px rgba(249,115,22,.18);
+          border-color: rgba(37,99,235,.35);
+          box-shadow: 0 8px 28px -12px rgba(37,99,235,.28);
         }
         .ct-accord-trigger {
           width: 100%; display: flex; justify-content: space-between; align-items: center;
@@ -433,19 +470,19 @@ export default function CompanyTabs() {
           color: var(--c-muted2); text-align: left;
           transition: color .2s ease;
         }
-        .ct-accord-trigger:hover { color: var(--c-orange); }
-        .ct-accord-trigger--open { color: var(--c-orange); }
+        .ct-accord-trigger:hover { color: var(--c-accent); }
+        .ct-accord-trigger--open { color: var(--c-accent); }
 
         .ct-accord-trigger__left {
           display: flex; align-items: center; gap: 10px;
           letter-spacing: .05em; text-transform: uppercase; font-size: .8rem;
         }
         .ct-accord-trigger__icon {
-          width: 32px; height: 32px; border-radius: 8px;
-          background: var(--c-orange-dim);
-          border: 1px solid rgba(249,115,22,.2);
+          width: 32px; height: 32px; border-radius: 9px;
+          background: var(--c-primary-dim);
+          border: 1px solid rgba(37,99,235,.25);
           display: flex; align-items: center; justify-content: center;
-          color: var(--c-orange); font-size: .85rem; flex-shrink: 0;
+          color: var(--c-accent); font-size: .85rem; flex-shrink: 0;
           transition: transform .35s cubic-bezier(.22,1,.36,1);
         }
         .ct-accord-trigger--open .ct-accord-trigger__icon {
@@ -456,7 +493,7 @@ export default function CompanyTabs() {
         }
         .ct-accord-chevron--open {
           transform: rotate(45deg);
-          color: var(--c-orange);
+          color: var(--c-accent);
         }
 
         .ct-accord-body {
@@ -481,16 +518,18 @@ export default function CompanyTabs() {
 
         /* corner accents */
         .ct-corner {
-          position: absolute; width: 22px; height: 22px; z-index: 5; opacity: .15;
+          position: absolute; width: 22px; height: 22px; z-index: 5; opacity: .2;
         }
-        .ct-corner--tl { top: 20px; left: 20px; border-top: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .ct-corner--tr { top: 20px; right: 20px; border-top: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
-        .ct-corner--bl { bottom: 20px; left: 20px; border-bottom: 1px solid var(--c-orange); border-left: 1px solid var(--c-orange); }
-        .ct-corner--br { bottom: 20px; right: 20px; border-bottom: 1px solid var(--c-orange); border-right: 1px solid var(--c-orange); }
+        .ct-corner--tl { top: 20px; left: 20px; border-top: 1px solid var(--c-accent); border-left: 1px solid var(--c-accent); }
+        .ct-corner--tr { top: 20px; right: 20px; border-top: 1px solid var(--c-accent); border-right: 1px solid var(--c-accent); }
+        .ct-corner--bl { bottom: 20px; left: 20px; border-bottom: 1px solid var(--c-accent); border-left: 1px solid var(--c-accent); }
+        .ct-corner--br { bottom: 20px; right: 20px; border-bottom: 1px solid var(--c-accent); border-right: 1px solid var(--c-accent); }
 
         @media (prefers-reduced-motion: reduce) {
-          .ct-img-wrap img, .ct-tab-icon, .ct-accord-trigger__icon, .ct-accord-chevron {
+          .ct-img-wrap img, .ct-tab-icon, .ct-accord-trigger__icon, .ct-accord-chevron,
+          .ct-section__orb--1, .ct-section__orb--2, .ct-section__orb--3 {
             transition: none !important;
+            animation: none !important;
           }
         }
       `}</style>
@@ -504,9 +543,11 @@ export default function CompanyTabs() {
       >
         {/* BG */}
         <div className="ct-section__grid" />
+        <div className="ct-section__mesh" />
         <div className="ct-section__grain" />
         <div className="ct-section__orb ct-section__orb--1" />
         <div className="ct-section__orb ct-section__orb--2" />
+        <div className="ct-section__orb ct-section__orb--3" />
 
         {/* Corner marks */}
         <div className="ct-corner ct-corner--tl" />
