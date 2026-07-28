@@ -16,6 +16,10 @@
 //   shared ConsultationCTA client wrapper instead of navigating to
 //   /contact, matching the hub page's CTA implementation.
 //
+//   LATEST TWEAK: Hero eyebrow badge (label pill + pulsing dot) recolored
+//   from blue to orange via a new --cg-orange CSS var. Everything else in
+//   the hero (h1, rule, sub, CTAs, ticker, corner brackets) stays blue.
+//
 // Unchanged: metadata, all schema nodes (org/local business/website/page/
 // breadcrumb/service/FAQ), FAQ_ITEMS copy, benefits copy, services copy
 // (title/description/highlight/bullets), canonical/robots/OG/Twitter tags,
@@ -287,7 +291,7 @@ export default function CADGISPhotogrammetry() {
 
         .cg-page{
           --cg-ink:#12141A; --cg-muted:#5B6172; --cg-paper:#F5F6F8; --cg-surface:#FFFFFF;
-          --cg-line:#E4E6EC; --cg-blue:#2E5CFF; --cg-green:#37D67A;
+          --cg-line:#E4E6EC; --cg-blue:#2E5CFF; --cg-green:#37D67A; --cg-orange:#F97316;
           background:var(--cg-paper);
         }
         .cg-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
@@ -351,8 +355,8 @@ export default function CADGISPhotogrammetry() {
         @keyframes cgFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.cg-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .cg-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cg-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .cg-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cg-blue);animation:cgPulse 2s ease-in-out infinite;}
+        .cg-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cg-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .cg-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cg-orange);animation:cgPulse 2s ease-in-out infinite;}
         @keyframes cgPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .cg-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .cg-hero__h1 em{font-style:normal;color:var(--cg-blue);}

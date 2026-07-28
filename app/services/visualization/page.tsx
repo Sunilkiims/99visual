@@ -22,6 +22,13 @@
 //
 //   No copy, schema, metadata, layout, or section structure changed —
 //   only color and typography tokens.
+//
+//   NOTE (latest tweak): the hero eyebrow badge ("● Architectural
+//   Rendering & 3D Visualization") was switched from the shared blue
+//   accent to a dedicated orange (--viz-orange) so it stands out against
+//   the photo banner. This is scoped to just the eyebrow badge + its
+//   pulsing dot — every other blue accent on the page (rules, headings,
+//   CTAs, cards, ticker) is unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -440,7 +447,8 @@ function HeroSection() {
         dark gradient overlay + white text is unchanged from before — a
         dark hero on top of a light page is exactly how every other
         redesigned service page works too. Only the accent color moved
-        from orange to blue.
+        from orange to blue (except the eyebrow badge, which is now
+        orange again — see .viz-hero__eyebrow / .viz-hero__dot below).
       */}
       <div className="viz-hero__inner">
         <div className="viz-hero__content">
@@ -688,7 +696,7 @@ export default function VisualizationPage() {
 
         .viz-page{
           --viz-ink:#12141A; --viz-muted:#5B6172; --viz-paper:#F5F6F8; --viz-surface:#FFFFFF;
-          --viz-line:#E4E6EC; --viz-blue:#2E5CFF; --viz-green:#37D67A;
+          --viz-line:#E4E6EC; --viz-blue:#2E5CFF; --viz-green:#37D67A; --viz-orange:#FF7A29;
           background:var(--viz-paper);
         }
 
@@ -770,8 +778,12 @@ export default function VisualizationPage() {
         @keyframes vizFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.viz-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--viz-blue);animation:vizPulse 2s ease-in-out infinite;}
+        /* Eyebrow badge — switched to the dedicated orange accent
+           (--viz-orange) instead of the shared blue, per latest request.
+           Everything else in the hero (rule, headline em, CTA, ticker)
+           stays on the blue accent. */
+        .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--viz-orange);border:1px solid rgba(255,122,41,.32);background:rgba(255,122,41,.1);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--viz-orange);animation:vizPulse 2s ease-in-out infinite;}
         @keyframes vizPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
         .viz-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .viz-hero__h1 em{font-style:normal;color:var(--viz-blue);}

@@ -27,6 +27,11 @@
 //   Everything else on the page — intro/stats, the four service clusters,
 //   the MindTrick.io spotlight, benefits grid, FAQ, and CTA strip — is
 //   unchanged from the previous revision.
+//
+// THIS EDIT: "Services · Digital Marketing & SEO" eyebrow pill in the hero
+//   is now orange (#FF8A2E) instead of blue. Only the pill (text, border,
+//   background tint, pulsing dot) changed — the shared --dm-blue variable
+//   used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
@@ -420,8 +425,9 @@ export default function DigitalMarketing() {
         @keyframes dmFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.dm-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--dm-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--dm-blue);animation:dmPulse 2s ease-in-out infinite;}
+        /* Eyebrow badge — now orange (#FF8A2E), independent of --dm-blue */
+        .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:dmPulse 2s ease-in-out infinite;}
         @keyframes dmPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .dm-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .dm-hero__h1 em{font-style:normal;color:var(--dm-blue);}

@@ -24,6 +24,11 @@
 // `benefits` and `services` copy (title/description/highlight/bullets),
 // canonical/robots/OG/Twitter tags, H1/H2 hierarchy and text, sections below
 // the hero, Header component.
+//
+// THIS EDIT: "Services · IT Consulting" eyebrow pill in the hero is now
+//   orange (#FF8A2E) instead of blue. Only the pill (text, border,
+//   background tint, pulsing dot) changed — the shared --itc-blue
+//   variable used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
@@ -468,8 +473,9 @@ export default function ITConsulting() {
         @keyframes itcFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.itc-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--itc-blue);border:1px solid rgba(46,92,255,.28);background:rgba(46,92,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--itc-blue);animation:itcPulse 2s ease-in-out infinite;}
+        /* Eyebrow badge — now orange (#FF8A2E), independent of --itc-blue */
+        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:itcPulse 2s ease-in-out infinite;}
         @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .itc-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
         .itc-hero__h1 em{font-style:normal;color:var(--itc-blue);}

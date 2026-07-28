@@ -356,9 +356,8 @@ const Header = () => {
                     >
                       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-80" aria-hidden="true" />
 
-                      <div className="px-5 pt-4 pb-2 flex items-center justify-between" aria-hidden="true">
+                      <div className="px-5 pt-4 pb-2" aria-hidden="true">
                         <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-white/30">What we do</p>
-                        <span className="text-[10px] text-white/20 tracking-wide">{SERVICE_ITEMS.length} services</span>
                       </div>
 
                       {/* Extra top/left breathing room (px-4 pt-2 instead of px-3)
