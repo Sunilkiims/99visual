@@ -4,9 +4,9 @@
 //
 // THIS REVISION — brings Hero + CTA in line with the Services page design
 // system (app/services/page.tsx), same treatment applied to app/about/page.tsx:
-//   1. Hero rebuilt on the Services mechanism: full-bleed photo banner,
-//      fixed 100vh/100dvh/100svh, single left-aligned column, corner
-//      brackets, grain texture, docked ticker bar on the hero's bottom edge.
+//   1. Hero rebuilt on the Services mechanism: fixed 100vh/100dvh/100svh,
+//      single left-aligned column, corner brackets, grain texture, docked
+//      ticker bar on the hero's bottom edge.
 //   2. Recolored to the shared Space Grotesk / Inter / IBM Plex Mono system
 //      with the one blue signal accent (--pt-blue); orange eyebrow retained.
 //   3. CTA section rebuilt to match Services' .sv-cta exactly, wired through
@@ -16,7 +16,8 @@
 //      are UNCHANGED. .pt-hero__h1 / .pt-hero__sub class names are kept so
 //      the existing `speakable.cssSelector` entries keep working.
 //
-//   Save your banner image to: /public/images/partner/partner-hero-banner.jpg
+//   HERO BACKGROUND — now a flat black screen at every breakpoint
+//   (banner image + gradient overlays removed; see .pt-hero below).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -270,25 +271,20 @@ export default function PartnersPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ══ HERO — same mechanism as Services / About ═══════════════════ */
+        /* ══ HERO — same mechanism as Services / About. Background is now
+           a flat black screen at every breakpoint (no banner image / no
+           gradient overlays). ══════════════════════════════════════════ */
         .pt-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/partner/partner-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
+          background-color:#000;
           overflow:hidden;
         }
         @supports (height: 100svh) { .pt-hero { height: 100svh; } }
         @supports (height: 100dvh) { .pt-hero { height: 100dvh; } }
         @media(max-width:960px){
           .pt-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/partner/partner-hero-banner.jpg') center center / cover no-repeat;
+            background-color:#000;
           }
         }
         .pt-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}

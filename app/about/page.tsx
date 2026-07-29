@@ -22,7 +22,8 @@
 //      (.ab-hero__h1 / .ab-hero__sub) are preserved so the existing
 //      `speakable.cssSelector` entries in aboutPageNode keep working.
 //
-//   Save your banner image to: /public/images/about/about-hero-banner.jpg
+//   HERO BACKGROUND — now a flat black screen at every breakpoint
+//   (banner image + gradient overlays removed; see .ab-hero below).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Metadata } from "next";
@@ -268,26 +269,20 @@ export default function AboutPage() {
           clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
         }
 
-        /* ══ HERO — same mechanism as Services: full-bleed banner, fixed
-           viewport height, docked ticker bar ═══════════════════════════ */
+        /* ══ HERO — same mechanism as Services: fixed viewport height,
+           docked ticker bar. Background is now a flat black screen at
+           every breakpoint (no banner image / no gradient overlays). ══ */
         .ab-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/about/about-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
+          background-color:#000;
           overflow:hidden;
         }
         @supports (height: 100svh) { .ab-hero { height: 100svh; } }
         @supports (height: 100dvh) { .ab-hero { height: 100dvh; } }
         @media(max-width:960px){
           .ab-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/about/about-hero-banner.jpg') center center / cover no-repeat;
+            background-color:#000;
           }
         }
         .ab-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}

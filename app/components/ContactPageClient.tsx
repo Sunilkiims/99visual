@@ -22,7 +22,11 @@
 //      `speakable.cssSelector` entries in contactPageNode (page.tsx) and the
 //      itemScope/itemType="ContactPage" microdata keep working.
 //
-//   Save your banner image to: /public/images/contact/contact-hero-banner.jpg
+//   UPDATE: Hero banner background is now solid black (#000) across all
+//           screen sizes. The photo banner image and its overlay gradients
+//           have been removed (both the base rule and the max-width:960px
+//           override that previously swapped in a different gradient mix
+//           over the same image).
 // ─────────────────────────────────────────────────────────────────────────────
 "use client";
 
@@ -250,26 +254,16 @@ export default function ContactPageClient() {
         }
 
         /* ══ HERO — same mechanism as Services/About/Partner/Careers ══════ */
+        /* UPDATE: solid black background for all screen sizes — photo banner
+           image and its overlay gradients removed. */
         .ct-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(6,6,8,.94) 0%, rgba(6,6,8,.78) 38%, rgba(6,6,8,.42) 64%, rgba(6,6,8,.18) 100%),
-            linear-gradient(180deg, rgba(6,6,8,.20) 0%, rgba(6,6,8,.10) 40%, rgba(6,6,8,.55) 100%),
-            url('/images/contact/contact-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#060608;background-size:cover;
+          background:#000;
           overflow:hidden;
         }
         @supports (height: 100svh) { .ct-hero { height: 100svh; } }
         @supports (height: 100dvh) { .ct-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .ct-hero {
-            background:
-              linear-gradient(180deg, rgba(6,6,8,.60) 0%, rgba(6,6,8,.38) 38%, rgba(6,6,8,.82) 100%),
-              linear-gradient(0deg, rgba(6,6,8,.30), rgba(6,6,8,.30)),
-              url('/images/contact/contact-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
         .ct-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
         .ct-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
         .ct-corner--tl{top:28px;left:28px;border-top:1px solid var(--ct-blue);border-left:1px solid var(--ct-blue);}
