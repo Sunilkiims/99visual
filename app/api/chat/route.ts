@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { retrieveContextString } from "@/lib/retrieve"; // ← NEW: RAG retrieval
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -43,15 +44,48 @@ type ConversationState = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// NODEMAILER
+// MAIL PROVIDERS — split by purpose
 // ═══════════════════════════════════════════════════════════════════════════════
+// Internal lead notification (→ your team's inbox) goes through Gmail via
+// nodemailer, so leads land directly in your existing Gmail — searchable,
+// familiar, no extra dashboard to check.
+//
+// Visitor-facing confirmation email goes through Resend instead, because
+// sending cold outbound mail to addresses you've never emailed before from
+// a personal Gmail account risks spam-folder placement / rate limits.
+// Resend is built for exactly this and keeps your Gmail account's sending
+// reputation clean.
+//
+// Required env vars (Vercel → Settings → Environment Variables):
+//   EMAIL_USER, EMAIL_PASS  — Gmail address + App Password (internal notification)
+//   LEAD_EMAIL              — inbox that receives lead notifications (usually = EMAIL_USER)
+//   RESEND_API_KEY          — from resend.com dashboard
+//   RESEND_FROM             — verified sender, e.g. "Vera @ 99 Visual <vera@99visual.com>"
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 465,
-  secure: true,
-  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-});
+const gmailTransporter =
+  process.env.EMAIL_USER && process.env.EMAIL_PASS
+    ? nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      })
+    : null;
+
+if (!gmailTransporter) {
+  console.error(
+    "[99Visual] EMAIL_USER/EMAIL_PASS not set — internal lead notifications will be skipped."
+  );
+}
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+if (!resend) {
+  console.error(
+    "[99Visual] RESEND_API_KEY not set — visitor confirmation emails will be skipped."
+  );
+}
 
 function intentBadge(level: IntentLevel): string {
   return {
@@ -63,6 +97,21 @@ function intentBadge(level: IntentLevel): string {
 }
 
 async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void> {
+  if (!gmailTransporter) {
+    console.error("[99Visual] Skipping lead email — EMAIL_USER/EMAIL_PASS not configured.");
+    return;
+  }
+
+  const fromAddress = process.env.EMAIL_USER;
+  const toAddress = process.env.LEAD_EMAIL || process.env.EMAIL_USER;
+
+  if (!toAddress) {
+    console.error(
+      "[99Visual] Skipping lead email — no destination address. Set LEAD_EMAIL in Vercel."
+    );
+    return;
+  }
+
   const badge = intentBadge(state.intentLevel);
   const accentColor =
     state.intentLevel === "hot" ? "#dc2626" :
@@ -70,11 +119,7 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
     state.intentLevel === "interested" ? "#ca8a04" :
     "#2563eb";
 
-  const mailOptions = {
-    from: `"99 Visual AI — Vera" <${process.env.SMTP_USER}>`,
-    to: process.env.LEAD_EMAIL,
-    subject: `${state.intentLevel === "hot" ? "🔴 HOT" : "🔥"} Lead [Score ${state.intentScore}/10]: ${lead.name} — ${lead.query ?? "Enquiry"}`,
-    html: `
+  const html = `
 <div style="font-family:'Segoe UI',sans-serif;max-width:640px;margin:auto;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.10);">
   <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:28px 36px;">
     <table style="width:100%"><tr>
@@ -113,15 +158,85 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
   <div style="background:#f1f5f9;padding:14px 36px;">
     <p style="color:#94a3b8;font-size:12px;margin:0;">🕐 ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST · Vera AI · 99visual.com</p>
   </div>
-</div>`,
+</div>`;
+
+  const payload = {
+    from: `"99 Visual AI — Vera" <${fromAddress}>`,
+    to: toAddress,
+    replyTo: lead.email,
+    subject: `${state.intentLevel === "hot" ? "🔴 HOT" : "🔥"} Lead [Score ${state.intentScore}/10]: ${lead.name} — ${lead.query ?? "Enquiry"}`,
+    html,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await gmailTransporter.sendMail(payload);
   } catch (err) {
     console.error("[99Visual] First email attempt failed, retrying in 3s:", err);
     await new Promise((r) => setTimeout(r, 3000));
-    await transporter.sendMail(mailOptions);
+    try {
+      await gmailTransporter.sendMail(payload);
+    } catch (retryErr) {
+      console.error("[99Visual] Lead email failed after retry:", retryErr);
+    }
+  }
+}
+
+// NEW: confirmation email sent TO THE VISITOR the moment their email is
+// captured, separate from the internal notification sent to the team
+// (sendLeadEmail above, which goes to LEAD_EMAIL). Uses the same
+// transporter/fromAddress. Failure here is logged but never blocks or
+// retries as aggressively — a missed confirmation is much lower stakes
+// than a missed internal lead notification.
+async function sendConfirmationEmail(lead: Lead): Promise<void> {
+  if (!resend) {
+    console.error("[99Visual] Skipping visitor confirmation — RESEND_API_KEY not configured.");
+    return;
+  }
+
+  const fromAddress = process.env.RESEND_FROM;
+  if (!fromAddress) {
+    console.error("[99Visual] Skipping visitor confirmation — set RESEND_FROM in Vercel.");
+    return;
+  }
+
+  const firstName = lead.name && lead.name !== "Not provided" ? lead.name.split(/\s+/)[0] : "there";
+
+  const html = `
+<div style="font-family:'Segoe UI',sans-serif;max-width:560px;margin:auto;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;">
+  <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:28px 36px;">
+    <div style="background:#f97316;border-radius:10px;display:inline-block;padding:8px 12px;font-size:20px;">✅</div>
+    <h2 style="color:#fff;margin:8px 0 2px;font-size:20px;font-weight:700;">Thanks for reaching out, ${firstName}!</h2>
+    <p style="color:#94a3b8;margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;">99 Visual Solutions</p>
+  </div>
+  <div style="padding:32px 36px;background:#fff;">
+    <p style="color:#0f172a;font-size:14px;line-height:1.6;margin:0 0 16px;">
+      We've received your message${lead.requirement ? ` about <strong>${lead.requirement}</strong>` : ""} and our team is reviewing it now.
+      Someone will personally follow up with you shortly${lead.phone ? " by email or phone" : " by email"}.
+    </p>
+    <div style="padding:16px 20px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;margin-bottom:16px;">
+      <p style="margin:0;font-size:13px;color:#c2410c;font-weight:700;">⏱️ What happens next</p>
+      <p style="margin:6px 0 0;font-size:13px;color:#9a3412;">A member of our team will get back to you within 24 hours with next steps.</p>
+    </div>
+    <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0;">
+      In the meantime, feel free to browse our
+      <a href="https://www.99visual.com/portfolio" style="color:#f97316;font-weight:600;text-decoration:none;">portfolio</a>
+      or reply directly to this email if you'd like to add anything.
+    </p>
+  </div>
+  <div style="background:#f1f5f9;padding:14px 36px;">
+    <p style="color:#94a3b8;font-size:12px;margin:0;">99 Visual Solutions · Bengaluru, India · 99visual.com</p>
+  </div>
+</div>`;
+
+  const { error } = await resend.emails.send({
+    from: fromAddress,
+    to: lead.email,
+    subject: `We've received your enquiry — 99 Visual Solutions`,
+    html,
+  });
+
+  if (error) {
+    console.error("[99Visual] Visitor confirmation email failed:", error);
   }
 }
 
@@ -283,9 +398,11 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
       const match = uText.match(EMAIL_RE);
       if (match) { state.email = match[0]; state.capturedFields.add("email"); }
     }
-    if (!state.name && state.email && aLower.includes("name")) {
+    if (!state.name && state.email) {
+      const wordCount = uText.trim().split(/\s+/).length;
       const looksLikeName =
         uText.length < 60 &&
+        wordCount <= 4 &&
         !EMAIL_RE.test(uText) &&
         !PHONE_RE.test(uText) &&
         /^[a-zA-Z\s''\-\.À-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF]+$/.test(uText);
@@ -303,7 +420,7 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
     }
     if (
       !state.requirement &&
-      state.capturedFields.has("phone") &&
+      state.capturedFields.has("email") &&
       REQUIREMENT_TRIGGERS.some((t) => aLower.includes(t))
     ) {
       if (uText.length > 5 && !EMAIL_RE.test(uText) && !PHONE_RE.test(uText)) {
@@ -319,11 +436,21 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
 function nextFieldToCapture(
   lead: LeadState
 ): "email" | "name" | "phone" | "requirement" | null {
+  // Only email + name are REQUIRED to consider the lead "ready" — this matches
+  // the actual condition sendLeadEmail() checks. Phone and requirement are
+  // nice-to-have and asked opportunistically, but must never block sending.
   if (!lead.capturedFields.has("email")) return "email";
   if (!lead.capturedFields.has("name")) return "name";
   if (!lead.capturedFields.has("phone")) return "phone";
   if (!lead.capturedFields.has("requirement")) return "requirement";
   return null;
+}
+
+// Returns true once the ONE truly essential field (email) is captured.
+// Name/phone/requirement are valuable but must never block sending a notification —
+// an email alone is enough for you to follow up.
+function hasMinimumLeadInfo(lead: LeadState): boolean {
+  return lead.capturedFields.has("email");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -455,7 +582,8 @@ export async function POST(req: Request) {
   const intentLevel = getIntentLevel(intentScore);
   const leadState = buildLeadState(history);
   const isFirstMessage = history.length === 0;
-  const nextField = leadState.emitted ? null : nextFieldToCapture(leadState);
+  const readyToEmit = hasMinimumLeadInfo(leadState);
+  const nextField = leadState.emitted || readyToEmit ? null : nextFieldToCapture(leadState);
   const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
 
   console.log(
@@ -631,11 +759,18 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
   const leadMatch = raw.match(/<!--LEAD:(\{[\s\S]*?\})-->/);
   let lead: Lead | null = null;
 
+  // ── TEMPORARY DEBUG LOGGING — remove once issue is resolved ──
+  console.log("[99Visual DEBUG] leadState.capturedFields:", Array.from(leadState.capturedFields));
+  console.log("[99Visual DEBUG] leadState.emitted:", leadState.emitted);
+  console.log("[99Visual DEBUG] nextField:", nextField);
+  console.log("[99Visual DEBUG] Did AI emit a LEAD block?", !!leadMatch);
+  console.log("[99Visual DEBUG] Raw AI reply (last 200 chars):", raw.slice(-200));
+
   if (leadMatch && !leadState.emitted) {
     try {
       const parsed = JSON.parse(leadMatch[1]) as Lead;
-      if (parsed.email && parsed.name) {
-        lead = parsed;
+      if (parsed.email) {
+        lead = { ...parsed, name: parsed.name || "Not provided" };
         const convState: ConversationState = {
           lead: leadState,
           intentScore,
@@ -645,6 +780,9 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
         };
         sendLeadEmail(lead, convState).catch((err) =>
           console.error("[99Visual] Lead email failed after retry:", err)
+        );
+        sendConfirmationEmail(lead).catch((err) =>
+          console.error("[99Visual] Visitor confirmation email failed:", err)
         );
       }
     } catch {
