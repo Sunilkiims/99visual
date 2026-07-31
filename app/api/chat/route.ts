@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import nodemailer from "nodemailer";
+import { retrieveContextString } from "@/lib/retrieve"; // ← NEW: RAG retrieval
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -54,18 +55,18 @@ const transporter = nodemailer.createTransport({
 
 function intentBadge(level: IntentLevel): string {
   return {
-    browsing:   "🔵 Browsing",
+    browsing: "🔵 Browsing",
     interested: "🟡 Interested",
-    warm:       "🟠 Warm Lead",
-    hot:        "🔴 HOT — Act Now",
+    warm: "🟠 Warm Lead",
+    hot: "🔴 HOT — Act Now",
   }[level];
 }
 
 async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void> {
   const badge = intentBadge(state.intentLevel);
   const accentColor =
-    state.intentLevel === "hot"        ? "#dc2626" :
-    state.intentLevel === "warm"       ? "#ea580c" :
+    state.intentLevel === "hot" ? "#dc2626" :
+    state.intentLevel === "warm" ? "#ea580c" :
     state.intentLevel === "interested" ? "#ca8a04" :
     "#2563eb";
 
@@ -250,13 +251,13 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
       if (match) {
         try {
           const parsed = JSON.parse(match[1]) as Lead;
-          state.email       = parsed.email       || "";
-          state.name        = parsed.name        || "";
-          state.phone       = parsed.phone       || "";
+          state.email = parsed.email || "";
+          state.name = parsed.name || "";
+          state.phone = parsed.phone || "";
           state.requirement = parsed.requirement || "";
-          if (state.email)       state.capturedFields.add("email");
-          if (state.name)        state.capturedFields.add("name");
-          if (state.phone)       state.capturedFields.add("phone");
+          if (state.email) state.capturedFields.add("email");
+          if (state.name) state.capturedFields.add("name");
+          if (state.phone) state.capturedFields.add("phone");
           if (state.requirement) state.capturedFields.add("requirement");
           state.emitted = true;
         } catch { /* ignore */ }
@@ -272,7 +273,7 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
     if (asst.role !== "assistant" || user?.role !== "user") continue;
 
     const aLower = asst.content.toLowerCase();
-    const uText  = user.content.trim();
+    const uText = user.content.trim();
 
     if (!state.email && aLower.includes("email")) {
       const match = uText.match(EMAIL_RE);
@@ -318,9 +319,9 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
 function nextFieldToCapture(
   lead: LeadState
 ): "email" | "name" | "phone" | "requirement" | null {
-  if (!lead.capturedFields.has("email"))       return "email";
-  if (!lead.capturedFields.has("name"))        return "name";
-  if (!lead.capturedFields.has("phone"))       return "phone";
+  if (!lead.capturedFields.has("email")) return "email";
+  if (!lead.capturedFields.has("name")) return "name";
+  if (!lead.capturedFields.has("phone")) return "phone";
   if (!lead.capturedFields.has("requirement")) return "requirement";
   return null;
 }
@@ -330,13 +331,13 @@ function nextFieldToCapture(
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const SERVICE_ROUTES = [
-  { keywords: ["website", "web dev", "landing page", "wordpress", "web design"],     label: "Website Development",    url: "https://www.99visual.com/services/website-development"   },
-  { keywords: ["web app", "application", "portal", "dashboard", "saas", "software"], label: "Web Applications",       url: "https://www.99visual.com/services/website-development"   },
-  { keywords: ["seo", "digital marketing", "google ranking", "ads", "ppc"],          label: "Digital Marketing & SEO",url: "https://www.99visual.com/services/digital-marketing-seo"  },
-  { keywords: ["3d", "visualization", "render", "architectural", "animation"],        label: "3D Visualization",       url: "https://www.99visual.com/services/visualization"          },
-  { keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"],      label: "CAD / GIS / LiDAR",      url: "https://www.99visual.com/services/cad-gis-photogrammetry" },
-  { keywords: ["consulting", "it strategy", "advisory", "digital transformation"],   label: "IT Consulting",          url: "https://www.99visual.com/services/it-consulting"          },
-  { keywords: ["automation", "testing", "qa", "quality assurance", "rpa"],           label: "Automation & Testing",   url: "https://www.99visual.com/services/it-consulting"          },
+  { keywords: ["website", "web dev", "landing page", "wordpress", "web design"], label: "Website Development", url: "https://www.99visual.com/services/website-development" },
+  { keywords: ["web app", "application", "portal", "dashboard", "saas", "software"], label: "Web Applications", url: "https://www.99visual.com/services/website-development" },
+  { keywords: ["seo", "digital marketing", "google ranking", "ads", "ppc"], label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo" },
+  { keywords: ["3d", "visualization", "render", "architectural", "animation"], label: "3D Visualization", url: "https://www.99visual.com/services/visualization" },
+  { keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"], label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry" },
+  { keywords: ["consulting", "it strategy", "advisory", "digital transformation"], label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting" },
+  { keywords: ["automation", "testing", "qa", "quality assurance", "rpa"], label: "Automation & Testing", url: "https://www.99visual.com/services/it-consulting" },
 ] as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -352,130 +353,31 @@ export type NavLink = {
 };
 
 const SITE_MAP: Array<{ keywords: string[]; link: NavLink }> = [
-  {
-    keywords: ["website", "web design", "landing page", "wordpress", "web development", "web dev", "redesign"],
-    link: { label: "Website Development", url: "https://www.99visual.com/services/website-development", category: "service", icon: "🌐", description: "Custom sites & landing pages" },
-  },
-  {
-    keywords: ["web app", "application", "portal", "dashboard", "saas", "software", "platform", "crm", "erp"],
-    link: { label: "Web Applications", url: "https://www.99visual.com/services/website-development", category: "service", icon: "⚙️", description: "Portals, SaaS & dashboards" },
-  },
-  {
-    keywords: ["seo", "search engine", "google ranking", "digital marketing", "ads", "ppc", "social media", "content marketing", "email marketing"],
-    link: { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo", category: "service", icon: "📈", description: "Rank higher, reach further" },
-  },
-  {
-    keywords: ["3d", "visualization", "render", "rendering", "architectural", "animation", "walkthrough", "interior", "exterior", "product render"],
-    link: { label: "3D Visualization", url: "https://www.99visual.com/services/visualization", category: "service", icon: "🎨", description: "Renders, walkthroughs & animation" },
-  },
-  {
-    keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting", "autocad", "survey", "spatial", "geospatial", "point cloud"],
-    link: { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "service", icon: "🗺️", description: "Spatial data & precision drafting" },
-  },
-  {
-    keywords: ["consulting", "it strategy", "advisory", "digital transformation", "cloud", "migration", "infrastructure", "audit"],
-    link: { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "💡", description: "Strategy, cloud & transformation" },
-  },
-  {
-    keywords: ["automation", "testing", "qa", "quality assurance", "rpa", "selenium", "playwright", "cypress", "test automation", "bug"],
-    link: { label: "Automation & QA Testing", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "🤖", description: "AI-powered QA & automation" },
-  },
-  {
-    keywords: ["about", "company", "who are you", "team", "founded", "history", "story", "background", "experience"],
-    link: { label: "About Us", url: "https://www.99visual.com/about", category: "internal", icon: "🏢", description: "Our story, team & values" },
-  },
-  {
-    keywords: ["portfolio", "work", "projects", "case study", "examples", "clients", "past work", "sample"],
-    link: { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "internal", icon: "🖼️", description: "See our past projects" },
-  },
-  {
-    keywords: ["contact", "reach", "get in touch", "talk", "email", "call", "whatsapp", "enquiry", "inquiry", "support", "help"],
-    link: { label: "Contact Us", url: "https://www.99visual.com/contact", category: "internal", icon: "📬", description: "Get in touch with our team" },
-  },
-  {
-    keywords: ["price", "pricing", "cost", "how much", "quote", "estimate", "budget", "package", "plan", "rate"],
-    link: { label: "Get a Quote", url: "https://www.99visual.com/contact", category: "internal", icon: "💰", description: "Request a custom quote" },
-  },
-  {
-    keywords: ["blog", "article", "read", "news", "update", "insight", "tips", "guide", "resource"],
-    link: { label: "Blog & Insights", url: "https://www.99visual.com/blog", category: "internal", icon: "📰", description: "Tips, guides & industry news" },
-  },
-  {
-    keywords: ["service", "services", "what do you do", "what do you offer", "offerings", "solutions", "capabilities"],
-    link: { label: "All Services", url: "https://www.99visual.com/services", category: "internal", icon: "🛠️", description: "Browse all our services" },
-  },
+  { keywords: ["website", "web design", "landing page", "wordpress", "web development", "web dev", "redesign"], link: { label: "Website Development", url: "https://www.99visual.com/services/website-development", category: "service", icon: "🌐", description: "Custom sites & landing pages" } },
+  { keywords: ["web app", "application", "portal", "dashboard", "saas", "software", "platform", "crm", "erp"], link: { label: "Web Applications", url: "https://www.99visual.com/services/website-development", category: "service", icon: "⚙️", description: "Portals, SaaS & dashboards" } },
+  { keywords: ["seo", "search engine", "google ranking", "digital marketing", "ads", "ppc", "social media", "content marketing", "email marketing"], link: { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo", category: "service", icon: "📈", description: "Rank higher, reach further" } },
+  { keywords: ["3d", "visualization", "render", "rendering", "architectural", "animation", "walkthrough", "interior", "exterior", "product render"], link: { label: "3D Visualization", url: "https://www.99visual.com/services/visualization", category: "service", icon: "🎨", description: "Renders, walkthroughs & animation" } },
+  { keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting", "autocad", "survey", "spatial", "geospatial", "point cloud"], link: { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "service", icon: "🗺️", description: "Spatial data & precision drafting" } },
+  { keywords: ["consulting", "it strategy", "advisory", "digital transformation", "cloud", "migration", "infrastructure", "audit"], link: { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "💡", description: "Strategy, cloud & transformation" } },
+  { keywords: ["automation", "testing", "qa", "quality assurance", "rpa", "selenium", "playwright", "cypress", "test automation", "bug"], link: { label: "Automation & QA Testing", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "🤖", description: "AI-powered QA & automation" } },
+  { keywords: ["about", "company", "who are you", "team", "founded", "history", "story", "background", "experience"], link: { label: "About Us", url: "https://www.99visual.com/about", category: "internal", icon: "🏢", description: "Our story, team & values" } },
+  { keywords: ["portfolio", "work", "projects", "case study", "examples", "clients", "past work", "sample"], link: { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "internal", icon: "🖼️", description: "See our past projects" } },
+  { keywords: ["contact", "reach", "get in touch", "talk", "email", "call", "whatsapp", "enquiry", "inquiry", "support", "help"], link: { label: "Contact Us", url: "https://www.99visual.com/contact", category: "internal", icon: "📬", description: "Get in touch with our team" } },
+  { keywords: ["price", "pricing", "cost", "how much", "quote", "estimate", "budget", "package", "plan", "rate"], link: { label: "Get a Quote", url: "https://www.99visual.com/contact", category: "internal", icon: "💰", description: "Request a custom quote" } },
+  { keywords: ["blog", "article", "read", "news", "update", "insight", "tips", "guide", "resource"], link: { label: "Blog & Insights", url: "https://www.99visual.com/blog", category: "internal", icon: "📰", description: "Tips, guides & industry news" } },
+  { keywords: ["service", "services", "what do you do", "what do you offer", "offerings", "solutions", "capabilities"], link: { label: "All Services", url: "https://www.99visual.com/services", category: "internal", icon: "🛠️", description: "Browse all our services" } },
 ];
 
 const BREADCRUMB_TRAILS: Array<{ keywords: string[]; trail: NavLink[] }> = [
-  {
-    keywords: ["website", "web design", "landing page", "web development", "web dev", "wordpress"],
-    trail: [
-      { label: "Home",                url: "https://www.99visual.com/",                              category: "breadcrumb" },
-      { label: "Services",            url: "https://www.99visual.com/services",                      category: "breadcrumb" },
-      { label: "Website Development", url: "https://www.99visual.com/services/website-development",  category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["seo", "digital marketing", "google ranking", "ads", "ppc"],
-    trail: [
-      { label: "Home",                    url: "https://www.99visual.com/",                                 category: "breadcrumb" },
-      { label: "Services",                url: "https://www.99visual.com/services",                         category: "breadcrumb" },
-      { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo",   category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["3d", "visualization", "render", "architectural", "walkthrough"],
-    trail: [
-      { label: "Home",             url: "https://www.99visual.com/",                       category: "breadcrumb" },
-      { label: "Services",         url: "https://www.99visual.com/services",               category: "breadcrumb" },
-      { label: "3D Visualization", url: "https://www.99visual.com/services/visualization", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"],
-    trail: [
-      { label: "Home",              url: "https://www.99visual.com/",                                 category: "breadcrumb" },
-      { label: "Services",          url: "https://www.99visual.com/services",                         category: "breadcrumb" },
-      { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["consulting", "it strategy", "cloud", "digital transformation"],
-    trail: [
-      { label: "Home",          url: "https://www.99visual.com/",                       category: "breadcrumb" },
-      { label: "Services",      url: "https://www.99visual.com/services",               category: "breadcrumb" },
-      { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["automation", "qa", "testing", "quality assurance"],
-    trail: [
-      { label: "Home",                 url: "https://www.99visual.com/",                       category: "breadcrumb" },
-      { label: "Services",             url: "https://www.99visual.com/services",               category: "breadcrumb" },
-      { label: "Automation & Testing", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["portfolio", "work", "projects", "case study", "examples"],
-    trail: [
-      { label: "Home",      url: "https://www.99visual.com/",          category: "breadcrumb" },
-      { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["about", "company", "team", "founded", "story"],
-    trail: [
-      { label: "Home",     url: "https://www.99visual.com/",      category: "breadcrumb" },
-      { label: "About Us", url: "https://www.99visual.com/about", category: "breadcrumb" },
-    ],
-  },
-  {
-    keywords: ["contact", "get in touch", "enquiry", "quote", "price", "pricing", "cost", "how much"],
-    trail: [
-      { label: "Home",       url: "https://www.99visual.com/",        category: "breadcrumb" },
-      { label: "Contact Us", url: "https://www.99visual.com/contact", category: "breadcrumb" },
-    ],
-  },
+  { keywords: ["website", "web design", "landing page", "web development", "web dev", "wordpress"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "Website Development", url: "https://www.99visual.com/services/website-development", category: "breadcrumb" }] },
+  { keywords: ["seo", "digital marketing", "google ranking", "ads", "ppc"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "Digital Marketing & SEO", url: "https://www.99visual.com/services/digital-marketing-seo", category: "breadcrumb" }] },
+  { keywords: ["3d", "visualization", "render", "architectural", "walkthrough"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "3D Visualization", url: "https://www.99visual.com/services/visualization", category: "breadcrumb" }] },
+  { keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "breadcrumb" }] },
+  { keywords: ["consulting", "it strategy", "cloud", "digital transformation"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" }] },
+  { keywords: ["automation", "qa", "testing", "quality assurance"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "Automation & Testing", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" }] },
+  { keywords: ["portfolio", "work", "projects", "case study", "examples"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "breadcrumb" }] },
+  { keywords: ["about", "company", "team", "founded", "story"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "About Us", url: "https://www.99visual.com/about", category: "breadcrumb" }] },
+  { keywords: ["contact", "get in touch", "enquiry", "quote", "price", "pricing", "cost", "how much"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Contact Us", url: "https://www.99visual.com/contact", category: "breadcrumb" }] },
 ];
 
 const MAX_NAV_LINKS = 4;
@@ -542,18 +444,27 @@ export async function POST(req: Request) {
   }: { message: string; history: HistoryMessage[]; detectedLanguage?: string } =
     await req.json();
 
-  const [detectedLanguage, intentScore] = await Promise.all([
+  // ── NEW: retrieve relevant knowledge chunks for this specific message ──
+  // Runs in parallel with language/intent detection to avoid adding latency.
+  const [detectedLanguage, intentScore, retrievedContext] = await Promise.all([
     resolveLanguage(message, history, prevLang),
     Promise.resolve(scoreIntent(history, message)),
+    retrieveContextString(message, 3),
   ]);
 
-  const intentLevel    = getIntentLevel(intentScore);
-  const leadState      = buildLeadState(history);
+  const intentLevel = getIntentLevel(intentScore);
+  const leadState = buildLeadState(history);
   const isFirstMessage = history.length === 0;
-  const nextField      = leadState.emitted ? null : nextFieldToCapture(leadState);
+  const nextField = leadState.emitted ? null : nextFieldToCapture(leadState);
   const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
 
-  console.log("[99Visual] Lang:", detectedLanguage, "| Intent:", intentScore, intentLevel, "| Next field:", nextField, "| Capture:", shouldCaptureLead);
+  console.log(
+    "[99Visual] Lang:", detectedLanguage,
+    "| Intent:", intentScore, intentLevel,
+    "| Next field:", nextField,
+    "| Capture:", shouldCaptureLead,
+    "| Retrieved chunks:\n", retrievedContext
+  );
 
   const visitorFirstName = leadState.name ? leadState.name.split(/\s+/)[0] : null;
   const nameUsageCount = history.filter(
@@ -614,10 +525,10 @@ STRICT RULES — violations make the conversation feel robotic and pushy:
 📊 VISITOR INTENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Intent score: ${intentScore}/10 — Level: ${intentLevel.toUpperCase()}
-${intentLevel === "hot"        ? "🔴 HOT: Visitor is ready to commit. Be decisive, move to lead capture confidently." : ""}
-${intentLevel === "warm"       ? "🟠 WARM: Strong interest. Provide value and gently bridge to next step." : ""}
+${intentLevel === "hot" ? "🔴 HOT: Visitor is ready to commit. Be decisive, move to lead capture confidently." : ""}
+${intentLevel === "warm" ? "🟠 WARM: Strong interest. Provide value and gently bridge to next step." : ""}
 ${intentLevel === "interested" ? "🟡 INTERESTED: Provide value first, then naturally lead into capturing contact details." : ""}
-${intentLevel === "browsing"   ? "🔵 BROWSING: Focus on education and trust. Only begin lead capture after 4+ messages." : ""}
+${intentLevel === "browsing" ? "🔵 BROWSING: Focus on education and trust. Only begin lead capture after 4+ messages." : ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧠 LEAD STATE
@@ -627,41 +538,41 @@ ${leadState.emitted
   : shouldCaptureLead
     ? `
 Fields collected so far:
-  Email:       ${leadState.email       || "Not yet"}
-  Name:        ${leadState.name        || "Not yet"}
-  Phone:       ${leadState.phone       || "Not yet"}
+  Email:       ${leadState.email || "Not yet"}
+  Name:        ${leadState.name || "Not yet"}
+  Phone:       ${leadState.phone || "Not yet"}
   Requirement: ${leadState.requirement || "Not yet"}
 
 NEXT FIELD TO COLLECT: ${nextField ?? "ALL DONE — emit lead block"}
-${nextField === "email"       ? '→ Ask ONLY for their email. Keep it casual: "What\'s the best email to send details to?"' : ""}
-${nextField === "name"        ? '→ Ask ONLY for their name. Keep it short: "And who am I speaking with?"' : ""}
-${nextField === "phone"       ? '→ Ask for phone (optional): "A phone number? No worries if you\'d rather skip it."' : ""}
+${nextField === "email" ? '→ Ask ONLY for their email. Keep it casual: "What\'s the best email to send details to?"' : ""}
+${nextField === "name" ? '→ Ask ONLY for their name. Keep it short: "And who am I speaking with?"' : ""}
+${nextField === "phone" ? '→ Ask for phone (optional): "A phone number? No worries if you\'d rather skip it."' : ""}
 ${nextField === "requirement" ? '→ Ask for their requirement: "What are you looking to build or achieve? Just a quick overview is fine."' : ""}
-${nextField === null          ? "→ All fields ready. Confirm warmly (without using their name unnecessarily) and emit the <!--LEAD:--> block at the END of your reply." : ""}
+${nextField === null ? "→ All fields ready. Confirm warmly (without using their name unnecessarily) and emit the <!--LEAD:--> block at the END of your reply." : ""}
 `
     : "⏳ Visitor is still browsing — answer their question helpfully. Do not ask for contact details yet."
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏢 COMPANY KNOWLEDGE
+🏢 RELEVANT COMPANY KNOWLEDGE (retrieved for this specific question)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${isFirstMessage
   ? "FIRST MESSAGE: Greet warmly as Vera. Ask what brings them here. Do NOT ask for contact details yet."
   : "CONTINUING CONVERSATION: Do NOT re-greet. Pick up naturally where the conversation left off."
 }
 
-Pages & links — embed inline in your reply whenever relevant (never dump all at once):
+The following facts were retrieved from 99 Visual's knowledge base as the most
+relevant to what the visitor just asked. Base your answer on these facts —
+do not invent details that aren't here:
 
-  SERVICES:
+${retrievedContext || "(No closely matching facts were found — answer generally and honestly, and offer to connect them with the team for specifics.)"}
+
+Useful links to embed inline when relevant (never dump all at once):
   ▸ Website Development      → https://www.99visual.com/services/website-development
-  ▸ Web Applications         → https://www.99visual.com/services/website-development
   ▸ Digital Marketing & SEO  → https://www.99visual.com/services/digital-marketing-seo
   ▸ 3D Visualization         → https://www.99visual.com/services/visualization
   ▸ CAD / GIS / LiDAR        → https://www.99visual.com/services/cad-gis-photogrammetry
   ▸ IT Consulting            → https://www.99visual.com/services/it-consulting
-  ▸ Automation & QA Testing  → https://www.99visual.com/services/it-consulting
-
-  GENERAL:
   ▸ All Services             → https://www.99visual.com/services
   ▸ Portfolio / Case Studies → https://www.99visual.com/portfolio
   ▸ About Us                 → https://www.99visual.com/about
@@ -673,18 +584,17 @@ LINK RULES:
 - Never list more than 2 links in a single reply — quality over quantity.
 - The frontend will automatically show page navigation chips below your reply; you do not need to list all links yourself.
 
-Key differentiators: full-service team, global clients, competitive pricing, fast delivery, transparent communication.
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 RESPONSE GUIDELINES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - PRICING → Never give fixed numbers. Explain custom scoping. Naturally bridge to lead capture.
 - PROJECT/HIRE → Validate enthusiasm, describe relevant service, capture lead.
-- TIMELINE → Simple sites: 1–3 wks, complex apps: 4–12+ wks. Always qualify with a discovery call.
+- TIMELINE → Use the retrieved timeline facts above. Always qualify with a discovery call.
 - TECH QUESTIONS → Answer confidently (React, Next.js, WordPress, Python, AWS, etc). Position as experts.
 - PORTFOLIO → https://www.99visual.com/portfolio — mention cross-industry experience.
 - SUPPORT → Empathise, direct to https://www.99visual.com/contact.
 - UNCLEAR → Ask ONE smart clarifying question only.
+- If the retrieved knowledge above doesn't cover the question, say so honestly rather than guessing — offer to connect them with the team.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 LEAD BLOCK FORMAT
