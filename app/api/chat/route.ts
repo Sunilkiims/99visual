@@ -63,6 +63,7 @@ type LeadState = {
   phone: string;
   requirement: string;
   capturedFields: Set<"email" | "name" | "phone" | "requirement">;
+  phoneDeclined: boolean;
   emitted: boolean;
 };
 
@@ -165,7 +166,7 @@ function validateChatRequest(body: unknown): { ok: true; data: ChatRequestBody }
 //   EMAIL_USER, EMAIL_PASS  — Gmail address + App Password (internal notification)
 //   LEAD_EMAIL              — inbox that receives lead notifications (usually = EMAIL_USER)
 //   RESEND_API_KEY          — from resend.com dashboard
-//   RESEND_FROM             — verified sender, e.g. "Vera @ 99 Visual <vera@99visual.com>"
+//   RESEND_FROM             — verified sender, e.g. "Nova @ 99 Visual <nova@99visual.com>"
 
 const gmailTransporter =
   process.env.EMAIL_USER && process.env.EMAIL_PASS
@@ -216,7 +217,7 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
     <table style="width:100%"><tr>
       <td>
         <div style="background:#f97316;border-radius:10px;display:inline-block;padding:8px 12px;font-size:20px;">🎯</div>
-        <h2 style="color:#fff;margin:8px 0 2px;font-size:20px;font-weight:700;">New Lead — Vera AI Assistant</h2>
+        <h2 style="color:#fff;margin:8px 0 2px;font-size:20px;font-weight:700;">New Lead — Nova AI Assistant</h2>
         <p style="color:#94a3b8;margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;">99 Visual Solutions</p>
       </td>
       <td style="text-align:right;vertical-align:top;">
@@ -247,12 +248,12 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
     </div>
   </div>
   <div style="background:#f1f5f9;padding:14px 36px;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">🕐 ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST · Vera AI · 99visual.com</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">🕐 ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })} IST · Nova AI · 99visual.com</p>
   </div>
 </div>`;
 
   const payload = {
-    from: `"99 Visual AI — Vera" <${fromAddress}>`,
+    from: `"99 Visual AI — Nova" <${fromAddress}>`,
     to: toAddress,
     replyTo: lead.email,
     subject: `${state.intentLevel === "hot" ? "🔴 HOT" : "🔥"} Lead [Score ${state.intentScore}/10]: ${lead.name} — ${lead.query ?? "Enquiry"}`,
@@ -426,15 +427,40 @@ async function resolveLanguage(
 // ═══════════════════════════════════════════════════════════════════════════════
 // LEAD STATE MANAGER
 // ═══════════════════════════════════════════════════════════════════════════════
+// Order of collection now follows the intended conversational flow:
+//   greeting → understand requirement → NAME → EMAIL → optional PHONE
+// Detection is "smart": a name, email, or phone volunteered inline by the
+// visitor (e.g. "I'm John", "my email is john@x.com") is captured the moment
+// it appears, regardless of whether the assistant explicitly asked for it —
+// this is what stops the bot from re-asking for something already given.
 
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/;
 const PHONE_RE = /(\+?\d[\d\s\-().]{7,}\d)/;
+
+// Direct "stated name" extraction — catches volunteered names like
+// "I'm John", "My name is John Smith", "This is John", "Call me John" —
+// independent of whatever the assistant last asked.
+const NAME_STATEMENT_RE =
+  /\b(?:i'?m|i am|my name'?s|my name is|this is|call me|it'?s)\s+([A-Za-zÀ-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF'’\-]{2,}(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF'’\-]{2,}){0,2})\b/i;
+
+const PHONE_DECLINE_RE = /\b(skip|no thanks?|no|later|don'?t|not now|not yet|prefer not|rather not|prefer email|email is (fine|enough)|that'?s (fine|ok|okay))\b/i;
 
 const REQUIREMENT_TRIGGERS = [
   "require", "project", "describe", "briefly", "looking to build",
   "achieve", "working on", "tell me more", "what do you need",
   "what are you", "goal", "help you with",
 ];
+
+function extractStatedName(text: string): string | null {
+  const match = text.match(NAME_STATEMENT_RE);
+  if (!match) return null;
+  const candidate = match[1].trim();
+  // Guard against false positives like "I'm looking for..." or "I'm not sure"
+  const STOPWORDS = /^(looking|not|just|trying|still|really|very|also|interested|curious|planning|hoping|wondering|going|here|new|good|fine|sure|okay|ok)\b/i;
+  if (STOPWORDS.test(candidate)) return null;
+  if (EMAIL_RE.test(candidate) || PHONE_RE.test(candidate)) return null;
+  return candidate;
+}
 
 function buildLeadState(history: HistoryMessage[]): LeadState {
   const state: LeadState = {
@@ -443,6 +469,7 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
     phone: "",
     requirement: "",
     capturedFields: new Set(),
+    phoneDeclined: false,
     emitted: false,
   };
 
@@ -470,45 +497,61 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
 
   if (state.emitted) return state;
 
-  for (let i = 0; i < history.length - 1; i++) {
-    const asst = history[i];
-    const user = history[i + 1];
-    if (asst.role !== "assistant" || user?.role !== "user") continue;
+  for (let i = 0; i < history.length; i++) {
+    const user = history[i];
+    if (user.role !== "user") continue;
 
-    const aLower = asst.content.toLowerCase();
     const uText = user.content.trim();
+    const asst = i > 0 ? history[i - 1] : null;
+    const aLower = asst?.role === "assistant" ? asst.content.toLowerCase() : "";
 
-    if (!state.email && aLower.includes("email")) {
-      const match = uText.match(EMAIL_RE);
-      if (match) { state.email = match[0]; state.capturedFields.add("email"); }
+    // ── Name: volunteered anywhere, or a short bare answer right after we asked ──
+    if (!state.name) {
+      const stated = extractStatedName(uText);
+      if (stated) {
+        state.name = stated;
+        state.capturedFields.add("name");
+      } else if (aLower.includes("name") || (state.capturedFields.has("email") && !aLower)) {
+        const wordCount = uText.split(/\s+/).length;
+        const looksLikeName =
+          uText.length < 60 &&
+          wordCount <= 4 &&
+          !EMAIL_RE.test(uText) &&
+          !PHONE_RE.test(uText) &&
+          /^[a-zA-Z\s''\-\.À-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF]+$/.test(uText);
+        if (looksLikeName) {
+          state.name = uText;
+          state.capturedFields.add("name");
+        }
+      }
     }
+
+    // ── Email: volunteered anywhere ──
     if (!state.email) {
       const match = uText.match(EMAIL_RE);
-      if (match) { state.email = match[0]; state.capturedFields.add("email"); }
+      if (match) {
+        state.email = match[0];
+        state.capturedFields.add("email");
+      }
     }
-    if (!state.name && state.email) {
-      const wordCount = uText.trim().split(/\s+/).length;
-      const looksLikeName =
-        uText.length < 60 &&
-        wordCount <= 4 &&
-        !EMAIL_RE.test(uText) &&
-        !PHONE_RE.test(uText) &&
-        /^[a-zA-Z\s''\-\.À-ÖØ-öø-ÿ\u0900-\u097F\u0600-\u06FF]+$/.test(uText);
-      if (looksLikeName) { state.name = uText; state.capturedFields.add("name"); }
-    }
-    if (!state.phone && aLower.includes("phone")) {
+
+    // ── Phone: volunteered, or answered/declined right after we asked ──
+    if (!state.phone && !state.phoneDeclined) {
       const match = uText.match(PHONE_RE);
       if (match) {
         state.phone = match[0];
         state.capturedFields.add("phone");
-      } else if (/skip|no|later|don'?t|not (now|yet)|prefer not/i.test(uText)) {
-        state.phone = "";
-        state.capturedFields.add("phone");
+      } else if (aLower.includes("phone") || aLower.includes("contact number")) {
+        if (PHONE_DECLINE_RE.test(uText)) {
+          state.phoneDeclined = true;
+          state.capturedFields.add("phone");
+        }
       }
     }
+
+    // ── Requirement: captured once email context makes the "what do you need" question relevant ──
     if (
       !state.requirement &&
-      state.capturedFields.has("email") &&
       REQUIREMENT_TRIGGERS.some((t) => aLower.includes(t))
     ) {
       if (uText.length > 5 && !EMAIL_RE.test(uText) && !PHONE_RE.test(uText)) {
@@ -521,18 +564,21 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
   return state;
 }
 
+// Collection order per the intended flow: NAME → EMAIL → optional PHONE.
+// Requirement is understood conversationally and isn't a blocking field.
 function nextFieldToCapture(
   lead: LeadState
-): "email" | "name" | "phone" | "requirement" | null {
-  if (!lead.capturedFields.has("email")) return "email";
+): "name" | "email" | "phone" | "requirement" | null {
   if (!lead.capturedFields.has("name")) return "name";
+  if (!lead.capturedFields.has("email")) return "email";
   if (!lead.capturedFields.has("phone")) return "phone";
   if (!lead.capturedFields.has("requirement")) return "requirement";
   return null;
 }
 
+// Minimum needed to treat a lead as capturable/emittable: name + email.
 function hasMinimumLeadInfo(lead: LeadState): boolean {
-  return lead.capturedFields.has("email");
+  return lead.capturedFields.has("name") && lead.capturedFields.has("email");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -640,17 +686,35 @@ function resolveNavigation(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// IDENTITY / INTRODUCTION DETECTION
+// ═══════════════════════════════════════════════════════════════════════════════
+// Detects whether the visitor is directly asking who they're talking to, so
+// the system prompt can answer that ONE question plainly without re-running
+// the full introduction or repeating it unprompted elsewhere.
+
+const IDENTITY_QUESTION_RE =
+  /\b(what'?s your name|what is your name|who are you|who am i (talking|speaking|chatting) (to|with)|your name\??$|do you have a name)\b/i;
+
+function isIdentityQuestion(text: string): boolean {
+  return IDENTITY_QUESTION_RE.test(text.trim());
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // SYSTEM PROMPT CONFIG — edit here to retune tone/length without touching logic
 // ═══════════════════════════════════════════════════════════════════════════════
-// Pulling these into a config object means the "personality" of Vera can be
+// Pulling these into a config object means the "personality" of Nova can be
 // tuned (word limits, off-topic message, CTA style) without hunting through
 // the template string logic below.
 
 const PROMPT_CONFIG = {
+  assistantName: "Nova",
   maxSentences: 4,
   targetWordLimit: 80,
+  introLine:
+    "Hi! I'm Nova, the AI Assistant for 99 Visual Solutions. I'm here to help you with our services, pricing, projects, or anything else you need.",
+  identityAnswer: "I'm Nova, the AI Assistant for 99 Visual Solutions.",
   offTopicMessage:
-    "I'm Vera, 99 Visual's assistant — I can only help with questions about our services like web development, digital marketing, or 3D visualization. Want help with one of those?",
+    "I'm Nova, 99 Visual's assistant — I can only help with questions about our services like web development, digital marketing, or 3D visualization. Want help with one of those?",
   ctaExamples: [
     "Want a free consultation or a custom quote?",
     "Should I get you a quote for that?",
@@ -661,30 +725,44 @@ const PROMPT_CONFIG = {
 function buildSystemPrompt(params: {
   detectedLanguage: string;
   leadState: LeadState;
-  nameUsageCount: number;
   intentScore: IntentScore;
   intentLevel: IntentLevel;
   shouldCaptureLead: boolean;
-  nextField: "email" | "name" | "phone" | "requirement" | null;
+  nextField: "name" | "email" | "phone" | "requirement" | null;
   isFirstMessage: boolean;
+  isIdentityQuestion: boolean;
   retrievedContext: string;
 }): string {
   const {
     detectedLanguage,
     leadState,
-    nameUsageCount,
     intentScore,
     intentLevel,
     shouldCaptureLead,
     nextField,
     isFirstMessage,
+    isIdentityQuestion,
     retrievedContext,
   } = params;
 
   return `
-You are Vera — the AI business assistant for 99 Visual Solutions, a full-service IT and digital transformation company in Bengaluru, India serving global clients.
+You are ${PROMPT_CONFIG.assistantName} — the AI business assistant for 99 Visual Solutions, a full-service IT and digital transformation company in Bengaluru, India serving global clients.
 
 Your single goal: give a short, confident, accurate answer, then move the visitor one step closer to becoming a client. You are a sales-savvy expert, not a documentation bot.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👋 INTRODUCTION — ONCE ONLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${
+  isFirstMessage
+    ? `This is the FIRST message of the conversation. Open with exactly this line (translated into the visitor's language if needed), then briefly ask what brings them here — nothing else, no contact details yet:\n"${PROMPT_CONFIG.introLine}"`
+    : `The introduction has ALREADY been given earlier in this conversation. Do NOT repeat your name or reintroduce yourself. Do not say "I'm ${PROMPT_CONFIG.assistantName}" again unless the rule below applies.`
+}
+${
+  isIdentityQuestion
+    ? `\nThe visitor is directly asking who you are / your name. Answer with ONLY: "${PROMPT_CONFIG.identityAnswer}" then continue helping naturally. Do not repeat the full introduction line — just this short identity answer.`
+    : `\nThe visitor is NOT asking about your identity right now — do not volunteer your name or restate who you are.`
+}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✂️ RESPONSE LENGTH — NON-NEGOTIABLE
@@ -720,7 +798,7 @@ If a visitor asks about anything outside this scope, respond ONLY with this mess
 (translated into their language if needed), then stop:
 "${PROMPT_CONFIG.offTopicMessage}"
 
-Do not answer even partially before redirecting. Do not apologise at length. This rule overrides all other instructions.
+Do not answer even partially before redirecting. Do not apologise at length. This rule overrides all other instructions — EXCEPT a direct identity question ("what's your name?"), which always gets the short identity answer above, never the off-topic message.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 LANGUAGE
@@ -729,11 +807,17 @@ Detected visitor language: ${detectedLanguage}
 Always reply in the SAME language as the visitor. Never switch unless they do first.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚫 HOW TO USE THE VISITOR'S NAME
+🧠 MEMORY — NEVER ASK TWICE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${leadState.name
-  ? `Known (internal use only): ${leadState.name}. Do NOT address them by name in your reply, do NOT open/close a sentence with it. Already used ${nameUsageCount} time(s) — use it at most once more in the whole conversation, only if it flows naturally. Default to omitting it.`
-  : "Not yet known. Do not reference it."}
+Everything captured below is remembered for the whole conversation. If a field already has a value, treat it as permanently known: use it naturally when it helps ("Thanks again, ${leadState.name || "..."}"), but never ask the visitor for it again, and never re-ask something they already answered or declined.
+
+Known so far:
+  • Name:        ${leadState.name || "not yet known"}
+  • Email:       ${leadState.email || "not yet known"}
+  • Phone:       ${leadState.phone ? leadState.phone : leadState.phoneDeclined ? "visitor declined to share — do not ask again" : "not yet known"}
+  • Requirement: ${leadState.requirement || "not yet known"}
+
+If the visitor volunteers any of these inline in their own words (e.g. "I'm John", "my email's john@x.com"), that counts as captured immediately — do not ask for it again even if you haven't explicitly requested it yet.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 VISITOR INTENT: ${intentScore}/10 — ${intentLevel.toUpperCase()}
@@ -744,28 +828,27 @@ ${intentLevel === "interested" ? "Give value first, then naturally lead into cap
 ${intentLevel === "browsing" ? "Focus on trust with short, sharp answers. Only begin lead capture after 4+ messages." : ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🧠 LEAD STATE
+🧭 LEAD COLLECTION FLOW — NAME → EMAIL → OPTIONAL PHONE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${leadState.emitted
-  ? "Lead fully captured. Do NOT ask for contact details again — keep helping, briefly."
-  : shouldCaptureLead
-    ? `
-Collected: Email ${leadState.email || "—"} | Name ${leadState.name || "—"} | Phone ${leadState.phone || "—"} | Requirement ${leadState.requirement || "—"}
-NEXT FIELD: ${nextField ?? "ALL DONE — emit lead block"}
-${nextField === "email" ? '→ Ask ONLY for email, one short line: "What\'s the best email to send details to?"' : ""}
-${nextField === "name" ? '→ Ask ONLY for name, one short line: "And who am I speaking with?"' : ""}
-${nextField === "phone" ? '→ Ask for phone (optional), one short line: "A phone number? Skip it if you\'d rather not."' : ""}
-${nextField === "requirement" ? '→ Ask for their requirement, one short line: "What are you looking to build?"' : ""}
-${nextField === null ? "→ All fields ready. One warm confirmation line, then emit the <!--LEAD:--> block at the END of your reply." : ""}
+Never interrupt the conversation just to collect details — only ask for the next field when it naturally fits, and only one field per message.
+${
+  leadState.emitted
+    ? "Lead fully captured earlier. Do NOT ask for contact details again — keep helping, briefly."
+    : shouldCaptureLead
+      ? `
+NEXT FIELD TO ASK: ${nextField ?? "ALL DONE — emit lead block"}
+${nextField === "name" ? '→ Ask ONLY for their name, warmly, one short line: "May I know your name?" or "Before we continue, may I have your name?"' : ""}
+${nextField === "email" ? `→ Thank them by name if known ("Thanks, ${leadState.name || "..."}!"), then ask ONLY for email, one short line: "Could you share your email address so our team can follow up with you?"` : ""}
+${nextField === "phone" ? "→ Ask for phone, framed as clearly OPTIONAL, one short line: \"Would you like to share your contact number? It's completely optional and helps us reach you faster if needed.\" If they decline in any form (no, skip, not now, prefer email, I'd rather not, etc.), accept gracefully in one short line (\"No problem, your email is enough.\") and never ask again." : ""}
+${nextField === "requirement" ? '→ Ask ONLY about their need, one short line: "What are you looking to build?" (skip this if it\'s already clear from the conversation).' : ""}
+${nextField === null ? "→ All required fields ready. One warm confirmation line, then emit the <!--LEAD:--> block at the END of your reply." : ""}
 `
-    : "Still browsing — answer helpfully and briefly. Don't ask for contact details yet."
+      : "Still browsing — answer helpfully and briefly. Don't ask for contact details yet."
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🏢 RELEVANT KNOWLEDGE (retrieved for this question — ground your answer in this, don't invent details)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${isFirstMessage ? "FIRST MESSAGE: Greet as Vera in one short line, ask what brings them here. No contact details yet." : "Continuing conversation — do not re-greet."}
-
 ${retrievedContext || "(No closely matching facts found — answer honestly and briefly, offer to connect them with the team.)"}
 
 Useful links (embed at most 1-2 inline, only if directly relevant — never dump the list):
@@ -789,7 +872,7 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ TONE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Confident, warm, human, conversational — never robotic, never sounding "AI-generated." 1 emoji maximum, used sparingly. Never fabricate prices or timelines. Never say "I don't know" — bridge to https://www.99visual.com/contact instead.
+Friendly, professional, helpful, concise, confident, human-like, sales-oriented, customer-focused — never robotic, never sounding "AI-generated" or scripted. 1 emoji maximum, used sparingly. Never fabricate prices or timelines. Never say "I don't know" — bridge to https://www.99visual.com/contact instead.
 `;
 }
 
@@ -837,28 +920,25 @@ export async function POST(req: Request): Promise<NextResponse<ChatSuccessRespon
     const readyToEmit = hasMinimumLeadInfo(leadState);
     const nextField = leadState.emitted || readyToEmit ? null : nextFieldToCapture(leadState);
     const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
+    const identityQuestion = isIdentityQuestion(message);
 
     console.log(
       "[99Visual] Lang:", detectedLanguage,
       "| Intent:", intentScore, intentLevel,
       "| Next field:", nextField,
-      "| Capture:", shouldCaptureLead
+      "| Capture:", shouldCaptureLead,
+      "| Identity Q:", identityQuestion
     );
-
-    const visitorFirstName = leadState.name ? leadState.name.split(/\s+/)[0] : null;
-    const nameUsageCount = history.filter(
-      (m) => m.role === "assistant" && visitorFirstName && m.content.includes(visitorFirstName)
-    ).length;
 
     const systemPrompt = buildSystemPrompt({
       detectedLanguage,
       leadState,
-      nameUsageCount,
       intentScore,
       intentLevel,
       shouldCaptureLead,
       nextField,
       isFirstMessage,
+      isIdentityQuestion: identityQuestion,
       retrievedContext,
     });
 
