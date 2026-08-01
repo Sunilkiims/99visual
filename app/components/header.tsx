@@ -258,10 +258,12 @@ const Header = () => {
           transform: translateY(-4px);
         }
 
-        /* Rotating light ring — GPU/paint-cheap: only opacity transitions,
-           the rotation itself is a custom-property animation, not layout
-           or transform work. Runs continuously (never paused/reset on
-           hover) so hovering never restarts or jumps the spin. */
+        /* Rotating light ring — dormant at rest (opacity 0, animation
+           paused) and only spins up on hover/focus. animation-play-state
+           is what makes this "start on hover" rather than "always running,
+           just dim": when paused, the gradient holds its last angle, so
+           resuming on the next hover continues smoothly instead of
+           snapping back to a reset starting position. */
         .svc-card::before {
           content: "";
           position: absolute;
@@ -281,8 +283,9 @@ const Header = () => {
           -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           -webkit-mask-composite: xor;
                   mask-composite: exclude;
-          opacity: 0.45;
+          opacity: 0;
           animation: border-spin 3.4s linear infinite;
+          animation-play-state: paused;
           transition: opacity 0.35s ease;
           pointer-events: none;
           will-change: opacity;
@@ -291,30 +294,7 @@ const Header = () => {
         .svc-card:hover::before,
         .svc-card:focus-visible::before {
           opacity: 1;
-        }
-
-        /* Ambient premium glow behind the card on hover — a soft, blurred
-           blue bloom (Stripe/Linear/Vercel-style), independent of each
-           card's own accent colour so the "lift" reads the same everywhere.
-           Purely opacity-transitioned so it fades in/out smoothly rather
-           than popping. */
-        .svc-card::after {
-          content: "";
-          position: absolute;
-          inset: -14px;
-          z-index: -1;
-          border-radius: inherit;
-          background: radial-gradient(circle, rgba(59,130,246,0.38), rgba(59,130,246,0) 70%);
-          filter: blur(8px);
-          opacity: 0;
-          transition: opacity 0.35s ease;
-          pointer-events: none;
-          will-change: opacity;
-        }
-
-        .svc-card:hover::after,
-        .svc-card:focus-visible::after {
-          opacity: 1;
+          animation-play-state: running;
         }
 
         /* Respect reduced-motion: keep the border visible but static
