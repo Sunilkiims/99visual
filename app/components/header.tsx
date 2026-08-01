@@ -210,44 +210,119 @@ const Header = () => {
           0%, 100% { opacity: 1;    transform: scale(1);    }
           50%       { opacity: 0.75; transform: scale(0.88); }
         }
-        @keyframes card-ring-spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SERVICE CARD — running light border
+           ───────────────────────────────────────────────────────────────
+           Technique: a registered custom property (--border-angle) drives
+           the rotation *inside* the conic-gradient itself, instead of
+           rotating the element with 'transform'. That's the fix for the
+           old "clipped at the corners" / "inconsistent per card" bugs:
+           previously an oversized ring div (inset: -45%) was physically
+           rotated and relied on the parent's overflow-hidden to crop it —
+           any mismatch in card size/aspect ratio made the crop look
+           different per card, and corners could clip mid-spin.
+
+           Here the border is produced with a padding + mask-composite
+           trick: the pseudo-element is exactly 'inset: 0' (same box as
+           the card, never larger), and 'padding' + mask "exclude" punches
+           out everything except a thin, constant-width ring hugging the
+           card's own border-radius. Since only the gradient's internal
+           angle changes (not the element's geometry), the ring can never
+           drift outside the card or clip at a corner — and because every
+           card uses the exact same class, keyframes, duration and easing,
+           the motion is identical everywhere. Only the ring's colour
+           (--card-glow) differs per service, set inline per card.
+        ═══════════════════════════════════════════════════════════════ */
+        @property --border-angle {
+          syntax: '<angle>';
+          inherits: false;
+          initial-value: 0deg;
         }
-        .svc-card-ring {
-          position: absolute;
-          /* Tightened from -60% so corner cards (e.g. top-left "End-to-End
-             Solutions") don't get their glow clipped by the panel's own
-             rounded/overflow-hidden edge — that clipping was what made the
-             top-left card's ring look different from the interior cards. */
-          inset: -45%;
-          opacity: 0;
-          pointer-events: none;
-          will-change: transform, opacity;
-          animation: card-ring-spin 2s linear infinite;
-          /* Paused while hidden so it doesn't keep spinning (and drifting out
-             of sync with other cards) in the background while the dropdown
-             is closed. */
-          animation-play-state: paused;
-          transition: opacity 0.3s ease;
-          z-index: 0;
+
+        @keyframes border-spin {
+          to { --border-angle: 360deg; }
         }
-        .group:hover .svc-card-ring {
-          opacity: 1;
-          animation-play-state: running;
-        }
-        .svc-card-mask {
-          position: absolute;
-          inset: 1px;
-          border-radius: 10px;
-          pointer-events: none;
-          background: #0d1117;
-          z-index: 1;
-        }
-        .svc-card-content {
+
+        .svc-card {
           position: relative;
-          z-index: 2;
-          display: contents;
+          isolation: isolate;
+          --border-angle: 0deg;
+          --card-glow: #f97316;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: translateY(0);
+        }
+
+        .svc-card:hover,
+        .svc-card:focus-visible {
+          transform: translateY(-4px);
+        }
+
+        /* Rotating light ring — GPU/paint-cheap: only opacity transitions,
+           the rotation itself is a custom-property animation, not layout
+           or transform work. Runs continuously (never paused/reset on
+           hover) so hovering never restarts or jumps the spin. */
+        .svc-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          border-radius: inherit;
+          padding: 1.5px;
+          background: conic-gradient(
+            from var(--border-angle),
+            transparent 0deg,
+            transparent 270deg,
+            color-mix(in srgb, var(--card-glow) 55%, transparent) 315deg,
+            var(--card-glow) 337deg,
+            color-mix(in srgb, var(--card-glow) 55%, transparent) 355deg,
+            transparent 360deg
+          );
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+                  mask-composite: exclude;
+          opacity: 0.45;
+          animation: border-spin 3.4s linear infinite;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+          will-change: opacity;
+        }
+
+        .svc-card:hover::before,
+        .svc-card:focus-visible::before {
+          opacity: 1;
+        }
+
+        /* Ambient premium glow behind the card on hover — a soft, blurred
+           blue bloom (Stripe/Linear/Vercel-style), independent of each
+           card's own accent colour so the "lift" reads the same everywhere.
+           Purely opacity-transitioned so it fades in/out smoothly rather
+           than popping. */
+        .svc-card::after {
+          content: "";
+          position: absolute;
+          inset: -14px;
+          z-index: -1;
+          border-radius: inherit;
+          background: radial-gradient(circle, rgba(59,130,246,0.38), rgba(59,130,246,0) 70%);
+          filter: blur(8px);
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+          will-change: opacity;
+        }
+
+        .svc-card:hover::after,
+        .svc-card:focus-visible::after {
+          opacity: 1;
+        }
+
+        /* Respect reduced-motion: keep the border visible but static
+           instead of forcing a spin on visitors who've opted out. */
+        @media (prefers-reduced-motion: reduce) {
+          .svc-card::before {
+            animation: none;
+          }
         }
       `}</style>
 
@@ -360,9 +435,11 @@ const Header = () => {
                         <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-white/30">What we do</p>
                       </div>
 
-                      {/* Extra top/left breathing room (px-4 pt-2 instead of px-3)
-                          so the top-row cards' ring glow has clearance before
-                          hitting the panel's rounded, overflow-hidden edge. */}
+                      {/* Generous top/left padding so every card's ring
+                          and ambient glow has room to breathe before the
+                          panel's own rounded edge — nothing here relies on
+                          clipping anymore, but the spacing still keeps the
+                          grid visually balanced. */}
                       <div className="px-4 pt-2 pb-3 grid grid-cols-2 gap-1.5">
                         {SERVICE_ITEMS.map((svc, idx) => {
                           const active  = pathname === svc.href;
@@ -376,9 +453,10 @@ const Header = () => {
                               onMouseEnter={() => setHoveredIdx(idx)}
                               onMouseLeave={() => setHoveredIdx(null)}
                               aria-current={active ? 'page' : undefined}
+                              style={{ ['--card-glow' as string]: svc.glow } as React.CSSProperties}
                               className={clsx(
-                                'group relative flex items-center gap-3 rounded-xl px-3 py-3',
-                                'transition-all duration-200 ease-out overflow-hidden',
+                                'svc-card group relative flex items-center gap-3 rounded-xl px-3 py-3',
+                                'transition-colors duration-200 ease-out',
                                 'border border-transparent',
                                 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-orange-500',
                                 active
@@ -386,34 +464,6 @@ const Header = () => {
                                   : 'hover:bg-white/[0.06]',
                               )}
                             >
-                              {/* ── Spinning card border light ── */}
-                              <div
-                                className="svc-card-ring"
-                                style={{
-                                  background: `conic-gradient(
-                                    transparent 0deg,
-                                    transparent 160deg,
-                                    ${svc.glow}ee 200deg,
-                                    ${svc.glow}55 225deg,
-                                    transparent 265deg,
-                                    transparent 360deg
-                                  )`,
-                                  // Anchor every ring to the same wall-clock cycle
-                                  // instead of "time since this element mounted".
-                                  // Without this, cards that happen to paint on a
-                                  // later frame than their siblings (e.g. the
-                                  // very first hover right after a cold page
-                                  // load, while images/fonts are still loading)
-                                  // start their rotation out of phase — which is
-                                  // exactly what made one card's light look
-                                  // "different" from the rest.
-                                  animationDelay: `-${Date.now() % 2000}ms`,
-                                }}
-                                aria-hidden="true"
-                              />
-                              {/* Mask: punches out center so only 1px border glow shows */}
-                              <div className="svc-card-mask" aria-hidden="true" />
-
                               {/* Icon box */}
                               <div
                                 className={clsx(
