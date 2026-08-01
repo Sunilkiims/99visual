@@ -2,7 +2,41 @@ import { NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
-import { retrieveContextString } from "@/lib/retrieve"; // ← NEW: RAG retrieval
+import { retrieveContextString } from "@/lib/retrieve"; // ← RAG retrieval
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENV VALIDATION
+// ═══════════════════════════════════════════════════════════════════════════════
+// Runs once at module load (cold start). Logs exactly what's missing instead
+// of failing silently mid-request — the biggest source of "why isn't this
+// working in production" bugs is a missing env var nobody noticed. This does
+// NOT throw, so the route still boots and answers chat messages even if mail
+// is misconfigured — only the mail-dependent paths degrade, and they log
+// clearly when they do.
+
+type EnvCheck = { name: string; required: boolean; present: boolean };
+
+function checkEnv(): EnvCheck[] {
+  const vars: Array<{ name: string; required: boolean }> = [
+    { name: "OPENAI_API_KEY", required: true }, // consumed by lib/openai, checked here for visibility
+    { name: "EMAIL_USER", required: false },
+    { name: "EMAIL_PASS", required: false },
+    { name: "LEAD_EMAIL", required: false },
+    { name: "RESEND_API_KEY", required: false },
+    { name: "RESEND_FROM", required: false },
+  ];
+  return vars.map((v) => ({ ...v, present: !!process.env[v.name] }));
+}
+
+const ENV_STATUS = checkEnv();
+
+for (const v of ENV_STATUS) {
+  if (v.required && !v.present) {
+    console.error(`[99Visual] REQUIRED env var missing: ${v.name}. Chat completions will fail.`);
+  } else if (!v.required && !v.present) {
+    console.warn(`[99Visual] Optional env var not set: ${v.name}. Related feature will be skipped.`);
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -43,18 +77,89 @@ type ConversationState = {
   messageCount: number;
 };
 
+// Shape of an incoming request body, validated at runtime below (no schema
+// library added — the checks are simple enough to do by hand and avoid a
+// new dependency for a single endpoint).
+type ChatRequestBody = {
+  message: string;
+  history: HistoryMessage[];
+  detectedLanguage?: string;
+};
+
+type ChatSuccessResponse = {
+  reply: string;
+  lead: Lead | null;
+  intentScore: IntentScore;
+  intentLevel: IntentLevel;
+  detectedLanguage: string;
+  navLinks: NavLink[];
+  breadcrumb: NavLink[] | null;
+  suggestedRoute: { label: string; url: string } | null;
+};
+
+type ChatErrorResponse = {
+  error: string;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REQUEST VALIDATION
+// ═══════════════════════════════════════════════════════════════════════════════
+// Hand-rolled runtime validation for type safety at the request boundary.
+// `as` casts on parsed JSON give compile-time safety only — this is what
+// actually protects the route from malformed/malicious bodies at runtime.
+
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_HISTORY_MESSAGES = 40;
+
+function validateChatRequest(body: unknown): { ok: true; data: ChatRequestBody } | { ok: false; error: string } {
+  if (typeof body !== "object" || body === null) {
+    return { ok: false, error: "Request body must be a JSON object." };
+  }
+
+  const b = body as Record<string, unknown>;
+
+  if (typeof b.message !== "string" || b.message.trim().length === 0) {
+    return { ok: false, error: "'message' is required and must be a non-empty string." };
+  }
+  if (b.message.length > MAX_MESSAGE_LENGTH) {
+    return { ok: false, error: `'message' exceeds maximum length of ${MAX_MESSAGE_LENGTH} characters.` };
+  }
+
+  let history: HistoryMessage[] = [];
+  if (b.history !== undefined) {
+    if (!Array.isArray(b.history)) {
+      return { ok: false, error: "'history' must be an array." };
+    }
+    if (b.history.length > MAX_HISTORY_MESSAGES) {
+      return { ok: false, error: `'history' exceeds maximum of ${MAX_HISTORY_MESSAGES} messages.` };
+    }
+    for (const item of b.history) {
+      if (
+        typeof item !== "object" ||
+        item === null ||
+        (item as { role?: unknown }).role === undefined ||
+        !["user", "assistant"].includes((item as { role: string }).role) ||
+        typeof (item as { content?: unknown }).content !== "string"
+      ) {
+        return { ok: false, error: "Each 'history' entry must have role ('user'|'assistant') and string content." };
+      }
+    }
+    history = b.history as HistoryMessage[];
+  }
+
+  const detectedLanguage = typeof b.detectedLanguage === "string" ? b.detectedLanguage : undefined;
+
+  return { ok: true, data: { message: b.message, history, detectedLanguage } };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIL PROVIDERS — split by purpose
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal lead notification (→ your team's inbox) goes through Gmail via
-// nodemailer, so leads land directly in your existing Gmail — searchable,
-// familiar, no extra dashboard to check.
+// nodemailer, so leads land directly in your existing Gmail.
 //
-// Visitor-facing confirmation email goes through Resend instead, because
-// sending cold outbound mail to addresses you've never emailed before from
-// a personal Gmail account risks spam-folder placement / rate limits.
-// Resend is built for exactly this and keeps your Gmail account's sending
-// reputation clean.
+// Visitor-facing confirmation email goes through Resend, since cold outbound
+// mail from a personal Gmail account risks spam-folder placement.
 //
 // Required env vars (Vercel → Settings → Environment Variables):
 //   EMAIL_USER, EMAIL_PASS  — Gmail address + App Password (internal notification)
@@ -73,19 +178,7 @@ const gmailTransporter =
       })
     : null;
 
-if (!gmailTransporter) {
-  console.error(
-    "[99Visual] EMAIL_USER/EMAIL_PASS not set — internal lead notifications will be skipped."
-  );
-}
-
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
-if (!resend) {
-  console.error(
-    "[99Visual] RESEND_API_KEY not set — visitor confirmation emails will be skipped."
-  );
-}
 
 function intentBadge(level: IntentLevel): string {
   return {
@@ -106,9 +199,7 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
   const toAddress = process.env.LEAD_EMAIL || process.env.EMAIL_USER;
 
   if (!toAddress) {
-    console.error(
-      "[99Visual] Skipping lead email — no destination address. Set LEAD_EMAIL in Vercel."
-    );
+    console.error("[99Visual] Skipping lead email — no destination address. Set LEAD_EMAIL in Vercel.");
     return;
   }
 
@@ -181,12 +272,6 @@ async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void
   }
 }
 
-// NEW: confirmation email sent TO THE VISITOR the moment their email is
-// captured, separate from the internal notification sent to the team
-// (sendLeadEmail above, which goes to LEAD_EMAIL). Uses the same
-// transporter/fromAddress. Failure here is logged but never blocks or
-// retries as aggressively — a missed confirmation is much lower stakes
-// than a missed internal lead notification.
 async function sendConfirmationEmail(lead: Lead): Promise<void> {
   if (!resend) {
     console.error("[99Visual] Skipping visitor confirmation — RESEND_API_KEY not configured.");
@@ -219,7 +304,7 @@ async function sendConfirmationEmail(lead: Lead): Promise<void> {
     </div>
     <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0;">
       In the meantime, feel free to browse our
-      <a href="https://www.99visual.com/portfolio" style="color:#f97316;font-weight:600;text-decoration:none;">portfolio</a>
+      <a href="https://www.99visual.com/services" style="color:#f97316;font-weight:600;text-decoration:none;">Services</a>
       or reply directly to this email if you'd like to add anything.
     </p>
   </div>
@@ -332,7 +417,8 @@ async function resolveLanguage(
       temperature: 0,
     });
     return langCheck.choices[0].message.content?.trim().toLowerCase() ?? "en";
-  } catch {
+  } catch (err) {
+    console.error("[99Visual] Language detection failed, defaulting to 'en':", err);
     return "en";
   }
 }
@@ -375,7 +461,9 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
           if (state.phone) state.capturedFields.add("phone");
           if (state.requirement) state.capturedFields.add("requirement");
           state.emitted = true;
-        } catch { /* ignore */ }
+        } catch {
+          console.error("[99Visual] Failed to parse stored LEAD block from history — ignoring.");
+        }
       }
     }
   }
@@ -436,9 +524,6 @@ function buildLeadState(history: HistoryMessage[]): LeadState {
 function nextFieldToCapture(
   lead: LeadState
 ): "email" | "name" | "phone" | "requirement" | null {
-  // Only email + name are REQUIRED to consider the lead "ready" — this matches
-  // the actual condition sendLeadEmail() checks. Phone and requirement are
-  // nice-to-have and asked opportunistically, but must never block sending.
   if (!lead.capturedFields.has("email")) return "email";
   if (!lead.capturedFields.has("name")) return "name";
   if (!lead.capturedFields.has("phone")) return "phone";
@@ -446,9 +531,6 @@ function nextFieldToCapture(
   return null;
 }
 
-// Returns true once the ONE truly essential field (email) is captured.
-// Name/phone/requirement are valuable but must never block sending a notification —
-// an email alone is enough for you to follow up.
 function hasMinimumLeadInfo(lead: LeadState): boolean {
   return lead.capturedFields.has("email");
 }
@@ -488,7 +570,6 @@ const SITE_MAP: Array<{ keywords: string[]; link: NavLink }> = [
   { keywords: ["consulting", "it strategy", "advisory", "digital transformation", "cloud", "migration", "infrastructure", "audit"], link: { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "💡", description: "Strategy, cloud & transformation" } },
   { keywords: ["automation", "testing", "qa", "quality assurance", "rpa", "selenium", "playwright", "cypress", "test automation", "bug"], link: { label: "Automation & QA Testing", url: "https://www.99visual.com/services/it-consulting", category: "service", icon: "🤖", description: "AI-powered QA & automation" } },
   { keywords: ["about", "company", "who are you", "team", "founded", "history", "story", "background", "experience"], link: { label: "About Us", url: "https://www.99visual.com/about", category: "internal", icon: "🏢", description: "Our story, team & values" } },
-  { keywords: ["portfolio", "work", "projects", "case study", "examples", "clients", "past work", "sample"], link: { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "internal", icon: "🖼️", description: "See our past projects" } },
   { keywords: ["contact", "reach", "get in touch", "talk", "email", "call", "whatsapp", "enquiry", "inquiry", "support", "help"], link: { label: "Contact Us", url: "https://www.99visual.com/contact", category: "internal", icon: "📬", description: "Get in touch with our team" } },
   { keywords: ["price", "pricing", "cost", "how much", "quote", "estimate", "budget", "package", "plan", "rate"], link: { label: "Get a Quote", url: "https://www.99visual.com/contact", category: "internal", icon: "💰", description: "Request a custom quote" } },
   { keywords: ["blog", "article", "read", "news", "update", "insight", "tips", "guide", "resource"], link: { label: "Blog & Insights", url: "https://www.99visual.com/blog", category: "internal", icon: "📰", description: "Tips, guides & industry news" } },
@@ -502,7 +583,6 @@ const BREADCRUMB_TRAILS: Array<{ keywords: string[]; trail: NavLink[] }> = [
   { keywords: ["cad", "gis", "lidar", "photogrammetry", "mapping", "drafting"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "CAD / GIS / LiDAR", url: "https://www.99visual.com/services/cad-gis-photogrammetry", category: "breadcrumb" }] },
   { keywords: ["consulting", "it strategy", "cloud", "digital transformation"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "IT Consulting", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" }] },
   { keywords: ["automation", "qa", "testing", "quality assurance"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Services", url: "https://www.99visual.com/services", category: "breadcrumb" }, { label: "Automation & Testing", url: "https://www.99visual.com/services/it-consulting", category: "breadcrumb" }] },
-  { keywords: ["portfolio", "work", "projects", "case study", "examples"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Portfolio", url: "https://www.99visual.com/portfolio", category: "breadcrumb" }] },
   { keywords: ["about", "company", "team", "founded", "story"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "About Us", url: "https://www.99visual.com/about", category: "breadcrumb" }] },
   { keywords: ["contact", "get in touch", "enquiry", "quote", "price", "pricing", "cost", "how much"], trail: [{ label: "Home", url: "https://www.99visual.com/", category: "breadcrumb" }, { label: "Contact Us", url: "https://www.99visual.com/contact", category: "breadcrumb" }] },
 ];
@@ -560,49 +640,74 @@ function resolveNavigation(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MAIN ROUTE HANDLER
+// SYSTEM PROMPT CONFIG — edit here to retune tone/length without touching logic
 // ═══════════════════════════════════════════════════════════════════════════════
+// Pulling these into a config object means the "personality" of Vera can be
+// tuned (word limits, off-topic message, CTA style) without hunting through
+// the template string logic below.
 
-export async function POST(req: Request) {
+const PROMPT_CONFIG = {
+  maxSentences: 4,
+  targetWordLimit: 80,
+  offTopicMessage:
+    "I'm Vera, 99 Visual's assistant — I can only help with questions about our services like web development, digital marketing, or 3D visualization. Want help with one of those?",
+  ctaExamples: [
+    "Want a free consultation or a custom quote?",
+    "Should I get you a quote for that?",
+    "Want to book a quick call with our team?",
+  ],
+} as const;
+
+function buildSystemPrompt(params: {
+  detectedLanguage: string;
+  leadState: LeadState;
+  nameUsageCount: number;
+  intentScore: IntentScore;
+  intentLevel: IntentLevel;
+  shouldCaptureLead: boolean;
+  nextField: "email" | "name" | "phone" | "requirement" | null;
+  isFirstMessage: boolean;
+  retrievedContext: string;
+}): string {
   const {
-    message,
-    history = [],
-    detectedLanguage: prevLang = "en",
-  }: { message: string; history: HistoryMessage[]; detectedLanguage?: string } =
-    await req.json();
+    detectedLanguage,
+    leadState,
+    nameUsageCount,
+    intentScore,
+    intentLevel,
+    shouldCaptureLead,
+    nextField,
+    isFirstMessage,
+    retrievedContext,
+  } = params;
 
-  // ── NEW: retrieve relevant knowledge chunks for this specific message ──
-  // Runs in parallel with language/intent detection to avoid adding latency.
-  const [detectedLanguage, intentScore, retrievedContext] = await Promise.all([
-    resolveLanguage(message, history, prevLang),
-    Promise.resolve(scoreIntent(history, message)),
-    retrieveContextString(message, 3),
-  ]);
+  return `
+You are Vera — the AI business assistant for 99 Visual Solutions, a full-service IT and digital transformation company in Bengaluru, India serving global clients.
 
-  const intentLevel = getIntentLevel(intentScore);
-  const leadState = buildLeadState(history);
-  const isFirstMessage = history.length === 0;
-  const readyToEmit = hasMinimumLeadInfo(leadState);
-  const nextField = leadState.emitted || readyToEmit ? null : nextFieldToCapture(leadState);
-  const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
+Your single goal: give a short, confident, accurate answer, then move the visitor one step closer to becoming a client. You are a sales-savvy expert, not a documentation bot.
 
-  console.log(
-    "[99Visual] Lang:", detectedLanguage,
-    "| Intent:", intentScore, intentLevel,
-    "| Next field:", nextField,
-    "| Capture:", shouldCaptureLead,
-    "| Retrieved chunks:\n", retrievedContext
-  );
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✂️ RESPONSE LENGTH — NON-NEGOTIABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Maximum ${PROMPT_CONFIG.maxSentences} sentences per reply.
+- Target under ${PROMPT_CONFIG.targetWordLimit} words. Only exceed this if the visitor explicitly asks for detail ("explain more", "walk me through it", "give me details").
+- No long explanations, no bullet-point essays, no restating the question back to them.
+- If a topic genuinely needs more than a short answer, give the 1-2 most important points only, then ask: "Want the full breakdown, or should we set up a call to go deeper?"
+- Never pad with filler ("That's a great question!", "I'd be happy to help with that!") — answer directly.
+- No repetitive phrasing across turns — vary sentence openings, don't reuse the same transition every message.
 
-  const visitorFirstName = leadState.name ? leadState.name.split(/\s+/)[0] : null;
-  const nameUsageCount = history.filter(
-    (m) => m.role === "assistant" && visitorFirstName && m.content.includes(visitorFirstName)
-  ).length;
-
-  const systemPrompt = `
-You are Vera — the intelligent AI business assistant for 99 Visual Solutions, a full-service IT and digital transformation company in Bengaluru, India serving global clients.
-
-Your goal: provide genuine expert value and, when appropriate, convert interested visitors into qualified leads by collecting their contact details naturally.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💼 CONVERSION FOCUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Every relevant reply should nudge toward a next step: a free consultation, a custom quote, or a quick call. Don't force it onto answers that don't need it (e.g. a one-word factual question).
+- Mention a specific service only when it's actually relevant to what they asked — don't shoehorn services in.
+- Weave in expertise naturally (e.g. "we've built this for e-commerce and SaaS clients before") instead of generic claims ("we are experts").
+- Example CTA phrasing to draw from (vary it, don't repeat verbatim every time): ${PROMPT_CONFIG.ctaExamples.map((c) => `"${c}"`).join(" / ")}
+- PRICING questions → never give fixed numbers. One line on why (custom scoping), then bridge to a quote/consultation.
+- SIMPLE factual questions (e.g. "do you build WordPress sites?") → answer directly in one line, no elaboration needed, then a light CTA only if it fits naturally.
+- TECHNICAL questions → answer accurately and briefly, then offer implementation help if relevant ("We can build that for you — want a quote?").
+- MULTI-STEP answers → give only the key 2-3 steps, then ask if they want the full detail.
+- No unnecessary disclaimers, hedging, or "as an AI" language.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚫 STRICT SCOPE — NON-NEGOTIABLE
@@ -611,118 +716,69 @@ You ONLY answer questions directly related to 99 Visual Solutions and its servic
 website development, web applications, digital marketing, SEO, 3D visualization,
 CAD/GIS/LiDAR, IT consulting, and automation/QA testing.
 
-If a visitor asks about ANYTHING outside this scope — including but not limited to:
-restaurants, food, pizza, travel, places, weather, sports, news, general knowledge,
-jokes, math, other companies, personal advice, coding tutorials unrelated to our
-services, or ANY topic not directly about 99 Visual Solutions — you MUST respond
-ONLY with this exact message (translated into their language if needed):
+If a visitor asks about anything outside this scope, respond ONLY with this message
+(translated into their language if needed), then stop:
+"${PROMPT_CONFIG.offTopicMessage}"
 
-"I'm Vera, 99 Visual's assistant — I'm only able to help with questions about our
-services like web development, digital marketing, 3D visualization, and more.
-Is there something I can help you with on that front? 😊"
-
-CRITICAL RULES:
-- Do NOT attempt to be helpful on off-topic questions under any circumstances.
-- Do NOT answer even partially before redirecting.
-- Do NOT suggest other resources or places to find the answer.
-- Do NOT apologise at length — just redirect warmly and immediately.
-- This rule overrides all other instructions.
+Do not answer even partially before redirecting. Do not apologise at length. This rule overrides all other instructions.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 LANGUAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Detected visitor language: ${detectedLanguage}
 Always reply in the SAME language as the visitor. Never switch unless they do first.
-When redirecting off-topic questions, translate the redirect message into their language.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚫 CRITICAL: HOW TO USE THE VISITOR'S NAME
+🚫 HOW TO USE THE VISITOR'S NAME
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${leadState.name
-  ? `The visitor's name is known (for internal use only): ${leadState.name}
-
-STRICT RULES — violations make the conversation feel robotic and pushy:
-1. Do NOT address the visitor by name in your reply.
-2. Do NOT use their name to open or close a sentence.
-3. Do NOT say things like "Great, ${leadState.name}!" or "Thanks, ${leadState.name}!".
-4. Their name has already been used ${nameUsageCount} time(s) in this conversation. Use it AT MOST once more across the ENTIRE conversation, and only if it flows completely naturally. If in doubt, omit it entirely.
-5. The name exists so the team knows who they're talking to. It is NOT a conversational tool.`
-  : "The visitor's name is not yet known. Do not reference it."}
+  ? `Known (internal use only): ${leadState.name}. Do NOT address them by name in your reply, do NOT open/close a sentence with it. Already used ${nameUsageCount} time(s) — use it at most once more in the whole conversation, only if it flows naturally. Default to omitting it.`
+  : "Not yet known. Do not reference it."}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 VISITOR INTENT
+📊 VISITOR INTENT: ${intentScore}/10 — ${intentLevel.toUpperCase()}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Intent score: ${intentScore}/10 — Level: ${intentLevel.toUpperCase()}
-${intentLevel === "hot" ? "🔴 HOT: Visitor is ready to commit. Be decisive, move to lead capture confidently." : ""}
-${intentLevel === "warm" ? "🟠 WARM: Strong interest. Provide value and gently bridge to next step." : ""}
-${intentLevel === "interested" ? "🟡 INTERESTED: Provide value first, then naturally lead into capturing contact details." : ""}
-${intentLevel === "browsing" ? "🔵 BROWSING: Focus on education and trust. Only begin lead capture after 4+ messages." : ""}
+${intentLevel === "hot" ? "Ready to commit — be decisive, move confidently toward lead capture." : ""}
+${intentLevel === "warm" ? "Strong interest — deliver value fast, then bridge to next step." : ""}
+${intentLevel === "interested" ? "Give value first, then naturally lead into capturing contact details." : ""}
+${intentLevel === "browsing" ? "Focus on trust with short, sharp answers. Only begin lead capture after 4+ messages." : ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧠 LEAD STATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${leadState.emitted
-  ? "✅ LEAD FULLY CAPTURED. Do NOT ask for any contact details again. Continue helping naturally."
+  ? "Lead fully captured. Do NOT ask for contact details again — keep helping, briefly."
   : shouldCaptureLead
     ? `
-Fields collected so far:
-  Email:       ${leadState.email || "Not yet"}
-  Name:        ${leadState.name || "Not yet"}
-  Phone:       ${leadState.phone || "Not yet"}
-  Requirement: ${leadState.requirement || "Not yet"}
-
-NEXT FIELD TO COLLECT: ${nextField ?? "ALL DONE — emit lead block"}
-${nextField === "email" ? '→ Ask ONLY for their email. Keep it casual: "What\'s the best email to send details to?"' : ""}
-${nextField === "name" ? '→ Ask ONLY for their name. Keep it short: "And who am I speaking with?"' : ""}
-${nextField === "phone" ? '→ Ask for phone (optional): "A phone number? No worries if you\'d rather skip it."' : ""}
-${nextField === "requirement" ? '→ Ask for their requirement: "What are you looking to build or achieve? Just a quick overview is fine."' : ""}
-${nextField === null ? "→ All fields ready. Confirm warmly (without using their name unnecessarily) and emit the <!--LEAD:--> block at the END of your reply." : ""}
+Collected: Email ${leadState.email || "—"} | Name ${leadState.name || "—"} | Phone ${leadState.phone || "—"} | Requirement ${leadState.requirement || "—"}
+NEXT FIELD: ${nextField ?? "ALL DONE — emit lead block"}
+${nextField === "email" ? '→ Ask ONLY for email, one short line: "What\'s the best email to send details to?"' : ""}
+${nextField === "name" ? '→ Ask ONLY for name, one short line: "And who am I speaking with?"' : ""}
+${nextField === "phone" ? '→ Ask for phone (optional), one short line: "A phone number? Skip it if you\'d rather not."' : ""}
+${nextField === "requirement" ? '→ Ask for their requirement, one short line: "What are you looking to build?"' : ""}
+${nextField === null ? "→ All fields ready. One warm confirmation line, then emit the <!--LEAD:--> block at the END of your reply." : ""}
 `
-    : "⏳ Visitor is still browsing — answer their question helpfully. Do not ask for contact details yet."
+    : "Still browsing — answer helpfully and briefly. Don't ask for contact details yet."
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏢 RELEVANT COMPANY KNOWLEDGE (retrieved for this specific question)
+🏢 RELEVANT KNOWLEDGE (retrieved for this question — ground your answer in this, don't invent details)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${isFirstMessage
-  ? "FIRST MESSAGE: Greet warmly as Vera. Ask what brings them here. Do NOT ask for contact details yet."
-  : "CONTINUING CONVERSATION: Do NOT re-greet. Pick up naturally where the conversation left off."
-}
+${isFirstMessage ? "FIRST MESSAGE: Greet as Vera in one short line, ask what brings them here. No contact details yet." : "Continuing conversation — do not re-greet."}
 
-The following facts were retrieved from 99 Visual's knowledge base as the most
-relevant to what the visitor just asked. Base your answer on these facts —
-do not invent details that aren't here:
+${retrievedContext || "(No closely matching facts found — answer honestly and briefly, offer to connect them with the team.)"}
 
-${retrievedContext || "(No closely matching facts were found — answer generally and honestly, and offer to connect them with the team for specifics.)"}
-
-Useful links to embed inline when relevant (never dump all at once):
+Useful links (embed at most 1-2 inline, only if directly relevant — never dump the list):
   ▸ Website Development      → https://www.99visual.com/services/website-development
   ▸ Digital Marketing & SEO  → https://www.99visual.com/services/digital-marketing-seo
   ▸ 3D Visualization         → https://www.99visual.com/services/visualization
   ▸ CAD / GIS / LiDAR        → https://www.99visual.com/services/cad-gis-photogrammetry
   ▸ IT Consulting            → https://www.99visual.com/services/it-consulting
   ▸ All Services             → https://www.99visual.com/services
-  ▸ Portfolio / Case Studies → https://www.99visual.com/portfolio
   ▸ About Us                 → https://www.99visual.com/about
-  ▸ Blog & Insights          → https://www.99visual.com/blog
+  ▸ Blog & Insights          → https://www.99visual.com/insights
   ▸ Contact / Get a Quote    → https://www.99visual.com/contact
-
-LINK RULES:
-- Only link pages directly relevant to what the visitor just asked about.
-- Never list more than 2 links in a single reply — quality over quantity.
-- The frontend will automatically show page navigation chips below your reply; you do not need to list all links yourself.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 RESPONSE GUIDELINES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- PRICING → Never give fixed numbers. Explain custom scoping. Naturally bridge to lead capture.
-- PROJECT/HIRE → Validate enthusiasm, describe relevant service, capture lead.
-- TIMELINE → Use the retrieved timeline facts above. Always qualify with a discovery call.
-- TECH QUESTIONS → Answer confidently (React, Next.js, WordPress, Python, AWS, etc). Position as experts.
-- PORTFOLIO → https://www.99visual.com/portfolio — mention cross-industry experience.
-- SUPPORT → Empathise, direct to https://www.99visual.com/contact.
-- UNCLEAR → Ask ONE smart clarifying question only.
-- If the retrieved knowledge above doesn't cover the question, say so honestly rather than guessing — offer to connect them with the team.
+The frontend shows navigation chips automatically — you don't need to list links yourself.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 LEAD BLOCK FORMAT
@@ -731,94 +787,176 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
 <!--LEAD:{"name":"FULL_NAME","email":"EMAIL","phone":"PHONE_OR_EMPTY","requirement":"REQUIREMENT_OR_EMPTY","query":"ONE_SENTENCE_SUMMARY_OF_VISITOR_NEED"}-->
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ TONE & STYLE RULES
+✅ TONE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Warm, expert, human — never robotic or sales-y
-- Max 3–4 short paragraphs per reply
-- ONE question per message maximum
-- 1–2 emojis maximum
-- End with a clear, low-friction next step
-- NEVER fabricate prices or timelines
-- NEVER say "I don't know" — bridge to https://www.99visual.com/contact
-- Make every visitor feel heard and valued
+Confident, warm, human, conversational — never robotic, never sounding "AI-generated." 1 emoji maximum, used sparingly. Never fabricate prices or timelines. Never say "I don't know" — bridge to https://www.99visual.com/contact instead.
 `;
+}
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system" as const, content: systemPrompt },
-      ...history.map((h) => ({ role: h.role, content: h.content })),
-      { role: "user" as const, content: message },
-    ],
-    temperature: intentLevel === "hot" ? 0.4 : 0.6,
-    max_tokens: 650,
-  });
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN ROUTE HANDLER
+// ═══════════════════════════════════════════════════════════════════════════════
 
-  const raw = completion.choices[0].message.content ?? "";
-
-  const leadMatch = raw.match(/<!--LEAD:(\{[\s\S]*?\})-->/);
-  let lead: Lead | null = null;
-
-  // ── TEMPORARY DEBUG LOGGING — remove once issue is resolved ──
-  console.log("[99Visual DEBUG] leadState.capturedFields:", Array.from(leadState.capturedFields));
-  console.log("[99Visual DEBUG] leadState.emitted:", leadState.emitted);
-  console.log("[99Visual DEBUG] nextField:", nextField);
-  console.log("[99Visual DEBUG] Did AI emit a LEAD block?", !!leadMatch);
-  console.log("[99Visual DEBUG] Raw AI reply (last 200 chars):", raw.slice(-200));
-
-  if (leadMatch && !leadState.emitted) {
-    try {
-      const parsed = JSON.parse(leadMatch[1]) as Lead;
-      if (parsed.email) {
-        lead = { ...parsed, name: parsed.name || "Not provided" };
-        const convState: ConversationState = {
-          lead: leadState,
-          intentScore,
-          intentLevel,
-          detectedLanguage,
-          messageCount: history.length + 1,
-        };
-        // FIXED: these were previously fire-and-forget (not awaited).
-        // On Vercel, once this route returns its response, the serverless
-        // function can be frozen/torn down immediately — any promise that
-        // wasn't awaited (or kept alive via waitUntil) may never finish,
-        // which is why emails worked locally (long-running Node process)
-        // but silently failed to arrive when deployed. Awaiting them here
-        // guarantees both sends complete before the response goes out.
-        await Promise.all([
-          sendLeadEmail(lead, convState).catch((err) =>
-            console.error("[99Visual] Lead email failed after retry:", err)
-          ),
-          sendConfirmationEmail(lead).catch((err) =>
-            console.error("[99Visual] Visitor confirmation email failed:", err)
-          ),
-        ]);
-      }
-    } catch {
-      console.error("[99Visual] Malformed LEAD JSON:", leadMatch?.[1]);
-    }
+export async function POST(req: Request): Promise<NextResponse<ChatSuccessResponse | ChatErrorResponse>> {
+  // ── Parse + validate request body ──
+  let rawBody: unknown;
+  try {
+    rawBody = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const reply = raw.replace(/<!--LEAD:\{[\s\S]*?\}-->/g, "").trim();
+  const validation = validateChatRequest(rawBody);
+  if (!validation.ok) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
+  const { message, history, detectedLanguage: prevLang = "en" } = validation.data;
 
-  const { navLinks, breadcrumb } = resolveNavigation(history, message);
+  // ── Guard: OpenAI not configured ──
+  if (!process.env.OPENAI_API_KEY) {
+    console.error("[99Visual] OPENAI_API_KEY missing — cannot generate a reply.");
+    return NextResponse.json(
+      { error: "Chat is temporarily unavailable. Please contact us directly at contact@99visual.com." },
+      { status: 503 }
+    );
+  }
 
-  const lowerMsg = message.toLowerCase();
-  const suggestedRoute =
-    SERVICE_ROUTES.find(({ keywords }) =>
-      keywords.some((kw) => lowerMsg.includes(kw))
-    ) ?? null;
+  try {
+    const [detectedLanguage, intentScore, retrievedContext] = await Promise.all([
+      resolveLanguage(message, history, prevLang),
+      Promise.resolve(scoreIntent(history, message)),
+      retrieveContextString(message, 3).catch((err) => {
+        console.error("[99Visual] Knowledge retrieval failed, continuing without it:", err);
+        return "";
+      }),
+    ]);
 
-  return NextResponse.json({
-    reply,
-    lead,
-    intentScore,
-    intentLevel,
-    detectedLanguage,
-    navLinks,
-    breadcrumb,
-    suggestedRoute: suggestedRoute
-      ? { label: suggestedRoute.label, url: suggestedRoute.url }
-      : null,
-  });
+    const intentLevel = getIntentLevel(intentScore);
+    const leadState = buildLeadState(history);
+    const isFirstMessage = history.length === 0;
+    const readyToEmit = hasMinimumLeadInfo(leadState);
+    const nextField = leadState.emitted || readyToEmit ? null : nextFieldToCapture(leadState);
+    const shouldCaptureLead = intentLevel !== "browsing" || history.length >= 4;
+
+    console.log(
+      "[99Visual] Lang:", detectedLanguage,
+      "| Intent:", intentScore, intentLevel,
+      "| Next field:", nextField,
+      "| Capture:", shouldCaptureLead
+    );
+
+    const visitorFirstName = leadState.name ? leadState.name.split(/\s+/)[0] : null;
+    const nameUsageCount = history.filter(
+      (m) => m.role === "assistant" && visitorFirstName && m.content.includes(visitorFirstName)
+    ).length;
+
+    const systemPrompt = buildSystemPrompt({
+      detectedLanguage,
+      leadState,
+      nameUsageCount,
+      intentScore,
+      intentLevel,
+      shouldCaptureLead,
+      nextField,
+      isFirstMessage,
+      retrievedContext,
+    });
+
+    // NOTE ON STREAMING: this endpoint does not stream tokens to the client.
+    // Streaming was considered, but the route needs the FULL completion text
+    // before it can (a) detect and parse the <!--LEAD:--> block, (b) decide
+    // whether to fire the lead/confirmation emails, and (c) compute
+    // navLinks/breadcrumb/suggestedRoute — all of which are returned in the
+    // same JSON payload the frontend expects. Streaming partial text would
+    // mean showing the visitor a reply before we know if a lead should be
+    // captured, and would require a second round-trip anyway. If token-by-
+    // token streaming becomes a priority, the clean approach is to stream
+    // the reply text only (via a ReadableStream / Server-Sent Events) and
+    // run lead-detection as a separate, non-blocking follow-up call once
+    // the stream closes — happy to wire that up as a follow-up change.
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system" as const, content: systemPrompt },
+        ...history.map((h) => ({ role: h.role, content: h.content })),
+        { role: "user" as const, content: message },
+      ],
+      // Lowered from 650 → 220: forces genuinely short replies rather than
+      // relying on prompt instructions alone (models drift toward verbosity
+      // under token headroom even when told to be brief).
+      temperature: intentLevel === "hot" ? 0.4 : 0.6,
+      max_tokens: 220,
+    });
+
+    const raw = completion.choices[0]?.message?.content ?? "";
+    if (!raw) {
+      console.error("[99Visual] OpenAI returned an empty completion.");
+      return NextResponse.json(
+        { error: "Couldn't generate a response — please try again." },
+        { status: 502 }
+      );
+    }
+
+    const leadMatch = raw.match(/<!--LEAD:(\{[\s\S]*?\})-->/);
+    let lead: Lead | null = null;
+
+    if (leadMatch && !leadState.emitted) {
+      try {
+        const parsed = JSON.parse(leadMatch[1]) as Lead;
+        if (parsed.email) {
+          lead = { ...parsed, name: parsed.name || "Not provided" };
+          const convState: ConversationState = {
+            lead: leadState,
+            intentScore,
+            intentLevel,
+            detectedLanguage,
+            messageCount: history.length + 1,
+          };
+          // Awaited (not fire-and-forget): on serverless platforms the
+          // function can be frozen the instant the response is sent, so any
+          // un-awaited promise (including the Gmail retry's 3s delay) risks
+          // never completing. Awaiting guarantees both sends finish first.
+          await Promise.all([
+            sendLeadEmail(lead, convState).catch((err) =>
+              console.error("[99Visual] Lead email failed after retry:", err)
+            ),
+            sendConfirmationEmail(lead).catch((err) =>
+              console.error("[99Visual] Visitor confirmation email failed:", err)
+            ),
+          ]);
+        }
+      } catch {
+        console.error("[99Visual] Malformed LEAD JSON:", leadMatch?.[1]);
+      }
+    }
+
+    const reply = raw.replace(/<!--LEAD:\{[\s\S]*?\}-->/g, "").trim();
+
+    const { navLinks, breadcrumb } = resolveNavigation(history, message);
+
+    const lowerMsg = message.toLowerCase();
+    const suggestedRoute =
+      SERVICE_ROUTES.find(({ keywords }) => keywords.some((kw) => lowerMsg.includes(kw))) ?? null;
+
+    return NextResponse.json({
+      reply,
+      lead,
+      intentScore,
+      intentLevel,
+      detectedLanguage,
+      navLinks,
+      breadcrumb,
+      suggestedRoute: suggestedRoute ? { label: suggestedRoute.label, url: suggestedRoute.url } : null,
+    });
+  } catch (err) {
+    // Catches OpenAI API errors (rate limits, timeouts, invalid key),
+    // unexpected retrieval failures, and anything else — the visitor gets a
+    // clean message instead of a raw 500/stack trace, and the real error is
+    // logged server-side for debugging.
+    console.error("[99Visual] Unhandled error in /api/chat:", err);
+    return NextResponse.json(
+      { error: "Something went wrong on our end. Please try again or contact us at contact@99visual.com." },
+      { status: 500 }
+    );
+  }
 }
