@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 
 /* ── Animated Robot SVG Icon ── */
-function RobotIcon({ size = 36 }: { size?: number }) {
+function RobotIcon({ size = 28 }: { size?: number }) {
   return (
     <svg
       className="cb-robot"
@@ -239,10 +239,13 @@ export default function Chatbot() {
           gap: 10px;
         }
 
+        /* FIXED: matched to WhatsApp button's 58px / mobile 52px size —
+           was 62px with no mobile breakpoint, making it visibly larger
+           than the WhatsApp button, especially on small screens. */
         .cb-trigger {
           position: relative;
-          width: 62px;
-          height: 62px;
+          width: 58px;
+          height: 58px;
           border-radius: 50%;
           background: #0f0f0f;
           border: 1.5px solid rgba(249,115,22,0.5);
@@ -393,13 +396,20 @@ export default function Chatbot() {
         }
 
         /* ── CHAT WINDOW ── */
+        /* FIXED: width/height were hardcoded (340px / 500px), so on short
+           or narrow viewports (small phones, landscape mode, split-screen
+           browser windows) the window could overflow past the top or
+           bottom of the screen and get clipped. Now both dimensions are
+           capped against the actual viewport size using min()/calc, so
+           the window always fits — it just shrinks gracefully instead. */
         .cb-window {
           position: fixed;
           bottom: 102px;
           left: 28px;
           z-index: 9998;
-          width: 340px;
-          height: 500px;
+          width: min(340px, calc(100vw - 40px));
+          height: min(500px, calc(100vh - 140px));
+          max-height: 78vh;
           background: #0f0f0f;
           border: 1px solid rgba(249,115,22,0.25);
           border-radius: 18px;
@@ -677,10 +687,39 @@ export default function Chatbot() {
         .cb-send:active { transform: scale(.95); }
         .cb-send svg { color: #080808; }
 
+        /* FIXED: added a mobile breakpoint for the trigger button matching
+           the WhatsApp button's 52px mobile size — previously .cb-trigger
+           had no mobile-specific size at all, so on small screens it stayed
+           at desktop size while the WhatsApp button shrank, making the
+           mismatch even more obvious. */
+        /* FIXED: added a mobile breakpoint for the trigger button matching
+           the WhatsApp button's 52px mobile size — previously .cb-trigger
+           had no mobile-specific size at all, so on small screens it stayed
+           at desktop size while the WhatsApp button shrank, making the
+           mismatch even more obvious. Window sizing also now scales with
+           the viewport instead of a second hardcoded height. */
         @media (max-width: 480px) {
-          .cb-window { width: calc(100vw - 32px); left: 16px; bottom: 90px; }
+          .cb-window {
+            width: calc(100vw - 32px);
+            height: min(500px, calc(100vh - 130px));
+            left: 16px;
+            bottom: 90px;
+          }
           .cb-fab { bottom: 20px; left: 16px; }
+          .cb-trigger { width: 52px; height: 52px; }
           .cb-contact-item__text { font-size: .65rem; }
+        }
+
+        /* Short / landscape viewports (phones rotated, small laptops with
+           browser chrome eating vertical space) — shrink further so the
+           window still fits fully on screen instead of being clipped
+           top or bottom. */
+        @media (max-height: 600px) {
+          .cb-window {
+            height: calc(100vh - 90px);
+            bottom: 80px;
+          }
+          .cb-fab { bottom: 16px; }
         }
       `}</style>
 
@@ -796,7 +835,7 @@ export default function Chatbot() {
           className="cb-trigger"
           aria-label="Open AI chat"
         >
-          <RobotIcon size={38} />
+          <RobotIcon size={28} />
           {!open && <span className="cb-trigger__dot" aria-hidden />}
         </button>
 
