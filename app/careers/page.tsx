@@ -715,7 +715,7 @@ export default function CareersPage() {
                 Now Hiring · Bangalore &amp; Beyond
               </div>
               <h1 className="cr-hero__h1" id="cr-hero-heading">
-                Build your <em>future</em><br />with 99 Visual Solutions
+                Create Technology That <em>Makes an Impact</em>
               </h1>
               <div className="cr-hero__rule" aria-hidden="true" />
               <p className="cr-hero__sub">
