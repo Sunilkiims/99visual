@@ -3,7 +3,7 @@
 // app/components/footer.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // Footer — 99 Visual Solutions
-// Theme  : Crisp white + Indigo (#4F46E5)
+// Theme  : Crisp white + Orange (#F97316)
 // Fonts  : Playfair Display (display) + Inter (body)
 // Newsletter now requires OTP email verification before subscribing.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -384,11 +384,6 @@ const Footer: React.FC = () => {
           margin-bottom: 1.1rem;
           display: flex; align-items: center; gap: 7px;
         }
-        .ft__nav-heading-num {
-          font-family: var(--serif);
-          font-size: .85rem; font-weight: 400; font-style: italic;
-          color: var(--indigo-border); letter-spacing: 0; text-transform: none;
-        }
         .ft__nav-heading::after {
           content: ''; flex: 1; height: 1px;
           background: linear-gradient(90deg, var(--indigo-border), transparent);
@@ -611,7 +606,6 @@ const Footer: React.FC = () => {
             {/* Company */}
             <nav className="ft__col" aria-label="Company links">
               <h3 className="ft__nav-heading">
-                <span className="ft__nav-heading-num">01</span>
                 Company
               </h3>
               <ul className="ft__nav-list">
@@ -626,7 +620,6 @@ const Footer: React.FC = () => {
             {/* Services */}
             <nav className="ft__col" aria-label="Services links">
               <h3 className="ft__nav-heading">
-                <span className="ft__nav-heading-num">02</span>
                 Services
               </h3>
               <ul className="ft__nav-list">
@@ -641,7 +634,6 @@ const Footer: React.FC = () => {
             {/* Newsletter — email → OTP → done */}
             <div className="ft__col">
               <h3 className="ft__nav-heading">
-                <span className="ft__nav-heading-num">03</span>
                 Newsletter
               </h3>
 
