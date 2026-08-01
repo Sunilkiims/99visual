@@ -99,25 +99,30 @@ export default async function InsightsPage({ searchParams }: Props) {
       <main className="min-h-screen bg-gray-950">
 
         {/* Hero */}
-        <section className="pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-14 lg:pb-16 px-4 sm:px-6 md:px-8 max-w-7xl mx-auto">
-          <div className="text-center mb-8 sm:mb-10 lg:mb-12">
-            <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-3 sm:mb-4">
-              Insights & Perspectives
+        <section className="pt-20 sm:pt-24 lg:pt-28 pb-8 sm:pb-10 lg:pb-12 px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-10">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-4 sm:mb-5">
+              Insights &amp; Perspectives
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-3 leading-[1.15] tracking-tight">
               Industry Insights &{' '}
               <span className="text-orange-400">Expert Perspectives</span>
             </h1>
-            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto px-2">
-              Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.
+            <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+              Trends, technology updates, business strategies, and digital transformation insights from our experts.
             </p>
           </div>
 
           {/* Search */}
-          <div className="max-w-xl mx-auto mb-8 sm:mb-10 lg:mb-12">
+          <div className="max-w-lg mx-auto mb-7 sm:mb-9">
             <form method="GET">
-              <div className="relative">
-                <svg className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="group relative">
+                <svg
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-orange-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -125,7 +130,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                   name="search"
                   defaultValue={params.search}
                   placeholder="Search articles..."
-                  className="w-full bg-gray-900 border border-gray-800 rounded-2xl pl-11 sm:pl-12 pr-4 py-3.5 sm:py-4 text-base text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-gray-900/70 border border-gray-800 rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-orange-500/60 focus:bg-gray-900 focus:ring-4 focus:ring-orange-500/10"
                 />
               </div>
             </form>
@@ -133,13 +138,13 @@ export default async function InsightsPage({ searchParams }: Props) {
 
           {/* Category Filters */}
           <div className="-mx-4 sm:mx-0 px-4 sm:px-0">
-            <div className="flex flex-nowrap sm:flex-wrap gap-2 justify-start sm:justify-center overflow-x-auto sm:overflow-visible pb-2 sm:pb-0 scrollbar-none snap-x snap-mandatory sm:snap-none">
+            <div className="flex flex-nowrap sm:flex-wrap gap-2 justify-start sm:justify-center overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 scrollbar-none snap-x snap-mandatory sm:snap-none scroll-smooth">
               <Link
                 href="/insights"
-                className={`shrink-0 snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`shrink-0 snap-start px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                   !params.category
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-gray-900 text-gray-400 border border-gray-800'
+                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                    : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                 }`}
               >
                 All
@@ -148,14 +153,14 @@ export default async function InsightsPage({ searchParams }: Props) {
                 <Link
                   key={cat.id}
                   href={'/insights?category=' + cat.slug}
-                  className={`shrink-0 snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`shrink-0 snap-start px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                     params.category === cat.slug
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-900 text-gray-400 border border-gray-800'
+                      ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                      : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                   }`}
                 >
                   {cat.name}
-                  <span className="ml-1.5 text-xs opacity-60">{cat._count.posts}</span>
+                  <span className="ml-1.5 text-[10px] sm:text-xs opacity-60">{cat._count.posts}</span>
                 </Link>
               ))}
             </div>
@@ -164,18 +169,18 @@ export default async function InsightsPage({ searchParams }: Props) {
 
         {/* Featured Post */}
         {featuredPost && !isFiltered && page === 1 && (
-          <section className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto mb-10 sm:mb-14 lg:mb-16">
+          <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto mb-10 sm:mb-14">
             <Link href={'/insights/' + featuredPost.slug} className="group block">
-              <div className="relative bg-gray-900 border border-gray-800 rounded-2xl sm:rounded-3xl overflow-hidden">
+              <div className="relative bg-gray-900/60 border border-gray-800 rounded-2xl sm:rounded-[28px] overflow-hidden transition-all duration-300 hover:border-gray-700 hover:shadow-2xl hover:shadow-black/40">
                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                  <div className="relative h-56 sm:h-72 lg:h-full lg:min-h-[300px] bg-gray-900 flex items-center justify-center">
+                  <div className="relative h-52 sm:h-64 lg:h-full lg:min-h-[320px] bg-gray-900 flex items-center justify-center overflow-hidden">
                     {featuredPost.featuredImage ? (
                       <Image
                         src={featuredPost.featuredImage.url}
                         alt={featuredPost.title}
                         fill
                         sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-contain"
+                        className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -183,13 +188,13 @@ export default async function InsightsPage({ searchParams }: Props) {
                       </div>
                     )}
                   </div>
-                  <div className="p-6 sm:p-8 lg:p-12 flex flex-col justify-center">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                  <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+                    <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
                         Featured
                       </span>
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-medium"
+                        className="px-2.5 py-1 rounded-full text-[11px] font-medium"
                         style={{
                           backgroundColor: (featuredPost.category.color || '#f97316') + '15',
                           color: featuredPost.category.color || '#f97316',
@@ -198,19 +203,19 @@ export default async function InsightsPage({ searchParams }: Props) {
                         {featuredPost.category.name}
                       </span>
                     </div>
-                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3 sm:mb-4 leading-snug group-hover:text-orange-400 transition-colors">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white mb-3 leading-snug tracking-tight transition-colors group-hover:text-orange-400">
                       {featuredPost.title}
                     </h2>
                     {featuredPost.excerpt && (
-                      <p className="text-gray-400 text-sm sm:text-base mb-5 sm:mb-6 line-clamp-3">{featuredPost.excerpt}</p>
+                      <p className="text-gray-400 text-sm leading-relaxed mb-5 line-clamp-3">{featuredPost.excerpt}</p>
                     )}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-500">
-                      <span>{featuredPost.author.name}</span>
-                      <span className="hidden sm:inline">·</span>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                      <span className="text-gray-400">{featuredPost.author.name}</span>
+                      <span className="text-gray-700">·</span>
                       <span>{featuredPost.readingTime} min read</span>
                       {featuredPost.publishedAt && (
                         <>
-                          <span className="hidden sm:inline">·</span>
+                          <span className="text-gray-700">·</span>
                           <span>
                             {new Date(featuredPost.publishedAt).toLocaleDateString('en-IN', {
                               day: 'numeric',
@@ -229,11 +234,11 @@ export default async function InsightsPage({ searchParams }: Props) {
         )}
 
         {/* Posts Grid */}
-        <section className="px-4 sm:px-6 md:px-8 max-w-7xl mx-auto pb-16 sm:pb-20">
+        <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto pb-16 sm:pb-20">
           {posts.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
               <p className="text-gray-500 text-base sm:text-lg mb-4">No articles found</p>
-              <Link href="/insights" className="text-orange-400 transition-colors">
+              <Link href="/insights" className="text-orange-400 hover:text-orange-300 transition-colors">
                 View all articles
               </Link>
             </div>
@@ -244,16 +249,16 @@ export default async function InsightsPage({ searchParams }: Props) {
                   <Link
                     key={post.id}
                     href={'/insights/' + post.slug}
-                    className="group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden transition-all hover:-translate-y-1"
+                    className="group bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-gray-700 hover:shadow-xl hover:shadow-black/30"
                   >
-                    <div className="relative h-44 sm:h-48 bg-gray-900 flex items-center justify-center">
+                    <div className="relative aspect-[16/10] bg-gray-900 flex items-center justify-center overflow-hidden">
                       {post.featuredImage ? (
                         <Image
                           src={post.featuredImage.url}
                           alt={post.title}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                          className="object-contain"
+                          className="object-contain transition-transform duration-500 group-hover:scale-[1.04]"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -262,7 +267,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                       )}
                       <div className="absolute top-3 left-3">
                         <span
-                          className="px-2.5 py-1 rounded-full text-xs font-medium"
+                          className="px-2.5 py-1 rounded-full text-[11px] font-medium backdrop-blur-sm"
                           style={{
                             backgroundColor: (post.category.color || '#f97316') + '20',
                             color: post.category.color || '#f97316',
@@ -273,13 +278,13 @@ export default async function InsightsPage({ searchParams }: Props) {
                       </div>
                     </div>
                     <div className="p-4 sm:p-5">
-                      <h3 className="text-white font-semibold text-base sm:text-lg mb-2 line-clamp-2 group-hover:text-orange-400 transition-colors">
+                      <h3 className="text-white font-semibold text-sm sm:text-base mb-2 leading-snug line-clamp-2 transition-colors group-hover:text-orange-400">
                         {post.title}
                       </h3>
                       {post.excerpt && (
-                        <p className="text-gray-400 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
+                        <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
                       )}
-                      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-500">
+                      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-500 pt-3 border-t border-gray-800/80">
                         <span className="truncate max-w-[45%]">{post.author.name}</span>
                         <div className="flex items-center gap-2 whitespace-nowrap">
                           <span>{post.readingTime} min read</span>
@@ -304,12 +309,12 @@ export default async function InsightsPage({ searchParams }: Props) {
               {totalPages > 1 && (
                 <nav
                   aria-label="Pagination"
-                  className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 mt-10 sm:mt-12"
+                  className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 mt-10 sm:mt-14"
                 >
                   {page > 1 && (
                     <Link
                       href={buildPageHref(page - 1)}
-                      className="px-3 sm:px-4 py-2 bg-gray-900 border border-gray-800 text-gray-300 rounded-xl text-xs sm:text-sm transition-colors"
+                      className="px-3 sm:px-4 h-9 sm:h-10 inline-flex items-center bg-gray-900/70 border border-gray-800 text-gray-300 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 hover:border-gray-700 hover:text-white"
                     >
                       Prev
                     </Link>
@@ -328,10 +333,10 @@ export default async function InsightsPage({ searchParams }: Props) {
                         key={p}
                         href={buildPageHref(p)}
                         aria-current={p === page ? 'page' : undefined}
-                        className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-xs sm:text-sm font-medium transition-colors ${
+                        className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                           p === page
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-900 border border-gray-800 text-gray-400'
+                            ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                            : 'bg-gray-900/70 border border-gray-800 text-gray-400 hover:border-gray-700 hover:text-white'
                         }`}
                       >
                         {p}
@@ -342,7 +347,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                   {page < totalPages && (
                     <Link
                       href={buildPageHref(page + 1)}
-                      className="px-3 sm:px-4 py-2 bg-gray-900 border border-gray-800 text-gray-300 rounded-xl text-xs sm:text-sm transition-colors"
+                      className="px-3 sm:px-4 h-9 sm:h-10 inline-flex items-center bg-gray-900/70 border border-gray-800 text-gray-300 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 hover:border-gray-700 hover:text-white"
                     >
                       Next
                     </Link>
