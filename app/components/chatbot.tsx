@@ -762,7 +762,7 @@ export default function Chatbot() {
                     <RobotIcon size={52} />
                   </div>
                   <p className="cb-empty__text">
-                    Namaste 🙏 I&apos;m Vera, your assistant from 99 Visual.<br />
+                    Namaste 🙏 I&apos;m Nova, your assistant from 99 Visual.<br />
                     Ask me anything about our services.
                   </p>
                 </div>
