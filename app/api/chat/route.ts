@@ -78,16 +78,6 @@ type ConversationState = {
   messageCount: number;
 };
 
-// Best-effort visitor geolocation, resolved from the request IP purely for
-// the internal lead-notification email — never shown to the visitor, and
-// never blocks or fails the chat response if it can't be resolved.
-type LocationInfo = {
-  ip: string;
-  city: string;
-  region: string;
-  country: string;
-};
-
 // Shape of an incoming request body, validated at runtime below (no schema
 // library added — the checks are simple enough to do by hand and avoid a
 // new dependency for a single endpoint).
@@ -191,78 +181,6 @@ const gmailTransporter =
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// VISITOR LOCATION (best-effort, internal email only)
-// ═══════════════════════════════════════════════════════════════════════════════
-// Same ip-api.com geolocation approach already used on /api/contact — kept
-// consistent so lead emails from chat and from the contact form show
-// location the same way. This is fire-and-forget-safe: a lookup failure
-// (private/dev IP, ip-api.com down, timeout) just omits location from the
-// email rather than failing the request or blocking the chat reply.
-
-function getClientIp(req: Request): string | null {
-  const forwardedFor = req.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    const first = forwardedFor.split(",")[0]?.trim();
-    if (first) return first;
-  }
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
-
-  const cfIp = req.headers.get("cf-connecting-ip");
-  if (cfIp) return cfIp.trim();
-
-  return null;
-}
-
-const PRIVATE_IP_RE = /^(127\.|10\.|192\.168\.|::1$|localhost$)/i;
-
-async function resolveLocation(ip: string | null): Promise<LocationInfo | null> {
-  if (!ip || PRIVATE_IP_RE.test(ip)) {
-    return null; // local/dev traffic — nothing meaningful to resolve
-  }
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2500);
-
-    const res = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,message,country,regionName,city,query`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      console.error("[99Visual] Geolocation lookup failed with status:", res.status);
-      return null;
-    }
-
-    const data = (await res.json()) as {
-      status: string;
-      message?: string;
-      country?: string;
-      regionName?: string;
-      city?: string;
-      query?: string;
-    };
-
-    if (data.status !== "success") {
-      console.warn("[99Visual] Geolocation lookup returned no result:", data.message ?? "unknown reason");
-      return null;
-    }
-
-    return {
-      ip: data.query || ip,
-      city: data.city || "",
-      region: data.regionName || "",
-      country: data.country || "",
-    };
-  } catch (err) {
-    console.error("[99Visual] Geolocation lookup errored, continuing without it:", err);
-    return null;
-  }
-}
-
 function intentBadge(level: IntentLevel): string {
   return {
     browsing: "🔵 Browsing",
@@ -272,7 +190,7 @@ function intentBadge(level: IntentLevel): string {
   }[level];
 }
 
-async function sendLeadEmail(lead: Lead, state: ConversationState, location: LocationInfo | null): Promise<void> {
+async function sendLeadEmail(lead: Lead, state: ConversationState): Promise<void> {
   if (!gmailTransporter) {
     console.error("[99Visual] Skipping lead email — EMAIL_USER/EMAIL_PASS not configured.");
     return;
@@ -313,14 +231,9 @@ async function sendLeadEmail(lead: Lead, state: ConversationState, location: Loc
       <tr style="background:#f8fafc;"><td style="padding:12px 16px;color:#64748b;font-weight:600;width:150px;">👤 Name</td><td style="padding:12px 16px;color:#0f172a;font-weight:700;font-size:16px;">${lead.name}</td></tr>
       <tr><td style="padding:12px 16px;color:#64748b;font-weight:600;">📧 Email</td><td style="padding:12px 16px;"><a href="mailto:${lead.email}" style="color:#f97316;font-weight:700;text-decoration:none;">${lead.email}</a></td></tr>
       <tr style="background:#f8fafc;"><td style="padding:12px 16px;color:#64748b;font-weight:600;">📱 Phone</td><td style="padding:12px 16px;color:#0f172a;">${lead.phone || "Not provided"}</td></tr>
-      <tr><td style="padding:12px 16px;color:#64748b;font-weight:600;vertical-align:top;">📍 Location</td><td style="padding:12px 16px;color:#0f172a;">${
-        location
-          ? `${[location.city, location.region, location.country].filter(Boolean).join(", ") || "Unknown"} <span style="color:#94a3b8;font-size:12px;">(IP: ${location.ip})</span>`
-          : '<span style="color:#94a3b8;">Not available</span>'
-      }</td></tr>
-      <tr style="background:#f8fafc;"><td style="padding:12px 16px;color:#64748b;font-weight:600;vertical-align:top;">💼 Requirement</td><td style="padding:12px 16px;color:#0f172a;">${lead.requirement || "Not specified"}</td></tr>
-      <tr><td style="padding:12px 16px;color:#64748b;font-weight:600;vertical-align:top;">💬 Original Query</td><td style="padding:12px 16px;color:#475569;font-style:italic;">"${lead.query || "—"}"</td></tr>
-      <tr style="background:#f8fafc;"><td style="padding:12px 16px;color:#64748b;font-weight:600;">🌐 Language</td><td style="padding:12px 16px;color:#0f172a;">${state.detectedLanguage.toUpperCase()}</td></tr>
+      <tr><td style="padding:12px 16px;color:#64748b;font-weight:600;vertical-align:top;">💼 Requirement</td><td style="padding:12px 16px;color:#0f172a;">${lead.requirement || "Not specified"}</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:12px 16px;color:#64748b;font-weight:600;vertical-align:top;">💬 Original Query</td><td style="padding:12px 16px;color:#475569;font-style:italic;">"${lead.query || "—"}"</td></tr>
+      <tr><td style="padding:12px 16px;color:#64748b;font-weight:600;">🌐 Language</td><td style="padding:12px 16px;color:#0f172a;">${state.detectedLanguage.toUpperCase()}</td></tr>
     </table>
     <div style="margin-top:24px;padding:18px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;">
       <p style="margin:0 0 8px;font-size:13px;color:#166534;font-weight:700;">📊 Intent Analysis</p>
