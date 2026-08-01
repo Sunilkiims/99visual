@@ -778,12 +778,21 @@ Emit ONCE at the very end of a reply, on its own line, when name + email are bot
           detectedLanguage,
           messageCount: history.length + 1,
         };
-        sendLeadEmail(lead, convState).catch((err) =>
-          console.error("[99Visual] Lead email failed after retry:", err)
-        );
-        sendConfirmationEmail(lead).catch((err) =>
-          console.error("[99Visual] Visitor confirmation email failed:", err)
-        );
+        // FIXED: these were previously fire-and-forget (not awaited).
+        // On Vercel, once this route returns its response, the serverless
+        // function can be frozen/torn down immediately — any promise that
+        // wasn't awaited (or kept alive via waitUntil) may never finish,
+        // which is why emails worked locally (long-running Node process)
+        // but silently failed to arrive when deployed. Awaiting them here
+        // guarantees both sends complete before the response goes out.
+        await Promise.all([
+          sendLeadEmail(lead, convState).catch((err) =>
+            console.error("[99Visual] Lead email failed after retry:", err)
+          ),
+          sendConfirmationEmail(lead).catch((err) =>
+            console.error("[99Visual] Visitor confirmation email failed:", err)
+          ),
+        ]);
       }
     } catch {
       console.error("[99Visual] Malformed LEAD JSON:", leadMatch?.[1]);
