@@ -13,7 +13,7 @@
 //   3. CTA rebuilt to match Services' .sv-cta exactly (light surface, radial
 //      orb, Space Grotesk heading), wired through <ConsultationCTA/> so the
 //      "talk to us" intent behaves identically across Services/About/
-//      Partner/Careers, plus a sticky mobile CTA bar. The "Apply Now" /
+//      Partner/Careers, plus a sticky mobile CTA bar. The "Apply Today" /
 //      "View Open Positions" CTAs stay as real navigation (Link/anchor)
 //      since those are job-application actions, not consultation requests.
 //   4. Career Areas, Why Us, Open Roles, and FAQ sections (content + JSON-LD)
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   title: "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
 
   description:
-    "Join 99 Visual Solutions in Bangalore — hiring web developers, UI/UX designers, 3D visualization artists & digital marketing specialists. 500+ projects delivered. Apply now.",
+    "Join 99 Visual Solutions — hiring remote web developers, UI/UX designers, 3D visualization artists & digital marketing specialists. 500+ projects delivered. Explore open roles.",
 
   metadataBase: new URL(BASE),
 
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
     description:
-      "Join 99 Visual Solutions — hiring web developers, UI/UX designers, 3D artists & digital marketers in Bangalore. 500+ projects delivered, 5+ years expertise.",
+      "Join 99 Visual Solutions — hiring remote web developers, UI/UX designers, 3D artists & digital marketers. 500+ projects delivered, 5+ years expertise.",
     url: `${BASE}/careers`,
     siteName: "99 Visual Solutions",
     images: [
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "Join Our Team | Careers at 99 Visual Solutions",
-    description: "We're hiring web developers, UI/UX designers, 3D artists & digital marketers in Bangalore. Build your career with 99 Visual Solutions.",
+    description: "We're hiring remote web developers, UI/UX designers, 3D artists & digital marketers. Build your career with 99 Visual Solutions.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
@@ -131,10 +131,6 @@ const JOB_VALID_THROUGH = new Date(
 // ─────────────────────────────────────────────────────────────────────────────
 const jobAddress = {
   "@type":         "PostalAddress",
-  streetAddress:   "Varthur",
-  addressLocality: "Bengaluru",
-  addressRegion:   "Karnataka",
-  postalCode:      "560087",
   addressCountry:  "IN",
 };
 
@@ -151,6 +147,7 @@ interface JobPosting {
   workHours: string;
   hiringOrganization: object;
   jobLocation: object;
+  jobLocationType: string;
   applicantLocationRequirements: object;
   directApply: boolean;
   url: string;
@@ -182,9 +179,10 @@ const makeJobPosting = (
   hiringOrganization: hiringOrg,
   jobLocation: {
     "@type": "Place",
-    name:    "99 Visual Solutions Office, Bengaluru",
+    name:    "99 Visual Solutions (Remote)",
     address: jobAddress,
   },
+  jobLocationType: "TELECOMMUTE",
   applicantLocationRequirements: { "@type": "Country", name: "India" },
   directApply: true,
   url:         `${BASE}/contact`,
@@ -214,7 +212,7 @@ const faqItems = [
   {
     question: "What jobs is 99 Visual Solutions currently hiring for?",
     answer:
-      `99 Visual Solutions is actively hiring for four roles at its Bengaluru office: Web Developer, UI/UX Designer, Digital Marketing Specialist, and 3D Visualization Artist. All positions are full-time and based in Bangalore, India. You can apply directly through the contact page at 99visual.com/contact or by emailing ${CONTACT_EMAIL} with your resume and portfolio.`,
+      `99 Visual Solutions is actively hiring for four remote roles: Web Developer, UI/UX Designer, Digital Marketing Specialist, and 3D Visualization Artist. All positions are full-time and open to candidates working remotely from anywhere in India. You can apply directly through the contact page at 99visual.com/contact or by emailing ${CONTACT_EMAIL} with your resume and portfolio.`,
   },
   {
     question: "Is 99 Visual Solutions a good company for freshers?",
@@ -224,7 +222,7 @@ const faqItems = [
   {
     question: "Does 99 Visual Solutions offer remote or hybrid work options?",
     answer:
-      "Work arrangements vary by role and project requirements. Candidates interested in remote or hybrid options should apply at 99visual.com/contact and discuss preferences during the interview process. Our team is open to flexible arrangements for the right candidates, and we have experience managing distributed teams across time zones for international projects.",
+      "Yes — 99 Visual Solutions is a remote-first company, and all open roles are available for fully remote work. Our team has extensive experience collaborating across time zones on international projects, so you can work from wherever suits you best. Apply at 99visual.com/contact to discuss your working setup during the interview process.",
   },
   {
     question: "How do I apply for a job at 99 Visual Solutions?",
@@ -276,7 +274,7 @@ const careersPageNode = {
   url:           `${BASE}/careers`,
   name:          "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
   description:
-    "Explore open positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today in Bangalore.",
+    "Explore open remote positions at 99 Visual Solutions: web developers, UI/UX designers, 3D visualization artists, SEO & digital marketing specialists. Apply today.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -325,7 +323,7 @@ const careersGraph = buildGraph(
   makeJobPosting(
     "job-web-developer",
     "Web Developer",
-    `Join 99 Visual Solutions in Bengaluru as a Web Developer. Build scalable, performant web applications and platforms for global clients using modern React and Next.js stacks. Collaborate with designers, QA engineers, and project managers to deliver pixel-perfect, accessible digital products. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
+    `Join 99 Visual Solutions as a remote Web Developer. Build scalable, performant web applications and platforms for global clients using modern React and Next.js stacks. Collaborate with designers, QA engineers, and project managers to deliver pixel-perfect, accessible digital products. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
     ["React", "Next.js", "TypeScript", "Node.js", "REST APIs", "Git", "Tailwind CSS", "PostgreSQL"],
     [
       "Design and implement scalable front-end and back-end web solutions.",
@@ -344,7 +342,7 @@ const careersGraph = buildGraph(
   makeJobPosting(
     "job-uiux-designer",
     "UI/UX Designer",
-    `99 Visual Solutions is hiring a UI/UX Designer in Bengaluru. Create intuitive, human-centred designs that elevate every user touchpoint and brand interaction. Own the full design process — from research and wireframes through to high-fidelity prototypes and design system maintenance. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
+    `99 Visual Solutions is hiring a remote UI/UX Designer. Create intuitive, human-centred designs that elevate every user touchpoint and brand interaction. Own the full design process — from research and wireframes through to high-fidelity prototypes and design system maintenance. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
     ["Figma", "Adobe XD", "Prototyping", "User Research", "Design Systems", "Accessibility", "Interaction Design"],
     [
       "Lead end-to-end UX/UI design for web and mobile products.",
@@ -363,7 +361,7 @@ const careersGraph = buildGraph(
   makeJobPosting(
     "job-digital-marketing",
     "Digital Marketing Specialist",
-    `99 Visual Solutions is looking for a Digital Marketing Specialist in Bengaluru. Drive measurable growth through SEO, paid campaigns (Google Ads, Meta Ads), content strategy, and data-backed creative execution. Own performance metrics and report directly to leadership. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
+    `99 Visual Solutions is looking for a remote Digital Marketing Specialist. Drive measurable growth through SEO, paid campaigns (Google Ads, Meta Ads), content strategy, and data-backed creative execution. Own performance metrics and report directly to leadership. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
     ["SEO", "Google Ads", "Meta Ads", "Google Analytics 4", "Content Marketing", "Email Marketing", "Copywriting", "Ahrefs", "SEMrush"],
     [
       "Plan, execute, and optimise multi-channel digital marketing campaigns.",
@@ -382,7 +380,7 @@ const careersGraph = buildGraph(
   makeJobPosting(
     "job-3d-artist",
     "3D Visualization Artist",
-    `99 Visual Solutions is hiring a 3D Visualization Artist in Bengaluru. Create photorealistic 3D renders, animations, and interactive experiences for architecture, product, and GIS projects. Work alongside our CAD/GIS and development teams on next-generation visualisation pipelines. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
+    `99 Visual Solutions is hiring a remote 3D Visualization Artist. Create photorealistic 3D renders, animations, and interactive experiences for architecture, product, and GIS projects. Work alongside our CAD/GIS and development teams on next-generation visualisation pipelines. To apply, visit ${BASE}/contact or email ${CONTACT_EMAIL}.`,
     ["3ds Max", "Blender", "V-Ray", "Unreal Engine", "AutoCAD", "Photoshop", "After Effects", "GIS"],
     [
       "Produce high-quality 3D models, renders, and animations for client projects.",
@@ -453,10 +451,10 @@ const whyItems = [
 ];
 
 const openRoles = [
-  { title: "Web Developer",                dept: "Development", type: "Full-time", loc: "India" },
-  { title: "UI/UX Designer",               dept: "Design",      type: "Full-time", loc: "India" },
-  { title: "Digital Marketing Specialist", dept: "Marketing",   type: "Full-time", loc: "India" },
-  { title: "3D Visualization Artist",      dept: "Innovation",  type: "Full-time", loc: "India" },
+  { title: "Web Developer",                dept: "Development", type: "Full-time", loc: "Remote" },
+  { title: "UI/UX Designer",               dept: "Design",      type: "Full-time", loc: "Remote" },
+  { title: "Digital Marketing Specialist", dept: "Marketing",   type: "Full-time", loc: "Remote" },
+  { title: "3D Visualization Artist",      dept: "Innovation",  type: "Full-time", loc: "Remote" },
 ];
 
 // Illustrative ticker, mirrors the mechanism on Services/About/Partner.
@@ -712,7 +710,7 @@ export default function CareersPage() {
             <div className="cr-hero__content">
               <div className="cr-hero__eyebrow" aria-hidden="true">
                 <span className="cr-hero__dot" />
-                Now Hiring · Bangalore &amp; Beyond
+                Now Hiring · Remote-First
               </div>
               <h1 className="cr-hero__h1" id="cr-hero-heading">
                 Create Technology That <em>Makes an Impact</em>
@@ -723,7 +721,7 @@ export default function CareersPage() {
                 shape the future of digital experiences together.
               </p>
               <div className="cr-hero__actions">
-                <a href="#open-roles" className="cr-hero__btn--primary" aria-label="View open positions at 99 Visual Solutions Bangalore">
+                <a href="#open-roles" className="cr-hero__btn--primary" aria-label="View open remote positions at 99 Visual Solutions">
                   View Open Positions
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -827,13 +825,13 @@ export default function CareersPage() {
           <div className="c-roles__inner">
             <div className="c-roles__header">
               <span className="c-section-label">Open positions</span>
-              <h2 className="c-section-h2" id="c-roles-heading">Current Job Openings in Bangalore</h2>
+              <h2 className="c-section-h2" id="c-roles-heading">Current Remote Job Openings</h2>
               <p className="c-section-sub" style={{ margin:"0 auto" }}>
                 We&apos;re actively hiring across all disciplines. Don&apos;t see a perfect fit?
                 Apply anyway — we&apos;re always interested in exceptional talent.
               </p>
             </div>
-            <ul className="c-roles__list" aria-label="Open job listings at 99 Visual Solutions Bangalore">
+            <ul className="c-roles__list" aria-label="Open remote job listings at 99 Visual Solutions">
               {openRoles.map(({ title, dept, type, loc }) => (
                 <li className="c-role-row" key={title}>
                   <div className="c-role-row__left">
@@ -845,8 +843,8 @@ export default function CareersPage() {
                       <span className="c-role-row__tag">{loc}</span>
                     </div>
                   </div>
-                  <Link href="/contact" className="c-role-row__apply" aria-label={`Apply for ${title} position at 99 Visual Solutions, ${loc}`}>
-                    Apply Now
+                  <Link href="/contact" className="c-role-row__apply" aria-label={`Apply for the remote ${title} position at 99 Visual Solutions`}>
+                    Apply Today
                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                       <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -907,7 +905,7 @@ export default function CareersPage() {
               excellence across web development, design, and digital marketing.
               We invest in people who are curious, driven, and bold.
             </p>
-            <Link href="/contact" className="cr-cta__btn" aria-label="Apply for a job at 99 Visual Solutions Bangalore">
+            <Link href="/contact" className="cr-cta__btn" aria-label="Apply for a remote job at 99 Visual Solutions">
               Join Our Team
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -918,7 +916,7 @@ export default function CareersPage() {
 
         {/* ══ STICKY MOBILE CTA ═══════════════════════════════════════════ */}
         <div className="cr-sticky-cta">
-          <Link href="/contact" className="cr-sticky-cta__btn">Apply Now</Link>
+          <Link href="/contact" className="cr-sticky-cta__btn">Apply Today</Link>
         </div>
       </div>
 
