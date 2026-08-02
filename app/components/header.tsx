@@ -284,7 +284,7 @@ const Header = () => {
           -webkit-mask-composite: xor;
                   mask-composite: exclude;
           opacity: 0;
-          animation: border-spin 3.4s linear infinite;
+          animation: border-spin 1.4s linear infinite;
           animation-play-state: paused;
           transition: opacity 0.35s ease;
           pointer-events: none;
