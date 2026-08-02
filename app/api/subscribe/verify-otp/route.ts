@@ -44,7 +44,7 @@ async function sendConfirmationEmail(email: string) {
     </a>
   </div>
   <div style="background:#f1f5f9;padding:14px 36px;">
-    <p style="color:#94a3b8;font-size:12px;margin:0;">99 Visual Solutions · Bengaluru, India · 99visual.com</p>
+    <p style="color:#94a3b8;font-size:12px;margin:0;">99 Visual Solutions · Bengaluru, India · <a href="https://www.99visual.com" target="_blank" rel="noopener noreferrer" style="color:#94a3b8;text-decoration:underline;">99visual.com</a></p>
   </div>
 </div>`;
 
