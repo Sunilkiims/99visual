@@ -39,7 +39,7 @@ async function sendConfirmationEmail(email: string) {
     <p style="color:#0f172a;font-size:14px;line-height:1.6;margin:0 0 16px;">
       While you're here, check out our Welcome Kit — a curated set of insights to help you get started.
     </p>
-    <a href="https://www.99visual.com/insights" style="display:inline-block;background:#4F46E5;color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:8px;">
+    <a href="https://www.99visual.com/insights" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#4F46E5;color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:8px;">
       Explore the Welcome Kit
     </a>
   </div>

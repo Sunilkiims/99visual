@@ -392,7 +392,7 @@ async function sendConfirmationEmail(lead: Lead): Promise<void> {
     </div>
     <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0;">
       In the meantime, feel free to browse our
-      <a href="https://www.99visual.com/services" style="color:#f97316;font-weight:600;text-decoration:none;">Services</a>
+      <a href="https://www.99visual.com/" target="_blank" rel="noopener noreferrer" style="color:#f97316;font-weight:600;text-decoration:none;">Website</a>
       or reply directly to this email if you'd like to add anything.
     </p>
   </div>
