@@ -131,6 +131,19 @@ function useFocusTrap(ref: React.RefObject<HTMLElement | null>, active: boolean)
   }, [active, ref]);
 }
 
+/* Restarts the one-shot border-spin animation on the pseudo-element by
+   toggling a class with a forced reflow in between. Without the reflow,
+   the browser coalesces the remove+add into a no-op and the animation
+   never restarts on a second hover. Also clears the "done" (vanished)
+   state left over from a previous pass so the ring is visible again. */
+function restartCardSpin(el: HTMLElement) {
+  el.classList.remove('svc-card--spin', 'svc-card--spin-done');
+  // Force a synchronous style flush so the class removal actually commits
+  // before we add it back — this is what makes the animation replay.
+  void el.offsetWidth;
+  el.classList.add('svc-card--spin');
+}
+
 const Header = () => {
   const [mobileMenuOpen,     setMobileMenuOpen]     = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
@@ -233,6 +246,12 @@ const Header = () => {
            card uses the exact same class, keyframes, duration and easing,
            the motion is identical everywhere. Only the ring's colour
            (--card-glow) differs per service, set inline per card.
+
+           Play behaviour: the spin is a single pass, not a loop. It's
+           triggered by JS adding the .svc-card--spin class (with a forced
+           reflow) on every hover/focus-in, so the ring always restarts
+           cleanly from 0deg rather than looping continuously or resuming
+           mid-rotation from a previous hover.
         ═══════════════════════════════════════════════════════════════ */
         @property --border-angle {
           syntax: '<angle>';
@@ -258,12 +277,9 @@ const Header = () => {
           transform: translateY(-4px);
         }
 
-        /* Rotating light ring — dormant at rest (opacity 0, animation
-           paused) and only spins up on hover/focus. animation-play-state
-           is what makes this "start on hover" rather than "always running,
-           just dim": when paused, the gradient holds its last angle, so
-           resuming on the next hover continues smoothly instead of
-           snapping back to a reset starting position. */
+        /* Rotating light ring — invisible and unanimated at rest. It only
+           becomes visible on hover/focus, and only spins when the
+           .svc-card--spin class is present (added by JS on hover-in). */
         .svc-card::before {
           content: "";
           position: absolute;
@@ -284,8 +300,7 @@ const Header = () => {
           -webkit-mask-composite: xor;
                   mask-composite: exclude;
           opacity: 0;
-          animation: border-spin 1.4s linear infinite;
-          animation-play-state: paused;
+          animation: none;
           transition: opacity 0.35s ease;
           pointer-events: none;
           will-change: opacity;
@@ -294,13 +309,31 @@ const Header = () => {
         .svc-card:hover::before,
         .svc-card:focus-visible::before {
           opacity: 1;
-          animation-play-state: running;
+        }
+
+        /* One-shot spin: runs exactly once (no infinite loop) and holds
+           its end state via forwards. Toggled on/off by JS. */
+        .svc-card--spin::before {
+          animation: border-spin 1.4s linear 1 forwards;
+        }
+
+        /* Once the single pass finishes, JS (onAnimationEnd) adds this
+           class so the ring fades out and vanishes — even if the mouse
+           is still hovering — instead of sitting there statically.
+           Higher specificity (class + pseudo-class + pseudo-element) is
+           needed so this beats the plain :hover/:focus-visible opacity
+           rule above. */
+        .svc-card--spin-done::before,
+        .svc-card--spin-done:hover::before,
+        .svc-card--spin-done:focus-visible::before {
+          opacity: 0;
+          transition: opacity 0.4s ease;
         }
 
         /* Respect reduced-motion: keep the border visible but static
            instead of forcing a spin on visitors who've opted out. */
         @media (prefers-reduced-motion: reduce) {
-          .svc-card::before {
+          .svc-card--spin::before {
             animation: none;
           }
         }
@@ -430,8 +463,20 @@ const Header = () => {
                               href={svc.href}
                               role="menuitem"
                               onClick={() => setServicesOpen(false)}
-                              onMouseEnter={() => setHoveredIdx(idx)}
+                              onMouseEnter={(e) => {
+                                setHoveredIdx(idx);
+                                restartCardSpin(e.currentTarget);
+                              }}
                               onMouseLeave={() => setHoveredIdx(null)}
+                              onFocus={(e) => restartCardSpin(e.currentTarget)}
+                              onAnimationEnd={(e) => {
+                                // Only react to the ring's own animation
+                                // (::before), not any other animated
+                                // descendant bubbling up.
+                                if (e.pseudoElement === '::before') {
+                                  e.currentTarget.classList.add('svc-card--spin-done');
+                                }
+                              }}
                               aria-current={active ? 'page' : undefined}
                               style={{ ['--card-glow' as string]: svc.glow } as React.CSSProperties}
                               className={clsx(
