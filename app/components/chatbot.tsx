@@ -155,6 +155,31 @@ function ContactBar() {
   );
 }
 
+/* ── Voice types (browser Speech APIs aren't in default TS DOM lib) ── */
+interface SpeechRecognitionResultLike {
+  isFinal: boolean;
+  0: { transcript: string };
+}
+interface SpeechRecognitionEventLike extends Event {
+  resultIndex: number;
+  results: ArrayLike<SpeechRecognitionResultLike>;
+}
+interface SpeechRecognitionErrorEventLike extends Event {
+  error: string;
+}
+interface SpeechRecognitionLike extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((e: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((e: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+  onstart: (() => void) | null;
+}
+
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -164,6 +189,32 @@ export default function Chatbot() {
   const [showHello, setShowHello] = useState(false);
   const [detectedLanguage, setDetectedLanguage] = useState("en");
   const chatRef = useRef<HTMLDivElement>(null);
+
+  /* ── Voice assistant state ── */
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [voiceReplyEnabled, setVoiceReplyEnabled] = useState(true);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [sttSupported, setSttSupported] = useState(true);
+  const [ttsSupported, setTtsSupported] = useState(true);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const manualStopRef = useRef(false);
+  const finalTranscriptRef = useRef("");
+
+  // Detect browser support once on mount (client-only — SSR has no window).
+  useEffect(() => {
+    const SR =
+      (window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognitionLike }).webkitSpeechRecognition;
+    setSttSupported(!!SR);
+    setTtsSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+
+    // Stop any in-flight mic/speech when the widget unmounts (e.g. route change).
+    return () => {
+      recognitionRef.current?.abort();
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -175,9 +226,12 @@ export default function Chatbot() {
     }
   }, [open]);
 
-  const sendMessage = async () => {
-    if (!message.trim()) return;
-    const userText = message;
+  // Accepts an optional override so voice input (which lands in `message`
+  // via state, async) can be sent immediately without waiting on a
+  // re-render — same request/response handling as the existing text flow.
+  const sendMessage = async (overrideText?: string, spokenReply = false) => {
+    const userText = (overrideText ?? message).trim();
+    if (!userText) return;
     setMessages((prev) => [...prev, { role: "user", text: userText }]);
     setMessage("");
     setLoading(true);
@@ -202,8 +256,11 @@ export default function Chatbot() {
         { role: "assistant", content: data.reply },
       ]);
       if (data.detectedLanguage) setDetectedLanguage(data.detectedLanguage);
+      if (spokenReply && voiceReplyEnabled && data.reply) speak(data.reply);
     } catch {
-      setMessages((prev) => [...prev, { role: "bot", text: "Something went wrong. Please try again." }]);
+      const fallback = "Something went wrong. Please try again.";
+      setMessages((prev) => [...prev, { role: "bot", text: fallback }]);
+      if (spokenReply && voiceReplyEnabled) speak(fallback);
     } finally {
       setLoading(false);
     }
@@ -217,6 +274,111 @@ export default function Chatbot() {
     setMessages([]);
     setHistory([]);
     setDetectedLanguage("en");
+    stopSpeaking();
+  };
+
+  /* ── Text-to-Speech (browser-native) ── */
+  const speak = (text: string) => {
+    if (!ttsSupported) return;
+    try {
+      window.speechSynthesis.cancel(); // don't overlap with any prior utterance
+      // Strip markdown links / bare URLs so TTS doesn't read out raw syntax.
+      const clean = text
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, "$1")
+        .replace(/https?:\/\/[^\s<>"]+/g, "")
+        .trim();
+      if (!clean) return;
+      const utterance = new SpeechSynthesisUtterance(clean);
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.onstart = () => setSpeaking(true);
+      utterance.onend = () => setSpeaking(false);
+      utterance.onerror = () => setSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      setSpeaking(false);
+    }
+  };
+
+  const stopSpeaking = () => {
+    if (ttsSupported) window.speechSynthesis.cancel();
+    setSpeaking(false);
+  };
+
+  /* ── Speech-to-Text (browser-native) ── */
+  const startListening = () => {
+    if (!sttSupported) {
+      setMicError("Voice input isn't supported in this browser. Try Chrome or Edge, or type your message instead.");
+      return;
+    }
+    setMicError(null);
+    stopSpeaking(); // don't listen while the assistant is talking
+
+    const SR =
+      (window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognitionLike }).webkitSpeechRecognition;
+    if (!SR) {
+      setMicError("Voice input isn't supported in this browser.");
+      return;
+    }
+
+    const recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = detectedLanguage && detectedLanguage !== "en" ? detectedLanguage : "en-US";
+
+    manualStopRef.current = false;
+    finalTranscriptRef.current = "";
+
+    recognition.onstart = () => setListening(true);
+
+    recognition.onresult = (e: SpeechRecognitionEventLike) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const result = e.results[i];
+        if (result.isFinal) {
+          finalTranscriptRef.current += result[0].transcript;
+        } else {
+          interim += result[0].transcript;
+        }
+      }
+      setMessage((finalTranscriptRef.current + interim).trim());
+    };
+
+    recognition.onerror = (e: SpeechRecognitionErrorEventLike) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+        setMicError("Microphone access was denied. Please allow microphone permission in your browser settings and try again.");
+      } else if (e.error === "no-speech") {
+        setMicError("Didn't catch that — please try again.");
+      } else if (e.error !== "aborted") {
+        setMicError("Voice input hit a snag. Please try again or type your message.");
+      }
+      manualStopRef.current = true; // suppress auto-send on the onend that follows
+      setListening(false);
+    };
+
+    recognition.onend = () => {
+      setListening(false);
+      const finalText = finalTranscriptRef.current.trim();
+      // Natural end (user stopped talking) → auto-submit, per the voice
+      // flow. Manual "Stop" click → keep the text in the input, don't send.
+      if (!manualStopRef.current && finalText) {
+        sendMessage(finalText, true);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {
+      setMicError("Couldn't start the microphone. Please try again.");
+    }
+  };
+
+  const stopListening = () => {
+    manualStopRef.current = true;
+    recognitionRef.current?.stop();
+    setListening(false);
   };
 
   useEffect(() => {
@@ -685,7 +847,78 @@ export default function Chatbot() {
         }
         .cb-send:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(249,115,22,0.5); }
         .cb-send:active { transform: scale(.95); }
+        .cb-send:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
         .cb-send svg { color: #080808; }
+
+        /* ── Voice: mic button ── */
+        .cb-mic {
+          width: 38px; height: 38px; border-radius: 10px;
+          background: #0f0f0f; border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.6); cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; transition: transform .15s ease, border-color .2s, color .2s, background .2s;
+        }
+        .cb-mic:hover { border-color: rgba(249,115,22,0.4); color: #f97316; }
+        .cb-mic:active { transform: scale(.93); }
+        .cb-mic--listening {
+          background: #ef4444; border-color: #ef4444; color: #fff;
+          animation: cbMicPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes cbMicPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.45); }
+          50%       { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+        }
+
+        /* ── Voice: status bar (listening / speaking / error) ── */
+        .cb-voice-bar {
+          display: flex; align-items: center; gap: 8px;
+          padding: 7px 14px;
+          background: rgba(249,115,22,0.08);
+          border-top: 1px solid rgba(249,115,22,0.15);
+          font-family: 'DM Sans', sans-serif;
+          font-size: .72rem;
+          color: rgba(255,255,255,0.7);
+          flex-shrink: 0;
+        }
+        .cb-voice-bar--error {
+          background: rgba(239,68,68,0.08);
+          border-top-color: rgba(239,68,68,0.25);
+          color: rgba(255,255,255,0.75);
+        }
+        .cb-voice-bar__text { flex: 1; }
+        .cb-voice-bar__action {
+          background: transparent; border: 1px solid rgba(255,255,255,0.15);
+          color: rgba(255,255,255,0.7); font-family: 'DM Sans', sans-serif;
+          font-size: .68rem; font-weight: 500; padding: 3px 9px; border-radius: 6px;
+          cursor: pointer; transition: color .2s, border-color .2s; flex-shrink: 0;
+        }
+        .cb-voice-bar__action:hover { color: #f97316; border-color: rgba(249,115,22,0.4); }
+
+        .cb-voice-wave {
+          display: flex; align-items: center; gap: 2px; height: 14px; flex-shrink: 0;
+        }
+        .cb-voice-wave span {
+          width: 2.5px; background: #ef4444; border-radius: 2px;
+          animation: cbWave .9s ease-in-out infinite;
+        }
+        .cb-voice-wave span:nth-child(1) { height: 5px; animation-delay: 0s; }
+        .cb-voice-wave span:nth-child(2) { height: 10px; animation-delay: .1s; }
+        .cb-voice-wave span:nth-child(3) { height: 14px; animation-delay: .2s; }
+        .cb-voice-wave span:nth-child(4) { height: 9px; animation-delay: .3s; }
+        .cb-voice-wave span:nth-child(5) { height: 5px; animation-delay: .4s; }
+        @keyframes cbWave {
+          0%, 100% { transform: scaleY(.4); }
+          50%       { transform: scaleY(1); }
+        }
+
+        .cb-voice-speaking-dot {
+          width: 8px; height: 8px; border-radius: 50%; background: #f97316;
+          flex-shrink: 0; animation: cbDotPulse 1s ease-in-out infinite;
+        }
+
+        .cb-header__btn--icon {
+          padding: 4px 7px; font-size: .82rem; line-height: 1;
+        }
 
         /* FIXED: added a mobile breakpoint for the trigger button matching
            the WhatsApp button's 52px mobile size — previously .cb-trigger
@@ -742,6 +975,19 @@ export default function Chatbot() {
                 </div>
               </div>
               <div className="cb-header__actions">
+                {ttsSupported && (
+                  <button
+                    onClick={() => {
+                      if (speaking) stopSpeaking();
+                      setVoiceReplyEnabled((v) => !v);
+                    }}
+                    className="cb-header__btn cb-header__btn--icon"
+                    aria-label={voiceReplyEnabled ? "Turn off spoken replies" : "Turn on spoken replies"}
+                    title={voiceReplyEnabled ? "Spoken replies: on" : "Spoken replies: off"}
+                  >
+                    {voiceReplyEnabled ? "🔊" : "🔇"}
+                  </button>
+                )}
                 <button onClick={clearChat} className="cb-header__btn">Clear</button>
                 <button onClick={() => setOpen(false)} className="cb-header__close" aria-label="Close">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -803,15 +1049,65 @@ export default function Chatbot() {
               )}
             </div>
 
+            {/* ── Voice status bar: only shown while listening/speaking/erroring ── */}
+            {(listening || speaking || micError) && (
+              <div className={`cb-voice-bar ${micError ? "cb-voice-bar--error" : ""}`}>
+                {listening && (
+                  <>
+                    <span className="cb-voice-wave" aria-hidden>
+                      <span /><span /><span /><span /><span />
+                    </span>
+                    <span className="cb-voice-bar__text">Listening…</span>
+                    <button onClick={stopListening} className="cb-voice-bar__action">Stop</button>
+                  </>
+                )}
+                {!listening && speaking && (
+                  <>
+                    <span className="cb-voice-speaking-dot" aria-hidden />
+                    <span className="cb-voice-bar__text">Speaking…</span>
+                    <button onClick={stopSpeaking} className="cb-voice-bar__action">Stop speaking</button>
+                  </>
+                )}
+                {!listening && !speaking && micError && (
+                  <>
+                    <span className="cb-voice-bar__text">⚠️ {micError}</span>
+                    <button onClick={() => setMicError(null)} className="cb-voice-bar__action">Dismiss</button>
+                  </>
+                )}
+              </div>
+            )}
+
             <div className="cb-input-wrap">
               <input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask the AI..."
+                placeholder={listening ? "Listening…" : "Ask the AI..."}
                 className="cb-input"
+                disabled={listening}
               />
-              <button onClick={sendMessage} className="cb-send" aria-label="Send">
+              {sttSupported && (
+                <button
+                  onClick={listening ? stopListening : startListening}
+                  className={`cb-mic ${listening ? "cb-mic--listening" : ""}`}
+                  aria-label={listening ? "Stop recording" : "Start voice input"}
+                  title={listening ? "Stop recording" : "Speak your message"}
+                  type="button"
+                >
+                  {listening ? (
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                      <rect x="1" y="1" width="11" height="11" rx="2" fill="currentColor" />
+                    </svg>
+                  ) : (
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                      <rect x="5" y="1" width="5" height="8" rx="2.5" fill="currentColor" />
+                      <path d="M2.5 7v.5a5 5 0 0 0 10 0V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                      <line x1="7.5" y1="12.5" x2="7.5" y2="14.2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </button>
+              )}
+              <button onClick={() => sendMessage()} className="cb-send" aria-label="Send" disabled={listening}>
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                   <path d="M13 7.5H2M8.5 3l4.5 4.5L8.5 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

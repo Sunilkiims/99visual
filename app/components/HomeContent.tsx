@@ -1,6 +1,7 @@
 // app/components/HomeContent.tsx
 'use client';
 
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import Header           from './header';
 import HomeScreenSlider from './homeslider';
 import WhyWeAre         from './whyweare';
@@ -13,6 +14,21 @@ import ScrollDown       from './scrolldown';
 import Chatbot          from './chatbot';
 import Whatsappbutton   from './wahtsappbutton';
 
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
+  display: 'swap',
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+});
+
 interface HomeContentProps {
   insights: React.ReactNode;
 }
@@ -20,7 +36,7 @@ interface HomeContentProps {
 export default function HomeContent({ insights }: HomeContentProps) {
   return (
     <>
-      <div>
+      <div className={`${cormorant.variable} ${dmSans.variable}`}>
         {/* 1. Navigation */}
         <Header />
 
@@ -86,19 +102,19 @@ export default function HomeContent({ insights }: HomeContentProps) {
           </nav>
 
           {/* Main copy — typography aligned with the Who We Are section */}
-          <div style={{ position: 'relative', zIndex: 10, maxWidth: 760, margin: '0 auto', textAlign: 'center', fontFamily: "'DM Sans', sans-serif" }}>
+          <div style={{ position: 'relative', zIndex: 10, maxWidth: 760, margin: '0 auto', textAlign: 'center', fontFamily: 'var(--font-dm-sans), sans-serif' }}>
 
             <p aria-label="Global IT and Digital Transformation company" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 10, fontWeight: 500, letterSpacing: '.22em', textTransform: 'uppercase', color: '#f97316', border: '1px solid rgba(249,115,22,.25)', background: 'rgba(249,115,22,.07)', padding: '5px 14px', borderRadius: 100, marginBottom: '1.4rem' }}>
               <span aria-hidden="true" style={{ width: 5, height: 5, borderRadius: '50%', background: '#f97316', animation: 'homePulse 2s ease-in-out infinite', display: 'inline-block' }} />
               Global IT &amp; Digital Transformation
             </p>
 
-            <h1 itemProp="name" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2.1rem, 4.2vw, 3.1rem)', fontWeight: 700, lineHeight: 1.12, letterSpacing: '-.02em', color: '#fff', margin: '0 0 .7rem' }}>
+            <h1 itemProp="name" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 'clamp(2.1rem, 4.2vw, 3.1rem)', fontWeight: 700, lineHeight: 1.12, letterSpacing: '-.02em', color: '#fff', margin: '0 0 .7rem' }}>
               We Don&apos;t Just Build Technology.{' '}
               <em style={{ fontStyle: 'italic', color: '#f97316' }}>We Build What&apos;s Next.</em>
             </h1>
 
-            <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '1.02rem', fontWeight: 500, color: 'rgba(255,255,255,0.55)', margin: '0 0 1.6rem', letterSpacing: '-.01em' }}>
+            <h2 style={{ fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: '1.02rem', fontWeight: 500, color: 'rgba(255,255,255,0.55)', margin: '0 0 1.6rem', letterSpacing: '-.01em' }}>
               Trusted by Startups &amp; Enterprises Across India, USA, UK, UAE &amp; Australia
             </h2>
 
@@ -113,14 +129,13 @@ export default function HomeContent({ insights }: HomeContentProps) {
             </p>
 
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="/contact" aria-label="Get a free project quote from 99 Visual Solutions" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 30px', borderRadius: 100, background: '#f97316', color: '#fff', fontFamily: "'DM Sans', sans-serif", fontSize: '.9rem', fontWeight: 600, letterSpacing: '.04em', textDecoration: 'none', transition: 'opacity 0.2s ease, transform 0.2s ease' }}>
+              <a href="/contact" aria-label="Get a free project quote from 99 Visual Solutions" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 30px', borderRadius: 100, background: '#f97316', color: '#fff', fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: '.9rem', fontWeight: 600, letterSpacing: '.04em', textDecoration: 'none', transition: 'opacity 0.2s ease, transform 0.2s ease' }}>
                 Get a Free Quote <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
 
           <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
             @keyframes homePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.6); } }
             @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
             a[href="/contact"]:hover  { opacity: 0.85; transform: translateY(-1px); }
