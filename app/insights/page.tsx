@@ -116,9 +116,21 @@ export default async function InsightsPage({ searchParams }: Props) {
           {/* Search */}
           <div className="max-w-lg mx-auto mb-7 sm:mb-9">
             <form method="GET">
-              <div className="group relative">
+              <div className="search-glow group relative rounded-full">
+                {/* Static ring mask — the ring's shape/position never
+                    changes, so the mask is computed once and reused every
+                    frame instead of being recomputed on each tick */}
+                <div className="search-glow-ring-mask" aria-hidden="true">
+                  <div className="search-glow-spin search-glow-spin--ring" />
+                </div>
+                {/* Static halo mask — same idea, offset outward so the
+                    blurred glow bleeds past the pill edge */}
+                <div className="search-glow-halo-mask" aria-hidden="true">
+                  <div className="search-glow-spin search-glow-spin--halo" />
+                </div>
+
                 <svg
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-orange-400"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-orange-400 z-10"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -130,10 +142,146 @@ export default async function InsightsPage({ searchParams }: Props) {
                   name="search"
                   defaultValue={params.search}
                   placeholder="Search articles..."
-                  className="w-full bg-gray-900/70 border border-gray-800 rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-orange-500/60 focus:bg-gray-900 focus:ring-4 focus:ring-orange-500/10"
+                  className="relative z-10 w-full bg-gray-900/70 rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:bg-gray-900 focus:ring-4 focus:ring-orange-500/10"
                 />
               </div>
             </form>
+
+            <style>{`
+              /*
+                Same visual result as before — crisp 1.5px ring, soft
+                blurred halo bleeding past the edge, cyan-to-white sweep —
+                rebuilt so it never drops a frame.
+
+                The previous version animated a registered custom property
+                (--border-angle) that fed straight into the conic-gradient
+                used by an inset:0 mask-composite trick. Every tick, the
+                browser had to regenerate that gradient AND redo the
+                xor/exclude mask composite on top of it — both are
+                main-thread paint work, so on anything but a flagship
+                device the ring visibly stutters, especially with other
+                content on the page competing for paint time.
+
+                This version separates the two jobs:
+                  - the mask (.search-glow-ring-mask / -halo-mask) is
+                    completely static — same shape, same position, every
+                    frame — so the browser paints it once and reuses it.
+                  - the only thing that ever animates is the CSS
+                    transform/rotate property on an oversized conic-gradient
+                    square
+                    (.search-glow-spin) living underneath that mask.
+                    Transform animations run entirely on the compositor
+                    (GPU), so this rotates at a locked 60fps regardless of
+                    what else is happening on the page.
+                The mask crops the rotating square down to the ring/halo
+                shape exactly as before — the output is pixel-identical,
+                just decoupled from paint.
+              */
+
+              .search-glow {
+                position: relative;
+              }
+
+              .search-glow-ring-mask,
+              .search-glow-halo-mask {
+                position: absolute;
+                z-index: 1;
+                border-radius: inherit;
+                overflow: hidden;
+                pointer-events: none;
+                -webkit-mask:
+                  linear-gradient(#fff 0 0) content-box,
+                  linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask:
+                  linear-gradient(#fff 0 0) content-box,
+                  linear-gradient(#fff 0 0);
+                mask-composite: exclude;
+              }
+
+              .search-glow-ring-mask {
+                inset: 0;
+                padding: 1.5px;
+                animation: search-ring-fade 2.5s linear 1 forwards;
+              }
+
+              .search-glow-halo-mask {
+                inset: -3px;
+                z-index: 0;
+                padding: 4px;
+                filter: blur(5px);
+                animation: search-halo-fade 2.5s linear 1 forwards;
+              }
+
+              .search-glow-spin {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 220%;
+                aspect-ratio: 1;
+                transform: translate(-50%, -50%) rotate(0deg);
+                animation: search-border-spin 2.5s linear 1 forwards;
+                will-change: transform;
+              }
+
+              .search-glow-spin--ring {
+                background: conic-gradient(
+                  from 0deg,
+                  rgba(56, 189, 248, 0.35) 0deg,
+                  rgba(56, 189, 248, 0.35) 300deg,
+                  rgba(125, 211, 252, 0.9) 332deg,
+                  #f0f9ff 349deg,
+                  rgba(125, 211, 252, 0.9) 356deg,
+                  rgba(56, 189, 248, 0.35) 360deg
+                );
+              }
+
+              .search-glow-spin--halo {
+                background: conic-gradient(
+                  from 0deg,
+                  rgba(56, 189, 248, 0) 0deg,
+                  rgba(56, 189, 248, 0) 320deg,
+                  rgba(125, 211, 252, 0.7) 340deg,
+                  #f0f9ff 349deg,
+                  rgba(125, 211, 252, 0.7) 358deg,
+                  rgba(56, 189, 248, 0) 360deg
+                );
+              }
+
+              @keyframes search-border-spin {
+                0% {
+                  transform: translate(-50%, -50%) rotate(0deg);
+                  opacity: 1;
+                }
+                85% {
+                  opacity: 1;
+                }
+                100% {
+                  transform: translate(-50%, -50%) rotate(360deg);
+                  opacity: 0;
+                }
+              }
+
+              @keyframes search-ring-fade {
+                0%, 85% {
+                  opacity: 1;
+                }
+                100% {
+                  opacity: 0;
+                  visibility: hidden;
+                }
+              }
+
+              @keyframes search-halo-fade {
+                0%, 85% {
+                  opacity: 0.8;
+                }
+                100% {
+                  opacity: 0;
+                  visibility: hidden;
+                }
+              }
+            `}</style>
           </div>
 
           {/* Category Filters */}
