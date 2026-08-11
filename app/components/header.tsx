@@ -512,14 +512,11 @@ const Header = () => {
                               {/* Text */}
                               <div className="relative z-[2] min-w-0 flex-1">
                                 <p className={clsx(
-                                  'text-[13px] font-semibold leading-tight truncate',
+                                  'text-[13px] font-semibold leading-tight',
                                   'transition-colors duration-150',
                                   active ? 'text-white' : 'text-white/80 group-hover:text-white',
                                 )}>
                                   {svc.label}
-                                </p>
-                                <p className="text-[11px] text-white/35 mt-0.5 leading-tight truncate group-hover:text-white/55 transition-colors duration-150">
-                                  {svc.sub}
                                 </p>
                               </div>
 
