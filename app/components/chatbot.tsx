@@ -127,34 +127,6 @@ function NavChips({ links }: { links: NavLink[] }) {
   );
 }
 
-/* ── Contact Bar ── */
-function ContactBar() {
-  return (
-    <div className="cb-contact-bar">
-      <a href="tel:+919205737431" className="cb-contact-item" aria-label="Call us">
-        <span className="cb-contact-item__icon">
-          {/* Phone icon */}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10.5 8.5c0 .18-.04.36-.13.53a1.97 1.97 0 0 1-.35.48c-.22.24-.46.36-.72.36-.19 0-.39-.05-.6-.14a5.84 5.84 0 0 1-.6-.32 9.97 9.97 0 0 1-.58-.44 9.82 9.82 0 0 1-.55-.55 9.82 9.82 0 0 1-.55-.55 9.97 9.97 0 0 1-.44-.58 5.84 5.84 0 0 1-.32-.6c-.09-.21-.14-.41-.14-.6 0-.18.04-.37.12-.54.08-.17.2-.33.36-.47.19-.17.4-.25.62-.25.09 0 .18.02.26.06.09.04.17.1.23.19l.8 1.13c.06.09.1.17.13.25.03.07.05.14.05.2 0 .08-.02.16-.06.24-.04.08-.09.16-.16.24l-.22.22c-.03.03-.04.07-.04.11 0 .02 0 .04.01.06.01.02.02.04.03.06.07.12.18.27.33.45.16.18.32.35.5.52.18.17.35.33.53.47.18.14.33.24.45.31.02.01.04.02.07.03.03.01.05.01.08.01.05 0 .08-.01.12-.04l.22-.22c.08-.08.16-.14.24-.17.08-.04.16-.05.25-.05.07 0 .13.01.2.04.07.03.15.07.23.13l1.14.81c.09.06.15.14.19.23.04.09.06.18.06.27z" fill="currentColor"/>
-          </svg>
-        </span>
-        <span className="cb-contact-item__text">+91-9205737431</span>
-      </a>
-      <span className="cb-contact-divider" aria-hidden>·</span>
-      <a href="mailto:contact@99visual.com" className="cb-contact-item" aria-label="Email us">
-        <span className="cb-contact-item__icon">
-          {/* Email icon */}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="1" y="2.5" width="10" height="7" rx="1.2" stroke="currentColor" strokeWidth="1"/>
-            <path d="M1 4l5 3.2L11 4" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-          </svg>
-        </span>
-        <span className="cb-contact-item__text">contact@99visual.com</span>
-      </a>
-    </div>
-  );
-}
-
 /* ── Voice types (browser Speech APIs aren't in default TS DOM lib) ── */
 interface SpeechRecognitionResultLike {
   isFinal: boolean;
@@ -640,52 +612,6 @@ export default function Chatbot() {
         }
         .cb-header__close:hover { color: #fff; }
 
-        /* ── CONTACT BAR ── */
-        .cb-contact-bar {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          padding: 7px 16px;
-          background: rgba(249,115,22,0.06);
-          border-bottom: 1px solid rgba(249,115,22,0.12);
-          flex-shrink: 0;
-        }
-        .cb-contact-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: .7rem;
-          font-weight: 500;
-          color: rgba(255,255,255,0.5);
-          text-decoration: none;
-          padding: 3px 7px;
-          border-radius: 6px;
-          border: 1px solid transparent;
-          transition: color .2s, background .2s, border-color .2s;
-          white-space: nowrap;
-        }
-        .cb-contact-item:hover {
-          color: #f97316;
-          background: rgba(249,115,22,0.1);
-          border-color: rgba(249,115,22,0.25);
-        }
-        .cb-contact-item__icon {
-          display: flex;
-          align-items: center;
-          color: #f97316;
-          opacity: 0.7;
-          flex-shrink: 0;
-          transition: opacity .2s;
-        }
-        .cb-contact-item:hover .cb-contact-item__icon { opacity: 1; }
-        .cb-contact-divider {
-          color: rgba(255,255,255,0.15);
-          font-size: .75rem;
-          user-select: none;
-        }
-
         .cb-messages {
           flex: 1; overflow-y: auto;
           padding: 14px 12px;
@@ -940,7 +866,6 @@ export default function Chatbot() {
           }
           .cb-fab { bottom: 20px; left: 16px; }
           .cb-trigger { width: 52px; height: 52px; }
-          .cb-contact-item__text { font-size: .65rem; }
         }
 
         /* Short / landscape viewports (phones rotated, small laptops with
@@ -996,9 +921,6 @@ export default function Chatbot() {
                 </button>
               </div>
             </div>
-
-            {/* ── Contact Bar ── */}
-            <ContactBar />
 
             <div ref={chatRef} className="cb-messages">
 

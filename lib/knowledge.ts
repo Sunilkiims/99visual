@@ -21,6 +21,10 @@
 //   8. MARKET/TREND     — 2026 industry context, kept separate from company claims
 //                          so it can be refreshed independently as the market moves.
 //   9. SALES/CONVERSION — qualification and response-style guidance for the bot itself.
+//   10. IT INFRASTRUCTURE & SUPPORT SERVICES — on-site/physical IT services
+//                          (AMC, networking, hardware installs, CCTV, biometric,
+//                          servers, OS upgrades). Kept distinct from the software/
+//                          web/creative services in section 2.
 
 export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
 
@@ -29,15 +33,15 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   // ────────────────────────────────────────────────────────────
   {
     id: "company-overview",
-    text: "99 Visual Solutions is a multidisciplinary technology and creative studio built on one belief: exceptional digital products demand both imagination and engineering precision. We bring 3D Visualisation, Web & App Development, Digital Marketing & SEO, IT Consulting, CAD, GIS & LiDAR, QA & Automation, and AI-powered solutions together under one team, one process, and one point of accountability. Every engagement begins with a clear understanding of your business objectives and ends with measurable, scalable outcomes. We design, build, and optimise with the same discipline — prioritising innovation, quality, and collaboration at every stage, from early concept to enterprise deployment.",
+    text: "99 Visual Solutions is a multidisciplinary technology and creative studio built on one belief: exceptional digital products demand both imagination and engineering precision. We bring 3D Visualisation, Web & App Development, Digital Marketing & SEO, IT Consulting, CAD, GIS & LiDAR, QA & Automation, IT Infrastructure & Support, and AI-powered solutions together under one team, one process, and one point of accountability. Every engagement begins with a clear understanding of your business objectives and ends with measurable, scalable outcomes. We design, build, and optimise with the same discipline — prioritising innovation, quality, and collaboration at every stage, from early concept to enterprise deployment.",
   },
   {
     id: "differentiators",
-    text: "99 Visual's approach centers on covering multiple disciplines under one team (development, AI, marketing, visualization, geospatial, QA) instead of requiring a client to coordinate several vendors, transparent communication throughout a project, and hands-on technical delivery rather than pure account management. The company also builds and runs its own production AI features (including this chatbot, using retrieval-augmented generation) as a working demonstration of its AI integration capability.",
+    text: "99 Visual's approach centers on covering multiple disciplines under one team (development, AI, marketing, visualization, geospatial, QA, IT infrastructure) instead of requiring a client to coordinate several vendors, transparent communication throughout a project, and hands-on technical delivery rather than pure account management. The company also builds and runs its own production AI features (including this chatbot, using retrieval-augmented generation) as a working demonstration of its AI integration capability.",
   },
   {
     id: "contact-process",
-    text: "Visitors interested in working with 99 Visual can reach out via the contact page, phone, or email. The typical next step after initial interest is a short discovery call to understand the business problem and requirements, followed by a scoped proposal. There is no obligation attached to an initial conversation.",
+    text: "Visitors interested in working with 99 Visual can reach out via the contact page, phone at +91-9205737431 (also reachable on WhatsApp at the same number), or email. The typical next step after initial interest is a short discovery call to understand the business problem and requirements, followed by a scoped proposal. There is no obligation attached to an initial conversation.",
   },
   {
     id: "pricing-policy",
@@ -45,7 +49,7 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "project-timelines",
-    text: "As a general guide, simple marketing websites or landing pages typically take about 1 to 3 weeks. Web applications, portals, dashboards, or platforms with integrations typically take about 4 to 12+ weeks depending on scope. AI chatbot/RAG integrations, 3D visualization packages, and CAD/GIS/LiDAR projects vary widely by data volume and complexity — exact timelines should be confirmed after scoping, not assumed from this general range.",
+    text: "As a general guide, simple marketing websites or landing pages typically take about 1 to 3 weeks. Web applications, portals, dashboards, or platforms with integrations typically take about 4 to 12+ weeks depending on scope. AI chatbot/RAG integrations, 3D visualization packages, CAD/GIS/LiDAR projects, and IT infrastructure/support engagements (AMC, hardware installs, networking) vary widely by data volume, site conditions, and complexity — exact timelines should be confirmed after scoping, not assumed from this general range.",
   },
   {
     id: "project-process",
@@ -299,6 +303,18 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
     id: "problem-legacy-app-migration",
     text: "Migrating an old application starts with an assessment of the current system: what it does, what data needs to be preserved, what's fragile or undocumented, and why the migration is needed (performance, security, hosting cost, inability to add new features). 99 Visual typically recommends this assessment phase before committing to a rebuild timeline, since legacy systems often have undocumented dependencies that only surface during close inspection.",
   },
+  {
+    id: "problem-need-amc-support",
+    text: "A business asking about ongoing IT support or an AMC (Annual Maintenance Contract) usually wants regular, scheduled attention to their IT infrastructure rather than one-off firefighting. 99 Visual offers AMC coverage for IT infrastructure that includes preventive maintenance, troubleshooting, and regular system support. Useful scoping details: what hardware/systems are covered, how many devices/locations, and current pain points (frequent breakdowns, no dedicated IT support, slow response to issues).",
+  },
+  {
+    id: "problem-need-office-network-setup",
+    text: "Setting up or fixing office networking and connectivity typically involves router installation and configuration, basic network setup, and troubleshooting connectivity issues. 99 Visual handles this as part of its IT infrastructure and support services. Useful scoping details: number of devices/users on the network, current internet connection type, and whether there are specific connectivity problems already being experienced.",
+  },
+  {
+    id: "problem-need-security-hardware",
+    text: "A request to add CCTV or biometric attendance/access-control systems is IT hardware installation work: physical installation, configuration, and connecting the system to the local network. 99 Visual installs and configures both CCTV and biometric systems. Useful scoping details: number of cameras/entry points or biometric devices needed, the site layout, and whether this is a new installation or replacing existing equipment.",
+  },
 
   // ────────────────────────────────────────────────────────────
   // 4. CLIENT-BUYING / EDUCATIONAL KNOWLEDGE
@@ -357,7 +373,7 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "quote-information-needed",
-    text: "To provide an accurate quote, 99 Visual typically needs: the type of project (website, application, e-commerce, AI feature, visualization, etc.), the core features/pages needed, any required integrations, existing assets or systems involved, target timeline, and whether ongoing maintenance/support is expected to be included. Sharing this upfront leads to a faster, more accurate proposal than a generic 'how much does a website cost' question.",
+    text: "To provide an accurate quote, 99 Visual typically needs: the type of project (website, application, e-commerce, AI feature, visualization, IT infrastructure/support, etc.), the core features/pages/hardware needed, any required integrations, existing assets or systems involved, target timeline, and whether ongoing maintenance/support is expected to be included. Sharing this upfront leads to a faster, more accurate proposal than a generic 'how much does this cost' question.",
   },
   {
     id: "proposal-contents",
@@ -399,6 +415,10 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
     id: "solution-path-ai-project",
     text: "A typical AI project path: identify the specific task or question the AI should handle → decide whether it needs a chatbot, RAG-based knowledge assistant, automation, or an agent that takes multi-step actions → build the retrieval/knowledge layer (embeddings, vector search) if grounding in company data is needed → integrate with the website or internal systems via API → add human-in-the-loop review for higher-stakes actions. Starting from a narrow, well-defined use case produces better results than trying to build a general-purpose AI system first.",
   },
+  {
+    id: "solution-path-office-it-setup",
+    text: "A typical new-office or growing-business IT setup path: router installation and network configuration → new hardware installation (workstations, servers, peripherals) → security hardware such as CCTV and biometric attendance systems → software installation and configuration on end-user machines → an AMC arrangement for ongoing preventive maintenance and support once everything is running. These are commonly bundled together for a single site rather than done as separate uncoordinated visits.",
+  },
 
   // ────────────────────────────────────────────────────────────
   // 6. INDUSTRY KNOWLEDGE
@@ -417,15 +437,15 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "industry-manufacturing",
-    text: "Manufacturing businesses commonly need: a professional website for B2B credibility and lead generation, product visualization/3D renders for catalogs, internal dashboards for production or inventory data, and integration between a website's inquiry forms and internal CRM/ERP systems. QA automation is also relevant for any customer-facing software these businesses run.",
+    text: "Manufacturing businesses commonly need: a professional website for B2B credibility and lead generation, product visualization/3D renders for catalogs, internal dashboards for production or inventory data, integration between a website's inquiry forms and internal CRM/ERP systems, and on-site IT infrastructure support (networking, servers, security hardware) for factory and office locations. QA automation is also relevant for any customer-facing software these businesses run.",
   },
   {
     id: "industry-retail-ecommerce",
-    text: "Retail and e-commerce businesses commonly need a conversion-optimized storefront, product visualization/3D configurators for higher-consideration products, SEO and paid advertising for discovery, and analytics/CRO to keep improving conversion over time. An AI chatbot can also handle common product questions and reduce support load.",
+    text: "Retail and e-commerce businesses commonly need a conversion-optimized storefront, product visualization/3D configurators for higher-consideration products, SEO and paid advertising for discovery, and analytics/CRO to keep improving conversion over time. An AI chatbot can also handle common product questions and reduce support load. Physical stores may also need in-store IT infrastructure such as networking, CCTV, and biometric staff attendance systems.",
   },
   {
     id: "industry-hospitality",
-    text: "Hospitality businesses (hotels, resorts, venues) commonly need a fast, visually strong website, 3D/virtual walkthroughs of spaces, local SEO for location-based search, and booking-system integration. Visual presentation quality has an outsized impact on conversion in this sector since customers are making a decision largely based on how a space looks and feels online.",
+    text: "Hospitality businesses (hotels, resorts, venues) commonly need a fast, visually strong website, 3D/virtual walkthroughs of spaces, local SEO for location-based search, booking-system integration, and on-premise IT infrastructure such as networking, CCTV, and biometric staff attendance systems. Visual presentation quality has an outsized impact on conversion in this sector since customers are making a decision largely based on how a space looks and feels online.",
   },
   {
     id: "industry-healthcare-tech",
@@ -433,11 +453,11 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "industry-education",
-    text: "Education-sector projects commonly include learning platforms, student/staff portals, content-heavy websites, and internal dashboards for administration or reporting. These are typically built as web applications with role-based access (students, staff, administrators) rather than simple marketing sites.",
+    text: "Education-sector projects commonly include learning platforms, student/staff portals, content-heavy websites, and internal dashboards for administration or reporting. These are typically built as web applications with role-based access (students, staff, administrators) rather than simple marketing sites. Campuses and institutes may also need biometric attendance systems, CCTV, and general networking/IT support.",
   },
   {
     id: "industry-logistics",
-    text: "Logistics and supply-chain businesses commonly need internal dashboards for tracking/reporting, integrations between systems (e.g. order management, inventory, shipping providers), and automation for repetitive coordination tasks. GIS/mapping capabilities can also apply for route or asset visualization in this sector.",
+    text: "Logistics and supply-chain businesses commonly need internal dashboards for tracking/reporting, integrations between systems (e.g. order management, inventory, shipping providers), and automation for repetitive coordination tasks. GIS/mapping capabilities can also apply for route or asset visualization in this sector, and warehouses/depots commonly need on-site networking, CCTV, and biometric access-control hardware.",
   },
   {
     id: "industry-professional-services",
@@ -445,7 +465,7 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "industry-startups-smes",
-    text: "Startups and SMEs typically benefit from an MVP-first approach — building the smallest version of a product/website that proves the core value before investing in every planned feature — combined with lean marketing (SEO plus targeted paid ads) rather than large upfront spend across every channel. 99 Visual can scope a phased roadmap so early spending focuses on validating the business idea first.",
+    text: "Startups and SMEs typically benefit from an MVP-first approach — building the smallest version of a product/website that proves the core value before investing in every planned feature — combined with lean marketing (SEO plus targeted paid ads) rather than large upfront spend across every channel. 99 Visual can scope a phased roadmap so early spending focuses on validating the business idea first. New offices commonly also need basic IT infrastructure set up (networking, hardware, security systems) alongside the digital product.",
   },
 
   // ────────────────────────────────────────────────────────────
@@ -466,6 +486,10 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   {
     id: "troubleshoot-ai-rag-quality",
     text: "If an AI chatbot gives wrong or inconsistent answers, common causes are: the knowledge base chunks are too broad or poorly organized for accurate retrieval, the underlying source content is outdated, embeddings weren't regenerated after content changed, or the retrieval step isn't returning enough (or the right) context for the question asked. Improving RAG quality usually means refining how content is chunked, keeping the knowledge base current, and testing retrieval against real user questions rather than only tuning the AI model's prompt.",
+  },
+  {
+    id: "troubleshoot-network-connectivity",
+    text: "Common causes of office network connectivity problems include router/modem misconfiguration, weak Wi-Fi coverage in parts of a site, IP address conflicts, outdated router firmware, or ISP-side outages. First-level troubleshooting can point to likely causes, but confirming the exact issue requires being on-site or having access to the router/network configuration, which is part of 99 Visual's router installation and networking support service.",
   },
 
   // ────────────────────────────────────────────────────────────
@@ -501,7 +525,7 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
   {
     id: "discovery-call-questions",
-    text: "Useful qualifying questions to ask a prospective client (one or two at a time, not all at once) include: what type of business they operate, what specific problem they're trying to solve, whether they have an existing website/application already, what integrations are required, their expected timeline, and roughly how many users/customers the solution needs to support. The goal is understanding the requirement well enough to route them toward the right service and a useful discovery call — not interrogating every visitor with a full checklist.",
+    text: "Useful qualifying questions to ask a prospective client (one or two at a time, not all at once) include: what type of business they operate, what specific problem they're trying to solve, whether they have an existing website/application/IT setup already, what integrations or hardware are required, their expected timeline, and roughly how many users/customers/devices the solution needs to support. The goal is understanding the requirement well enough to route them toward the right service and a useful discovery call — not interrogating every visitor with a full checklist.",
   },
   {
     id: "response-guidelines-conversion",
@@ -509,10 +533,44 @@ export const KNOWLEDGE_CHUNKS: { id: string; text: string }[] = [
   },
 
   // ────────────────────────────────────────────────────────────
-  // ACCURACY / TRUST POLICY (guidance the bot should follow)
+  // 10. IT INFRASTRUCTURE & SUPPORT SERVICES
+  // (on-site/physical IT services — distinct from the software, web, and
+  // creative services in section 2; scoped strictly to what's confirmed here)
   // ────────────────────────────────────────────────────────────
   {
-    id: "accuracy-and-trust-policy",
-    text: "The chatbot should never invent specific clients, case studies, certifications, awards, partnerships, employee names, exact prices, guaranteed results, guaranteed rankings, or revenue figures for 99 Visual. If a visitor asks something not covered by confirmed company information, the honest answer is that the specific detail isn't available here and that the team can confirm it directly — this is more trustworthy than a confident-sounding guess.",
+    id: "it-infrastructure-support-overview",
+    text: "Alongside its software, web, and creative services, 99 Visual also provides IT Infrastructure & Support Services covering the physical/on-site side of business IT: Annual Maintenance Contracts (AMC), router installation and configuration, software and networking services, new hardware installation, biometric attendance/access-control system installation, server installation and configuration, CCTV installation, and operating system upgrades. This category is kept distinct from 99 Visual's software/web/creative services, since it involves on-site hardware and infrastructure work rather than digital product development.",
+  },
+  {
+    id: "amc-services",
+    text: "99 Visual offers AMC (Annual Maintenance Contract) services: annual maintenance and technical support for IT infrastructure. This covers preventive maintenance, troubleshooting, and regular system support, intended for businesses that want ongoing, scheduled IT support rather than one-off fixes when something breaks.",
+  },
+  {
+    id: "router-installation",
+    text: "99 Visual provides router installation and configuration as part of its IT infrastructure services: setting up routers, configuring network settings, and general network setup. This includes network connectivity support and basic troubleshooting if connectivity issues come up.",
+  },
+  {
+    id: "software-networking-services",
+    text: "99 Visual provides software and networking services for businesses: software installation and configuration, network setup, troubleshooting and maintenance, and general system and network support. This is aimed at keeping a business's day-to-day software and network environment running reliably.",
+  },
+  {
+    id: "new-hardware-installation",
+    text: "99 Visual installs and configures new IT hardware for businesses, including biometric attendance systems, servers, CCTV systems, and other business IT hardware and peripherals. This covers the physical setup and configuration of new equipment being added to a business's IT environment.",
+  },
+  {
+    id: "biometric-system-installation",
+    text: "99 Visual installs and configures biometric attendance and access-control systems, including hardware setup and basic system configuration. This is commonly used by businesses wanting to track staff attendance or control access to specific areas.",
+  },
+  {
+    id: "server-installation",
+    text: "99 Visual provides server installation and configuration services: setting up new servers, basic server setup, connectivity, and maintenance support. This is relevant for businesses adding on-premise server infrastructure or replacing existing server hardware.",
+  },
+  {
+    id: "cctv-installation",
+    text: "99 Visual installs and configures CCTV camera systems, including network connectivity for the cameras and basic troubleshooting. This covers physical camera installation and getting the system connected and operational on the business's network.",
+  },
+  {
+    id: "os-upgrade",
+    text: "99 Visual provides operating system upgrade services — upgrading Windows or other operating systems and handling related system configuration. This includes compatibility checks before the upgrade and troubleshooting support after the upgrade is completed.",
   },
 ];

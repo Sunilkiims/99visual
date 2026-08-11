@@ -4,20 +4,15 @@
 // NOT part of the live app — run manually from your terminal:
 //
 //   npx tsx scripts/generate-embeddings.ts
-//
-// It reads KNOWLEDGE_CHUNKS, generates an embedding for each chunk via the
-// OpenAI embeddings API, and writes the result to lib/knowledge-embeddings.json.
 
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
 // Next.js auto-loads .env.local when running via `next dev`, but this script
-// runs standalone via tsx, so we load it manually here.
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
-
-import { openai } from "../lib/openai";
-import { KNOWLEDGE_CHUNKS } from "../lib/knowledge";
+// runs standalone via tsx, so we load it manually here — BEFORE importing
+// lib/openai, which needs it available at module-init time.
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 type EmbeddedChunk = {
   id: string;
@@ -26,6 +21,11 @@ type EmbeddedChunk = {
 };
 
 async function main() {
+  // Dynamic imports here run AFTER dotenv.config() above, unlike static
+  // imports which get hoisted to the top of the file regardless of position.
+  const { openai } = await import("../lib/openai");
+  const { KNOWLEDGE_CHUNKS } = await import("../lib/knowledge");
+
   console.log(`Embedding ${KNOWLEDGE_CHUNKS.length} knowledge chunks...`);
 
   const results: EmbeddedChunk[] = [];
