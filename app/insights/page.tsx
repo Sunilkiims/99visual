@@ -106,7 +106,7 @@ export default async function InsightsPage({ searchParams }: Props) {
             </span>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-3 leading-[1.15] tracking-tight">
               Industry Insights &{' '}
-              <span className="text-orange-400">Expert Perspectives</span>
+              <span className="text-blue-400">Expert Perspectives</span>
             </h1>
             <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
               Trends, technology updates, business strategies, and digital transformation insights from our experts.

@@ -667,7 +667,7 @@ const Footer: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          Verify Email
+                          Subscribe
                           <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                             <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>

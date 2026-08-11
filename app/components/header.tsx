@@ -558,6 +558,7 @@ const Header = () => {
                 </AnimatePresence>
               </div>
 
+              <Link href="/insights" className={navLinkClass('/insights')} aria-current={isActive('/insights') ? 'page' : undefined}>Insights</Link>
               <Link href="/partner" className={navLinkClass('/partner')} aria-current={isActive('/partner') ? 'page' : undefined}>Partner</Link>
               <Link href="/careers" className={navLinkClass('/careers')} aria-current={isActive('/careers') ? 'page' : undefined}>Career</Link>
               <Link href="/contact" className={navLinkClass('/contact')} aria-current={isActive('/contact') ? 'page' : undefined}>Contact</Link>
@@ -755,9 +756,10 @@ const Header = () => {
                   </motion.div>
 
                   {[
-                    { href: '/partner', label: 'Partner', delay: 0.23 },
-                    { href: '/careers', label: 'Career',  delay: 0.28 },
-                    { href: '/contact', label: 'Contact', delay: 0.33 },
+                    { href: '/insights', label: 'Insights', delay: 0.23 },
+                    { href: '/partner',  label: 'Partner',  delay: 0.28 },
+                    { href: '/careers',  label: 'Career',   delay: 0.33 },
+                    { href: '/contact',  label: 'Contact',  delay: 0.38 },
                   ].map((item) => (
                     <motion.div
                       key={item.href}
