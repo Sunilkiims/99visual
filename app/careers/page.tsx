@@ -17,9 +17,27 @@
 //      "View Open Positions" CTAs stay as real navigation (Link/anchor)
 //      since those are job-application actions, not consultation requests.
 //   4. Career Areas, Why Us, Open Roles, and FAQ sections (content + JSON-LD)
-//      are UNCHANGED. .cr-hero__h1 / .cr-hero__sub class names are kept so
-//      the existing `speakable.cssSelector` entries in careersPageNode keep
-//      working.
+//      are UNCHANGED except where noted below. .cr-hero__h1 / .cr-hero__sub
+//      class names are kept so the existing `speakable.cssSelector` entries
+//      in careersPageNode keep working.
+//
+// ── APPLY-NOW UPDATE ─────────────────────────────────────────────────────
+//   5. "Apply Today" in the Open Roles list now opens an in-page application
+//      modal (JobApplyButton -> JobApplicationModal) instead of navigating
+//      to /contact. The modal preselects the clicked role, lets the
+//      candidate attach a resume, and posts to /api/apply, which emails the
+//      submission via SMTP/Nodemailer. Hero "View Open Positions", the
+//      sticky mobile bar, and the closing CTA still link to /contact —
+//      say the word if you'd like those converted to the modal too.
+//
+// ── FAQ UPDATE (this revision) ───────────────────────────────────────────
+//   6. Updated the "What jobs is 99 Visual Solutions currently hiring for?"
+//      and "How do I apply for a job at 99 Visual Solutions?" FAQ answers
+//      to reflect the new in-page Apply flow: candidates now click "Apply
+//      Today" next to a role in the Open Roles list, which opens the
+//      application modal directly on the page (no redirect to /contact).
+//      Emailing a resume to CONTACT_EMAIL is kept as the fallback option.
+//      All other FAQ items, JSON-LD, and job postings are unchanged.
 //
 //   Save your banner image to: /public/images/careers/careers-hero-banner.jpg
 // ─────────────────────────────────────────────────────────────────────────────
@@ -31,6 +49,7 @@ import Footer           from "@/app/components/footer";
 import ScrollDown       from "@/app/components/scrolldown";
 
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
+import JobApplyButton   from "@/app/components/JobApplyButton";
 import { FaLaptopCode, FaUsers, FaLightbulb, FaRocket } from "react-icons/fa";
 
 import {
@@ -206,13 +225,13 @@ const makeJobPosting = (
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ DATA — unchanged
+// FAQ DATA — UPDATED (apply flow now in-page, no /contact redirect)
 // ─────────────────────────────────────────────────────────────────────────────
 const faqItems = [
   {
     question: "What jobs is 99 Visual Solutions currently hiring for?",
     answer:
-      `99 Visual Solutions is actively hiring for four remote roles: Web Developer, UI/UX Designer, Digital Marketing Specialist, and 3D Visualization Artist. All positions are full-time and open to candidates working remotely from anywhere in India. You can apply directly through the contact page at 99visual.com/contact or by emailing ${CONTACT_EMAIL} with your resume and portfolio.`,
+      `99 Visual Solutions is actively hiring for four remote roles: Web Developer, UI/UX Designer, Digital Marketing Specialist, and 3D Visualization Artist. All positions are full-time and open to candidates working remotely from anywhere in India. To apply, click "Apply Today" next to any role in the Open Positions section on this page — it opens an application form right here where you can attach your resume, or you can email ${CONTACT_EMAIL} with your resume and portfolio.`,
   },
   {
     question: "Is 99 Visual Solutions a good company for freshers?",
@@ -222,12 +241,12 @@ const faqItems = [
   {
     question: "Does 99 Visual Solutions offer remote or hybrid work options?",
     answer:
-      "Yes — 99 Visual Solutions is a remote-first company, and all open roles are available for fully remote work. Our team has extensive experience collaborating across time zones on international projects, so you can work from wherever suits you best. Apply at 99visual.com/contact to discuss your working setup during the interview process.",
+      "Yes — 99 Visual Solutions is a remote-first company, and all open roles are available for fully remote work. Our team has extensive experience collaborating across time zones on international projects, so you can work from wherever suits you best. Click \"Apply Today\" on the role you're interested in to start your application and discuss your working setup during the interview process.",
   },
   {
     question: "How do I apply for a job at 99 Visual Solutions?",
     answer:
-      `Visit 99visual.com/contact, fill in your details, and attach your resume or portfolio. Alternatively, email us directly at ${CONTACT_EMAIL} with the job title in the subject line. Our hiring team reviews all applications and reaches out about suitable openings within a few business days. We welcome applications from freshers and experienced professionals alike.`,
+      `Scroll to the Open Positions section on this page and click "Apply Today" next to the role you want — it opens an application form directly on the page where you can fill in your details and attach your resume, no redirect required. Alternatively, email us directly at ${CONTACT_EMAIL} with the job title in the subject line. Our hiring team reviews all applications and reaches out about suitable openings within a few business days. We welcome applications from freshers and experienced professionals alike.`,
   },
   {
     question: "How much experience does 99 Visual Solutions have?",
@@ -820,7 +839,10 @@ export default function CareersPage() {
           </div>
         </section>
 
-        {/* ══ OPEN ROLES — unchanged ═══════════════════════════════════════ */}
+        {/* ══ OPEN ROLES ═══════════════════════════════════════════════════
+             "Apply Today" now opens JobApplyButton's modal (jobTitle
+             preselected, full role list offered in the dropdown) instead of
+             navigating to /contact. */}
         <section id="open-roles" className="c-roles" aria-labelledby="c-roles-heading">
           <div className="c-roles__inner">
             <div className="c-roles__header">
@@ -843,19 +865,24 @@ export default function CareersPage() {
                       <span className="c-role-row__tag">{loc}</span>
                     </div>
                   </div>
-                  <Link href="/contact" className="c-role-row__apply" aria-label={`Apply for the remote ${title} position at 99 Visual Solutions`}>
+                  <JobApplyButton
+                    jobTitle={title}
+                    jobOptions={openRoles.map((r) => r.title)}
+                    className="c-role-row__apply"
+                    ariaLabel={`Apply for the remote ${title} position at 99 Visual Solutions`}
+                  >
                     Apply Today
                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                       <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                  </Link>
+                  </JobApplyButton>
                 </li>
               ))}
             </ul>
           </div>
         </section>
 
-        {/* ══ FAQ — unchanged, JSON-LD only, no microdata ══════════════════ */}
+        {/* ══ FAQ — UPDATED answers only, JSON-LD only, no microdata ══════════ */}
         <section className="c-faq" aria-labelledby="c-faq-heading">
           <div className="c-faq__inner">
             <div className="c-faq__header">
