@@ -746,13 +746,26 @@ export default function WebsiteDevelopment() {
         .wdev-faq{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
         .wdev-faq__inner{max-width:760px;margin:0 auto;}
         .wdev-faq__head{margin-bottom:2.5rem;}
+        /* ✅ FIX — native <details>/<summary> accordion (zero JS). The previous
+           implementation relied on a <script> tag injected via
+           dangerouslySetInnerHTML to attach click listeners. Inline scripts
+           inserted that way only execute on a hard page load — Next.js
+           client-side navigation (clicking a <Link> anywhere on the site)
+           inserts the page via React, and browsers never execute a <script>
+           tag added that way. Result: the accordion silently did nothing for
+           any visitor who arrived via normal in-site navigation. Matches the
+           same robust pattern already used on the automation-testing and
+           cad-gis-photogrammetry service pages. */
         .wdev-faq__list{display:flex;flex-direction:column;gap:.75rem;}
         .wdev-faq__item{background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:14px;overflow:hidden;}
-        .wdev-faq__item.is-open{border-color:var(--wdev-blue);}
-        .wdev-faq__q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;background:transparent;border:none;text-align:left;font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);padding:1.25rem 1.5rem;cursor:pointer;}
+        .wdev-faq__item[open]{border-color:var(--wdev-blue);}
+        .wdev-faq__q{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);padding:1.25rem 1.5rem;cursor:pointer;user-select:none;}
+        .wdev-faq__q::-webkit-details-marker{display:none;}
+        .wdev-faq__q::marker{display:none;content:'';}
         .wdev-faq__chevron{color:var(--wdev-blue);flex-shrink:0;transition:transform .2s ease;}
-        .wdev-faq__item.is-open .wdev-faq__chevron{transform:rotate(180deg);}
-        .wdev-faq__a-wrap{padding:0 1.5rem 1.4rem;}
+        .wdev-faq__item[open] .wdev-faq__chevron{transform:rotate(180deg);}
+        .wdev-faq__a-wrap{padding:0 1.5rem 1.4rem;animation:wdevFaqOpen .3s cubic-bezier(.22,1,.36,1) both;}
+        @keyframes wdevFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         .wdev-faq__a{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin:0;}
 
         /* ══ BENEFITS ════════════════════════════════════════════════════ */
@@ -1091,7 +1104,12 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
-        {/* ══ FAQ — same copy as wdevFaqNode, structure/script untouched ══ */}
+        {/* ══ FAQ — same copy as wdevFaqNode. Native <details>/<summary>
+            accordion: no JS needed, so it works on every navigation type
+            (see the ✅ FIX note in the <style> block above for why the old
+            button+script version silently broke). FAQPage structured data
+            is handled separately via JSON-LD (wdevFaqNode) — no microdata
+            attributes needed here. */}
         <section className="wdev-faq" aria-labelledby="wdev-faq-heading">
           <div className="wdev-faq__inner">
             <div className="wdev-faq__head">
@@ -1100,29 +1118,17 @@ export default function WebsiteDevelopment() {
             </div>
             <div className="wdev-faq__list">
               {faqItems.map((item, i) => (
-                <div className={`wdev-faq__item${i === 0 ? " is-open" : ""}`} key={item.question}>
-                  <button
-                    type="button"
-                    className="wdev-faq__q"
-                    aria-expanded={i === 0}
-                    aria-controls={`wdev-faq-panel-${i}`}
-                    id={`wdev-faq-trigger-${i}`}
-                  >
+                <details className="wdev-faq__item" key={item.question} open={i === 0}>
+                  <summary className="wdev-faq__q">
                     <span>{item.question}</span>
                     <svg className="wdev-faq__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                       <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                  </button>
-                  <div
-                    className="wdev-faq__a-wrap"
-                    role="region"
-                    id={`wdev-faq-panel-${i}`}
-                    aria-labelledby={`wdev-faq-trigger-${i}`}
-                    hidden={i !== 0}
-                  >
+                  </summary>
+                  <div className="wdev-faq__a-wrap">
                     <p className="wdev-faq__a">{item.answer}</p>
                   </div>
-                </div>
+                </details>
               ))}
             </div>
           </div>
@@ -1189,27 +1195,9 @@ export default function WebsiteDevelopment() {
         dangerouslySetInnerHTML={{
           __html: `
           (function () {
-            // FAQ accordion — one panel open at a time
-            document.querySelectorAll(".wdev-faq__item").forEach(function (item) {
-              var btn = item.querySelector(".wdev-faq__q");
-              var panel = item.querySelector(".wdev-faq__a-wrap");
-              if (!btn || !panel) return;
-              btn.addEventListener("click", function () {
-                var wasOpen = item.classList.contains("is-open");
-                document.querySelectorAll(".wdev-faq__item").forEach(function (i) {
-                  i.classList.remove("is-open");
-                  var p = i.querySelector(".wdev-faq__a-wrap");
-                  var b = i.querySelector(".wdev-faq__q");
-                  if (p) p.hidden = true;
-                  if (b) b.setAttribute("aria-expanded", "false");
-                });
-                if (!wasOpen) {
-                  item.classList.add("is-open");
-                  panel.hidden = false;
-                  btn.setAttribute("aria-expanded", "true");
-                }
-              });
-            });
+            // FAQ accordion is now native <details>/<summary> (see the
+            // ✅ FIX note near .wdev-faq__item in the <style> block) and
+            // needs no JS at all, so that logic has been removed from here.
 
             // Animated stat counters — count up once, on first scroll into view
             var stats = document.querySelectorAll(".wdev-stat[data-target]");
