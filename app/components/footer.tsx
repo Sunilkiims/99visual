@@ -21,11 +21,16 @@ import {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const NAV_COMPANY = [
-  { label: 'About',    href: '/about'    },
-  { label: 'Careers',  href: '/careers'  },
-  { label: 'Partner',  href: '/partner'  },
-  { label: 'Contact',  href: '/contact'  },
-  { label: 'Insights', href: '/insights' },
+  { label: 'About',       href: '/about'       },
+  { label: 'Careers',     href: '/careers'     },
+  { label: 'Partner',     href: '/partner'     },
+  { label: 'Contact',     href: '/contact'     },
+  { label: 'Insights',    href: '/insights'    },
+  // ✅ FIX — /press and /help-center existed as real pages with their own
+  // metadata but had no internal links pointing to them anywhere on the
+  // site, making them orphan pages for crawlers and users alike.
+  { label: 'Press',       href: '/press'       },
+  { label: 'Help Center', href: '/help-center' },
 ];
 
 const NAV_SERVICES = [

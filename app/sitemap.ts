@@ -32,6 +32,11 @@ const staticRoutes: {
   { url: `${BASE}/careers`,                         priority: 0.6, changeFrequency: 'weekly',  lastModified: '2025-06-01' },
   { url: `${BASE}/contact`,                         priority: 0.7, changeFrequency: 'monthly', lastModified: '2025-06-01' },
   { url: `${BASE}/insights`,                        priority: 0.8, changeFrequency: 'daily',   lastModified: '2025-06-01' },
+  // ✅ FIX — /press and /help-center already exist as indexable pages with
+  // their own metadata but were missing from the sitemap (and, separately,
+  // from the site's internal nav — see footer.tsx). Adding both here.
+  { url: `${BASE}/press`,                           priority: 0.5, changeFrequency: 'monthly', lastModified: '2025-06-01' },
+  { url: `${BASE}/help-center`,                     priority: 0.5, changeFrequency: 'monthly', lastModified: '2025-06-01' },
   // Service pages
   { url: `${BASE}/services/website-development`,           priority: 0.8, changeFrequency: 'monthly', lastModified: '2025-06-01' },
   { url: `${BASE}/services/digital-marketing-seo`,         priority: 0.8, changeFrequency: 'monthly', lastModified: '2025-06-01' },
