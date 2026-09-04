@@ -243,9 +243,10 @@ export const localBusinessSchema = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. Website
-// NOTE: SearchAction requires a working /search route in your Next.js app.
-// If /search is not implemented, remove the potentialAction block to avoid
-// a non-functional Sitelinks Searchbox in Google Search results.
+// ✅ FIX — SearchAction removed: it targeted a /search route that does not
+// exist in this app. A SearchAction pointing at a non-functional route risks
+// a broken Sitelinks Searchbox in Google Search results. Re-add it only if
+// a working /search route is built, targeting that real route.
 // ─────────────────────────────────────────────────────────────────────────────
 export const websiteSchema = {
   '@type': 'WebSite',
@@ -254,12 +255,6 @@ export const websiteSchema = {
   url: BASE,
   inLanguage: 'en',
   publisher: { '@id': `${BASE}/#organization` },
-  // Remove potentialAction below if /search route does not exist:
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: { '@type': 'EntryPoint', urlTemplate: `${BASE}/search?q={search_term_string}` },
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

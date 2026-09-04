@@ -1,7 +1,12 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
+import { BASE } from '@/lib/schema'
 
-const BASE = 'https://www.99visual.com'
+// ✅ FIX — BASE now imported from lib/schema.ts instead of being redeclared
+// here. This file previously hardcoded its own copy of the production
+// domain, which matched lib/schema.ts by coincidence but was a second,
+// unsynchronized source of truth — the exact drift risk BASE was created
+// to prevent in the first place.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ✅ FIX — each static route now carries its own explicit lastModified date,
