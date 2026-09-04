@@ -4,17 +4,26 @@ import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
+import { BASE } from '@/lib/schema'
 
+// ✅ FIX — canonical/OG URLs were hardcoded to `https://99visual.com/...`
+// (missing the `www.` that the site actually runs on — BASE below is the
+// verified production origin, matching every other page). A mismatched
+// canonical can cause Google to disregard it, undermining exactly the
+// duplicate-content protection this page relies on for its filtered/
+// paginated views (?category=, ?tag=, ?page=, ?search=) — every one of
+// those still canonicalizes to the plain /insights URL, which is correct
+// and is left unchanged here.
 export const metadata: Metadata = {
   title: 'Industry Insights & Expert Perspectives | 99 Visual Solutions',
   description: 'Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.',
   alternates: {
-    canonical: 'https://99visual.com/insights',
+    canonical: `${BASE}/insights`,
   },
   openGraph: {
     title: 'Industry Insights & Expert Perspectives',
     description: 'Stay ahead with trends, technology updates, and industry knowledge from 99 Visual Solutions.',
-    url: 'https://99visual.com/insights',
+    url: `${BASE}/insights`,
   },
 }
 

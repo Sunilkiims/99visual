@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import PostViewer from '@/app/components/PostViewer'
+import { BASE } from '@/lib/schema'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -21,11 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Not Found' }
 
   const seo = post.seo
-  const BASE = 'https://99visual.com'
 
   return {
     title: seo?.metaTitle || post.title,
     description: seo?.metaDescription || post.excerpt || '',
+    metadataBase: new URL(BASE),
     alternates: {
       canonical: seo?.canonicalUrl || BASE + '/insights/' + slug,
     },
@@ -74,7 +75,7 @@ function ReadingMeter({ minutes, color }: { minutes: number; color: string }) {
 }
 
 function ShareButtons({ slug, title }: { slug: string; title: string }) {
-  const base = 'https://99visual.com/insights/'
+  const base = BASE + '/insights/'
   const url = base + slug
   const twitterHref =
     'https://twitter.com/intent/tweet?text=' +
@@ -169,14 +170,14 @@ export default async function InsightPostPage({ params }: Props) {
     publisher: {
       '@type': 'Organization',
       name: '99 Visual Solutions',
-      url: 'https://99visual.com',
+      url: BASE,
     },
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
-    url: 'https://99visual.com/insights/' + post.slug,
+    url: BASE + '/insights/' + post.slug,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://99visual.com/insights/' + post.slug,
+      '@id': BASE + '/insights/' + post.slug,
     },
   }
 
