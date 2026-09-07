@@ -1,17 +1,5 @@
 import type { MetadataRoute } from 'next'
 import { BASE } from '@/lib/schema'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Dynamic robots.txt via the Next.js Metadata API (replaces the previous
-// static public/robots.txt). Using app/robots.ts keeps the crawl rules,
-// sitemap reference, and BASE domain in one TypeScript source of truth
-// alongside app/sitemap.ts, instead of a hand-maintained static file that
-// can silently drift out of sync with the real domain or route structure.
-//
-// Rules preserved from the previous robots.txt, plus:
-//   • /login is now explicitly disallowed — it's a functional auth screen
-//     with no unique indexable content (same treatment as /admin).
-// ─────────────────────────────────────────────────────────────────────────────
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -30,19 +18,35 @@ export default function robots(): MetadataRoute.Robots {
           '/*?ref=',
           '/*?fbclid=',
           '/*?gclid=',
+          '/*?sessionid=',
+          '/*?sort=',
+          '/*?filter=',
         ],
       },
-      // AI / assistant crawlers explicitly allowed to browse public content.
+     
+      { userAgent: 'ClaudeBot', allow: '/' },
+      { userAgent: 'Claude-User', allow: '/' },
+      { userAgent: 'Claude-SearchBot', allow: '/' },
       { userAgent: 'GPTBot', allow: '/' },
       { userAgent: 'ChatGPT-User', allow: '/' },
+      { userAgent: 'OAI-SearchBot', allow: '/' },
       { userAgent: 'GoogleOther', allow: '/' },
       { userAgent: 'Google-Extended', allow: '/' },
-      { userAgent: 'PerplexityBot', allow: '/' },
-      // Low-value bulk scrapers blocked entirely.
+      { userAgent: 'PerplexityBot', allow: '/' },      
+      { userAgent: 'AhrefsBot', disallow: '/' },
+      { userAgent: 'SemrushBot', disallow: '/' },
+      { userAgent: 'DotBot', disallow: '/' }, // Moz
+      { userAgent: 'MJ12bot', disallow: '/' }, // Majestic
+      { userAgent: 'BLEXBot', disallow: '/' }, // SEO PowerSuite / WebMeUp
+      { userAgent: 'Screaming Frog SEO Spider', disallow: '/' },
+      { userAgent: 'SEOkicks', disallow: '/' },
+      { userAgent: 'rogerbot', disallow: '/' }, // Moz Pro
       { userAgent: 'CCBot', disallow: '/' },
       { userAgent: 'omgili', disallow: '/' },
       { userAgent: 'omgilibot', disallow: '/' },
+      { userAgent: 'Bytespider', disallow: '/' },
     ],
     sitemap: `${BASE}/sitemap.xml`,
+    host: BASE,
   }
 }
