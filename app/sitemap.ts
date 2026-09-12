@@ -3,6 +3,29 @@ import { prisma } from '@/lib/prisma'
 import { BASE } from '@/lib/schema'
 import { videos } from '@/lib/videos'
 
+// ✅ FIX — Next.js's built-in sitemap XML writer (resolve-route-data.js)
+// interpolates `video.title` / `video.description` (and every other video:*
+// field) straight into the XML string with NO entity-escaping. Any raw
+// `&`, `<`, `>`, `'`, or `"` in that text produces malformed XML — which is
+// exactly what happened here: "Architectural Walkthrough & Flyover
+// Visualization" broke the whole sitemap.xml document with
+// `xmlParseEntityRef: no name`, which risks Google failing to parse the
+// *entire* sitemap, not just the one video entry.
+//
+// lib/videos.ts intentionally keeps this text as plain, unescaped English
+// (it's reused as-is in on-page HTML text nodes and in JSON-LD, where
+// XML-escaping it would be wrong / double-escaped). So the escaping has to
+// happen right here, only for the sitemap's video: fields, not at the
+// source.
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
 // ✅ FIX — BASE now imported from lib/schema.ts instead of being redeclared
 // here. This file previously hardcoded its own copy of the production
 // domain, which matched lib/schema.ts by coincidence but was a second,
@@ -98,10 +121,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
     videos: [
       {
-        title: video.title,
-        thumbnail_loc: `${BASE}${video.thumbnail}`,
-        description: video.description,
-        content_loc: `${BASE}${video.videoSrc}`,
+        // ✅ FIX — escapeXml() applied to every free-text field. thumbnail_loc/
+        // content_loc are also escaped defensively (they're plain paths today
+        // with no query strings, but that isn't guaranteed to stay true).
+        title: escapeXml(video.title),
+        thumbnail_loc: escapeXml(`${BASE}${video.thumbnail}`),
+        description: escapeXml(video.description),
+        content_loc: escapeXml(`${BASE}${video.videoSrc}`),
         duration: video.durationSeconds,
         publication_date: video.uploadDate,
         family_friendly: 'yes' as const,
