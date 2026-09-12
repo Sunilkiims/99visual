@@ -12,6 +12,27 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Static media under /public (video clips, images, fonts) is content-
+  // addressed by filename only — there's no build hash in the URL, so a
+  // long max-age relies on the filename changing when the content does.
+  // Scoped to file extensions only (never matches an app/ page route, none
+  // of which end in these extensions) so this can't accidentally cache an
+  // HTML response. Improves repeat-view load time / Core Web Vitals for the
+  // video showcase pages in particular, which otherwise re-fetch multi-MB
+  // .mp4 files on every visit.
+  async headers() {
+    return [
+      {
+        source: '/:path*(jpg|jpeg|png|gif|webp|avif|svg|ico|mp4|webm|woff|woff2)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       // ── Service page redirects ─────────────────────────────────────────────

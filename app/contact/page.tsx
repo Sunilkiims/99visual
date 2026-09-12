@@ -110,7 +110,7 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = new Date().toISOString().split("T")[0];
+const DATE_MODIFIED  = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQ DATA

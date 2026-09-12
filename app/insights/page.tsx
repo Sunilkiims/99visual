@@ -6,29 +6,60 @@ import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { BASE } from '@/lib/schema'
 
-// ✅ FIX — canonical/OG URLs were hardcoded to `https://99visual.com/...`
-// (missing the `www.` that the site actually runs on — BASE below is the
-// verified production origin, matching every other page). A mismatched
-// canonical can cause Google to disregard it, undermining exactly the
-// duplicate-content protection this page relies on for its filtered/
-// paginated views (?category=, ?tag=, ?page=, ?search=) — every one of
-// those still canonicalizes to the plain /insights URL, which is correct
-// and is left unchanged here.
-export const metadata: Metadata = {
-  title: 'Industry Insights & Expert Perspectives | 99 Visual Solutions',
-  description: 'Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.',
-  alternates: {
-    canonical: `${BASE}/insights`,
-  },
-  openGraph: {
-    title: 'Industry Insights & Expert Perspectives',
-    description: 'Stay ahead with trends, technology updates, and industry knowledge from 99 Visual Solutions.',
-    url: `${BASE}/insights`,
-  },
-}
-
 interface Props {
   searchParams: Promise<{ category?: string; tag?: string; page?: string; search?: string }>
+}
+
+// ── FIX — canonical was a single static value pointing every ?page=N view
+// back to the plain /insights URL. That's the outdated pagination pattern:
+// current Google guidance is a self-referencing canonical per paginated
+// page (see https://developers.google.com/search/docs/crawling-indexing/canonicalization
+// and https://developers.google.com/search/blog/2021/02/pagination-best-practices).
+// Collapsing every page to page 1 tells Google the later pages' post
+// listings don't exist as distinct crawlable entry points, which can slow
+// discovery of posts that only surface deeper in the list. This page's
+// individual posts are also covered directly in app/sitemap.ts, so this
+// mainly affects how the *listing* pages themselves are crawled/indexed.
+//
+// New behaviour:
+//   - unfiltered, page 1              → canonical: /insights
+//   - unfiltered, page N>1            → canonical: /insights?page=N
+//   - category, any page              → canonical: /insights?category=X[&page=N]
+//   - tag or search present           → canonical: /insights (collapsed —
+//     tag views are too granular and search-result pages shouldn't be
+//     indexed as unique pages; this matches Google's explicit guidance for
+//     site-internal search results)
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const params = await searchParams
+  const page = parseInt(params.page || '1')
+
+  let canonicalPath = '/insights'
+  if (!params.tag && !params.search) {
+    const qs = new URLSearchParams()
+    if (params.category) qs.set('category', params.category)
+    if (page > 1) qs.set('page', String(page))
+    const query = qs.toString()
+    canonicalPath = query ? `/insights?${query}` : '/insights'
+  }
+  const canonicalUrl = `${BASE}${canonicalPath}`
+
+  return {
+    title: 'Industry Insights & Expert Perspectives | 99 Visual Solutions',
+    description: 'Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.',
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    // Self-referencing canonical still tells Google these are indexable —
+    // that's correct for real category/pagination views. Filtered-out cases
+    // (tag/search) already collapse their canonical to /insights above,
+    // which is the accepted way to deflect indexation of those variants
+    // without a separate noindex directive.
+    openGraph: {
+      title: 'Industry Insights & Expert Perspectives',
+      description: 'Stay ahead with trends, technology updates, and industry knowledge from 99 Visual Solutions.',
+      url: canonicalUrl,
+    },
+  }
 }
 
 async function getPosts(params: Awaited<Props['searchParams']>) {

@@ -124,7 +124,7 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01T00:00:00+05:30";
-const DATE_MODIFIED  = new Date().toISOString();
+const DATE_MODIFIED  = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA NODES — unchanged from prior revision

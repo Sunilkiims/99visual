@@ -13,6 +13,17 @@ import {
   webPage,
 } from '@/lib/schema'
 
+// Must match the '/videos' entry's lastModified in app/sitemap.ts. Without
+// this, webPage() below defaults dateModified to new Date().toISOString() —
+// a false "changed today" freshness signal on every deploy that silently
+// contradicts the sitemap's static date. Update only when a video is
+// actually added, removed, or edited.
+const DATE_MODIFIED = '2026-04-01'
+
+function isoDuration(seconds: number): string {
+  return `PT${Math.max(1, Math.round(seconds))}S`
+}
+
 export const metadata: Metadata = {
   title: 'Video Showcase | 99 Visual Solutions',
   description:
@@ -28,6 +39,32 @@ export const metadata: Metadata = {
 }
 
 export default function VideosIndexPage() {
+  // Gallery-level ItemList of VideoObjects — gives Google a single node that
+  // enumerates every watch page on this hub, in addition to (not instead of)
+  // each video's own full VideoObject on its /videos/[slug] page. This is
+  // the structured-data pattern Google documents for video gallery/listing
+  // pages: https://developers.google.com/search/docs/appearance/structured-data/video
+  const videoGalleryList = {
+    '@type': 'ItemList',
+    '@id': `${BASE}/videos#video-gallery`,
+    itemListElement: videos.map((video, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${BASE}/videos/${video.slug}`,
+      item: {
+        '@type': 'VideoObject',
+        '@id': `${BASE}/videos/${video.slug}#video`,
+        name: video.title,
+        description: video.description,
+        thumbnailUrl: [`${BASE}${video.thumbnail}`],
+        uploadDate: `${video.uploadDate}T00:00:00+05:30`,
+        duration: isoDuration(video.durationSeconds),
+        contentUrl: `${BASE}${video.videoSrc}`,
+        embedUrl: `${BASE}${video.videoSrc}`,
+      },
+    })),
+  }
+
   const graph = buildGraph(
     orgSchema,
     websiteSchema,
@@ -37,7 +74,9 @@ export default function VideosIndexPage() {
       name: 'Video Showcase | 99 Visual Solutions',
       description:
         'Watch 3D visualization, architectural animation, product rendering, and marketing showreel clips produced by 99 Visual Solutions.',
+      dateModified: `${DATE_MODIFIED}T00:00:00+05:30`,
     }),
+    videoGalleryList,
   )
 
   return (
