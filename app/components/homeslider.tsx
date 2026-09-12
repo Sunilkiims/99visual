@@ -331,6 +331,17 @@ const HomeSlider: React.FC = () => {
                   </Link>
                 </motion.div>
               )}
+
+              {currentSlide.type === "video" && (
+                <motion.div variants={textItem} className="mt-3">
+                  <Link
+                    href="/videos/3d-visualization-showreel"
+                    className="text-xs text-white/60 hover:text-cyan-300 transition-colors underline underline-offset-4"
+                  >
+                    Watch more
+                  </Link>
+                </motion.div>
+              )}
             </motion.div>
           </div>
         </motion.div>

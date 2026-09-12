@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
 export default function BlueScreenBox() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -298,6 +299,13 @@ export default function BlueScreenBox() {
               and multiple viewing options. Our services help you present products
               in a way that feels real, interactive, and customer-ready.
             </p>
+
+            <Link
+              href="/videos/product-visualization-compositing-demo"
+              style={{ color: '#f97316', fontWeight: 600, fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}
+            >
+              Watch more →
+            </Link>
           </div>
 
         </div>

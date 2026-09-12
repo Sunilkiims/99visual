@@ -475,6 +475,39 @@ export function articleSchema(opts: {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 9. VideoObject — use on individual /videos/[slug] watch pages
+// All fields are required inputs (no fake/default fallbacks) — callers must
+// pass the video's real name, description, thumbnail, contentUrl and
+// uploadDate. embedUrl/contentUrl both point at the same self-hosted file
+// since these are not third-party embeds.
+// ─────────────────────────────────────────────────────────────────────────────
+export function videoObjectSchema(opts: {
+  pathname: string;
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  contentUrl: string;
+  uploadDate: string;
+  duration: string; // ISO 8601 duration, e.g. 'PT16S'
+}) {
+  return {
+    '@type': 'VideoObject',
+    '@id': `${BASE}${opts.pathname}#video`,
+    name: opts.name,
+    description: opts.description,
+    thumbnailUrl: [abs(opts.thumbnailUrl)],
+    uploadDate: opts.uploadDate,
+    duration: opts.duration,
+    contentUrl: abs(opts.contentUrl),
+    embedUrl: abs(opts.contentUrl),
+    url: `${BASE}${opts.pathname}`,
+    isFamilyFriendly: true,
+    publisher: { '@id': `${BASE}/#organization` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE}${opts.pathname}#webpage` },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // USAGE — copy-paste into any page file
 // ─────────────────────────────────────────────────────────────────────────────
 //

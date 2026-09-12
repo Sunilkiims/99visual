@@ -3,6 +3,47 @@ import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaQuestionCircle, FaHeadset, FaBookOpen, FaTools } from "react-icons/fa";
+import { buildGraph, orgSchema, websiteSchema, faqSchema } from "@/lib/schema";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FAQ content — single source of truth for BOTH the visible FAQ section
+// below and the FAQPage JSON-LD in helpFaq/helpGraph. Google's structured
+// data guidelines require FAQPage markup to match what's actually visible
+// on the page, so this is defined once and rendered in both places rather
+// than kept as two separately-maintained copies that could drift apart.
+// ─────────────────────────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    question: "What services does 99Visual offer?",
+    answer:
+      "We provide web development, 3D visualization, digital marketing, SEO, and IT consulting services tailored to your business needs.",
+  },
+  {
+    question: "How can I contact support?",
+    answer:
+      "You can reach our team via the contact page or directly request support through this help center.",
+  },
+  {
+    question: "Do you provide ongoing maintenance?",
+    answer:
+      "Yes, we offer ongoing support, maintenance, and optimization services for all our solutions.",
+  },
+  {
+    question: "How quickly will I get a response?",
+    answer:
+      "Our team typically responds within 24 hours, depending on the complexity of the request.",
+  },
+];
+
+// ─── Single @graph document — one @context, all nodes ────────────────────────
+// Matches the pattern used on the homepage (app/page.tsx): orgSchema +
+// websiteSchema anchor this page to the sitewide Organization/WebSite nodes
+// instead of the FAQPage floating on its own with no publisher context.
+const helpGraph = buildGraph(
+  orgSchema,
+  websiteSchema,
+  faqSchema(FAQ_ITEMS),
+);
 
 export const metadata: Metadata = {
   title:

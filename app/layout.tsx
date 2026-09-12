@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./global.css";
 import { BASE } from "@/lib/schema";
 
@@ -110,23 +109,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* Pannellum CSS */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"
-        />
-      </head>
-
+      {/*
+        Pannellum's CSS/JS previously loaded here for every route. It's only
+        used by the 360° panorama viewer on /services/visualization (via
+        app/components/panoramaviewer.tsx), so it's now loaded there instead
+        — every other page stops paying for a render-blocking third-party
+        CDN stylesheet + beforeInteractive script it never needed.
+      */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Load Pannellum JS before React components mount */}
-        <Script
-          src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"
-          strategy="beforeInteractive"
-        />
-
         {children}
       </body>
     </html>

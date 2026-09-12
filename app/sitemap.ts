@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { BASE } from '@/lib/schema'
+import { videos } from '@/lib/videos'
 
 // ✅ FIX — BASE now imported from lib/schema.ts instead of being redeclared
 // here. This file previously hardcoded its own copy of the production
@@ -37,6 +38,7 @@ const staticRoutes: {
   { url: `${BASE}/careers`,                         priority: 0.6, changeFrequency: 'weekly',  lastModified: '2025-06-01' },
   { url: `${BASE}/contact`,                         priority: 0.7, changeFrequency: 'monthly', lastModified: '2025-06-01' },
   { url: `${BASE}/insights`,                        priority: 0.8, changeFrequency: 'daily',   lastModified: '2025-06-01' },
+  { url: `${BASE}/videos`,                          priority: 0.7, changeFrequency: 'monthly', lastModified: '2026-04-01' },
   // ✅ FIX — /press and /help-center already exist as indexable pages with
   // their own metadata but were missing from the sitemap (and, separately,
   // from the site's internal nav — see footer.tsx). Adding both here.
@@ -86,5 +88,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: failed to fetch insight posts', e)
   }
 
-  return [...staticEntries, ...insightEntries]
+  // Video watch pages — each carries its own <video:video> sitemap extension,
+  // sourced from the same registry (lib/videos.ts) that powers the pages
+  // themselves and their VideoObject JSON-LD, so all three stay in sync.
+  const videoEntries: MetadataRoute.Sitemap = videos.map((video) => ({
+    url: `${BASE}/videos/${video.slug}`,
+    lastModified: video.uploadDate,
+    changeFrequency: 'yearly' as const,
+    priority: 0.6,
+    videos: [
+      {
+        title: video.title,
+        thumbnail_loc: `${BASE}${video.thumbnail}`,
+        description: video.description,
+        content_loc: `${BASE}${video.videoSrc}`,
+        duration: video.durationSeconds,
+        publication_date: video.uploadDate,
+        family_friendly: 'yes' as const,
+      },
+    ],
+  }))
+
+  return [...staticEntries, ...insightEntries, ...videoEntries]
 }

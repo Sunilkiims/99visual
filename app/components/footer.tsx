@@ -31,6 +31,11 @@ const NAV_COMPANY = [
   // site, making them orphan pages for crawlers and users alike.
   { label: 'Press',       href: '/press'       },
   { label: 'Help Center', href: '/help-center' },
+  // ✅ FIX — /videos and its /videos/[slug] watch pages need a persistent,
+  // sitewide crawlable link (same orphan-page reasoning as above), since the
+  // in-context "Watch more" links only appear on the specific pages
+  // where each clip is embedded.
+  { label: 'Videos',      href: '/videos'      },
 ];
 
 const NAV_SERVICES = [
