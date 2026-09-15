@@ -71,6 +71,16 @@ const nextConfig: NextConfig = {
         destination: "/services/website-development",
         permanent: true,
       },
+      // NEW — this was the actual legacy URL indexed in Google Search Console
+      // (/services/website-webapp-development), which did not match any
+      // existing source pattern above and was 404ing. Next.js matches this
+      // with or without a trailing slash, so no separate rule is needed for
+      // /services/website-webapp-development/.
+      {
+        source: "/services/website-webapp-development",
+        destination: "/services/website-development",
+        permanent: true,
+      },
 
       // ── Blog / insights redirects ──────────────────────────────────────────
       {
