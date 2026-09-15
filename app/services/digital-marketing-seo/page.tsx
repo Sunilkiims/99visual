@@ -427,6 +427,14 @@ export default function DigitalMarketing() {
 
         /* Eyebrow badge — now orange (#FF8A2E), independent of --dm-blue */
         .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .dm-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
+        .dm-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
+        .dm-breadcrumb li{display:flex;align-items:center;gap:6px;}
+        .dm-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
+        .dm-breadcrumb a:hover{color:#FF8A2E;}
+        .dm-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
+        .dm-breadcrumb__sep{color:rgba(255,255,255,.25);}
+        @media(max-width:640px){.dm-breadcrumb{padding-top:1.1rem;}}
         .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:dmPulse 2s ease-in-out infinite;}
         @keyframes dmPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .dm-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -584,20 +592,22 @@ export default function DigitalMarketing() {
           <div className="dm-corner dm-corner--bl" aria-hidden="true" />
           <div className="dm-corner dm-corner--br" aria-hidden="true" />
 
-          <nav className="dm-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
+          <nav className="dm-breadcrumb" aria-label="Breadcrumb">
+            <ol itemScope itemType="https://schema.org/BreadcrumbList">
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
                 <meta itemProp="position" content="1" />
               </li>
+              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
                 <meta itemProp="position" content="2" />
               </li>
+              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services/digital-marketing-seo" itemProp="item" aria-current="page">
+                <Link href="/services/digital-marketing-seo" itemProp="item" aria-current="page">
                   <span itemProp="name">Digital Marketing &amp; SEO</span>
-                </a>
+                </Link>
                 <meta itemProp="position" content="3" />
               </li>
             </ol>

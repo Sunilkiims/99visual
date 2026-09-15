@@ -356,6 +356,14 @@ export default function CADGISPhotogrammetry() {
         @media(max-width:960px){.cg-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
         .cg-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cg-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .cg-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
+        .cg-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
+        .cg-breadcrumb li{display:flex;align-items:center;gap:6px;}
+        .cg-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
+        .cg-breadcrumb a:hover{color:var(--cg-orange);}
+        .cg-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
+        .cg-breadcrumb__sep{color:rgba(255,255,255,.25);}
+        @media(max-width:640px){.cg-breadcrumb{padding-top:1.1rem;}}
         .cg-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cg-orange);animation:cgPulse 2s ease-in-out infinite;}
         @keyframes cgPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .cg-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -480,20 +488,22 @@ export default function CADGISPhotogrammetry() {
           <div className="cg-corner cg-corner--bl" aria-hidden="true" />
           <div className="cg-corner cg-corner--br" aria-hidden="true" />
 
-          <nav className="cg-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
+          <nav className="cg-breadcrumb" aria-label="Breadcrumb">
+            <ol itemScope itemType="https://schema.org/BreadcrumbList">
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
                 <meta itemProp="position" content="1" />
               </li>
+              <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
                 <meta itemProp="position" content="2" />
               </li>
+              <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services/cad-gis-photogrammetry" itemProp="item" aria-current="page">
+                <Link href="/services/cad-gis-photogrammetry" itemProp="item" aria-current="page">
                   <span itemProp="name">CAD, GIS &amp; Photogrammetry</span>
-                </a>
+                </Link>
                 <meta itemProp="position" content="3" />
               </li>
             </ol>

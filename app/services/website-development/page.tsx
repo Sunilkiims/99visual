@@ -575,6 +575,14 @@ export default function WebsiteDevelopment() {
 
         /* Eyebrow badge — now orange (#FF8A2E), independent of --wdev-blue */
         .wdev-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .wdev-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
+        .wdev-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
+        .wdev-breadcrumb li{display:flex;align-items:center;gap:6px;}
+        .wdev-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
+        .wdev-breadcrumb a:hover{color:#FF8A2E;}
+        .wdev-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
+        .wdev-breadcrumb__sep{color:rgba(255,255,255,.25);}
+        @media(max-width:640px){.wdev-breadcrumb{padding-top:1.1rem;}}
         .wdev-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:wdevPulse 2s ease-in-out infinite;}
         @keyframes wdevPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .wdev-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -819,20 +827,22 @@ export default function WebsiteDevelopment() {
           <div className="wdev-corner wdev-corner--bl" aria-hidden="true" />
           <div className="wdev-corner wdev-corner--br" aria-hidden="true" />
 
-          <nav className="wdev-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
+          <nav className="wdev-breadcrumb" aria-label="Breadcrumb">
+            <ol itemScope itemType="https://schema.org/BreadcrumbList">
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
+                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
                 <meta itemProp="position" content="1" />
               </li>
+              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
+                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
                 <meta itemProp="position" content="2" />
               </li>
+              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
               <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services/website-development" itemProp="item" aria-current="page">
+                <Link href="/services/website-development" itemProp="item" aria-current="page">
                   <span itemProp="name">Web Development</span>
-                </a>
+                </Link>
                 <meta itemProp="position" content="3" />
               </li>
             </ol>
