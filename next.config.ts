@@ -82,6 +82,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
+      // ── Company page redirects ──────────────────────────────────────────────
+      // Legacy URL flagged in GSC as "Crawled - currently not indexed"
+      // (99visual.com/partnership-with-us/) — no rule previously existed
+      // for it, so it was 404ing just like website-webapp-development was.
+      {
+        source: "/partnership-with-us",
+        destination: "/partner",
+        permanent: true,
+      },
+
       // ── Blog / insights redirects ──────────────────────────────────────────
       {
         source: "/blog",
