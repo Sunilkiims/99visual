@@ -27,6 +27,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import Link from "next/link";
+import Image from "next/image";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
@@ -67,10 +68,10 @@ const BASE_SAFE = BASE.replace(/\/$/, "");
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Website & Web App Development Services | 99 Visual",
+  title: "Website Development Company in India | 99 Visual Solutions",
 
   description:
-    "We build custom web applications and business websites engineered for speed, security, and conversions — covering UX design, front-end and back-end development, e-commerce, CMS, SEO, and API integrations for teams worldwide.",
+    "99 Visual Solutions is a website development company in India (Bengaluru), building custom, responsive, SEO-friendly websites and web applications in React & Next.js. Get a free quote.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -91,8 +92,8 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title:       "Website & Web App Development Services | 99 Visual Solutions",
-    description: "From custom web applications to e-commerce platforms and API integrations, 99 Visual Solutions designs and builds full-cycle digital products for startups and enterprises around the world.",
+    title:       "Website Development Company in India | 99 Visual Solutions",
+    description: "Custom website development, business websites, and web applications built in React and Next.js — responsive, SEO-friendly, and engineered for speed, security, and conversions. Based in Bengaluru, serving clients across India and worldwide.",
     url:         `${BASE_SAFE}/services/website-development`,
     siteName:    "99 Visual Solutions",
     images: [
@@ -101,7 +102,7 @@ export const metadata: Metadata = {
         width:  1200,
         height: 630,
         type:   "image/jpeg",
-        alt:    "Web Development & Web App Services by 99 Visual Solutions",
+        alt:    "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
       },
     ],
     locale: "en_US",
@@ -110,14 +111,14 @@ export const metadata: Metadata = {
 
   twitter: {
     card:        "summary_large_image",
-    title:       "Website & Web App Development Services | 99 Visual Solutions",
-    description: "Custom web apps, e-commerce builds, API integrations, and ongoing SEO support — 99 Visual Solutions builds websites engineered to perform, not just look good.",
+    title:       "Website Development Company in India | 99 Visual Solutions",
+    description: "Custom web apps, responsive business websites, e-commerce builds, and SEO-friendly development in React & Next.js — from a website development company based in Bengaluru, India.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
       {
         url: `${BASE_SAFE}/images/og/web-development-og.jpg`,
-        alt: "Web Development & Web App Services by 99 Visual Solutions",
+        alt: "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
       },
     ],
   },
@@ -136,7 +137,7 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = "2026-09-18"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA — unchanged
@@ -150,11 +151,20 @@ const wdevBreadcrumbNode = breadcrumbFromItems([
 
 const wdevServiceNode = {
   ...serviceSchema({
-    name:        "Website & Web App Development",
-    description: "Full-cycle web development covering custom web application builds, UX and UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations.",
+    name:        "Website Development",
+    description: "Website development company services from 99 Visual Solutions: custom website development, business websites, and web application builds, UX/UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations — delivered from Bengaluru, India for clients in India and abroad.",
     pathname:    "/services/website-development",
     image:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
   }),
+  areaServed: [
+    { "@type": "Country", name: "India" },
+    { "@type": "City", name: "Bengaluru" },
+    { "@type": "Country", name: "United States" },
+    { "@type": "Country", name: "United Kingdom" },
+    { "@type": "Country", name: "United Arab Emirates" },
+    { "@type": "Country", name: "Australia" },
+  ],
+  provider: { "@id": `${BASE_SAFE}/#organization` },
   "@id": `${BASE_SAFE}/services/website-development#service`,
   serviceType: "Web Development",
   hasOfferCatalog: {
@@ -178,39 +188,23 @@ const wdevServiceNode = {
   },
 };
 
-const wdevFaqNode = {
-  ...faqSchema([
-    {
-      question: "What web development services does 99 Visual Solutions offer?",
-      answer:
-        `We handle the full lifecycle: custom web applications, UX and UI design, front-end and back-end development, e-commerce and CMS builds, SEO and performance work, security, hosting, and API integrations. If you're not sure where to start, email us at ${CONTACT_EMAIL} — there's no cost or obligation for that first conversation.`,
-    },
-    {
-      question: "Do you build mobile-responsive websites?",
-      answer:
-        "Yes. Every site we build is mobile-first and tested on real devices, not just resized in a browser. This matters for more than usability — Google's Core Web Vitals are part of how pages rank, so a slow or broken mobile layout costs you both users and search visibility.",
-    },
-    {
-      question: "Which technologies do you use for web development?",
-      answer:
-        "Our front-end stack is mainly React and Next.js, paired with headless CMS platforms like Sanity, Contentful, or Strapi when a content team needs to publish independently. On the back end we build REST and GraphQL APIs on PostgreSQL, MongoDB, or MySQL, deployed to AWS, GCP, or Azure depending on your scale and budget.",
-    },
-    {
-      question: "Can you modernize or upgrade our existing web application?",
-      answer:
-        `Yes — this is one of the more common requests we get. We start with a technical audit to separate what's genuinely broken from what's just old, then migrate incrementally where that's safer than a full rebuild. Email ${CONTACT_EMAIL} with some background on your current system and we'll give you a straight read on what it would take.`,
-    },
-  ]),
-  "@id":            `${BASE_SAFE}/services/website-development#faq`,
-  mainEntityOfPage: { "@id": `${BASE_SAFE}/services/website-development#webpage` },
-};
+// FAQ copy lives in one place (faqItems, defined below with the rest of the
+// page data) and is reused for both the on-page accordion and this JSON-LD
+// node, so the two can no longer drift out of sync.
+function buildWdevFaqNode(items: { question: string; answer: string }[]) {
+  return {
+    ...faqSchema(items),
+    "@id":            `${BASE_SAFE}/services/website-development#faq`,
+    mainEntityOfPage: { "@id": `${BASE_SAFE}/services/website-development#webpage` },
+  };
+}
 
 const wdevPageNode = {
   "@type":       "WebPage",
   "@id":         `${BASE_SAFE}/services/website-development#webpage`,
   url:           `${BASE_SAFE}/services/website-development`,
-  name:          "Website & Web App Development Services | 99 Visual Solutions",
-  description:   "A complete overview of 99 Visual Solutions' web development services, including custom web applications, UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations.",
+  name:          "Website Development Company in India | 99 Visual Solutions",
+  description:   "99 Visual Solutions is a website development company in India, covering custom website development, business websites, and web application builds — UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations, delivered from Bengaluru for clients in India and abroad.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -222,7 +216,7 @@ const wdevPageNode = {
     url:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
     width:     1200,
     height:    630,
-    caption:   "Web Development & Web App Services by 99 Visual Solutions",
+    caption:   "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
   },
   speakable: {
     "@type":     "SpeakableSpecification",
@@ -232,15 +226,9 @@ const wdevPageNode = {
   potentialAction: { "@type": "ReadAction", target: [`${BASE_SAFE}/services/website-development`] },
 };
 
-const wdevGraph = buildGraph(
-  orgSchema,
-  localBusinessSchema,
-  websiteSchema,
-  wdevPageNode,
-  wdevBreadcrumbNode,
-  wdevServiceNode,
-  wdevFaqNode,
-);
+// NOTE: wdevGraph is assembled further below (after `faqItems` is defined in
+// the PAGE DATA section), via buildWdevFaqNode(faqItems), so the FAQ schema
+// and the on-page FAQ accordion always share one copy of the same content.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE DATA — unchanged
@@ -400,6 +388,25 @@ function serviceById(id: string) {
   return services.find((s) => s.id === id)!;
 }
 
+// Illustration + descriptive alt text per service card. Assets already exist
+// in /public/images — this swaps the icon-only cards for real content images
+// with meaningful alt text (previously the page had no <img> elements at all).
+const serviceMedia: Record<string, { src: string; alt: string }> = {
+  "web-application":       { src: "/images/web-application.png",                 alt: "Custom web application development for a business dashboard and internal tool" },
+  "ux-design":             { src: "/images/ux-design.png",                        alt: "UX and UI design process for a responsive business website" },
+  "website-customization": { src: "/images/website-customization.png",            alt: "Custom website development layout tailored to a specific business workflow" },
+  "frontend":              { src: "/images/frontend-development.png",             alt: "Front-end development in React and Next.js for a responsive website" },
+  "backend":               { src: "/images/backend-development.png",              alt: "Back-end development with APIs, databases, and server architecture" },
+  "ecommerce":             { src: "/images/e-commerce-cms-development.png",       alt: "E-commerce and CMS development for an online storefront" },
+  "modernization":         { src: "/images/webapp-modernization.png",             alt: "Legacy web application modernisation and cloud migration" },
+  "seo":                   { src: "/images/seo-and-performance-optimization.png", alt: "SEO-friendly, high-performance website development and Core Web Vitals optimisation" },
+  "security":              { src: "/images/web-security-services.png",            alt: "Web security services including SSL, monitoring, and vulnerability testing" },
+  "hosting":               { src: "/images/website-hosting-deployement.png",      alt: "Website hosting, deployment, and CI/CD pipeline setup" },
+  "api":                   { src: "/images/api-and-third-party-intigration.png",  alt: "API and third-party integration for payment gateways and CRM systems" },
+  "landing-page":          { src: "/images/landing-page-design.png",              alt: "Landing page design and development built for campaign conversions" },
+  "dashboard":             { src: "/images/custom-dashboard-admin-panel.png",     alt: "Custom dashboard and admin panel development with role-based access" },
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SUPPORTING CONTENT — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
@@ -485,7 +492,39 @@ const faqItems = [
     answer:
       `Yes — this is one of the more common requests we get. We start with a technical audit to separate what's genuinely broken from what's just old, then migrate incrementally where that's safer than a full rebuild. Email ${CONTACT_EMAIL} with some background on your current system and we'll give you a straight read on what it would take.`,
   },
+  {
+    question: "Are you a website development company based in India?",
+    answer:
+      "Yes. 99 Visual Solutions is a website development company headquartered in Bengaluru (Bangalore), Karnataka, India. Being based here doesn't limit who we work with — our team also builds and supports websites and web applications for clients in the US, UK, UAE, and Australia, all from the same India-based delivery team.",
+  },
+  {
+    question: "What's the difference between a business website and a custom web application?",
+    answer:
+      "A business website — a marketing site, a service page, a catalogue — mainly needs to inform and convert visitors, so speed, SEO, and clear content structure matter most. A web application adds logins, dashboards, or workflows that your team or customers actually operate inside. Many projects start as a business website and grow a web application layer later; we design the site so that path stays open instead of requiring a rebuild.",
+  },
+  {
+    question: "Do you build custom websites, or work from templates?",
+    answer:
+      "We build custom website development projects rather than reskinning a theme. That doesn't mean starting from a blank file for everything — reusable components and a documented design system keep the build efficient — but the structure, layout, and functionality are scoped to how your business actually sells and operates, not to a template's assumptions.",
+  },
+  {
+    question: "How much does professional website development cost in India?",
+    answer:
+      `Cost depends mainly on scope — a business website with a handful of pages is priced very differently from a custom web application with logins, a database, and ongoing integrations. Rather than quote a generic range that won't match your project, we scope it properly: email ${CONTACT_EMAIL} with a short description of what you need and we'll come back with a clear, itemised estimate.`,
+  },
 ];
+
+const wdevFaqNode = buildWdevFaqNode(faqItems);
+
+const wdevGraph = buildGraph(
+  orgSchema,
+  localBusinessSchema,
+  websiteSchema,
+  wdevPageNode,
+  wdevBreadcrumbNode,
+  wdevServiceNode,
+  wdevFaqNode,
+);
 
 // Illustrative build/QA pipeline lines for the signature ticker band.
 const pipeline = [
@@ -523,7 +562,7 @@ export default function WebsiteDevelopment() {
            Save your banner image to:
            /public/images/services/website-development-hero-banner.jpg ── */
         .wdev-hero{
-          position:relative;height:100vh;width:100%;
+          position:relative;min-height:100vh;width:100%;
           display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
@@ -532,8 +571,8 @@ export default function WebsiteDevelopment() {
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
-        @supports (height: 100svh) { .wdev-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .wdev-hero { height: 100dvh; } }
+        @supports (height: 100svh) { .wdev-hero { min-height:100svh; } }
+        @supports (height: 100dvh) { .wdev-hero { min-height:100dvh; } }
         @media(max-width:960px){
           .wdev-hero {
             background:
@@ -552,17 +591,17 @@ export default function WebsiteDevelopment() {
 
         .wdev-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
+          display:flex;align-items:center;overflow-x:hidden;overflow-y:visible;
           max-width:1280px;margin:0 auto;width:100%;
-          padding:9rem 1.5rem 1.5rem;
-          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
+          padding:7rem 1.5rem 1.5rem;
+          padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem));
           box-sizing:border-box;
         }
-        @media(max-width:960px){ .wdev-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .wdev-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .wdev-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        @media(max-width:960px){ .wdev-hero__inner{ padding:5.5rem 1.25rem 1.25rem; padding-top:max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
+        @media(max-width:640px){ .wdev-hero__inner{ padding:5rem 1rem 1rem; padding-top:max(5rem, calc(env(safe-area-inset-top) + 4rem)); } }
+        @media(max-width:380px){ .wdev-hero__inner{ padding:4.5rem .85rem .85rem; padding-top:max(4.5rem, calc(env(safe-area-inset-top) + 3.5rem)); } }
         @media(max-height:520px){
-          .wdev-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
+          .wdev-hero__inner{ padding-top:3.25rem; padding-bottom:.75rem; }
           .wdev-hero__eyebrow{ margin-bottom:1.1rem; }
           .wdev-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
           .wdev-hero__rule{ margin-bottom:.8rem; }
@@ -591,7 +630,7 @@ export default function WebsiteDevelopment() {
         @media(max-width:960px){.wdev-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--wdev-blue),transparent);}}
         .wdev-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
         @media(max-width:960px){.wdev-hero__sub{margin:0 auto 2.6rem;}}
-        .wdev-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
+        .wdev-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:.5rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         @media(max-width:960px){.wdev-hero__actions{justify-content:center;}}
         .wdev-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--wdev-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
         .wdev-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
@@ -641,6 +680,29 @@ export default function WebsiteDevelopment() {
         .wdev-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
         .wdev-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--wdev-muted);max-width:700px;margin:0 auto .9rem;}
         .wdev-intro__p strong{color:var(--wdev-ink);font-weight:500;}
+
+        /* ══ EXPERTISE — "what a website development company does" ══════ */
+        .wdev-expertise{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-expertise__inner{max-width:1080px;margin:0 auto;}
+        .wdev-expertise__head{max-width:760px;margin:0 auto 3rem;}
+        .wdev-expertise__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.25rem 2.5rem;}
+        @media(max-width:760px){.wdev-expertise__grid{grid-template-columns:1fr;}}
+        .wdev-expertise__item h3{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .55rem;}
+        .wdev-expertise__item p{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin:0;}
+        .wdev-expertise__item p a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
+        .wdev-expertise__item p a:hover{text-decoration-color:var(--wdev-blue);}
+
+        /* ══ LOCATION STRIP — Bengaluru / India / global delivery ═══════ */
+        .wdev-location{background:var(--wdev-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-location__inner{max-width:860px;margin:0 auto;text-align:center;}
+        .wdev-location__p{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.85;color:var(--wdev-muted);max-width:720px;margin:0 auto .9rem;}
+        .wdev-location__p strong{color:var(--wdev-ink);font-weight:500;}
+        .wdev-location__p a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
+        .wdev-location__p a:hover{text-decoration-color:var(--wdev-blue);}
+
+        /* Service-card illustration image (real content image + alt text) */
+        .wdev-card__media{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;margin-bottom:1.1rem;background:var(--wdev-paper);}
+        .wdev-card__media img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;}
 
         /* ══ SOLUTION OVERVIEW GRID ═════════════════════════════════════ */
         .wdev-overview{background:var(--wdev-surface);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
@@ -855,13 +917,13 @@ export default function WebsiteDevelopment() {
                 Services · Web Development
               </div>
               <h1 className="wdev-hero__h1" id="wdev-hero-heading">
-                Web builds measured in <em>speed</em>,<br />uptime, and conversions
+                Website development company in <em>India</em> — speed, security &amp; growth
               </h1>
               <div className="wdev-hero__rule" aria-hidden="true" />
               <p className="wdev-hero__sub">
-                Custom web applications, UX-first design, e-commerce, SEO, and
-                security — built to hold up under real traffic, not just in a
-                demo environment.
+                Custom websites, business sites, and web applications —
+                responsive, SEO-friendly, and engineered to hold up under
+                real traffic, not just a demo.
               </p>
 
               <div className="wdev-hero__actions">
@@ -925,7 +987,7 @@ export default function WebsiteDevelopment() {
             <p className="wdev-intro__p">
               At <strong>99 Visual Solutions</strong>, we treat design and engineering as one discipline,
               not two handoffs — because a site that looks great but loads slowly or breaks on mobile isn't
-              actually doing its job. As a <strong>web design and development company</strong>, we build
+              actually doing its job. As a <strong>website design and development company</strong>, we build
               with that in mind from the first wireframe, not just at launch.
             </p>
             <p className="wdev-intro__p">
@@ -937,13 +999,116 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
+        {/* ══ EXPERTISE — genuine explainer content, not marketing copy ═══ */}
+        <section className="wdev-expertise" aria-labelledby="wdev-expertise-heading">
+          <div className="wdev-expertise__inner">
+            <div className="wdev-expertise__head">
+              <span className="wdev-label">How We Think About It</span>
+              <h2 className="wdev-h2" id="wdev-expertise-heading">
+                What a <em>website development company</em> actually does
+              </h2>
+              <p className="wdev-sub">
+                "Website development" covers a wide range of work. As a web development company in
+                India, here's how we break it down, and what each piece means for your project.
+              </p>
+            </div>
+            <div className="wdev-expertise__grid">
+              <div className="wdev-expertise__item">
+                <h3>Business websites vs. custom web applications</h3>
+                <p>
+                  A business website — a marketing site, a service catalogue, a lead-generation
+                  page — is judged on clarity, speed, and conversions. A custom web application adds
+                  logins, dashboards, or internal workflows on top of that. As a <strong>custom website
+                  development company</strong>, we scope each project against which of these you actually
+                  need, then build the site so it can grow into the other without a rebuild if your
+                  business does.
+                </p>
+              </div>
+              <div className="wdev-expertise__item">
+                <h3>Responsive, mobile-first development</h3>
+                <p>
+                  Every site we ship is built <strong>responsive website development</strong>-first — designed
+                  for a phone screen, then scaled up — and checked on real devices rather than a resized
+                  browser window. Since most traffic today arrives on mobile, this is less a nice-to-have
+                  and more a baseline requirement for usability and search ranking alike.
+                </p>
+              </div>
+              <div className="wdev-expertise__item">
+                <h3>Performance &amp; high-performance engineering</h3>
+                <p>
+                  <strong>High-performance website development</strong> means optimised images, minimal
+                  render-blocking scripts, and server responses tuned for Core Web Vitals — done at build
+                  time, not patched in after a slow launch. A page that loads in under two seconds keeps
+                  more visitors than one that takes five, and that difference compounds across every
+                  campaign you run to the site.
+                </p>
+              </div>
+              <div className="wdev-expertise__item">
+                <h3>SEO-friendly by design</h3>
+                <p>
+                  <strong>SEO-friendly website development</strong> starts with semantic HTML, clean URL
+                  structures, and schema markup built in from the first sprint — not bolted on before
+                  launch. We also handle the technical side (sitemaps, canonical tags, structured data)
+                  in-house, and pair it with our{" "}
+                  <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing services</Link>{" "}
+                  when a site needs ongoing content and off-page work as well.
+                </p>
+              </div>
+              <div className="wdev-expertise__item">
+                <h3>Modern technologies: React &amp; Next.js website development</h3>
+                <p>
+                  Most of our builds run on <strong>React website development</strong> and{" "}
+                  <strong>Next.js website development</strong> — server rendering for fast first loads,
+                  a component-based front end that's easier to extend later, and a large enough ecosystem
+                  that hiring or handing off the codebase down the line isn't a problem. See the full stack
+                  in the "Technologies we build with" section below.
+                </p>
+              </div>
+              <div className="wdev-expertise__item">
+                <h3>Security, scalability &amp; maintenance</h3>
+                <p>
+                  Authentication, encrypted data handling, and dependency patching are built in from the
+                  start, not added after an incident. Architecture is sized to your actual load rather than
+                  over-built by default, and we offer ongoing maintenance and support after launch so the
+                  site keeps working as browsers, frameworks, and your business itself keep changing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ LOCATION — Bengaluru / India / global delivery ══════════════ */}
+        <section className="wdev-location" aria-labelledby="wdev-location-heading">
+          <div className="wdev-location__inner">
+            <span className="wdev-label">Where We're Based</span>
+            <h2 className="wdev-h2" id="wdev-location-heading">
+              A website development company in <em>Bengaluru, India</em>
+            </h2>
+            <p className="wdev-location__p">
+              99 Visual Solutions is a <strong>website development company in Bangalore</strong> —
+              headquartered in Bengaluru, Karnataka, and working as a{" "}
+              <strong>business website development company</strong> and{" "}
+              <strong>web application development company in India</strong> for clients across the
+              country. Being a <strong>web development company in Bangalore</strong> also means our full
+              design and engineering team sits together in one time zone, which keeps communication and
+              turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE,
+              and Australia. Read more about our team and background on the{" "}
+              <Link href="/about">About 99 Visual Solutions</Link> page.
+            </p>
+          </div>
+        </section>
+
         {/* ══ SOLUTION OVERVIEW — quick-jump index ══════════════════════════ */}
         <section className="wdev-overview" aria-labelledby="wdev-overview-heading">
           <div className="wdev-overview__inner">
             <div className="wdev-overview__head">
               <span className="wdev-label">Our Solution</span>
               <h2 className="wdev-h2" id="wdev-overview-heading">Everything under <em>one roof</em></h2>
-              <p className="wdev-sub">Jump to the service you need, or scroll through the full detail below.</p>
+              <p className="wdev-sub">
+                Our website development services in India cover everything from a single landing page
+                to a full custom web development services engagement — jump to the piece you need, or
+                scroll through the full detail below.
+              </p>
             </div>
             <div className="wdev-overview__grid">
               {services.map((svc) => (
@@ -969,8 +1134,14 @@ export default function WebsiteDevelopment() {
                 <div className={`wdev-cluster__grid wdev-cluster__grid--${cluster.cols}`}>
                   {cluster.ids.map((id) => {
                     const svc = serviceById(id);
+                    const media = serviceMedia[svc.id];
                     return (
                       <article className="wdev-card" id={svc.id} key={svc.id} aria-labelledby={`wdev-svc-heading-${svc.id}`}>
+                        {media && (
+                          <div className="wdev-card__media">
+                            <Image src={media.src} alt={media.alt} width={640} height={400} loading="lazy" />
+                          </div>
+                        )}
                         <div className="wdev-card__icon" aria-hidden="true">{svc.icon}</div>
                         <h3 className="wdev-card__title" id={`wdev-svc-heading-${svc.id}`}>{svc.title}</h3>
                         <p className="wdev-card__desc">{svc.description}</p>
@@ -1067,6 +1238,13 @@ export default function WebsiteDevelopment() {
             <div className="wdev-ind__head">
               <span className="wdev-label">Who We Work With</span>
               <h2 className="wdev-h2" id="wdev-ind-heading">Industries we <em>serve</em></h2>
+              <p className="wdev-sub">
+                Real estate clients building a project or listings site often pair this with our{" "}
+                <Link href="/services/visualization">3D architectural visualisation</Link> service for
+                renders and walkthroughs; e-commerce brands typically add our{" "}
+                <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing</Link> work once
+                the site is live.
+              </p>
             </div>
             <div className="wdev-ind__grid">
               {industries.map((ind) => (
@@ -1084,7 +1262,12 @@ export default function WebsiteDevelopment() {
           <div className="wdev-tech__inner">
             <span className="wdev-label">Under the Hood</span>
             <h2 className="wdev-h2" id="wdev-tech-heading">Technologies we <em>build with</em></h2>
-            <p className="wdev-sub">From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the current, production-proven tools behind every build.</p>
+            <p className="wdev-sub">
+              From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the
+              current, production-proven tools behind every build. For more on how we approach specific
+              topics like Next.js and SEO, see our{" "}
+              <Link href="/insights?category=web-development">web development insights</Link>.
+            </p>
             <div className="wdev-tech__grid">
               {techStack.map((t) => (
                 <span className="wdev-tech__badge" key={t.name}>{t.icon} {t.name}</span>
@@ -1153,8 +1336,8 @@ export default function WebsiteDevelopment() {
                 Benefits of working with <em>99 Visual</em>
               </h2>
               <p className="wdev-benefits__sub">
-                A website is only worth what it does for your business afterward. Here's what that
-                looks like in practice when you work with us.
+                A website is only worth what it does for your business afterward. As a professional
+                website development company, here's what that looks like in practice when you work with us.
               </p>
             </div>
             <div className="wdev-benefits__grid">

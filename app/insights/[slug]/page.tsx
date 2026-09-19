@@ -3,9 +3,14 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
+import { ChevronRight } from 'lucide-react'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import PostViewer from '@/app/components/PostViewer'
+import Reveal from '@/app/components/insights/Reveal'
+import TableOfContents from '@/app/components/insights/TableOfContents'
+import { getCategoryIcon } from '@/app/components/insights/categoryIcon'
+import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { BASE } from '@/lib/schema'
 
 interface Props {
@@ -16,12 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post = await prisma.post.findUnique({
     where: { slug, status: 'PUBLISHED' },
-    include: { seo: true, author: true },
+    include: { seo: true, author: true, featuredImage: true },
   })
 
   if (!post) return { title: 'Not Found' }
 
   const seo = post.seo
+  // The seo table already has ogImage/twitterImage columns — they just
+  // weren't being read here, so shares of every article had no image at
+  // all. Falls back to the featured image, then omits `images` entirely
+  // (not an empty array) if neither exists, which is what Next expects.
+  const ogImage = seo?.ogImage || post.featuredImage?.url
+  const twitterImage = seo?.twitterImage || ogImage
 
   return {
     title: seo?.metaTitle || post.title,
@@ -37,11 +48,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
       authors: [post.author.name],
+      ...(ogImage && { images: [{ url: ogImage }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title: seo?.twitterTitle || post.title,
       description: seo?.twitterDescription || post.excerpt || '',
+      ...(twitterImage && { images: [twitterImage] }),
     },
     robots: seo?.robots || 'index, follow',
   }
@@ -160,12 +173,22 @@ export default async function InsightPostPage({ params }: Props) {
   ])
 
   const accent = post.category.color || '#f97316'
+  const CategoryIcon = getCategoryIcon(post.category.slug, post.category.name)
+
+  // Headings get stable ids injected server-side so the Table of Contents
+  // (and any #anchor deep link) has something real to target — the editor's
+  // raw HTML has no ids of its own. Everything else in post.content passes
+  // through completely unchanged.
+  const { html: contentHtml, headings } = extractHeadings(post.content)
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
+    ...(post.featuredImage?.url && { image: [post.featuredImage.url] }),
+    ...(post.tags.length > 0 && { keywords: post.tags.map(({ tag }) => tag.name).join(', ') }),
+    articleSection: post.category.name,
     author: { '@type': 'Person', name: post.author.name },
     publisher: {
       '@type': 'Organization',
@@ -181,12 +204,29 @@ export default async function InsightPostPage({ params }: Props) {
     },
   }
 
+  // Breadcrumb structured data — wasn't present before. Purely additive: it
+  // mirrors the visible breadcrumb nav just below and doesn't change any
+  // existing field on the BlogPosting JSON-LD above.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: BASE },
+      { '@type': 'ListItem', position: 2, name: 'Insights', item: BASE + '/insights' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: BASE + '/insights/' + post.slug },
+    ],
+  }
+
   return (
     <>
       <Header />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       <main className="min-h-screen bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
@@ -195,94 +235,116 @@ export default async function InsightPostPage({ params }: Props) {
             {/* Main Article */}
             <article>
 
-              <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
-                <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
-                <span className="text-gray-700">→</span>
-                <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
-                <span className="text-gray-700">→</span>
-                <span className="text-gray-500 truncate max-w-xs">{post.title}</span>
-              </nav>
+              <Reveal>
+                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-gray-500 mb-10 flex-wrap">
+                  <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                  <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                  <span className="text-gray-500 truncate max-w-xs" aria-current="page">{post.title}</span>
+                </nav>
 
-              <div className="flex items-center gap-2 flex-wrap mb-7">
-                <Link
-                  href={'/insights?category=' + post.category.slug}
-                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors"
-                  style={{
-                    backgroundColor: accent + '18',
-                    color: accent,
-                  }}
-                >
-                  {post.category.name}
-                </Link>
-                {post.tags.map(({ tag }) => (
+                <div className="flex items-center gap-2 flex-wrap mb-7">
                   <Link
-                    key={tag.id}
-                    href={'/insights?tag=' + tag.slug}
-                    className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-500 hover:text-white hover:border-gray-700 transition-colors"
+                    href={'/insights?category=' + post.category.slug}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors"
+                    style={{
+                      backgroundColor: accent + '18',
+                      color: accent,
+                    }}
                   >
-                    {tag.name}
+                    <CategoryIcon className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
+                    {post.category.name}
                   </Link>
-                ))}
-              </div>
+                  {post.tags.map(({ tag }) => (
+                    <Link
+                      key={tag.id}
+                      href={'/insights?tag=' + tag.slug}
+                      className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-500 hover:text-white hover:border-gray-700 transition-colors"
+                    >
+                      {tag.name}
+                    </Link>
+                  ))}
+                </div>
 
-              <h1
-                className="font-serif text-4xl md:text-[3.25rem] font-bold text-white mb-8 leading-[1.08] tracking-tight"
-                style={{ textWrap: 'balance' as any }}
-              >
-                {post.title}
-              </h1>
+                {/* Fluid title — scales continuously between mobile and
+                    desktop instead of jumping at a single breakpoint. */}
+                <h1
+                  className="font-serif font-bold text-white mb-5 leading-[1.08] tracking-tight"
+                  style={{ fontSize: 'clamp(1.4rem, 1.1rem + 1.3vw, 2.1rem)', textWrap: 'balance' as any }}
+                >
+                  {post.title}
+                </h1>
 
-              {/* thin accent rule — echoes the category color, quiet signature */}
-              <div
-                className="h-px w-full mb-8"
-                style={{ background: `linear-gradient(90deg, ${accent}, transparent 60%)` }}
-              />
+                {post.excerpt && (
+                  <p
+                    className="text-gray-400 leading-relaxed mb-8 max-w-2xl"
+                    style={{ fontSize: 'clamp(0.9rem, 0.86rem + 0.2vw, 1rem)' }}
+                  >
+                    {post.excerpt}
+                  </p>
+                )}
 
-              <div className="flex items-center justify-between gap-6 mb-10 pb-8 border-b border-gray-800 flex-wrap">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
-                      <span className="text-orange-400 text-sm font-semibold">
-                        {post.author.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div className="leading-tight">
-                      <p className="text-white text-sm font-medium">{post.author.name}</p>
-                      {post.publishedAt && (
-                        <time dateTime={post.publishedAt.toISOString()} className="text-gray-500 text-xs">
-                          {new Date(post.publishedAt).toLocaleDateString('en-IN', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
-                        </time>
-                      )}
+                {/* thin accent rule — echoes the category color, quiet signature */}
+                <div
+                  className="h-px w-full mb-8"
+                  style={{ background: `linear-gradient(90deg, ${accent}, transparent 60%)` }}
+                />
+
+                <div className="flex items-center justify-between gap-6 mb-10 pb-8 border-b border-gray-800 flex-wrap">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
+                        <span className="text-orange-400 text-sm font-semibold">
+                          {post.author.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="leading-tight">
+                        <p className="text-white text-sm font-medium">{post.author.name}</p>
+                        {post.publishedAt && (
+                          <time dateTime={post.publishedAt.toISOString()} className="text-gray-500 text-xs">
+                            {new Date(post.publishedAt).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            })}
+                          </time>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-5">
-                  <ReadingMeter minutes={post.readingTime} color={accent} />
-                  <span className="text-gray-700">·</span>
-                  <span className="text-sm text-gray-500">{post.viewCount.toLocaleString('en-IN')} views</span>
+                  <div className="flex items-center gap-5">
+                    <ReadingMeter minutes={post.readingTime} color={accent} />
+                    <span className="text-gray-700">·</span>
+                    <span className="text-sm text-gray-500">{post.viewCount.toLocaleString('en-IN')} views</span>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
 
               {post.featuredImage && (
-                <div className="relative w-full rounded-3xl overflow-hidden mb-12 bg-gray-900 flex items-center justify-center max-h-[520px] border border-gray-800/60">
-                  <Image
-                    src={post.featuredImage.url}
-                    alt={post.featuredImage.altText || post.title}
-                    width={1200}
-                    height={675}
-                    className="w-full h-auto max-h-[520px] object-contain"
-                    priority
-                  />
-                </div>
+                <Reveal delay={0.08}>
+                  <div className="relative w-full rounded-3xl overflow-hidden mb-10 bg-gray-900 flex items-center justify-center max-h-[560px] border border-gray-800/60">
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: `radial-gradient(circle at 50% 50%, ${accent}14, transparent 65%)` }}
+                    />
+                    <Image
+                      src={post.featuredImage.url}
+                      alt={post.featuredImage.altText || post.title}
+                      width={1200}
+                      height={675}
+                      className="relative w-full h-auto max-h-[560px] object-contain"
+                      priority
+                    />
+                  </div>
+                </Reveal>
               )}
 
+              <TableOfContents headings={headings} accent={accent} variant="mobile" />
+
               <PostViewer
-                html={post.content}
+                html={contentHtml}
                 postTitle={post.title}
                 postUrl={`/insights/${post.slug}`}
               />
@@ -305,9 +367,11 @@ export default async function InsightPostPage({ params }: Props) {
                 .article-content h1,
                 .article-content h2,
                 .article-content h3,
-                .article-content h4 { font-family: ui-serif, Georgia, serif; color: #ffffff; font-weight: 700; margin-top: 2.75rem; margin-bottom: 1rem; letter-spacing: -0.01em; }
+                .article-content h4 { font-family: ui-serif, Georgia, serif; color: #ffffff; font-weight: 700; margin-top: 2.75rem; margin-bottom: 1rem; letter-spacing: -0.01em; scroll-margin-top: 6.5rem; }
                 .article-content h2 { font-size: 1.6rem; }
                 .article-content h3 { font-size: 1.3rem; }
+                .article-content figure { margin: 2rem 0; }
+                .article-content figcaption { text-align: center; font-size: 0.85rem; color: #6b7280; margin-top: 0.6rem; }
                 .article-content p { margin-bottom: 1.4rem; color: #d1d5db; }
                 .article-content a { color: ${accent}; text-decoration: none; border-bottom: 1px solid ${accent}55; }
                 .article-content a:hover { border-bottom-color: ${accent}; }
@@ -347,27 +411,39 @@ export default async function InsightPostPage({ params }: Props) {
             {/* Sidebar */}
             <aside className="space-y-6 lg:pt-16">
 
-              <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6 sticky top-8">
-                <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Categories</h3>
-                <div className="space-y-0.5">
-                  {allCategories.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      href={'/insights?category=' + cat.slug}
-                      className="flex items-center justify-between group py-2.5 border-b border-gray-800/70 last:border-0"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: cat.color || '#f97316' }}
-                        />
-                        <span className="text-gray-400 group-hover:text-white text-sm transition-colors">
-                          {cat.name}
-                        </span>
-                      </div>
-                      <span className="text-gray-600 text-xs tabular-nums">{cat._count.posts}</span>
-                    </Link>
-                  ))}
+              {/* TOC + Categories are grouped under one sticky wrapper so
+                  they scroll and pin together as a single unit — each was
+                  previously `sticky top-8` on its own, which meant they'd
+                  both try to pin at the same viewport offset and visually
+                  overlap (translucent backgrounds compositing into a
+                  "glass"/double-exposure look) once scrolled. Related
+                  Articles stays outside this wrapper and scrolls normally,
+                  as before. */}
+              <div className="lg:sticky lg:top-8 space-y-6">
+                <TableOfContents headings={headings} accent={accent} variant="desktop" />
+
+                <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6">
+                  <h3 className="text-white font-semibold mb-5 text-xs uppercase tracking-widest">Categories</h3>
+                  <div className="space-y-0.5">
+                    {allCategories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={'/insights?category=' + cat.slug}
+                        className="flex items-center justify-between group py-2.5 border-b border-gray-800/70 last:border-0"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: cat.color || '#f97316' }}
+                          />
+                          <span className="text-gray-400 group-hover:text-white text-sm transition-colors">
+                            {cat.name}
+                          </span>
+                        </div>
+                        <span className="text-gray-600 text-xs tabular-nums">{cat._count.posts}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
 
