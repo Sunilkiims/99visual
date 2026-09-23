@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./global.css";
 import { BASE } from "@/lib/schema";
+import RouteProgressBar from "@/app/components/RouteProgressBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -119,6 +120,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/*
+          Site-wide page-transition system:
+          - RouteProgressBar (below): a top-of-viewport "trickle" loading bar
+            for in-flight navigations. Lives here, as a sibling of {children},
+            because layout.tsx persists across navigations (unlike
+            page.tsx/template.tsx), so its start/finish state survives the
+            whole visit.
+          - The fade-in itself is applied per-route via app/template.tsx →
+            app/components/PageTransition.tsx, since template.tsx is the
+            Next.js file convention that remounts on every navigation.
+          See both files for the full explanation, including why the fade
+          only ever animates opacity (never transform) on this codebase.
+        */}
+        <RouteProgressBar />
         {children}
       </body>
     </html>
