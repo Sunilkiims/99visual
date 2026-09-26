@@ -7,14 +7,18 @@ export default function AnimationVideo() {
     <div className="w-full md:w-[100%]">
       <div className="aspect-[16/10] relative">
         <video
-          src="/videos/animation.mp4"
           autoPlay
           loop
           muted
           playsInline
           controls
+          preload="metadata"
+          poster="/videos/thumbnails/animation.jpg"
+          aria-label="Architectural animation and motion visualization preview"
           className="w-full h-full object-cover rounded-2xl shadow-xl"
-        />
+        >
+          <source src="/videos/animation.mp4" type="video/mp4" />
+        </video>
       </div>
       <Link
         href="/videos/animation-motion-visualization"

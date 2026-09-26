@@ -7,14 +7,18 @@ export default function AnimationVideo() {
     <div className="w-full md:w-[100%]">
       <div className="aspect-[16/10] relative">
         <video
-          src="/videos/marketing.mp4"
           autoPlay
           loop
           muted
           playsInline
           controls
+          preload="metadata"
+          poster="/videos/thumbnails/marketing.jpg"
+          aria-label="Visualization assets for digital marketing preview"
           className="w-full h-full object-cover rounded-2xl shadow-xl"
-        />
+        >
+          <source src="/videos/marketing.mp4" type="video/mp4" />
+        </video>
       </div>
       <Link
         href="/videos/marketing-visualization-demo"
