@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+
+// The only hostname that should ever be indexed. Every canonical, sitemap
+// entry and JSON-LD URL already points here (lib/schema.ts BASE).
+const PRODUCTION_HOST = "www.99visual.com";
 const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
@@ -22,6 +26,18 @@ const nextConfig: NextConfig = {
   // .mp4 files on every visit.
   async headers() {
     return [
+      // ── Staging / preview protection ─────────────────────────────────────
+      // Any request whose Host is not the production hostname — the
+      // 99visual.vercel.app alias, per-deployment preview URLs, localhost —
+      // gets `X-Robots-Tag: noindex`. This keeps duplicate copies of the site
+      // out of Google's index even if a staging link leaks, while robots.txt
+      // stays crawlable so Google can actually see the noindex. Requests to
+      // www.99visual.com are unaffected.
+      {
+        source: "/:path*",
+        missing: [{ type: "host", value: PRODUCTION_HOST }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
       {
         source: '/:path*(jpg|jpeg|png|gif|webp|avif|svg|ico|mp4|webm|woff|woff2)',
         headers: [

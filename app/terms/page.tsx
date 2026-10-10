@@ -3,7 +3,8 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | 99 Visual Solutions Service Agreement",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Terms & Conditions | 99 Visual Solutions Service Agreement" },
 
   description:
     "Read the terms and conditions for using 99Visual services including web development, 3D visualization, SEO, and digital solutions. Understand your rights and obligations.",

@@ -33,6 +33,7 @@
 //   revision) are unchanged. No copy, schema, or metadata changes.
 //   Save your banner image to: /public/images/services/services-hub-hero-banner.jpg
 //
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header           from "@/app/components/header";
 import Footer           from "@/app/components/footer";
@@ -134,7 +135,7 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
@@ -501,14 +502,12 @@ export default function ServicesPage() {
           <div className="sv-corner sv-corner--br" aria-hidden="true" />
 
           <nav className="sv-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
+            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
+              <li>
+                <a href="/"><span>Home</span></a>
               </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services" itemProp="item" aria-current="page"><span itemProp="name">Services</span></a>
-                <meta itemProp="position" content="2" />
+              <li>
+                <a href="/services" aria-current="page"><span>Services</span></a>
               </li>
             </ol>
           </nav>

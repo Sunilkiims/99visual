@@ -9,9 +9,10 @@ import Footer from '@/app/components/footer'
 import PostViewer from '@/app/components/PostViewer'
 import Reveal from '@/app/components/insights/Reveal'
 import TableOfContents from '@/app/components/insights/TableOfContents'
-import { getCategoryIcon } from '@/app/components/insights/categoryIcon'
+import { getCategoryIcon, getRelatedService } from '@/app/components/insights/categoryIcon'
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
-import { BASE } from '@/lib/schema'
+import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
+import { insightUrl, isProductionUrl, parseRobots, stripBrandSuffix } from '@/lib/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -21,42 +22,69 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const post = await prisma.post.findUnique({
     where: { slug, status: 'PUBLISHED' },
-    include: { seo: true, author: true, featuredImage: true },
+    include: { seo: true, author: true, featuredImage: true, category: true },
   })
 
-  if (!post) return { title: 'Not Found' }
+  if (!post) return { title: 'Not Found', robots: { index: false, follow: false } }
 
   const seo = post.seo
-  // The seo table already has ogImage/twitterImage columns — they just
-  // weren't being read here, so shares of every article had no image at
-  // all. Falls back to the featured image, then omits `images` entirely
-  // (not an empty array) if neither exists, which is what Next expects.
-  const ogImage = seo?.ogImage || post.featuredImage?.url
-  const twitterImage = seo?.twitterImage || ogImage
+  const selfUrl = insightUrl(post.slug)
+
+  // ── Canonical ──────────────────────────────────────────────────────────
+  // The CMS previously stored every article's canonical as
+  // https://99visualsolutions.com/insights/<slug> — a different domain —
+  // which told Google the real article lived elsewhere. A stored canonical
+  // is now honoured only when it is an absolute https URL on the production
+  // host; anything else falls back to the self-referencing canonical.
+  const canonical = isProductionUrl(seo?.canonicalUrl) ? seo.canonicalUrl : selfUrl
+
+  // ── Title / description ────────────────────────────────────────────────
+  // The root layout template appends " | 99 Visual Solutions", so any brand
+  // suffix already typed into the CMS meta title is stripped first.
+  const title = stripBrandSuffix(seo?.metaTitle || post.title)
+  const description = seo?.metaDescription || post.excerpt || ''
+
+  // ── Social ─────────────────────────────────────────────────────────────
+  // ogTitle/ogDescription/twitterTitle/twitterDescription are not editable
+  // in the admin UI, so they went stale whenever a post was renamed (two
+  // live articles were sharing another article's OG title). Social text is
+  // therefore derived from the same fields as the page itself. The
+  // featured image is preferred because it is what the article displays.
+  const socialTitle = stripBrandSuffix(post.title)
+  const socialDescription = post.excerpt || description
+  const ogImage = post.featuredImage?.url || seo?.ogImage || undefined
 
   return {
-    title: seo?.metaTitle || post.title,
-    description: seo?.metaDescription || post.excerpt || '',
-    metadataBase: new URL(BASE),
-    alternates: {
-      canonical: seo?.canonicalUrl || BASE + '/insights/' + slug,
-    },
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: seo?.ogTitle || post.title,
-      description: seo?.ogDescription || post.excerpt || '',
-      url: BASE + '/insights/' + slug,
+      title: socialTitle,
+      description: socialDescription,
+      url: selfUrl,
+      siteName: '99 Visual Solutions',
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
       authors: [post.author.name],
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      section: post.category?.name,
+      ...(ogImage && {
+        images: [{
+          url: ogImage,
+          ...(post.featuredImage?.width && post.featuredImage?.height && ogImage === post.featuredImage.url
+            ? { width: post.featuredImage.width, height: post.featuredImage.height }
+            : {}),
+          alt: post.featuredImage?.altText || post.title,
+        }],
+      }),
     },
     twitter: {
       card: 'summary_large_image',
-      title: seo?.twitterTitle || post.title,
-      description: seo?.twitterDescription || post.excerpt || '',
-      ...(twitterImage && { images: [twitterImage] }),
+      title: socialTitle,
+      description: socialDescription,
+      ...(ogImage && { images: [ogImage] }),
     },
-    robots: seo?.robots || 'index, follow',
+    robots: parseRobots(seo?.robots),
   }
 }
 
@@ -174,6 +202,9 @@ export default async function InsightPostPage({ params }: Props) {
 
   const accent = post.category.color || '#f97316'
   const CategoryIcon = getCategoryIcon(post.category.slug, post.category.name)
+  // Title first: it is the most specific signal of what the article covers.
+  const relatedService =
+    getRelatedService(post.title) ?? getRelatedService(post.category.name, post.category.slug)
 
   // Headings get stable ids injected server-side so the Table of Contents
   // (and any #anchor deep link) has something real to target — the editor's
@@ -181,52 +212,66 @@ export default async function InsightPostPage({ params }: Props) {
   // through completely unchanged.
   const { html: contentHtml, headings } = extractHeadings(post.content)
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.excerpt,
-    ...(post.featuredImage?.url && { image: [post.featuredImage.url] }),
-    ...(post.tags.length > 0 && { keywords: post.tags.map(({ tag }) => tag.name).join(', ') }),
-    articleSection: post.category.name,
-    author: { '@type': 'Person', name: post.author.name },
-    publisher: {
-      '@type': 'Organization',
-      name: '99 Visual Solutions',
-      url: BASE,
-    },
-    datePublished: post.publishedAt?.toISOString(),
-    dateModified: post.updatedAt.toISOString(),
-    url: BASE + '/insights/' + post.slug,
-    mainEntityOfPage: {
+  // ── Structured data ──────────────────────────────────────────────────────
+  // One @graph: the shared Organization/WebSite entities (same @ids used on
+  // every page), a WebPage, the BlogPosting and a BreadcrumbList that
+  // mirrors the visible breadcrumb nav below. Every value comes from the
+  // same post record that renders the visible headline, byline, dates and
+  // featured image, so the markup always matches what readers see.
+  const pageUrl = insightUrl(post.slug)
+  const featuredImageNode = post.featuredImage?.url
+    ? {
+        '@type': 'ImageObject',
+        url: post.featuredImage.url,
+        ...(post.featuredImage.width && { width: post.featuredImage.width }),
+        ...(post.featuredImage.height && { height: post.featuredImage.height }),
+      }
+    : undefined
+  const breadcrumbNode = breadcrumbFromItems([
+    { name: 'Home', url: '/' },
+    { name: 'Insights', url: '/insights' },
+    { name: post.title, url: `/insights/${post.slug}` },
+  ])
+  const jsonLd = buildGraph(
+    orgSchema,
+    websiteSchema,
+    {
       '@type': 'WebPage',
-      '@id': BASE + '/insights/' + post.slug,
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: post.title,
+      ...(post.excerpt && { description: post.excerpt }),
+      inLanguage: 'en',
+      isPartOf: { '@id': `${BASE}/#website` },
+      breadcrumb: { '@id': breadcrumbNode['@id'] },
+      ...(featuredImageNode && { primaryImageOfPage: featuredImageNode }),
     },
-  }
-
-  // Breadcrumb structured data — wasn't present before. Purely additive: it
-  // mirrors the visible breadcrumb nav just below and doesn't change any
-  // existing field on the BlogPosting JSON-LD above.
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: BASE },
-      { '@type': 'ListItem', position: 2, name: 'Insights', item: BASE + '/insights' },
-      { '@type': 'ListItem', position: 3, name: post.title, item: BASE + '/insights/' + post.slug },
-    ],
-  }
+    {
+      '@type': 'BlogPosting',
+      '@id': `${pageUrl}#article`,
+      headline: post.title,
+      ...(post.excerpt && { description: post.excerpt }),
+      ...(featuredImageNode && { image: featuredImageNode }),
+      ...(post.tags.length > 0 && { keywords: post.tags.map(({ tag }: { tag: { name: string } }) => tag.name).join(', ') }),
+      articleSection: post.category.name,
+      inLanguage: 'en',
+      author: { '@type': 'Person', name: post.author.name },
+      publisher: { '@id': `${BASE}/#organization` },
+      ...(post.publishedAt && { datePublished: post.publishedAt.toISOString() }),
+      dateModified: post.updatedAt.toISOString(),
+      url: pageUrl,
+      mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
+      isPartOf: { '@id': `${BASE}/#website` },
+    },
+    breadcrumbNode,
+  )
 
   return (
     <>
       <Header />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <main className="min-h-screen bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
@@ -235,7 +280,8 @@ export default async function InsightPostPage({ params }: Props) {
             {/* Main Article */}
             <article>
 
-              <Reveal>
+              {/* fade={false}: title block is the above-the-fold LCP area. */}
+              <Reveal fade={false}>
                 <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-gray-500 mb-10 flex-wrap">
                   <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
@@ -323,7 +369,7 @@ export default async function InsightPostPage({ params }: Props) {
               </Reveal>
 
               {post.featuredImage && (
-                <Reveal delay={0.08}>
+                <Reveal delay={0.08} fade={false}>
                   <div className="relative w-full rounded-3xl overflow-hidden mb-10 bg-gray-900 flex items-center justify-center max-h-[560px] border border-gray-800/60">
                     <div
                       className="absolute inset-0"
@@ -446,6 +492,19 @@ export default async function InsightPostPage({ params }: Props) {
                   </div>
                 </div>
               </div>
+
+              {relatedService && (
+                <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6">
+                  <h3 className="text-white font-semibold mb-3 text-xs uppercase tracking-widest">Related Service</h3>
+                  <Link
+                    href={relatedService.href}
+                    className="group flex items-center justify-between gap-3 text-gray-300 hover:text-orange-400 transition-colors text-sm font-medium"
+                  >
+                    <span>{relatedService.label} services</span>
+                    <ChevronRight className="w-4 h-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5" strokeWidth={2} aria-hidden="true" />
+                  </Link>
+                </div>
+              )}
 
               {relatedPosts.length > 0 && (
                 <div className="bg-gray-900/60 border border-gray-800 rounded-3xl p-6">

@@ -24,6 +24,7 @@
 //     the existing 99 Visual design system — only content, structure and
 //     claims changed.
 //
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -53,7 +54,8 @@ const PAGE_PATH  = "/services/automation-testing";
 const PAGE_URL   = `${CLEAN_BASE}${PAGE_PATH}`;
 
 export const metadata: Metadata = {
-  title: "QA & Software Test Automation Services | 99 Visual",
+  // Brand suffix is appended by the root layout's title template.
+  title: "QA & Software Test Automation Services",
 
   description:
     "Software QA, test automation and quality engineering services — functional, API, performance, mobile, accessibility and security testing, plus AI/LLM application testing, integrated into your CI/CD pipeline.",
@@ -124,7 +126,7 @@ export const metadata: Metadata = {
 };
 
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2026-09-24"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/automation-testing']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 const FAQ_ITEMS = [
   {
@@ -748,22 +750,19 @@ export default function AutomationTestingPage() {
           <div className="qa-corner qa-corner--br" aria-hidden="true" />
 
           <nav className="qa-breadcrumb" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList">
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
-                <meta itemProp="position" content="1" />
+            <ol>
+              <li>
+                <Link href="/"><span>Home</span></Link>
               </li>
               <li className="qa-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
-                <meta itemProp="position" content="2" />
+              <li>
+                <Link href="/services"><span>Services</span></Link>
               </li>
               <li className="qa-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href={PAGE_PATH} itemProp="item" aria-current="page">
-                  <span itemProp="name">QA &amp; Automation Testing</span>
+              <li>
+                <Link href={PAGE_PATH} aria-current="page">
+                  <span>QA &amp; Automation Testing</span>
                 </Link>
-                <meta itemProp="position" content="3" />
               </li>
             </ol>
           </nav>

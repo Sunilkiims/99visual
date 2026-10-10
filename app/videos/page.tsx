@@ -1,3 +1,4 @@
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -18,14 +19,15 @@ import {
 // a false "changed today" freshness signal on every deploy that silently
 // contradicts the sitemap's static date. Update only when a video is
 // actually added, removed, or edited.
-const DATE_MODIFIED = '2026-04-01'
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/videos']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 function isoDuration(seconds: number): string {
   return `PT${Math.max(1, Math.round(seconds))}S`
 }
 
 export const metadata: Metadata = {
-  title: 'Video Showcase | 99 Visual Solutions',
+  // Brand suffix comes from the root layout's title template.
+  title: 'Video Showcase: 3D Visualization & Animation Reels',
   description:
     'Watch 3D visualization, architectural animation, product rendering, and marketing showreel clips produced by 99 Visual Solutions.',
   alternates: { canonical: `${BASE}/videos` },

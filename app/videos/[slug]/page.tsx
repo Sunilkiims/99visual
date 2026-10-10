@@ -36,7 +36,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `${BASE}/videos/${video.slug}`
 
   return {
-    title: `${video.title} | 99 Visual Solutions`,
+    // Brand suffix comes from the root layout's title template.
+    title: video.title,
     description: video.description,
     metadataBase: new URL(BASE),
     alternates: { canonical: url },
@@ -49,7 +50,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [{ url: `${BASE}${video.thumbnail}`, width: 1280, height: 720, alt: video.thumbnailAlt }],
     },
     twitter: {
-      card: 'player',
+      // 'player' cards require a twitter:player iframe URL, which these
+      // self-hosted clips don't have — the card was invalid as declared.
+      card: 'summary_large_image',
       title: video.title,
       description: video.description,
       images: [`${BASE}${video.thumbnail}`],

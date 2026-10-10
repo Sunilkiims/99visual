@@ -20,7 +20,8 @@
 //      markup, same CSS. FAQ remains excluded per the existing page.tsx split.
 //   5. .ct-hero__h1 / .ct-hero__sub class names are kept so the
 //      `speakable.cssSelector` entries in contactPageNode (page.tsx) and the
-//      itemScope/itemType="ContactPage" microdata keep working.
+//      page's JSON-LD keep working. (Inline microdata was removed — the
+//      JSON-LD @graph in page.tsx is the single structured-data source.)
 //
 //   UPDATE: Hero banner background is now solid black (#000) across all
 //           screen sizes. The photo banner image and its overlay gradients
@@ -704,8 +705,6 @@ export default function ContactPageClient() {
         className="ct-hero"
         aria-labelledby="ct-hero-heading"
         id="contact-hero"
-        itemScope
-        itemType="https://schema.org/ContactPage"
       >
         <div aria-hidden="true">
           <div className="ct-hero__grain" />
@@ -716,14 +715,12 @@ export default function ContactPageClient() {
         <div className="ct-corner ct-corner--br" aria-hidden="true" />
 
         <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
-          <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none", margin:0, padding:0 }}>
-            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-              <meta itemProp="position" content="1" />
+          <ol style={{ listStyle:"none", margin:0, padding:0 }}>
+            <li>
+              <a href="/"><span>Home</span></a>
             </li>
-            <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-              <a href="/contact" itemProp="item" aria-current="page"><span itemProp="name">Contact</span></a>
-              <meta itemProp="position" content="2" />
+            <li>
+              <a href="/contact" aria-current="page"><span>Contact</span></a>
             </li>
           </ol>
         </nav>
@@ -734,12 +731,12 @@ export default function ContactPageClient() {
               <span className="ct-hero__dot" />
               Free Consultation · No Commitment
             </div>
-            <h1 className="ct-hero__h1" id="ct-hero-heading" itemProp="name">
+            <h1 className="ct-hero__h1" id="ct-hero-heading">
               Your vision deserves a<br />
               <em>digital partner</em> who delivers.
             </h1>
             <div className="ct-hero__rule" aria-hidden="true" />
-            <p className="ct-hero__sub" itemProp="description">
+            <p className="ct-hero__sub">
               Tell us about your project — we respond within 24 hours with a
               clear plan, honest pricing, and zero fluff. Bangalore&apos;s most
               trusted web, 3D &amp; marketing studio is one message away.

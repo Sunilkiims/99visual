@@ -33,6 +33,7 @@
 //     layout also carries forward the height/overflow fixes already applied
 //     to the QA page (min-height instead of fixed height, no clipping).
 //
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -63,7 +64,8 @@ const PAGE_PATH = "/services/cad-gis-photogrammetry";
 const PAGE_URL  = `${BASE_SAFE}${PAGE_PATH}`;
 
 export const metadata: Metadata = {
-  title: "CAD, GIS & Photogrammetry Services | LiDAR — 99 Visual",
+  // Brand suffix is appended by the root layout's title template.
+  title: "CAD, GIS, LiDAR & Photogrammetry Services",
 
   description:
     "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modeling, and spatial analysis for infrastructure, engineering, construction, and land development projects.",
@@ -131,7 +133,7 @@ export const metadata: Metadata = {
 };
 
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2026-09-25"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/cad-gis-photogrammetry']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 const FAQ_ITEMS = [
   {
@@ -755,22 +757,19 @@ export default function CADGISPhotogrammetry() {
           <div className="cg-corner cg-corner--br" aria-hidden="true" />
 
           <nav className="cg-breadcrumb" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList">
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
-                <meta itemProp="position" content="1" />
+            <ol>
+              <li>
+                <Link href="/"><span>Home</span></Link>
               </li>
               <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
-                <meta itemProp="position" content="2" />
+              <li>
+                <Link href="/services"><span>Services</span></Link>
               </li>
               <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href={PAGE_PATH} itemProp="item" aria-current="page">
-                  <span itemProp="name">CAD, GIS &amp; Photogrammetry</span>
+              <li>
+                <Link href={PAGE_PATH} aria-current="page">
+                  <span>CAD, GIS &amp; Photogrammetry</span>
                 </Link>
-                <meta itemProp="position" content="3" />
               </li>
             </ol>
           </nav>

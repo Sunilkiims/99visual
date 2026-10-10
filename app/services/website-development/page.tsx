@@ -26,6 +26,7 @@
 //   variable used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Image from "next/image";
 import Header         from "@/app/components/header";
@@ -68,7 +69,8 @@ const BASE_SAFE = BASE.replace(/\/$/, "");
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Website Development Company in India | 99 Visual Solutions",
+  // Brand suffix is appended by the root layout's title template.
+  title: "Website Development Company in India",
 
   description:
     "99 Visual Solutions is a website development company in India (Bengaluru), building custom, responsive, SEO-friendly websites and web applications in React & Next.js. Get a free quote.",
@@ -137,7 +139,7 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2026-09-18"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/website-development']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA — unchanged
@@ -890,22 +892,19 @@ export default function WebsiteDevelopment() {
           <div className="wdev-corner wdev-corner--br" aria-hidden="true" />
 
           <nav className="wdev-breadcrumb" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList">
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
-                <meta itemProp="position" content="1" />
+            <ol>
+              <li>
+                <Link href="/"><span>Home</span></Link>
               </li>
               <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
-                <meta itemProp="position" content="2" />
+              <li>
+                <Link href="/services"><span>Services</span></Link>
               </li>
               <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services/website-development" itemProp="item" aria-current="page">
-                  <span itemProp="name">Web Development</span>
+              <li>
+                <Link href="/services/website-development" aria-current="page">
+                  <span>Web Development</span>
                 </Link>
-                <meta itemProp="position" content="3" />
               </li>
             </ol>
           </nav>

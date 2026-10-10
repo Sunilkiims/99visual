@@ -26,6 +26,7 @@
 //   (banner image + gradient overlays removed; see .ab-hero below).
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Header           from "../components/header";
 import Footer           from "../components/footer";
@@ -39,20 +40,20 @@ import ConsultationCTA  from "@/app/components/ConsultationCTA";
 
 import {
   BASE,
-  CONTACT_EMAIL,
   buildGraph,
   orgSchema,
   localBusinessSchema,
   websiteSchema,
   breadcrumbFromItems,
-  faqSchema,
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA — unchanged from prior revision
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "About 99 Visual Solutions | IT & 3D Visualization Bangalore",
+  // `absolute` — this title already names the brand, so the root layout's
+  // "%s | 99 Visual Solutions" template must not append it a second time.
+  title: { absolute: "About 99 Visual Solutions | IT & 3D Visualization Bangalore" },
 
   description:
     "Meet 99 Visual Solutions — Bengaluru's full-service IT company. Founded in 2020, 500+ projects across web development, 3D visualisation, CAD, GIS, SEO & IT consulting.",
@@ -124,7 +125,7 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01T00:00:00+05:30";
-const DATE_MODIFIED  = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/about']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA NODES — unchanged from prior revision
@@ -134,47 +135,10 @@ const aboutBreadcrumbNode = breadcrumbFromItems([
   { name: "About", url: "/about" },
 ]);
 
-const aboutFaqNode = {
-  ...faqSchema([
-    {
-      question: "What services does 99 Visual Solutions offer?",
-      answer:
-        "99 Visual Solutions is a full-service IT and digital transformation company offering 3D architectural visualisation, custom web and mobile app development, CAD drafting, GIS and LiDAR mapping, digital marketing and SEO, IT consulting, and AI-powered QA and automation testing. We serve startups and enterprises across India, the USA, UK, UAE, and Australia, delivering measurable outcomes on every engagement.",
-    },
-    {
-      question: "When was 99 Visual Solutions founded?",
-      answer:
-        "99 Visual Solutions was founded in 2020 and is headquartered in Bengaluru (Bangalore), Karnataka, India. Since our founding, we have grown into a full-service digital transformation company with over 500 projects delivered for clients across India, the USA, UK, UAE, and Australia. We combine deep technical expertise with a client-first approach on every project.",
-    },
-    {
-      question: "How many projects has 99 Visual Solutions completed?",
-      answer:
-        "99 Visual Solutions has successfully delivered over 500 projects across IT, web development, 3D architectural visualisation, CAD drafting, GIS and LiDAR mapping, and digital marketing domains. Our clients range from early-stage startups to established enterprises across multiple industries including real estate, architecture, construction, healthcare, retail, and government sectors worldwide.",
-    },
-    {
-      question: "Does 99 Visual Solutions work with international clients?",
-      answer:
-        "Yes, we actively serve startups and enterprises in the USA, UK, UAE, and Australia alongside our Indian clients. Our offshore IT model delivers world-class quality at competitive rates, with dedicated account managers, agile delivery, and time-zone overlap for seamless real-time communication. We have strong experience managing international projects with transparent reporting and milestone-based delivery.",
-    },
-    {
-      question: "How can I contact 99 Visual Solutions?",
-      answer:
-        `You can reach us via our contact page at 99visual.com/contact or email us directly at ${CONTACT_EMAIL}. We typically respond to all enquiries within 24 business hours. We also offer a free discovery call to fully understand your project requirements before sending any proposal. All initial consultations are obligation-free and tailored to your specific business needs.`,
-    },
-    {
-      question: "What industries does 99 Visual Solutions serve?",
-      answer:
-        "We serve a wide range of industries including real estate, architecture, construction, healthcare, retail, e-commerce, education, logistics, and government. Our multi-disciplinary team brings domain expertise relevant to each sector, ensuring solutions that are both technically sound and commercially effective. Whether you need 3D visualisation for a real estate developer or a custom web application for a healthcare provider, we have you covered.",
-    },
-    {
-      question: "Why choose 99 Visual Solutions over other IT companies in Bangalore?",
-      answer:
-        "99 Visual Solutions combines six distinct specialisations under one roof — 3D visualisation, web and app development, CAD and GIS, SEO, IT consulting, and QA testing — giving clients a single accountable partner instead of managing multiple agencies. Founded in 2020 with over 500 delivered projects, we bring a transparent, client-first approach to every engagement, consistently delivering measurable results on time and within budget.",
-    },
-  ]),
-  "@id":            `${BASE}/about#faq`,
-  mainEntityOfPage: { "@id": `${BASE}/about#webpage` },
-};
+// FAQPage markup removed: Google requires FAQ structured data to mirror
+// question/answer text that is visible on the page, and this page renders
+// no FAQ section. Markup for invisible content is a structured-data policy
+// violation (risk of a manual action). Re-add it alongside a visible FAQ.
 
 const aboutPageNode = {
   "@type":       "AboutPage",
@@ -203,25 +167,16 @@ const aboutPageNode = {
   potentialAction: { "@type": "ReadAction", target: [`${BASE}/about`] },
 };
 
-const profilePageNode = {
-  "@type":      "ProfilePage",
-  "@id":        `${BASE}/about#profilepage`,
-  url:          `${BASE}/about`,
-  name:         "Company Profile — 99 Visual Solutions",
-  dateCreated:  DATE_PUBLISHED,
-  dateModified: DATE_MODIFIED,
-  mainEntity:   { "@id": `${BASE}/#organization` },
-  isPartOf:     { "@id": `${BASE}/#website` },
-};
+// ProfilePage removed: it duplicated the AboutPage entity for the same URL
+// (two competing page types). ProfilePage is meant for person/creator
+// profile pages; AboutPage already describes this page.
 
 const aboutGraph = buildGraph(
   orgSchema,
   localBusinessSchema,
   websiteSchema,
   aboutPageNode,
-  profilePageNode,
   aboutBreadcrumbNode,
-  aboutFaqNode,
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -389,8 +344,6 @@ export default function AboutPage() {
           className="ab-hero"
           aria-labelledby="ab-hero-heading"
           id="about-hero"
-          itemScope
-          itemType="https://schema.org/AboutPage"
         >
           <div aria-hidden="true">
             <div className="ab-hero__grain" />
@@ -401,14 +354,12 @@ export default function AboutPage() {
           <div className="ab-corner ab-corner--br" aria-hidden="true" />
 
           <nav className="ab-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
+            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
+              <li>
+                <a href="/"><span>Home</span></a>
               </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/about" itemProp="item" aria-current="page"><span itemProp="name">About</span></a>
-                <meta itemProp="position" content="2" />
+              <li>
+                <a href="/about" aria-current="page"><span>About</span></a>
               </li>
             </ol>
           </nav>
@@ -419,11 +370,11 @@ export default function AboutPage() {
                 <span className="ab-hero__dot" />
                 Est. 2020 · Bangalore, India
               </div>
-              <h1 className="ab-hero__h1" id="ab-hero-heading" itemProp="name">
+              <h1 className="ab-hero__h1" id="ab-hero-heading">
                 We build what<br /><em>matters</em>
               </h1>
               <div className="ab-hero__rule" aria-hidden="true" />
-              <p className="ab-hero__sub" itemProp="description">
+              <p className="ab-hero__sub">
                 From bold web experiences to precise spatial data — 99 Visual
                 Solutions turns complex ideas into digital realities that
                 drive real, measurable growth.

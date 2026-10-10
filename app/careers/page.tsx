@@ -42,6 +42,7 @@
 //   Save your banner image to: /public/images/careers/careers-hero-banner.jpg
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header           from "@/app/components/header";
@@ -66,7 +67,8 @@ import {
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Careers at 99 Visual Solutions | Web Developer & Design Jobs",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Careers at 99 Visual Solutions | Web Developer & Design Jobs" },
 
   description:
     "Join 99 Visual Solutions — hiring remote web developers, UI/UX designers, 3D visualization artists & digital marketing specialists. 500+ projects delivered. Explore open roles.",
@@ -139,11 +141,14 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED    = "2023-01-01T00:00:00+05:30";
-const DATE_MODIFIED     = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
-const JOB_DATE_POSTED   = new Date().toISOString();
-const JOB_VALID_THROUGH = new Date(
-  new Date().setFullYear(new Date().getFullYear() + 1)
-).toISOString();
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/careers']; // shared with app/sitemap.ts — edit lib/page-dates.ts
+// datePosted was previously `new Date()`, i.e. re-stamped on every build,
+// which presents old openings as freshly posted — against Google's
+// JobPosting guidelines. It is now the date these four roles were added to
+// the site (commit of 2026-05-08). Update it only when a role is genuinely
+// (re)posted. validThrough was likewise a rolling "one year from build"
+// date; it is omitted until a real closing date exists.
+const JOB_DATE_POSTED   = "2026-05-08";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // JOB POSTING HELPER — unchanged
@@ -161,7 +166,6 @@ interface JobPosting {
   title: string;
   description: string;
   datePosted: string;
-  validThrough: string;
   employmentType: string;
   workHours: string;
   hiringOrganization: object;
@@ -192,7 +196,6 @@ const makeJobPosting = (
   title,
   description,
   datePosted:       JOB_DATE_POSTED,
-  validThrough:     JOB_VALID_THROUGH,
   employmentType:   "FULL_TIME",
   workHours:        "Monday–Friday, 09:00–18:00 IST",
   hiringOrganization: hiringOrg,
@@ -203,8 +206,9 @@ const makeJobPosting = (
   },
   jobLocationType: "TELECOMMUTE",
   applicantLocationRequirements: { "@type": "Country", name: "India" },
+  // Applications are submitted from the in-page form on /careers.
   directApply: true,
-  url:         `${BASE}/contact`,
+  url:         `${BASE}/careers`,
   industry:    "Information Technology",
   occupationalCategory: title,
   skills:          skills.join(", "),

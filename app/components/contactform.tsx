@@ -145,9 +145,11 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-blue-50 text-blue-600 border border-blue-100 mb-4">
                         Contact Us
                     </span>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 mb-3 leading-[1.15] tracking-tight">
+                    {/* h2, not h1: /contact already has its page H1 in the hero
+                        (ContactPageClient). Same classes, so it looks identical. */}
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 mb-3 leading-[1.15] tracking-tight">
                         Let&apos;s build something great together
-                    </h1>
+                    </h2>
                     <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
                         We&apos;d love to hear about your project. Send us a message and we&apos;ll get back to you within 24 hours.
                     </p>

@@ -37,7 +37,18 @@
 
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+
+// Initial page load: no fade. framer-motion renders `initial` into the
+// server HTML, so `initial={{ opacity: 0 }}` shipped every page with
+// style="opacity:0" on its whole body until JavaScript hydrated and finished
+// the animation. Nothing at opacity 0 counts as painted, so the first load's
+// Largest Contentful Paint was pushed back behind hydration on every page.
+// The fade now plays only on client-side navigations, after the first page
+// has mounted. This flag is module state, so it is only ever set in the
+// browser (inside useEffect) and the server always renders fully visible
+// HTML.
+let hasCompletedFirstRender = false;
 
 const NO_TRANSITION_PREFIXES = ['/admin', '/login'];
 
@@ -53,9 +64,20 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
+  return <FadeIn>{children}</FadeIn>;
+}
+
+function FadeIn({ children }: { children: ReactNode }) {
+  // Read once per mount: false for the first page of a visit (and always on
+  // the server), true for every later client-side navigation.
+  const animate = hasCompletedFirstRender;
+  useEffect(() => {
+    hasCompletedFirstRender = true;
+  }, []);
+
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={animate ? { opacity: 0 } : false}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       style={{ willChange: 'opacity' }}

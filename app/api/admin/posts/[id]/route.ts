@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { insightUrl } from '@/lib/seo'
 
 function calculateReadingTime(content: string): number {
   const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length
@@ -50,13 +51,22 @@ export async function PATCH(
             create: {
               metaTitle: seo.metaTitle || title,
               metaDescription: seo.metaDescription || excerpt,
-              canonicalUrl: 'https://99visualsolutions.com/insights/' + slug,
+              // Always the production URL of this article. (This previously
+              // hard-coded https://99visualsolutions.com — a different domain.)
+              canonicalUrl: insightUrl(slug),
               robots: 'index, follow',
             },
             update: {
               metaTitle: seo.metaTitle || title,
               metaDescription: seo.metaDescription || excerpt,
-              canonicalUrl: 'https://99visualsolutions.com/insights/' + slug,
+              canonicalUrl: insightUrl(slug),
+              // The editor has no fields for these, so they can only ever be
+              // stale copies from an earlier title. Clearing them lets the
+              // article page derive social text from the current post.
+              ogTitle: null,
+              ogDescription: null,
+              twitterTitle: null,
+              twitterDescription: null,
             },
           },
         } : undefined,

@@ -41,3 +41,25 @@ export function getCategoryIcon(...labels: (string | null | undefined)[]): Lucid
 
   return Sparkles
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Related service for an article — used for a contextual "related service"
+// link on Insights articles, so each article links to the service page it
+// is actually about (and that page gains a relevant internal link). Uses the
+// same matching order as getCategoryIcon above; returns null when an
+// article doesn't clearly map to one service, rather than forcing a link.
+// ─────────────────────────────────────────────────────────────────────────────
+export function getRelatedService(
+  ...labels: (string | null | undefined)[]
+): { href: string; label: string } | null {
+  const s = labels.filter(Boolean).join(' ').toLowerCase()
+
+  if (/3d|visuali[sz]|render|immers/.test(s)) return { href: '/services/visualization', label: '3D Visualization & Rendering' }
+  if (/\bweb(site)?\b|frontend|full[\s-]?stack|next\.?js/.test(s)) return { href: '/services/website-development', label: 'Website & Web App Development' }
+  if (/\bit[\s-]?consult|cloud|cyber/.test(s)) return { href: '/services/it-consulting', label: 'IT Consulting' }
+  if (/market|\bseo\b|search engine|algorithm/.test(s)) return { href: '/services/digital-marketing-seo', label: 'Digital Marketing & SEO' }
+  if (/\bgis\b|\bcad\b|photogram|lidar|spatial|mapping|survey/.test(s)) return { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry' }
+  if (/automat|testing|\bqa\b/.test(s)) return { href: '/services/automation-testing', label: 'QA & Automation Testing' }
+
+  return null
+}

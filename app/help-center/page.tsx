@@ -46,8 +46,8 @@ const helpGraph = buildGraph(
 );
 
 export const metadata: Metadata = {
-  title:
-    "Help Center | 99 Visual Support, FAQs & Customer Assistance",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Help Center | 99 Visual Support, FAQs & Customer Assistance" },
 
   description:
     "Get help with 99Visual services including web development, 3D visualization, SEO, and digital marketing. Explore FAQs, guides, and contact support.",

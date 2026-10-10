@@ -3,7 +3,8 @@ import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | 99 Visual Solutions Data Protection & Security",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Privacy Policy | 99 Visual Solutions Data Protection & Security" },
 
   description:
     "Learn how 99Visual collects, uses, and protects your personal data. Our privacy policy ensures transparency, security, and compliance with global data standards.",

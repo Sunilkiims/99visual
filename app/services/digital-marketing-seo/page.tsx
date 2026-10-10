@@ -43,6 +43,7 @@
 //   section styles below it were added.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -89,7 +90,8 @@ const OG_IMAGE = `${BASE_SAFE}/images/services/digital-marketing-seo-hero-banner
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Digital Marketing & SEO Company in Bangalore, India | 99 Visual",
+  // Brand suffix is appended by the root layout's title template.
+  title: "Digital Marketing & SEO Company in Bangalore, India",
 
   description:
     "99 Visual Solutions is a Bengaluru-based digital marketing and SEO company helping businesses across India turn search and paid media into measurable growth.",
@@ -158,7 +160,7 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2026-09-21"; // <- Update this when content changes
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/digital-marketing-seo']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA (all URLs use BASE_SAFE + PAGE_CANONICAL; nothing here is invented —
@@ -808,22 +810,19 @@ export default function DigitalMarketing() {
           <div className="dm-corner dm-corner--br" aria-hidden="true" />
 
           <nav className="dm-breadcrumb" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList">
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/" itemProp="item"><span itemProp="name">Home</span></Link>
-                <meta itemProp="position" content="1" />
+            <ol>
+              <li>
+                <Link href="/"><span>Home</span></Link>
               </li>
               <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services" itemProp="item"><span itemProp="name">Services</span></Link>
-                <meta itemProp="position" content="2" />
+              <li>
+                <Link href="/services"><span>Services</span></Link>
               </li>
               <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <Link href="/services/digital-marketing-seo" itemProp="item" aria-current="page">
-                  <span itemProp="name">Digital Marketing &amp; SEO</span>
+              <li>
+                <Link href="/services/digital-marketing-seo" aria-current="page">
+                  <span>Digital Marketing &amp; SEO</span>
                 </Link>
-                <meta itemProp="position" content="3" />
               </li>
             </ol>
           </nav>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import TiptapEditor from './TiptapEditor'
+import { insightUrl } from '@/lib/seo'
 
 interface Category { id: string; name: string }
 interface Author { id: string; name: string }
@@ -259,7 +260,7 @@ export default function EditPostClient({ post, categories, authors, tags }: Prop
                 <label className="block text-gray-400 text-sm font-medium mb-2">Canonical URL</label>
                 <input
                   type="text"
-                  value={'https://99visualsolutions.com/insights/' + slug}
+                  value={insightUrl(slug)}
                   readOnly
                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-gray-400 font-mono text-sm"
                 />

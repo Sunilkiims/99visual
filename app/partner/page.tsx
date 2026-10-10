@@ -20,6 +20,7 @@
 //   (banner image + gradient overlays removed; see .pt-hero below).
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Header           from "@/app/components/header";
 import Footer           from "@/app/components/footer";
@@ -44,7 +45,8 @@ import {
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Partner With 99 Visual | White-Label & Agency Collaboration",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Partner With 99 Visual | White-Label & Agency Collaboration" },
 
   description:
     "Partner with 99 Visual Solutions — white-label web development, 3D visualisation, SEO & digital marketing. Scale globally with India's trusted IT partner. 30+ global partners.",
@@ -152,7 +154,7 @@ const FAQ_ITEMS = [
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01T00:00:00+05:30";
-const DATE_MODIFIED  = new Date().toISOString();
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/partner']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA — unchanged

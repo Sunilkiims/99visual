@@ -135,8 +135,6 @@ export default function OurServices() {
     <section
       aria-labelledby="services-heading"
       id="services"
-      itemScope
-      itemType="https://schema.org/Service"
       style={{
         position: 'relative',
         background: '#f8fafc',
@@ -368,14 +366,11 @@ export default function OurServices() {
               key={svc.href}
               role="listitem"
               className="vs-card"
-              itemScope
-              itemType="https://schema.org/Service"
               style={{ position: 'relative', padding: '2.2rem 2rem 2rem' }}
             >
               <span aria-hidden="true" className="vs-number">{svc.number}</span>
               <div className="vs-icon-wrap">{svc.icon}</div>
               <h3
-                itemProp="name"
                 style={{
                   fontSize: 'clamp(1.1rem, 2vw, 1.3rem)',
                   fontWeight: 700,
@@ -388,7 +383,6 @@ export default function OurServices() {
                 {svc.heading}
               </h3>
               <p
-                itemProp="description"
                 style={{
                   fontSize: '.88rem',
                   fontWeight: 400,
@@ -399,7 +393,7 @@ export default function OurServices() {
               >
                 {svc.body}
               </p>
-              <Link href={svc.href} itemProp="url" aria-label={svc.anchor} className="vs-link">
+              <Link href={svc.href} aria-label={svc.anchor} className="vs-link">
                 {svc.anchor}
                 <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12, flexShrink: 0 }}>
                   <path d="M3 8h10M9 4l4 4-4 4" />

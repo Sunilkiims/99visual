@@ -56,8 +56,6 @@ export default function HomeContent({ insights }: HomeContentProps) {
         <section
           aria-label="About 99 Visual Solutions"
           id="about"
-          itemScope
-          itemType="https://schema.org/AboutPage"
           style={{
             position: 'relative',
             background: '#000',
@@ -89,17 +87,11 @@ export default function HomeContent({ insights }: HomeContentProps) {
             <div key={i} aria-hidden="true" role="presentation" style={{ position: 'absolute', width: 22, height: 22, opacity: 0.15, zIndex: 5, ...s }} />
           ))}
 
-          {/* Visually-hidden breadcrumb for crawlers */}
-          <nav aria-label="Breadcrumb" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
-            <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', gap: 6 }} itemScope itemType="https://schema.org/BreadcrumbList">
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item" aria-current="page" style={{ color: '#f97316', textDecoration: 'none' }}>
-                  <span itemProp="name">Home</span>
-                </a>
-                <meta itemProp="position" content="1" />
-              </li>
-            </ol>
-          </nav>
+          {/* A visually-hidden "Home" breadcrumb with BreadcrumbList microdata
+              and AboutPage microdata on this <section> were removed: hidden
+              text marked up for crawlers only conflicts with the page's JSON-LD
+              (which already declares the WebPage and its breadcrumb) and
+              labelled the homepage as an AboutPage. */}
 
           {/* Main copy — typography aligned with the Who We Are section */}
           <div style={{ position: 'relative', zIndex: 10, maxWidth: 760, margin: '0 auto', textAlign: 'center', fontFamily: 'var(--font-dm-sans), sans-serif' }}>
@@ -109,7 +101,7 @@ export default function HomeContent({ insights }: HomeContentProps) {
               Global IT &amp; Digital Transformation
             </p>
 
-            <h1 itemProp="name" style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 'clamp(2.1rem, 4.2vw, 3.1rem)', fontWeight: 700, lineHeight: 1.12, letterSpacing: '-.02em', color: '#fff', margin: '0 0 .7rem' }}>
+            <h1 style={{ fontFamily: 'var(--font-cormorant), serif', fontSize: 'clamp(2.1rem, 4.2vw, 3.1rem)', fontWeight: 700, lineHeight: 1.12, letterSpacing: '-.02em', color: '#fff', margin: '0 0 .7rem' }}>
               We Don&apos;t Just Build Technology.{' '}
               <em style={{ fontStyle: 'italic', color: '#f97316' }}>We Build What&apos;s Next.</em>
             </h1>
@@ -120,7 +112,7 @@ export default function HomeContent({ insights }: HomeContentProps) {
 
             <div aria-hidden="true" style={{ width: 44, height: 2, borderRadius: 2, background: 'linear-gradient(90deg, #f97316, #fbbf24)', margin: '0 auto 1.6rem' }} />
 
-            <p itemProp="description" style={{ fontSize: '.98rem', fontWeight: 400, lineHeight: 1.9, color: 'rgba(255,255,255,0.55)', maxWidth: 620, margin: '0 auto 1.1rem' }}>
+            <p style={{ fontSize: '.98rem', fontWeight: 400, lineHeight: 1.9, color: 'rgba(255,255,255,0.55)', maxWidth: 620, margin: '0 auto 1.1rem' }}>
               We believe technology should not just support businesses — it should drive growth, innovation, and long-term success. <strong style={{ color: '#fff', fontWeight: 600 }}>99 Visual Solutions</strong> is a full-service IT solutions and digital transformation company specialising in 3D architectural visualisation, custom web &amp; mobile app development, CAD drafting, GIS mapping, LiDAR data processing, search engine optimisation (SEO), and IT consulting. From startups to large enterprises, we help organisations worldwide build powerful digital ecosystems that perform, scale, and deliver measurable results.
             </p>
 

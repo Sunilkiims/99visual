@@ -23,9 +23,17 @@ interface RevealProps {
   delay?: number
   y?: number
   once?: boolean
+  /**
+   * Set false for above-the-fold content (article title, featured image).
+   * The entrance then uses movement only: framer-motion writes `initial`
+   * into the server HTML, and an element at opacity 0 is not counted as
+   * painted, so fading the hero delayed Largest Contentful Paint until
+   * hydration.
+   */
+  fade?: boolean
 }
 
-export default function Reveal({ children, className, delay = 0, y = 20, once = true }: RevealProps) {
+export default function Reveal({ children, className, delay = 0, y = 20, once = true, fade = true }: RevealProps) {
   const shouldReduceMotion = useReducedMotion()
 
   if (shouldReduceMotion) {
@@ -34,8 +42,8 @@ export default function Reveal({ children, className, delay = 0, y = 20, once = 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={fade ? { opacity: 0, y } : { y }}
+      whileInView={fade ? { opacity: 1, y: 0 } : { y: 0 }}
       viewport={{ once, margin: '-60px' }}
       transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}

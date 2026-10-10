@@ -31,6 +31,7 @@
 //   CTAs, cards, ticker) is unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Image          from "next/image";
 import Link           from "next/link";
@@ -60,7 +61,8 @@ const PAGE_CANONICAL = `${BASE_SAFE}/services/visualization`;
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "3D Visualization & Architectural Rendering | 99 Visual",
+  // Brand suffix is appended by the root layout's title template.
+  title: "3D Visualization & Architectural Rendering Services",
 
   description:
     "Photorealistic architectural rendering, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR point cloud processing for architects, developers, and product designers. In-house team, transparent revision cycles, fixed turnaround.",
@@ -129,7 +131,7 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/visualization']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA
@@ -420,23 +422,18 @@ function HeroSection() {
 
       <nav className="viz-sr-only" aria-label="Breadcrumb">
         <ol
-          itemScope
-          itemType="https://schema.org/BreadcrumbList"
           style={{ listStyle: "none", margin: 0, padding: 0 }}
         >
-          <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-            <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-            <meta itemProp="position" content="1" />
+          <li>
+            <a href="/"><span>Home</span></a>
           </li>
-          <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-            <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
-            <meta itemProp="position" content="2" />
+          <li>
+            <a href="/services"><span>Services</span></a>
           </li>
-          <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-            <a href="/services/visualization" itemProp="item" aria-current="page">
-              <span itemProp="name">3D Visualization</span>
+          <li>
+            <a href="/services/visualization" aria-current="page">
+              <span>3D Visualization</span>
             </a>
-            <meta itemProp="position" content="3" />
           </li>
         </ol>
       </nav>

@@ -7,12 +7,13 @@
 // so the route never 500s.
 
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // adjust to your actual Prisma client path
+import { prisma } from "@/lib/prisma";
+import { BASE } from "@/lib/schema";
 
-export const dynamic = "force-dynamic"; // don't cache at build time
-export const revalidate = 3600; // if you'd rather ISR-cache it, set this instead and drop force-dynamic
+// Regenerated at most hourly (matches the Cache-Control header below).
+export const revalidate = 3600;
 
-const BASE_URL = "https://www.99visual.com";
+const BASE_URL = BASE;
 
 const STATIC_INSIGHTS_FALLBACK = [
   {
@@ -42,10 +43,12 @@ const STATIC_INSIGHTS_FALLBACK = [
 
 async function getInsights() {
   try {
-    // Adjust model/field names to match your actual Prisma schema.
-    // Expected shape: { title, slug, excerpt/description, published: true }
-    const posts = await prisma.post.findMany({
-      where: { published: true },
+    // Post has no `published` column — the previous `where: { published: true }`
+    // threw on every request, so this route always served the hard-coded
+    // fallback list instead of the real articles.
+    const posts: { title: string; slug: string; excerpt: string | null }[] = await prisma.post.findMany({
+      // Same eligibility as the sitemap: published and not marked noindex.
+      where: { status: "PUBLISHED", NOT: { seo: { robots: { contains: "noindex" } } } },
       select: { title: true, slug: true, excerpt: true },
       orderBy: { publishedAt: "desc" },
       take: 20, // keep the file curated, not a full dump

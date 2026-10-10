@@ -5,7 +5,8 @@ import Footer from "@/app/components/footer";
 import { FaNewspaper, FaBullhorn, FaChartLine, FaEnvelope } from "react-icons/fa";
 
 export const metadata: Metadata = {
-  title: "Press & Media | 99 Visual News, Announcements & Media Kit",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Press & Media | 99 Visual News, Announcements & Media Kit" },
 
   description:
     "Explore the latest news, press releases, media coverage, and announcements from 99Visual. Download our media kit and connect with our team.",

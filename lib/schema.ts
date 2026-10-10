@@ -77,6 +77,24 @@ export function buildGraph(...nodes: object[]) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 0b. jsonLdString — safe serialisation for <script type="application/ld+json">
+//
+// JSON.stringify alone does not escape "<", so a CMS-supplied string such as
+// "</script><script>…" would break out of the JSON-LD block. Escaping <, > and
+// & as \u003c / \u003e / \u0026 keeps the JSON identical once parsed while making
+// it impossible to terminate the surrounding script element. Use this for any
+// JSON-LD that contains database or user-entered content.
+// ─────────────────────────────────────────────────────────────────────────────
+export function jsonLdString(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 1. Organisation
 // ─────────────────────────────────────────────────────────────────────────────
 export const orgSchema = {
@@ -90,8 +108,9 @@ export const orgSchema = {
     '@type': 'ImageObject',
     '@id': `${BASE}/#logo`,
     url: `${BASE}/logo.png`,
-    width: 250,
-    height: 60,
+    // Real pixel dimensions of /public/logo.png (previously declared 250×60).
+    width: 686,
+    height: 369,
     caption: COMPANY_NAME,
   },
   image: DEFAULT_IMAGE,
@@ -123,10 +142,12 @@ export const orgSchema = {
     },
   ],
   sameAs: [
-    'https://twitter.com/99VisualSoluti1',
-    'https://www.linkedin.com/company/99-visual-solutions',
-    'https://www.facebook.com/99visualsolutions',
-    'https://www.instagram.com/99visualsolutions',
+    // Kept identical to the profile links the site itself shows in the
+    // header/footer, so search engines see one consistent identity.
+    'https://x.com/99VisualSoluti1',
+    'https://www.linkedin.com/company/99-visual-solutions/',
+    'https://www.facebook.com/profile.php?id=100093639888151',
+    'https://www.instagram.com/99visualsolutions/',
     'https://www.youtube.com/@99visualsolutions',
     'https://share.google/Z8p6oOg8zphuqGsQA',
   ],
@@ -386,7 +407,10 @@ export function webPage(opts: {
     publisher: { '@id': `${BASE}/#organization` },
     // ✅ FIX: datePublished default matches earliest published page (2023-01-01)
     datePublished: opts.datePublished ?? '2023-01-01T00:00:00+05:30',
-    dateModified: opts.dateModified ?? new Date().toISOString(),
+    // No build-time fallback: stamping `new Date()` here told search engines
+    // the page changed on every deploy. Omitted unless the caller passes the
+    // real content-modified date.
+    ...(opts.dateModified && { dateModified: opts.dateModified }),
     potentialAction: { '@type': 'ReadAction', target: [`${BASE}${path}`] },
     // ✅ FIX: reference only — standalone breadcrumb node in @graph provides data
     breadcrumb: { '@id': breadcrumbId },
@@ -470,7 +494,7 @@ export function articleSchema(opts: {
     inLanguage: 'en',
     author: { '@type': 'Person', name: opts.authorName },
     publisher: { '@id': `${BASE}/#organization` },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE}${opts.pathname}#webpage` },
+    mainEntityOfPage: { '@id': `${BASE}${opts.pathname}#webpage` },
   };
 }
 
@@ -503,7 +527,7 @@ export function videoObjectSchema(opts: {
     url: `${BASE}${opts.pathname}`,
     isFamilyFriendly: true,
     publisher: { '@id': `${BASE}/#organization` },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE}${opts.pathname}#webpage` },
+    mainEntityOfPage: { '@id': `${BASE}${opts.pathname}#webpage` },
   };
 }
 

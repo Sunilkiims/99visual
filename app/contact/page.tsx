@@ -16,6 +16,7 @@
 //         FAQ is now rendered as a server-side section directly in page.tsx.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import ContactPageClient from "../components/ContactPageClient";
 import Header         from "../components/header";
@@ -39,7 +40,8 @@ import {
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Contact 99 Visual Solutions | Free Quote — Web, 3D & SEO",
+  // `absolute` — already contains the brand; prevents a duplicated suffix.
+  title: { absolute: "Contact 99 Visual Solutions | Free Quote — Web, 3D & SEO" },
 
   description:
     "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing. We respond within 24 business hours.",
@@ -110,7 +112,7 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2025-06-01"; // <- Update this when content changes (must match app/sitemap.ts lastModified for this route)
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/contact']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQ DATA
@@ -396,9 +398,9 @@ export default function ContactPage() {
 
       {/* ── FAQ — now below the contact form ─────────────────────────────── */}
       {/*
-        itemScope / itemType intentionally omitted here.
-        The JSON-LD contactFaqNode above is the sole authoritative FAQPage
-        declaration. Individual Question/Answer microdata is on each <details>.
+        No microdata here: the JSON-LD contactFaqNode above is the sole
+        FAQPage declaration (per-item Question/Answer microdata used to
+        duplicate it).
       */}
       <section
         id="faq"
@@ -421,11 +423,8 @@ export default function ContactPage() {
               <details
                 key={i}
                 className="ct-faq__item"
-                itemScope
-                itemProp="mainEntity"
-                itemType="https://schema.org/Question"
               >
-                <summary className="ct-faq__q" itemProp="name">
+                <summary className="ct-faq__q">
                   <span className="ct-faq__q-text">{question}</span>
                   <span className="ct-faq__chevron" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -441,11 +440,8 @@ export default function ContactPage() {
                 </summary>
                 <div
                   className="ct-faq__a"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
                 >
-                  <p itemProp="text">{answer}</p>
+                  <p>{answer}</p>
                 </div>
               </details>
             ))}

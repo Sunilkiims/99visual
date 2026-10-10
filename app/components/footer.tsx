@@ -45,6 +45,9 @@ const NAV_SERVICES = [
   { label: 'Digital Marketing & SEO', href: '/services/digital-marketing-seo'  },
   { label: 'QA & Automation',         href: '/services/automation-testing'     },
   { label: 'CAD & GIS',               href: '/services/cad-gis-photogrammetry' },
+  // The /services hub was only reachable through the header's JS dropdown
+  // and a few in-page CTAs — not from any sitewide server-rendered link.
+  { label: 'All Services',            href: '/services'                        },
 ];
 
 const TICKER_ITEMS = [

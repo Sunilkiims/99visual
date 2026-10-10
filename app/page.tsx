@@ -33,6 +33,7 @@
 import type { ReactElement } from 'react';
 import type { Metadata } from 'next';
 import HomeContent from './components/HomeContent';
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import InsightsSection from './components/InsightsSection';
 
 // InsightsSection is an async Server Component (it awaits a Prisma query
@@ -50,14 +51,12 @@ export const revalidate = 60
 
 import {
   BASE,
-  CONTACT_EMAIL,
   buildGraph,
   orgSchema,
   websiteSchema,
   localBusinessSchema,
   breadcrumbFromPath,
   webPage,
-  faqSchema,
 } from '@/lib/schema';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -161,51 +160,14 @@ const homeWebPage = webPage({
   name:          '99 Visual Solutions — Global IT & Digital Transformation Company',
   description:   'Full-service IT company in Bengaluru offering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO, and IT consulting globally. 5+ years of expertise, 500+ projects delivered.',
   datePublished: '2023-01-01',
-  dateModified:  new Date().toISOString().split('T')[0],
+  // Real content date (shared with the sitemap) — not the build date.
+  dateModified:  PAGE_LAST_MODIFIED['/'],
 });
 
-const homeFaq = faqSchema([
-  {
-    question: 'What services does 99 Visual Solutions offer?',
-    answer:
-      '99 Visual Solutions is a full-service IT and digital transformation company offering 3D architectural visualisation, custom web and mobile app development, CAD drafting, GIS and LiDAR mapping, digital marketing and SEO, IT consulting, and AI-powered QA and automation testing. We serve startups and enterprises across India, the USA, UK, UAE, and Australia. Our cross-functional team brings deep domain expertise to every engagement, ensuring high-quality deliverables and measurable business outcomes.',
-  },
-  {
-    question: 'Where is 99 Visual Solutions located?',
-    answer:
-      "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India — one of Asia's leading technology hubs. While our primary office is in Bengaluru, we operate as a remote-first company and serve clients globally across India, the USA, UK, UAE, and Australia. Our team ensures time-zone overlap, real-time communication, and agile delivery for international clients.",
-  },
-  {
-    question: 'Does 99 Visual Solutions work with international clients?',
-    answer:
-      'Yes, we actively serve startups and enterprises in the USA, UK, UAE, and Australia alongside our Indian clients. Our offshore IT model delivers world-class quality at competitive rates with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. We have successfully delivered over 500 projects for international clients across diverse industries including real estate, construction, healthcare, retail, and government.',
-  },
-  {
-    question: 'How can I get a quote from 99 Visual Solutions?',
-    answer:
-      `You can request a free quote by visiting our contact page at 99visual.com/contact or emailing us at ${CONTACT_EMAIL}. Our team typically responds within 24 business hours. We offer detailed project scoping calls at no charge to ensure your requirements are fully understood before any proposal is sent. All initial consultations are obligation-free.`,
-  },
-  {
-    question: 'How much does 3D architectural visualisation cost in India?',
-    answer:
-      `The cost of 3D architectural visualisation at 99 Visual Solutions depends on project scope, number of views, level of detail, and required turnaround time. We offer highly competitive rates compared to Western studios while maintaining international quality standards. Pricing varies by project type — from single exterior stills to full animated walkthroughs. Contact us at ${CONTACT_EMAIL} for a tailored, no-obligation quote based on your specific requirements.`,
-  },
-  {
-    question: 'What industries does 99 Visual Solutions serve?',
-    answer:
-      'We serve a wide range of industries including real estate, architecture, construction, healthcare, retail, e-commerce, education, logistics, government, and manufacturing. Our cross-functional team of engineers, designers, and domain specialists ensures solutions that are technically sound and commercially effective for each sector. Whether you are a startup looking for your first digital product or an enterprise modernising a legacy system, we have the expertise to deliver.',
-  },
-  {
-    question: 'Can 99 Visual Solutions handle end-to-end web and app development?',
-    answer:
-      'Yes. We manage the complete product lifecycle — from UX research and UI design to frontend development, backend engineering, API integrations, cloud deployment on AWS, GCP, or Azure, and long-term post-launch support and maintenance. We work with modern technology stacks including React, Next.js, Node.js, Python, Flutter, and more. Our agile delivery methodology ensures transparent communication and iterative progress throughout the project.',
-  },
-  {
-    question: 'What makes 99 Visual Solutions different from other IT companies in India?',
-    answer:
-      'We combine multi-disciplinary expertise under one roof — 3D visualisation, GIS and LiDAR, CAD, web and app development, SEO, and IT consulting — meaning you get a single accountable partner instead of managing multiple agencies. Founded in 2020 and headquartered in Bengaluru, our team brings international project experience, agile delivery methods, transparent communication, and a client-first approach to every engagement. We have delivered 500+ projects across India, USA, UK, UAE, and Australia.',
-  },
-]);
+// FAQPage markup removed: Google requires FAQ structured data to mirror
+// question/answer text that is visible on the page, and this page renders
+// no FAQ section. Markup for invisible content is a structured-data policy
+// violation (risk of a manual action). Re-add it alongside a visible FAQ.
 
 // ─── Single @graph document — one @context, all nodes ────────────────────────
 const homeGraph = buildGraph(
@@ -215,7 +177,6 @@ const homeGraph = buildGraph(
   // ✅ FIX: standalone BreadcrumbList node — webPage() references it by @id only
   breadcrumbFromPath('/'),
   homeWebPage,
-  homeFaq,
 );
 
 // ─────────────────────────────────────────────────────────────────────────────

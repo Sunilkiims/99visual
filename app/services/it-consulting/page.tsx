@@ -31,6 +31,7 @@
 //   variable used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -47,7 +48,6 @@ import {
 
 import {
   BASE,
-  CONTACT_EMAIL,
   buildGraph,
   orgSchema,
   localBusinessSchema,
@@ -61,7 +61,8 @@ const PAGE_CANONICAL = `${BASE_SAFE}/services/it-consulting`;
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "IT Consulting Services | Cloud, Cybersecurity & IoT — 99 Visual",
+  // Brand suffix is appended by the root layout's title template.
+  title: "IT Consulting Services | Cloud, Cybersecurity & IoT",
 
   description:
     "99 Visual Solutions provides end-to-end IT consulting: infrastructure planning, cloud migration (AWS, Azure, GCP), cybersecurity, IoT integration, software consulting, and IT project management worldwide.",
@@ -130,7 +131,7 @@ export const metadata: Metadata = {
 // DATES — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = "2025-06-01"; // ← Update this when content changes
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/it-consulting']; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SCHEMA NODES — unchanged
@@ -196,49 +197,10 @@ const itcServiceNode = {
   },
 };
 
-const itcFaqNode = {
-  "@type": "FAQPage",
-  "@id":   `${PAGE_CANONICAL}#faq`,
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name":  "What IT consulting services does 99 Visual Solutions provide?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text":
-          `We offer IT infrastructure planning and optimisation, cloud migration and digital transformation (AWS, Azure, GCP), cybersecurity and risk management, software and application consulting, IoT and smart device integration, IT project management, and installation and system migration services. Contact us at ${CONTACT_EMAIL} for a free IT consulting consultation tailored to your organisation's needs.`,
-      },
-    },
-    {
-      "@type": "Question",
-      "name":  "Which cloud platforms do you support for migration?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text":
-          "We support migrations to and on Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP), including hybrid and multi-cloud strategies. Our cloud migration team handles everything from initial assessment and architecture planning to data migration, application refactoring, and post-migration support and optimisation to ensure a smooth, disruption-free transition.",
-      },
-    },
-    {
-      "@type": "Question",
-      "name":  "Do you provide ongoing IT support after the project is complete?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text":
-          "Yes. Our consultants provide continuous guidance, monitoring, and support to ensure your IT ecosystem evolves alongside your business needs. Post-project support includes system health monitoring, performance optimisation, security patching, and strategic technology reviews to keep your infrastructure aligned with your long-term business objectives.",
-      },
-    },
-    {
-      "@type": "Question",
-      "name":  "Can you help us with cybersecurity compliance?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text":
-          `Absolutely. We provide risk assessments, vulnerability management, and compliance support aligned with industry standards including ISO 27001, SOC 2, and GDPR. Our cybersecurity practice includes threat monitoring, incident response planning, penetration testing, and remediation roadmaps. Email us at ${CONTACT_EMAIL} to discuss your specific compliance requirements.`,
-      },
-    },
-  ],
-  "mainEntityOfPage": { "@id": `${PAGE_CANONICAL}#webpage` },
-};
+// FAQPage markup removed: Google requires FAQ structured data to mirror
+// question/answer text that is visible on the page, and this page renders
+// no FAQ section. Markup for invisible content is a structured-data policy
+// violation (risk of a manual action). Re-add it alongside a visible FAQ.
 
 const itcPageNode = {
   "@type":         "WebPage",
@@ -277,7 +239,6 @@ const itcGraph = buildGraph(
   itcPageNode,
   itcBreadcrumbNode,
   itcServiceNode,
-  itcFaqNode,
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -591,20 +552,17 @@ export default function ITConsulting() {
           <div className="itc-corner itc-corner--br" aria-hidden="true" />
 
           <nav className="itc-sr-only" aria-label="Breadcrumb">
-            <ol itemScope itemType="https://schema.org/BreadcrumbList" style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/" itemProp="item"><span itemProp="name">Home</span></a>
-                <meta itemProp="position" content="1" />
+            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
+              <li>
+                <a href="/"><span>Home</span></a>
               </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services" itemProp="item"><span itemProp="name">Services</span></a>
-                <meta itemProp="position" content="2" />
+              <li>
+                <a href="/services"><span>Services</span></a>
               </li>
-              <li itemScope itemProp="itemListElement" itemType="https://schema.org/ListItem">
-                <a href="/services/it-consulting" itemProp="item" aria-current="page">
-                  <span itemProp="name">IT Consulting</span>
+              <li>
+                <a href="/services/it-consulting" aria-current="page">
+                  <span>IT Consulting</span>
                 </a>
-                <meta itemProp="position" content="3" />
               </li>
             </ol>
           </nav>

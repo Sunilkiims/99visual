@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
+import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
@@ -41,42 +42,30 @@ const SERVICE_LINKS = [
   { href: '/services/automation-testing', label: 'QA & Automation Testing', Icon: ShieldCheck, glow: '#6366f1' },
 ]
 
-// ── FIX — canonical was a single static value pointing every ?page=N view
-// back to the plain /insights URL. That's the outdated pagination pattern:
-// current Google guidance is a self-referencing canonical per paginated
-// page (see https://developers.google.com/search/docs/crawling-indexing/canonicalization
-// and https://developers.google.com/search/blog/2021/02/pagination-best-practices).
-// Collapsing every page to page 1 tells Google the later pages' post
-// listings don't exist as distinct crawlable entry points, which can slow
-// discovery of posts that only surface deeper in the list. This page's
-// individual posts are also covered directly in app/sitemap.ts, so this
-// mainly affects how the *listing* pages themselves are crawled/indexed.
-//
-// New behaviour:
-//   - unfiltered, page 1              → canonical: /insights
-//   - unfiltered, page N>1            → canonical: /insights?page=N
-//   - category, any page              → canonical: /insights?category=X[&page=N]
-//   - tag or search present           → canonical: /insights (collapsed —
-//     tag views are too granular and search-result pages shouldn't be
-//     indexed as unique pages; this matches Google's explicit guidance for
-//     site-internal search results)
+// ── Indexing rules for /insights views ────────────────────────────────────
+//   - /insights and /insights?page=N → indexable, self-referencing canonical,
+//     each page with a distinct title ("… – Page 2"), per Google's pagination
+//     guidance.
+//   - category / tag / search views  → `noindex, follow`. They re-list the
+//     same articles under the same heading and copy, so they were indexable
+//     near-duplicates of /insights with identical titles and descriptions.
+//     `follow` keeps every article link they contain crawlable.
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = await searchParams
-  const page = parseInt(params.page || '1')
+  const page = parsePage(params.page)
+  const isFilteredView = Boolean(params.category || params.tag || params.search)
 
-  let canonicalPath = '/insights'
-  if (!params.tag && !params.search) {
-    const qs = new URLSearchParams()
-    if (params.category) qs.set('category', params.category)
-    if (page > 1) qs.set('page', String(page))
-    const query = qs.toString()
-    canonicalPath = query ? `/insights?${query}` : '/insights'
-  }
+  const canonicalPath = page > 1 ? `/insights?page=${page}` : '/insights'
   const canonicalUrl = `${BASE}${canonicalPath}`
 
-  // Featured post's image gives the listing page a real social-share image
-  // instead of falling back to whatever default the platform picks. Purely
-  // additive — no existing metadata field is touched or removed.
+  const baseTitle = 'Industry Insights & Expert Perspectives'
+  const title = page > 1 ? `${baseTitle} – Page ${page}` : baseTitle
+  const description =
+    page > 1
+      ? `Page ${page} of articles from 99 Visual Solutions on technology trends, SEO, 3D visualisation, GIS, IT consulting and business strategy.`
+      : 'Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.'
+
+  // Featured post's image gives the listing page a real social-share image.
   let ogImage: string | undefined
   try {
     const featured = await prisma.post.findFirst({
@@ -89,28 +78,39 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     ogImage = undefined
   }
 
+  if (isFilteredView) {
+    return {
+      title: baseTitle,
+      description,
+      robots: { index: false, follow: true },
+    }
+  }
+
   return {
-    title: 'Industry Insights & Expert Perspectives | 99 Visual Solutions',
-    description: 'Stay ahead with trends, technology updates, business strategies, digital transformation insights, and industry knowledge from our experts.',
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    // Self-referencing canonical still tells Google these are indexable —
-    // that's correct for real category/pagination views. Filtered-out cases
-    // (tag/search) already collapse their canonical to /insights above,
-    // which is the accepted way to deflect indexation of those variants
-    // without a separate noindex directive.
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: 'Industry Insights & Expert Perspectives',
-      description: 'Stay ahead with trends, technology updates, and industry knowledge from 99 Visual Solutions.',
+      title,
+      description,
       url: canonicalUrl,
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      siteName: '99 Visual Solutions',
+      type: 'website',
+      ...(ogImage ? { images: [{ url: ogImage }] } : { images: [{ url: `${BASE}/images/home-og.jpg`, width: 1200, height: 630 }] }),
     },
   }
 }
 
+// "?page=abc", "?page=0" or "?page=-3" previously reached Prisma as a NaN or
+// negative `skip` and returned a 500. Anything that isn't a positive integer
+// is treated as page 1.
+function parsePage(value: string | undefined): number {
+  const n = Number.parseInt(value || '1', 10)
+  return Number.isFinite(n) && n >= 1 ? n : 1
+}
+
 async function getPosts(params: Awaited<Props['searchParams']>) {
-  const page = parseInt(params.page || '1')
+  const page = parsePage(params.page)
   const perPage = 9
   const search = params.search || ''
 
@@ -178,6 +178,9 @@ export default async function InsightsPage({ searchParams }: Props) {
   const params = await searchParams
   const { posts, total, categories, featuredPost, page, perPage } = await getPosts(params)
   const totalPages = Math.ceil(total / perPage)
+  // A page number past the end is not a real page — return a 404 instead of
+  // an empty, indexable listing (a soft 404).
+  if (page > 1 && page > totalPages) notFound()
   const isFiltered = params.category || params.tag || params.search
   const pageWindow = getPageWindow(page, totalPages)
   const showFeatured = featuredPost && !isFiltered && page === 1
