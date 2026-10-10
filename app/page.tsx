@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     template: '%s | 99 Visual Solutions',
   },
   description:
-    'Bengaluru IT company delivering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting to clients across India, USA, UK, UAE & Australia. 5+ years · 500+ projects.',
+    'Bengaluru IT company delivering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting for clients in India, USA, UK, UAE & Australia.',
 
   metadataBase: new URL(BASE),
 

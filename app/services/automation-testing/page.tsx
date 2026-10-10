@@ -24,6 +24,8 @@
 //     the existing 99 Visual design system — only content, structure and
 //     claims changed.
 //
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -53,12 +55,16 @@ const CLEAN_BASE = BASE.replace(/\/+$/, "");
 const PAGE_PATH  = "/services/automation-testing";
 const PAGE_URL   = `${CLEAN_BASE}${PAGE_PATH}`;
 
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
   title: "QA & Software Test Automation Services",
 
   description:
-    "Software QA, test automation and quality engineering services — functional, API, performance, mobile, accessibility and security testing, plus AI/LLM application testing, integrated into your CI/CD pipeline.",
+    "Software QA and test automation: functional, API, performance, mobile, accessibility, security and AI/LLM testing, built into your CI/CD pipeline.",
 
   metadataBase: new URL(CLEAN_BASE),
 
@@ -469,6 +475,10 @@ const pipeline = [
 ];
 
 export default function AutomationTestingPage() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/automation-testing-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <script
@@ -1060,6 +1070,8 @@ export default function AutomationTestingPage() {
         </div>
       </div>
 
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/automation-testing" />
       <Footer />
       <ScrollDown />
 

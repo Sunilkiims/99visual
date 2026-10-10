@@ -31,6 +31,8 @@
 //   CTAs, cards, ticker) is unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Image          from "next/image";
@@ -60,12 +62,16 @@ const PAGE_CANONICAL = `${BASE_SAFE}/services/visualization`;
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
-  title: "3D Visualization & Architectural Rendering Services",
+  title: "3D Visualization & Architectural Rendering",
 
   description:
-    "Photorealistic architectural rendering, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR point cloud processing for architects, developers, and product designers. In-house team, transparent revision cycles, fixed turnaround.",
+    "Photorealistic architectural rendering, 3D walkthrough animation, BIM modeling and LiDAR processing for architects, developers and product designers.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -686,6 +692,10 @@ function FaqSection() {
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function VisualizationPage() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/visualization-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <style>{`
@@ -949,6 +959,8 @@ export default function VisualizationPage() {
 
       <Seriously />
       <ContactCTA />
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/visualization" />
       <Footer />
       <ScrollDown />
     </>

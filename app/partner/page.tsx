@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   title: { absolute: "Partner With 99 Visual | White-Label & Agency Collaboration" },
 
   description:
-    "Partner with 99 Visual Solutions — white-label web development, 3D visualisation, SEO & digital marketing. Scale globally with India's trusted IT partner. 30+ global partners.",
+    "Partner with 99 Visual Solutions for white-label web development, 3D visualisation, SEO and digital marketing from a Bengaluru team. 30+ global partners.",
 
   metadataBase: new URL(BASE),
 

@@ -98,6 +98,7 @@ export default function PressPage() {
         {/* Arrow */}
         <a
           href="#press"
+          aria-label="Scroll to content"
           className="absolute bottom-6 left-1/2 arrowSwing"
           style={{ transform: "translateX(-50%)" }}
         >

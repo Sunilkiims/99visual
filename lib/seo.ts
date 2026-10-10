@@ -59,3 +59,19 @@ export function parseRobots(value: string | null | undefined): { index: boolean;
 export function insightUrl(slug: string): string {
   return `${BASE}/insights/${slug}`;
 }
+
+/**
+ * Fits free text into a meta description (~155 characters, the width search
+ * results show before truncating). Cuts at a sentence end when one fits,
+ * otherwise at a word boundary with an ellipsis. Used where the same long
+ * copy also appears on the page or in JSON-LD, which keep the full text.
+ */
+export function metaDescription(text: string, max = 155): string {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  const slice = clean.slice(0, max);
+  const sentenceEnd = Math.max(slice.lastIndexOf('. '), slice.lastIndexOf('! '), slice.lastIndexOf('? '));
+  if (sentenceEnd > max * 0.5) return slice.slice(0, sentenceEnd + 1);
+  const wordEnd = slice.lastIndexOf(' ');
+  return `${slice.slice(0, wordEnd > 0 ? wordEnd : max - 1).replace(/[\s,;:—–-]+$/, '')}…`;
+}

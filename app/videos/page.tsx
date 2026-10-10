@@ -27,7 +27,7 @@ function isoDuration(seconds: number): string {
 
 export const metadata: Metadata = {
   // Brand suffix comes from the root layout's title template.
-  title: 'Video Showcase: 3D Visualization & Animation Reels',
+  title: 'Video Showcase: 3D & Animation Reels',
   description:
     'Watch 3D visualization, architectural animation, product rendering, and marketing showreel clips produced by 99 Visual Solutions.',
   alternates: { canonical: `${BASE}/videos` },

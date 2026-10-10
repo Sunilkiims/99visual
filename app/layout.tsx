@@ -12,6 +12,10 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Only the admin screens use the mono face (`font-mono`). Not preloading it
+  // stops every public page from downloading a font it never renders,
+  // leaving bandwidth for the hero image / LCP. It still loads on demand.
+  preload: false,
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

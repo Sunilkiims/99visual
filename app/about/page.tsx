@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   title: { absolute: "About 99 Visual Solutions | IT & 3D Visualization Bangalore" },
 
   description:
-    "Meet 99 Visual Solutions — Bengaluru's full-service IT company. Founded in 2020, 500+ projects across web development, 3D visualisation, CAD, GIS, SEO & IT consulting.",
+    "Meet 99 Visual Solutions, a Bengaluru IT company founded in 2020, with 500+ projects in web development, 3D visualisation, CAD, GIS, SEO and IT consulting.",
 
   metadataBase: new URL(BASE),
 

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: { absolute: "Terms & Conditions | 99 Visual Solutions Service Agreement" },
 
   description:
-    "Read the terms and conditions for using 99Visual services including web development, 3D visualization, SEO, and digital solutions. Understand your rights and obligations.",
+    "Terms and conditions for using the 99 Visual Solutions website and services, including web development, 3D visualization and SEO: your rights and obligations.",
 
   keywords: [
     "99Visual Terms and Conditions",

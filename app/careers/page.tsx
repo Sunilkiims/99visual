@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   title: { absolute: "Careers at 99 Visual Solutions | Web Developer & Design Jobs" },
 
   description:
-    "Join 99 Visual Solutions — hiring remote web developers, UI/UX designers, 3D visualization artists & digital marketing specialists. 500+ projects delivered. Explore open roles.",
+    "Join 99 Visual Solutions: remote roles for web developers, UI/UX designers, 3D visualization artists and digital marketing specialists. See open positions.",
 
   metadataBase: new URL(BASE),
 

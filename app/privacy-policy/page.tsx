@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: { absolute: "Privacy Policy | 99 Visual Solutions Data Protection & Security" },
 
   description:
-    "Learn how 99Visual collects, uses, and protects your personal data. Our privacy policy ensures transparency, security, and compliance with global data standards.",
+    "How 99 Visual Solutions collects, uses and protects your personal data, and the choices you have. Read our privacy policy.",
 
   keywords: [
     "99Visual Privacy Policy",

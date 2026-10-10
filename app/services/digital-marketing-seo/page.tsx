@@ -43,6 +43,8 @@
 //   section styles below it were added.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -89,9 +91,13 @@ const OG_IMAGE = `${BASE_SAFE}/images/services/digital-marketing-seo-hero-banner
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
-  title: "Digital Marketing & SEO Company in Bangalore, India",
+  title: "Digital Marketing & SEO Company, Bangalore",
 
   description:
     "99 Visual Solutions is a Bengaluru-based digital marketing and SEO company helping businesses across India turn search and paid media into measurable growth.",
@@ -446,6 +452,10 @@ function FaqSection() {
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function DigitalMarketing() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/digital-marketing-seo-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <style>{`
@@ -1352,6 +1362,8 @@ export default function DigitalMarketing() {
         </div>
       </div>
 
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/digital-marketing-seo" />
       <Footer />
       <ScrollDown />
 

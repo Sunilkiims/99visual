@@ -33,6 +33,8 @@
 //     layout also carries forward the height/overflow fixes already applied
 //     to the QA page (min-height instead of fixed height, no clipping).
 //
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -63,12 +65,16 @@ const BASE_SAFE = BASE.replace(/\/$/, "");
 const PAGE_PATH = "/services/cad-gis-photogrammetry";
 const PAGE_URL  = `${BASE_SAFE}${PAGE_PATH}`;
 
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
   title: "CAD, GIS, LiDAR & Photogrammetry Services",
 
   description:
-    "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modeling, and spatial analysis for infrastructure, engineering, construction, and land development projects.",
+    "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing and terrain modeling for infrastructure, engineering and construction projects.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -476,6 +482,10 @@ const pipeline = [
 ];
 
 export default function CADGISPhotogrammetry() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/cad-gis-photogrammetry-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <script
@@ -1068,6 +1078,8 @@ export default function CADGISPhotogrammetry() {
         </div>
       </div>
 
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/cad-gis-photogrammetry" />
       <Footer />
       <ScrollDown />
 

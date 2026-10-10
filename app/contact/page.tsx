@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   title: { absolute: "Contact 99 Visual Solutions | Free Quote — Web, 3D & SEO" },
 
   description:
-    "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO, and digital marketing. We respond within 24 business hours.",
+    "Contact 99 Visual Solutions in Bangalore for a free consultation on web development, 3D visualization, SEO and marketing. We reply within 24 business hours.",
 
   metadataBase: new URL(BASE),
 

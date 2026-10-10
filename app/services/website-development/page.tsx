@@ -26,6 +26,8 @@
 //   variable used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Image from "next/image";
@@ -68,12 +70,16 @@ const BASE_SAFE = BASE.replace(/\/$/, "");
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
   title: "Website Development Company in India",
 
   description:
-    "99 Visual Solutions is a website development company in India (Bengaluru), building custom, responsive, SEO-friendly websites and web applications in React & Next.js. Get a free quote.",
+    "Website development company in Bengaluru, India, building custom, responsive, SEO-friendly websites and web apps in React and Next.js. Get a free quote.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -542,6 +548,10 @@ const pipeline = [
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function WebsiteDevelopment() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/website-development-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <style>{`
@@ -1423,6 +1433,8 @@ export default function WebsiteDevelopment() {
         }}
       />
 
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/website-development" />
       <Footer />
       <ScrollDown />
 

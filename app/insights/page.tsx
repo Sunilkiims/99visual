@@ -8,7 +8,7 @@ import Footer from '@/app/components/footer'
 import ConsultationCTA from '@/app/components/ConsultationCTA'
 import Reveal from '@/app/components/insights/Reveal'
 import { getCategoryIcon } from '@/app/components/insights/categoryIcon'
-import { BASE } from '@/lib/schema'
+import { BASE, buildGraph, orgSchema, websiteSchema, jsonLdString } from '@/lib/schema'
 import {
   Search,
   Clock,
@@ -190,8 +190,39 @@ export default async function InsightsPage({ searchParams }: Props) {
   const buildPageHref = (p: number) =>
     '/insights?page=' + p + (params.category ? '&category=' + params.category : '')
 
+  // CollectionPage + ItemList for the indexable listing views only (not the
+  // noindex category/tag/search views). Lists exactly the articles rendered
+  // on this page, in the same order.
+  const listingUrl = page > 1 ? `${BASE}/insights?page=${page}` : `${BASE}/insights`
+  const listingLd = isFiltered
+    ? null
+    : buildGraph(orgSchema, websiteSchema, {
+        '@type': 'CollectionPage',
+        '@id': `${listingUrl}#webpage`,
+        url: listingUrl,
+        name: page > 1 ? `Industry Insights & Expert Perspectives – Page ${page}` : 'Industry Insights & Expert Perspectives',
+        inLanguage: 'en',
+        isPartOf: { '@id': `${BASE}/#website` },
+        publisher: { '@id': `${BASE}/#organization` },
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: posts.map((p: { slug: string; title: string }, i: number) => ({
+            '@type': 'ListItem',
+            position: rangeStart + i,
+            url: `${BASE}/insights/${p.slug}`,
+            name: p.title,
+          })),
+        },
+      })
+
   return (
     <>
+      {listingLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(listingLd) }}
+        />
+      )}
       <Header />
       <main className="min-h-screen bg-gray-950">
 

@@ -33,6 +33,7 @@
 //   revision) are unchanged. No copy, schema, or metadata changes.
 //   Save your banner image to: /public/images/services/services-hub-hero-banner.jpg
 //
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header           from "@/app/components/header";
@@ -66,10 +67,10 @@ const BASE_SAFE = BASE.replace(/\/$/, "");
 // METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Our Services | Web, 3D Viz, AI QA, SEO & IT Consulting",
+  title: "Services: Web, 3D, QA, SEO & IT Consulting",
 
   description:
-    "Explore 99 Visual Solutions' full range of services: custom web development, AI-powered QA & automation testing, digital marketing & SEO, IT consulting, 3D visualization, and CAD/GIS. Trusted worldwide.",
+    "Web development, AI-powered QA and test automation, digital marketing & SEO, IT consulting, 3D visualization and CAD/GIS services from 99 Visual Solutions.",
 
   alternates: {
     canonical: `${BASE_SAFE}/services`,
@@ -296,6 +297,10 @@ const pipeline = [
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ServicesPage() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/services-hub-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       

@@ -12,7 +12,7 @@ import TableOfContents from '@/app/components/insights/TableOfContents'
 import { getCategoryIcon, getRelatedService } from '@/app/components/insights/categoryIcon'
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
-import { insightUrl, isProductionUrl, parseRobots, stripBrandSuffix } from '@/lib/seo'
+import { insightUrl, isProductionUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -42,7 +42,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // The root layout template appends " | 99 Visual Solutions", so any brand
   // suffix already typed into the CMS meta title is stripped first.
   const title = stripBrandSuffix(seo?.metaTitle || post.title)
-  const description = seo?.metaDescription || post.excerpt || ''
+  // A meta description that ends in " | 99 Visual Solutions" is a title
+  // pasted into the wrong field (live on one article); the excerpt is the
+  // better summary then. Either way it is fitted to ~155 characters.
+  const storedDescription =
+    seo?.metaDescription && stripBrandSuffix(seo.metaDescription) === seo.metaDescription.trim()
+      ? seo.metaDescription
+      : ''
+  const description = metaDescription(storedDescription || post.excerpt || post.title)
 
   // ── Social ─────────────────────────────────────────────────────────────
   // ogTitle/ogDescription/twitterTitle/twitterDescription are not editable

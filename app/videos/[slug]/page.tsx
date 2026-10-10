@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { videos, getVideoBySlug } from '@/lib/videos'
+import { metaDescription } from '@/lib/seo'
 import {
   BASE,
   buildGraph,
@@ -38,7 +39,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     // Brand suffix comes from the root layout's title template.
     title: video.title,
-    description: video.description,
+    // Meta description trimmed to fit search results; the page and its
+    // VideoObject JSON-LD keep the full description.
+    description: metaDescription(video.description),
     metadataBase: new URL(BASE),
     alternates: { canonical: url },
     openGraph: {

@@ -31,6 +31,8 @@
 //   variable used everywhere else on the page is untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import RelatedInsights from '@/app/components/RelatedInsights';
+import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
@@ -60,12 +62,16 @@ const PAGE_CANONICAL = `${BASE_SAFE}/services/it-consulting`;
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
+// Re-render at most hourly so newly published related articles appear
+// without a redeploy (see RelatedInsights).
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
-  title: "IT Consulting Services | Cloud, Cybersecurity & IoT",
+  title: "IT Consulting: Cloud, Cybersecurity & IoT",
 
   description:
-    "99 Visual Solutions provides end-to-end IT consulting: infrastructure planning, cloud migration (AWS, Azure, GCP), cybersecurity, IoT integration, software consulting, and IT project management worldwide.",
+    "End-to-end IT consulting: infrastructure planning, cloud migration (AWS, Azure, GCP), cybersecurity, IoT integration and IT project management.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -357,6 +363,10 @@ const pipeline = [
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ITConsulting() {
+  // The hero image is a CSS background, which the browser only discovers
+  // after downloading and parsing the stylesheet. Preloading it lets the
+  // largest above-the-fold image (the LCP element) start downloading at once.
+  preload('/images/services/it-consulting-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <script
@@ -711,6 +721,8 @@ export default function ITConsulting() {
         </div>
       </div>
 
+      {/* Articles about this service — reverse of the article's "Related Service" link. */}
+      <RelatedInsights serviceHref="/services/it-consulting" />
       <Footer />
       <ScrollDown />
 
