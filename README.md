@@ -1,36 +1,323 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShilpiKala
 
-## Getting Started
+A premium art store for Mandala Art, Lipan Art and handmade decorative pieces.
 
-First, run the development server:
+Next.js 16 (App Router, Turbopack) · React 19 · strict TypeScript · Tailwind CSS 4 · PostgreSQL · Razorpay · Resend.
+
+**What's in it**
+
+| Area | Features |
+| --- | --- |
+| Storefront | Home, shop, categories, product pages (gallery, reviews, JSON-LD), wishlist, cart, checkout, order success, order tracking |
+| Content | About, Journal (blog), FAQ (with FAQ schema), Shipping, Returns, Privacy, Terms, Contact form, Custom-art commission form |
+| Accounts | Register / sign in / sign out, email verification, password reset, order history, saved address, checkout prefill |
+| Payments | Razorpay with server-side pricing, HMAC signature verification, order snapshot so a payment can only ever record what was priced and charged |
+| Admin (`/admin`) | Dashboard (revenue, orders, low stock, best sellers), orders (status + tracking, ships email), products (CRUD + photos), categories, reviews moderation, inquiries inbox, blog CMS, payments needing reconciliation |
+| Platform | PostgreSQL storage (photos included, so it runs on read-only/serverless hosts), rate limiting, brute-force lockout, security headers, sitemap + robots, responsive and WCAG-AA checked |
+
+---
+
+## 1. Quick start (local development)
+
+Requires Node.js 20.9 or newer.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local     # then edit it (see §2)
+npm run dev                    # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With `DATABASE_URL` empty, the app uses an **embedded PostgreSQL (PGlite)** stored in `storage/pgdata/`. Nothing to install; the starter catalogue is created on first run. This is for development only — see §3 for production.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Useful commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm run build` / `npm start` | Production build / server |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Generates Next route types, then `tsc --noEmit` |
+| `npm test` | Vitest suite (uses an in-memory database; never touches your data) |
+| `npm run db:check` | Shows which database the app is using (PostgreSQL or embedded) and row counts per table |
+| `npm run db:migrate` | Apply database migrations up front (the app also does this automatically on first use) |
+| `npm run db:import-legacy` | One-off import from the old file-based storage (see §3.4) |
 
-## Learn More
+## 2. Environment variables
 
-To learn more about Next.js, take a look at the following resources:
+All are documented in [`.env.example`](./.env.example). **Never commit real values** — `.env*` is git-ignored except the example.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `SITE_URL` | **Yes (prod)** | Same value as below, server-only and read at runtime. Password-reset and verification emails link to it. Set it on your host, then redeploy/restart. |
+| `NEXT_PUBLIC_SITE_URL` | Yes (prod) | Public URL, no trailing slash. Canonical URLs, sitemap, and **the links inside password-reset and verification emails**. If left as `http://localhost:3000`, those links only work on the computer running the site. |
+| `DATABASE_URL` | **Yes (prod)** | PostgreSQL connection string. Empty ⇒ embedded dev database. |
+| `DATABASE_SSL` | Usually | `true` for Neon/Supabase/most managed Postgres (encrypts and verifies the certificate). `no-verify` only for self-signed hosts. `false` to disable. |
+| `DATABASE_POOL_MAX` | No | Connections per instance (default 5; use 1–3 on serverless). |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | For payments | Razorpay Key ID (public by design). |
+| `RAZORPAY_KEY_SECRET` | For payments | Razorpay Key Secret — **server only**. |
+| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | Yes | Protects `/admin` and `/api/admin` (HTTP Basic). If either is empty the admin stays locked. Use a long random password. |
+| `RESEND_API_KEY`, `ORDER_EMAIL_FROM`, `INVOICE_EMAIL_FROM`, `ACCOUNT_EMAIL_FROM` | For email | Order, shipping, verification and reset emails. Without them the site works but sends nothing. |
+| `ADMIN_NOTIFICATION_EMAIL` | No | Receives new-order and new-inquiry alerts. |
+| `ANDROID_SHA256_CERT_FINGERPRINTS` | For the Android app | Comma-separated SHA-256 signing fingerprints served at `/.well-known/assetlinks.json` so the app opens full screen. See [`android/README.md`](./android/README.md). |
+| `ANDROID_PACKAGE_NAME` | No | Android package name (default `com.shilpikala.app`). |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. Database
 
-## Deploy on Vercel
+### 3.1 How it works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* PostgreSQL 13+ via `pg` (production) or PGlite (dev/test/build). Same SQL, same schema.
+* Migrations live in `src/lib/db/migrations.ts` and are applied automatically on first use under an advisory lock, so several instances starting together are safe. Applied migrations are recorded in `schema_migrations`.
+* Tables: `categories`, `products`, `product_categories`, `product_images` (photo bytes), `customers`, `sessions`, `auth_tokens`, `orders`, `pending_orders`, `unreconciled_payments`, `reviews`, `inquiries`, `blog_posts`, `meta`.
+* The starter catalogue (`src/data/`) is inserted **once** per database; deleting all products later does not bring it back.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3.2 Making sure data goes to PostgreSQL
+
+Set `DATABASE_URL` in `.env.local` (development) and in your host's environment (production), then run `npm run db:check`. It must print `Backend: PostgreSQL` and your host name. If it prints `EMBEDDED`, `DATABASE_URL` is not being read (check the file is named exactly `.env.local`, is in the project root, and the dev server was restarted).
+
+In production the app refuses to start without `DATABASE_URL`, so data can never silently go anywhere else.
+
+### 3.3 Production setup
+
+1. Create a PostgreSQL database (Neon, Supabase, Railway, RDS, or your own server).
+2. Set `DATABASE_URL` (and `DATABASE_SSL=true` if required) in your host's environment.
+3. `npm run build` needs the database reachable at build time (pages are pre-rendered from the catalogue). On first request/boot the tables are created.
+4. Back up the database regularly — it holds your orders, customers **and product photos**.
+
+### 3.4 Coming from the old file-based version
+
+If your running site still has `storage/catalog.json`, `storage/*.jsonl` and photos in `public/images/products/`:
+
+```bash
+# with DATABASE_URL pointing at the NEW database
+npm run db:import-legacy
+```
+
+It replaces the demo catalogue with yours (keeping product ids), imports photos, orders, pending checkouts and reviews, and lists any photo it couldn't find. It is safe to re-run (orders/reviews are not duplicated).
+
+## 4. Payments (Razorpay)
+
+1. Create a Razorpay account and complete KYC to go live. Use **Test mode** keys first.
+2. Set `NEXT_PUBLIC_RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.
+3. Flow: the browser sends only product ids + quantities → the server prices the cart from the database, creates the Razorpay order and stores a snapshot → after payment the browser sends Razorpay's three values → the server verifies the HMAC-SHA256 signature and records the order **from the snapshot**, never from browser-supplied cart data.
+4. A genuine payment with no matching snapshot is never turned into an order automatically; it appears in **Admin → Payments** to reconcile by hand against the Razorpay dashboard.
+5. Currency is INR. Shipping rules are in `src/lib/shipping/config.ts`.
+
+> The payment round trip against Razorpay's real servers can only be tested with your own keys; see the testing notes in the delivery report.
+
+## 5. Email, invoices and the Razorpay webhook
+
+### 5.1 What is sent, and from where
+
+| Email | From | To |
+|---|---|---|
+| **Order Confirmed – ShilpiKala \| Order #SK-1001** (order number + reference, no attachment) | `ORDER_EMAIL_FROM` (`orders@shilpikala.com`) | customer |
+| Order processing, shipped (with carrier + tracking), out for delivery, delivered, cancelled | `ORDER_EMAIL_FROM` | customer |
+| **Payment Received & Invoice SK/… – ShilpiKala \| Order #SK-1001** + PDF invoice | `INVOICE_EMAIL_FROM` (`invoice@shilpikala.com`) | customer |
+| Refund issued | `INVOICE_EMAIL_FROM` | customer |
+| **Verify your email address — ShilpiKala** (6-digit code), "you already have an account" notice, welcome, password reset, "password changed" notice | `ACCOUNT_EMAIL_FROM` (`account@shilpikala.com`) | customer |
+| **New Order Received – #SK-1001** + the same PDF invoice | `ShilpiKala Orders <ORDER_EMAIL_FROM>` | `ADMIN_EMAIL` |
+| Contact / custom-art receipt, new inquiry alert | `EMAIL_GENERAL_FROM` (`hello@shilpikala.com`) | customer / `ADMIN_EMAIL` |
+
+Status emails are sent when an admin moves an order into that status (Admin → Orders); each is sent once per order. Older variable names keep working (`EMAIL_INVOICE_FROM`, `EMAIL_RESET_FROM`) when the new ones are unset. Sign-up uses an emailed **6-digit code** (section 5.4); password reset still uses a link. **Admin → Emails** lists the four senders and checks each domain against your Resend account.
+
+Provider: **Resend** (kept - it was already integrated, is a proper transactional provider, supports attachments and idempotency keys). The API key lives only in `RESEND_API_KEY` (server-side). Every email is HTML + plain text.
+
+### 5.2 Provider and DNS setup (you must do this)
+
+1. In Resend, **add and verify every domain you send from**. Only `shilpikala.com` is needed - all senders (`orders@`, `invoice@`, `account@`, `hello@`) are on it. Resend verifies the **domain**, not individual mailboxes, so no separate setup per address is needed - but they must be real addresses if you want replies.
+2. For each domain, add the DNS records Resend shows you:
+   - **SPF** - a `TXT` record (Resend gives you the exact value, usually on a `send.` subdomain) so Resend may send for you.
+   - **DKIM** - the `TXT`/`CNAME` record(s) Resend gives you, which cryptographically sign your mail.
+   - **DMARC** - a `TXT` record at `_dmarc.<domain>`. Start with `v=DMARC1; p=none; rua=mailto:you@yourdomain` to watch reports, then tighten to `quarantine`/`reject` once SPF and DKIM pass.
+3. Wait until Resend shows each domain as **Verified**. Until then Resend only delivers to your own account email.
+4. Create an API key in Resend and set it as `RESEND_API_KEY`.
+5. Set `ADMIN_EMAIL` (where order alerts go), `SITE_URL` (your real URL) and optionally `EMAIL_LOGO_URL`.
+
+
+### 5.3 Orders, payments and duplicate protection
+
+- An order (and its emails) is created **only** after a verified payment: a valid Razorpay signature on `/api/checkout/verify-payment`, **or** a signed `payment.captured` / `order.paid` webhook. Reaching the "success" page alone does nothing. Failed or cancelled payments create no order and send nothing.
+- Both paths share one function (`src/lib/orders/finalize.ts`) and are idempotent: webhook retries, refreshes, double-clicks and the browser racing the webhook produce **one** order, **one** stock decrement and **each email once**.
+- Every email goes through an outbox (`email_log` table, **Admin -> Emails**) that claims a unique key per email before sending and records status, attempts and the last error. No message bodies are stored.
+- The order is committed **before** any email is attempted, and email errors never surface to the payment flow, so a mail problem cannot turn a paid order into a failed one. The customer and admin emails are attempted independently.
+- Failed order emails are retried: automatically up to 5 times per email whenever the order is touched again, via **Admin -> Emails -> Retry** (button per email or "Retry unsent order emails"), and, optionally, from a scheduler calling `/api/cron/retry-emails` (needs `CRON_SECRET`).
+- Refunds: issue them in the Razorpay dashboard. When the refund covers the full order amount, the `refund.processed` webhook marks the order *refunded* and emails the customer once (a partial refund leaves the status alone). Admins can also set *cancelled/refunded* in **Admin -> Orders**, which sends the matching notice once.
+
+**Razorpay webhook setup:** Dashboard -> Settings -> Webhooks -> add `https://<your-domain>/api/webhooks/razorpay`, choose a secret, put it in `RAZORPAY_WEBHOOK_SECRET`, and enable `payment.captured`, `order.paid`, `refund.processed`, `refund.failed`, `payment.failed`. Without the secret the endpoint answers 503 and the browser-verify path still works.
+
+### 5.4 PDF invoices
+
+- Generated server-side with `pdfkit` from the **stored order** (the same figures the customer paid). Numbers are sequential and gap-free per Indian financial year: `SK/2026-27/00001`.
+- Attached to both emails; also re-generated on demand (identical numbers) from the account page, the track-order page and Admin -> Orders. There are no public invoice URLs: a signed-in customer can only fetch their own orders (others get 404), guests need order number **and** matching email (rate limited), admin routes sit behind the admin login.
+- Seller details come from `BUSINESS_*`. **GST is shown only if `BUSINESS_GSTIN` is a valid GSTIN and `GST_RATE_PERCENT` is set**; nothing is invented. Prices are assumed to be GST-inclusive; intra-state sales show CGST+SGST, inter-state IGST. Have your accountant confirm this before you rely on it as a tax invoice.
+- The PDF uses the built-in Latin fonts, so non-Latin characters in names/addresses print as `?` on the PDF (the HTML emails show them correctly).
+
+### 5.4 Sign-up with an emailed code (OTP)
+
+1. **Create account** → `POST /api/auth/register` validates the details and emails a 6-digit code from `ACCOUNT_EMAIL_FROM`. **No account exists yet.**
+2. The person enters the code → `POST /api/auth/register/verify`. Only a correct, unexpired, unused code creates the account (`email_verified = true`), signs them in and sends the welcome email.
+3. **Resend** → `POST /api/auth/register/resend` issues a new code; the old one stops working.
+
+| Rule | Value |
+|---|---|
+| Code | 6 digits from `crypto.randomInt`; only a salted SHA-256 is stored (table `email_otps`, migration `004`); never logged or put in `email_log` |
+| Expiry / single use | 5 minutes; consumed by an atomic `DELETE`, so simultaneous submissions can't both succeed |
+| Wrong guesses | 5 per code, then locked until a new code is requested |
+| Resend | once per 60 s, at most 5 codes per address per hour |
+| Per-IP limits | register 10/h, verify 30/15 min, resend 10/h (in-memory — per server instance; the limits in the rows above are enforced in the database, so they hold on Vercel's many instances) |
+| Enumeration | register answers identically whether or not the address has an account; an existing owner gets a "you already have an account" email (max one per hour) instead of a code |
+| Unverified accounts | accounts created before this feature and never verified can't sign in: signing in with the right password emails them a code instead. Their old sessions stop working. Whoever proves they own the inbox with a code (by signing up again, or signing in) takes the account over |
+| Housekeeping | pending rows that expired over an hour ago are deleted on the next sign-up |
+
+If the email can't be sent the person sees an error and may retry immediately; no account is created. In local development (`next dev`) with no email provider configured, the code is printed to the terminal so sign-up can be tried; this never happens in production.
+
+### 5.5 Returns and replacements (7-day window)
+
+Customers: **My Account → order → Return / Replace Item** (`/account/orders/<id>`). Tracking: `/account/returns/<id>`; the emailed link `/return-status/<id>?t=<token>` is read-only. Admin: **Admin → Returns** (`/admin/returns`). Public policy: `/return-refund-policy` (wording in `src/lib/config/returnPolicy.ts`).
+
+**Rules, all enforced on the server** (`src/lib/returns/eligibility.ts`, re-checked inside the creating transaction):
+
+* The window runs from the **confirmed delivery time** (`orders.delivered_at`, stamped when an order is marked *delivered*, or corrected in Admin → Orders) to exactly `RETURN_WINDOW_DAYS` × 24 h later (default 7, inclusive). A missing or future delivery time never opens a window. Shown in IST.
+* Per product (Admin → Returns → Product policies): returnable and/or replaceable. Default is both.
+* Partial returns by item and quantity. Units held by an active or completed request can't be requested again; rejected and cancelled requests release them. The order row is locked while a request is created, so two simultaneous requests can't both win.
+* Evidence: 1–5 photos required (JPEG/PNG/WebP, ≤ 4 MB each; the browser shrinks big phone photos), one optional video (MP4/MOV/WebM, ≤ `RETURN_VIDEO_MAX_MB`, default 4). File types are checked by content, not by name. Stored in the database (`return_evidence`) and served only to the owner and admin, `no-store`.
+
+**Workflow** (`src/lib/returns/types.ts` is the only list of allowed moves; every change is compare-and-swapped and written to `return_status_history` with time and actor):
+
+`submitted → under_review → approved | rejected → pickup_scheduled → picked_up → inspection → refund_initiated | replacement_processing → completed`, plus `cancelled`, `pickup_failed`, `inspection_failed`, `refund_failed`, `replacement_unavailable`. Rejecting needs a reason. Customers can cancel until pickup is scheduled.
+
+**Refunds** (`refunds.ts`, `gateway.ts`): refund = price paid for the returned items, plus the shipping paid if the **whole order** comes back for a seller-fault reason (damaged, wrong, defective, not as described, missing parts). Never more than the order's captured amount across all its refunds. One live refund per request is enforced by a unique index; the attempt row is written before Razorpay is called, so two simultaneous clicks reach Razorpay once. A request becomes *completed* only when Razorpay reports the refund `processed` (API answer, the signed `refund.processed` webhook, or "Check Razorpay"). Failures set `refund_failed` and email you; **Retry** makes a new attempt. If Razorpay doesn't answer, the refund stays *pending* and is never retried blindly. UPI/bank refunds are paid by you by hand and marked with the bank reference; that is a manual settlement, not a gateway confirmation.
+
+Webhook: add the events `refund.processed` and `refund.failed` (section 5.3). A refund made by this feature settles its request and does **not** mark the whole order refunded; a full-amount refund made from the Razorpay dashboard still does.
+
+**Replacements** (`replacements.ts`): after inspection, stock is taken with one guarded `UPDATE … WHERE stock_quantity >= qty` and a shipment with an internal tracking number `RPL-…` is created in the same transaction; if any item is short nothing is reserved and the request waits at *replacement unavailable* for you to restock and retry or refund instead. Products with no stock count (made to order) are replaceable while marked in stock. A replacement is a shipment record, not a new paid order.
+
+**Emails** (all through the existing outbox, each sent once): submitted, approved, rejected, pickup scheduled, product received, inspection result, refund initiated/completed, replacement unavailable/dispatched/delivered, cancelled. Refund mail comes from the invoice mailbox, the rest from the orders mailbox; you get alerts for new requests, cancellations, failed refunds and unavailable replacements.
+
+| Variable | Purpose |
+|---|---|
+| `RETURN_WINDOW_DAYS` | Window length, 1–60 (default from `siteConfig.business.returnWindowDays` = 7) |
+| `RETURNS_ENCRYPTION_KEY` | Any long random string. **Required to offer UPI / bank-transfer refunds**; without it only "original payment method" is offered. Payout details are AES-256-GCM encrypted, shown only to you, and deleted when the refund completes. Changing the key makes stored details unreadable |
+| `RETURN_VIDEO_MAX_MB` | Largest unboxing video (default 4, max 100). Vercel rejects request bodies over about 4.5 MB, so raise it only on a server you host yourself |
+
+**Not integrated (needs your accounts):** there is **no courier API**. Pickup scheduling, the pickup AWB and the replacement courier/AWB are entered by you in the admin; the customer is emailed. Refunds to the original method use your existing Razorpay keys, and Razorpay can refuse old payments, in which case use UPI/bank. Nothing here has been run against live Razorpay; the automated tests use a stand-in for the gateway. Try a small refund in Razorpay test mode before going live.
+
+## 6. Admin
+
+Visit `/admin` (browser asks for `ADMIN_USERNAME` / `ADMIN_PASSWORD`). Ten failed sign-in attempts from one IP lock that IP out for 15 minutes.
+
+* **Orders** – change status (paid → processing → shipped → delivered / cancelled / refunded) and add carrier + tracking. Moving to *shipped* emails the customer once. Marking *delivered* stamps the delivery time that starts the return window (you can correct it).
+* **Returns** – requests with filters, search, evidence, approve / reject / pickup / inspection / refund / replacement actions, audit history, and per-product return policies (section 5.5).
+* **Products / Categories** – create, edit, delete; upload photos (JPEG/PNG/WebP/GIF, ≤ 5 MB each).
+* **Ads & Promotions** – homepage banners, GIF ads and product carousels (section 6.1).
+* **Reviews** – approve or reject (only verified purchasers can submit).
+* **Inquiries** – contact and custom-art requests, with status.
+* **Blog** – plain text; blank line = new paragraph, `## ` = heading. Drafts are private.
+* **Payments** – verified payments needing manual reconciliation.
+
+### 6.1 Ads & Promotions
+
+Admin → **Ads & Promotions**. Nothing promotional is hard-coded: every banner and carousel is a database record.
+
+**Ad types and where they appear**
+
+| Type | Placements |
+|---|---|
+| Festive hero banner | Homepage hero (swipeable slideshow, arrows, dots, optional autoplay) |
+| Product deal carousel | Homepage carousel row(s); category pages |
+| Category promotion | Homepage category section; category pages (one category or all) |
+| GIF advertisement | Homepage hero, homepage category section, category pages |
+
+Homepage order: hero slideshow → your existing brand hero → first carousel → category promotions → remaining carousels → existing "New from the studio", categories and brand sections. With no live ads the homepage looks exactly as before.
+
+**Creating an ad** (*New advertisement*): name, type, customer heading/subtitle/badge/button text; desktop and mobile artwork (JPEG, PNG, WebP or animated GIF, ≤ 4 MB, checked from the file's bytes; SVG/HTML refused); placement; destination; start/end, priority, enabled; **Publish** or **Save as draft**. The preview shows desktop and phone width, image size and aspect ratio, and the click target; GIFs animate.
+
+**Destinations**: a product, a category, a collection, several hand-picked products (opens a listing page, `/promotions/<id>`), a page on this site (`/…`, never `/admin` or `/api`), or an external `http(s)` URL (opens in a new tab). `javascript:`, `data:` and similar are rejected. If the target is later deleted the ad stops showing on the site and is flagged in the list.
+
+**Carousels** take products from: hand-picked (reorderable), a category, a collection, newest, on sale (biggest discount first) or bestsellers (units in paid orders; hidden until you have orders). Names, prices, photos and stock always come from the live catalogue; a discount badge shows only when a real sale price is lower than the regular price.
+
+**Collections** (*Ads & Promotions → Collections*): hand-picked product groups with their own page at `/collections/<slug>`.
+
+**Status**: Draft, Scheduled (start in the future), Active, Expired (end passed), Disabled. The list can be filtered by type or status, searched by name, and filtered by placement, category and date; ↑ ↓ change the order (higher priority first, then list order). Deleting asks for confirmation.
+
+**Timing**: admin changes appear immediately. Start/end times are honoured by a 60-second page refresh, so a campaign starts or ends within about a minute of its time (no admin action needed). The settings box on the Ads page controls hero autoplay (off, or every 3–30 s). Autoplay also stops on hover/touch and for visitors who prefer reduced motion.
+
+**Media storage**: artwork is stored in the `ad_media` table (separate from the `ads` rows) and served from `/media/ads/<id>` byte-for-byte with immutable caching, so GIFs keep animating. This is the same approach as product photos and needs no extra service or environment variable. The 4 MB cap keeps uploads under Vercel's 4.5 MB request limit. If you later want a CDN/Blob store, only `src/lib/ads/store.ts` (`createMedia` / `getMediaData`) and `/media/ads` need to change.
+
+**Security**: all `/admin/**` pages and `/api/admin/**` endpoints (including every ads and collections endpoint) sit behind the admin sign-in in `src/proxy.ts`, which fails closed. Uploads are identified from their bytes, size- and dimension-limited, and never executed or re-encoded.
+
+**Database change**: migration `007_ads_promotions` adds `ad_media`, `ads`, `collections`, `ad_settings`. It only creates new tables; products, orders, users and payments are untouched. Migrations run automatically on start (`npm run dev` / first request in production). No manual command is needed.
+
+### 6.2 Discounts & Offers
+
+**Admin → Discounts & Offers** changes what customers actually pay. (Banners, GIFs and carousels stay under *Ads & Promotions*.) The dashboard counts active, scheduled, expired, draft and disabled offers and lists every offer with its discount, calculated price, dates and status.
+
+- **Product offers**: pick one or many products (bulk) and a percentage or a fixed rupee amount. **Category offers**: pick a category; it applies to every product in it, including ones added later. Both have a campaign name, an optional customer-facing badge ("Diwali Special"), optional start/end dates (IST in the admin) and an enable switch. The form shows a server-calculated preview (original → offer price, `% OFF`, a mock product card, how many products are eligible, and overlapping offers) before anything is published.
+- **Rules**: negative discounts, 100% or more, and any discount that would make a price zero or negative are rejected, validated against each product's *current* price. A fixed category discount simply skips products cheaper than the discount. The price an offer starts from is the product's current selling price (its own sale price if it has one).
+- **Precedence**: a product-specific offer beats a category offer. Offers do not stack, except a category offer whose **"also apply on top of a product-specific offer"** box is ticked. If two offers of the same kind overlap, the lower price wins (ties go to the newest).
+- **Scheduling**: an offer applies only when published, enabled and inside its dates; at the end time prices go back to normal on their own. Storefront pages re-render at least every 60 seconds (and immediately after any admin change); the cart, checkout and every API use the exact current time. An expired offer can't be re-enabled.
+- **Money**: all arithmetic is integer paise (percent stored as hundredths of a percent), rounded half-up to the paisa, never floating point. Prices with paise display as `₹1,199.20`; whole rupees as before (`₹1,499`).
+- **Storefront**: product cards, product page, shop/category/search results, featured products, wishlist and every carousel show the struck-through original price, the offer price, a `20% OFF` badge and the optional campaign badge. Products without a discount look exactly as before. In **Ads & Promotions → product carousel** a new "Show only discounted products" option builds deal carousels (heading, source, order, schedule, View all) that read offer prices from the database, so nothing is typed twice.
+- **Cart and checkout**: the cart re-asks the server for prices (`POST /api/cart/price`) when it loads and when an item is added; checkout re-prices everything on the server and never reads a price from the browser. If the total the customer saw no longer matches (an offer started or ended), `create-order` answers `409 prices_changed` with the new prices and nothing is charged until the customer confirms. Once the Razorpay order exists the price is locked: the order snapshot keeps the charged unit price, the original price, the discount per unit and the offer id/name, so history never changes if the offer or product is edited or deleted later. Free-shipping thresholds use the discounted subtotal. There is no coupon feature in this codebase, so there is nothing for offers to conflict with.
+- **Database**: migration `008_offers` adds `offers` and `offer_products` (plus `ads.discounted_only`). It only adds tables/a column, with no data changes, and runs automatically on first start.
+- Admin pages and `/api/admin/offers/**` sit behind the same HTTP Basic auth as the rest of the admin.
+
+## 7. Deployment
+
+### Option A — Node server / VPS / Docker
+
+```bash
+npm ci
+npm run build
+npm start            # PORT=3000 by default
+```
+
+Put it behind HTTPS (Caddy, nginx, a platform load balancer). Set the env vars from §2. Session cookies are marked `Secure` automatically in production, so HTTPS is required for sign-in to work.
+
+### Option B — Vercel (or similar serverless)
+
+1. Import the repo; set the env vars from §2 (including `DATABASE_URL`, `DATABASE_SSL=true`, `DATABASE_POOL_MAX=1`).
+2. Deploy. No file storage is used, so nothing else is needed.
+
+### Behind multiple instances
+
+Rate limiting is in-memory per instance. That is fine for one instance; with several, an attacker's attempts are spread across them. Swap `src/lib/security/rateLimiter.ts` for a shared store (e.g. Redis) if you scale out.
+
+### Post-deploy checklist
+
+* [ ] Sign in to `/admin`; add real products and photos; delete the demo products you don't want.
+* [ ] Replace placeholder contact details in `src/lib/config/site.ts` (email, phone, address, social links) and review the business terms in `siteConfig.business` (dispatch/delivery times, return window). The About, Shipping, Returns and FAQ pages are generated from them.
+* [ ] Have the Privacy and Terms text reviewed against your registered business details.
+* [ ] Place a test order with Razorpay test keys, then switch to live keys.
+* [ ] Send yourself a password-reset email to confirm Resend works.
+* [ ] Submit `https://your-domain/sitemap.xml` to Google Search Console.
+
+## 8. Project layout
+
+```
+src/
+  app/            Routes (pages + API route handlers)
+    api/          auth, account, checkout, reviews, inquiries, track-order, admin/*
+    admin/        Admin screens
+    media/        Serves product photos from the database
+  components/     UI, forms, account, admin, cart, checkout, product, seo …
+  lib/
+    db/           client (pg / PGlite), migrations, seed, legacy importer
+    store/        Catalogue (products, categories, photos, stock)
+    orders/       Orders, pending-order snapshots, unreconciled payments
+    returns/      Returns & replacements: eligibility, workflow, refunds, replacements, evidence
+    auth/         Passwords (scrypt), sessions, tokens, validation
+    razorpay/ checkout/ shipping/ email/ security/ seo/ config/ …
+  proxy.ts        Admin gate (Next 16 replacement for middleware.ts)
+scripts/          db-migrate, import-legacy
+```
+
+## 9. Security notes
+
+* Prices and totals are computed on the server; the browser is never trusted for amounts or cart contents at verification.
+* Passwords: scrypt with per-user salt; sign-in and "forgot password" answer identically for unknown emails; reset/verification tokens are random, hashed at rest, single-use, expiring; a password reset signs out all sessions.
+* Sessions: random 256-bit token in an `HttpOnly`, `SameSite=Lax`, `Secure` (prod) cookie; only a hash is stored.
+* Guest orders appear in an account only after its email is verified.
+* Public forms are rate-limited; the contact forms have a honeypot field.
+* Admin-entered blog text is rendered as text (no HTML), and JSON-LD escapes `<`.
+* Security headers: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`. A strict Content-Security-Policy is not set, because Razorpay's checkout loads third-party scripts and frames; add one once you've tested it against your flow.
