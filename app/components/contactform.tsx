@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 // ── Lead source tracking ────────────────────────────────────────────────
 // Pure data-collection utility — no UI impact. See lib/leadTracking.ts
 import { getTrackingData, type TrackingData } from '@/lib/leadTracking';
+import { GOOGLE_MAPS_URL } from '@/lib/schema';
 
 type FormData = {
     name: string;
@@ -330,9 +331,20 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                     <p className="pt-1.5 leading-relaxed">
                                         <strong className="text-gray-900">Address:</strong>
                                         <br />
-                                        Site No - 13, Idgah Rd, Varthur,
+                                        Site No-13, Ground Floor, Idgha Road,
                                         <br />
-                                        Bangalore - 560087, India
+                                        Varthur, Devasthanagalu, Bengaluru,
+                                        <br />
+                                        Karnataka 560087, India
+                                        <br />
+                                        <a
+                                            href={GOOGLE_MAPS_URL}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            View on Google Maps
+                                        </a>
                                     </p>
                                 </div>
                             </div>
