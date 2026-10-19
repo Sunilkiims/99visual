@@ -163,7 +163,10 @@ export default async function TopicPage({ params, searchParams }: Props) {
 
           <div className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
             <Reveal fade={false}>
-              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-gray-500 mb-8 flex-wrap">
+              {/* Visually hidden (sr-only) by design choice, like articles and
+                  /about; still read by screen readers and crawlers, and the
+                  BreadcrumbList JSON-LD is unchanged. */}
+              <nav aria-label="Breadcrumb" className="sr-only">
                 <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
                 <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                 <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
