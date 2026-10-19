@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { BASE } from '@/lib/schema'
 import { videos } from '@/lib/videos'
 import { PAGE_LAST_MODIFIED, type StaticPagePath } from '@/lib/page-dates'
-import { insightUrl, isProductionUrl, parseRobots } from '@/lib/seo'
+import { insightUrl, parseRobots } from '@/lib/seo'
 import { MIN_POSTS_FOR_INDEXABLE_TOPIC, topicUrl } from '@/lib/insights'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ type PostRow = {
   slug: string
   updatedAt: Date
   category: { slug: string }
-  seo: { robots: string | null; canonicalUrl: string | null } | null
+  seo: { robots: string | null } | null
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -80,11 +80,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   )
 
   // ── Insights ────────────────────────────────────────────────────────────
-  // Only published articles that are indexable and canonical to themselves.
-  // A post the editor marked noindex, or whose stored canonical points at a
-  // different production URL, is not a canonical page and must not be
-  // listed. (Stored canonicals on other hosts are ignored by the article
-  // page itself, so those posts still count as self-canonical.)
+  // Only published articles that are indexable. Every article page now
+  // declares a self-referencing canonical (the stored canonicalUrl is
+  // ignored — it can hold another domain or a renamed article's old slug),
+  // so the only exclusion is a post the editor marked noindex.
   let insightEntries: MetadataRoute.Sitemap = []
   let insightsIndexLastModified: Date | undefined
   let topicEntries: MetadataRoute.Sitemap = []
@@ -95,15 +94,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         slug: true,
         updatedAt: true,
         category: { select: { slug: true } },
-        seo: { select: { robots: true, canonicalUrl: true } },
+        seo: { select: { robots: true } },
       },
       orderBy: { publishedAt: 'desc' },
     })
-    const eligible = posts.filter((post) => {
-      if (!parseRobots(post.seo?.robots).index) return false
-      const stored = post.seo?.canonicalUrl
-      return !isProductionUrl(stored) || stored === insightUrl(post.slug)
-    })
+    const eligible = posts.filter((post) => parseRobots(post.seo?.robots).index)
     insightEntries = eligible.map((post) => ({
       url: insightUrl(post.slug),
       lastModified: post.updatedAt,

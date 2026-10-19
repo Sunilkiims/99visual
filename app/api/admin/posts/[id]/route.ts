@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { insightUrl } from '@/lib/seo'
+import { revalidateInsightListings } from '@/lib/revalidate-insights'
 
 function calculateReadingTime(content: string): number {
   const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length
@@ -73,6 +74,7 @@ export async function PATCH(
       },
     })
 
+    revalidateInsightListings()
     return NextResponse.json({ success: true, post })
   } catch (error) {
     console.error('Update post error:', error)
@@ -91,6 +93,7 @@ export async function DELETE(
 
   const { id } = await params
   await prisma.post.delete({ where: { id } })
+  revalidateInsightListings()
 
   return NextResponse.json({ success: true })
 }

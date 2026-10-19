@@ -12,7 +12,7 @@ import TableOfContents from '@/app/components/insights/TableOfContents'
 import { getCategoryIcon, getRelatedService } from '@/app/components/insights/categoryIcon'
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
-import { insightUrl, isProductionUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
+import { insightUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
 import { topicPath } from '@/lib/insights'
 
 interface Props {
@@ -32,12 +32,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const selfUrl = insightUrl(post.slug)
 
   // ── Canonical ──────────────────────────────────────────────────────────
-  // The CMS previously stored every article's canonical as
-  // https://99visualsolutions.com/insights/<slug> — a different domain —
-  // which told Google the real article lived elsewhere. A stored canonical
-  // is now honoured only when it is an absolute https URL on the production
-  // host; anything else falls back to the self-referencing canonical.
-  const canonical = isProductionUrl(seo?.canonicalUrl) ? seo.canonicalUrl : selfUrl
+  // Always self-referencing. The stored post_seo.canonicalUrl is not
+  // trustworthy: it was saved as https://99visualsolutions.com/... (another
+  // domain), and when an article is renamed it keeps pointing at the OLD
+  // slug — a same-host URL that now 404s. Honouring "any production-host
+  // canonical" therefore sent renamed articles' canonicals to a dead URL and
+  // (via the matching sitemap filter) dropped them from sitemap.xml. The
+  // editor has no canonical field, so there is no intentional cross-page
+  // canonical to preserve.
+  const canonical = selfUrl
 
   // ── Title / description ────────────────────────────────────────────────
   // The root layout template appends " | 99 Visual Solutions", so any brand
@@ -196,15 +199,29 @@ export default async function InsightPostPage({ params }: Props) {
   // bypasses @updatedAt, so updatedAt now changes only when an editor saves.
   await prisma.$executeRaw`UPDATE "posts" SET "viewCount" = "viewCount" + 1 WHERE "id" = ${post.id}`
 
-  const [relatedPosts, allCategories] = await Promise.all([
+  // Related articles: same-topic posts first, then the newest other posts to
+  // fill the remaining slots. Topic-only matching left most articles with no
+  // links to any other article (5 articles spread over 4 topics), so Google
+  // could only reach them from /insights. noindex posts are excluded so the
+  // sidebar never points at a page that is kept out of the index.
+  const RELATED_LIMIT = 3
+  const relatedWhere = {
+    status: 'PUBLISHED',
+    id: { not: post.id },
+    NOT: { seo: { robots: { contains: 'noindex' } } },
+  }
+  const relatedInclude = { author: true, category: true, featuredImage: true }
+  const [sameTopicPosts, latestPosts, allCategories] = await Promise.all([
     prisma.post.findMany({
-      where: {
-        status: 'PUBLISHED',
-        categoryId: post.categoryId,
-        id: { not: post.id },
-      },
-      include: { author: true, category: true, featuredImage: true },
-      take: 3,
+      where: { ...relatedWhere, categoryId: post.categoryId },
+      include: relatedInclude,
+      take: RELATED_LIMIT,
+      orderBy: { publishedAt: 'desc' },
+    }),
+    prisma.post.findMany({
+      where: { ...relatedWhere, categoryId: { not: post.categoryId } },
+      include: relatedInclude,
+      take: RELATED_LIMIT,
       orderBy: { publishedAt: 'desc' },
     }),
     // Topics with published articles only (empty topic pages are 404s);
@@ -215,6 +232,7 @@ export default async function InsightPostPage({ params }: Props) {
       include: { _count: { select: { posts: { where: { status: 'PUBLISHED' } } } } },
     }),
   ])
+  const relatedPosts = [...sameTopicPosts, ...latestPosts].slice(0, RELATED_LIMIT)
 
   const accent = post.category.color || '#f97316'
   const CategoryIcon = getCategoryIcon(post.category.slug, post.category.name)
