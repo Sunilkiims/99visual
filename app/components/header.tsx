@@ -17,7 +17,7 @@ import { createPortal } from 'react-dom';
 const SERVICE_ITEMS = [
   {
     href:   '/services',
-    label:  'End-to-End Solutions',
+    label:  'All Services',
     sub:    'Full-spectrum digital delivery',
     Icon:   Layers,
     accent: 'from-orange-500 to-amber-400',
@@ -420,18 +420,25 @@ const Header = () => {
                   <div className="absolute left-0 top-full h-3 w-full" aria-hidden="true" />
                 )}
 
-                <AnimatePresence>
-                  {servicesOpen && (
-                    <motion.div
+                {/*
+                  SEO: this panel used to be mounted ONLY while hovered, so the
+                  server HTML (what Googlebot reads — it never hovers) had no
+                  links to /services or any service page from the main menu.
+                  It is now always in the DOM and hidden with CSS + `inert`
+                  while closed: same look and animation, but the links are
+                  crawlable, which also feeds Google's sitelinks selection.
+                */}
+                    <div
                       id={dropdownId}
                       role="menu"
                       aria-labelledby={menuButtonId}
-                      initial={{ opacity: 0, y: -10, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0,   scale: 1    }}
-                      exit={{    opacity: 0, y: -8,  scale: 0.98 }}
-                      transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-                      style={{ transformOrigin: 'top center', willChange: 'transform, opacity' }}
+                      inert={!servicesOpen}
+                      style={{ transformOrigin: 'top center', transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)' }}
                       className={clsx(
+                        'transition-all duration-200',
+                        servicesOpen
+                          ? 'visible opacity-100 translate-y-0 scale-100'
+                          : 'invisible opacity-0 -translate-y-2.5 scale-[0.97] pointer-events-none',
                         'absolute left-1/2 -translate-x-1/2 top-full mt-3 z-50',
                         'w-[530px]',
                         'bg-[#0d1117]/92 backdrop-blur-2xl',
@@ -550,9 +557,7 @@ const Header = () => {
                       </div>
 
                       <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/20 to-transparent pointer-events-none rounded-b-2xl" aria-hidden="true" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
               </div>
 
               <Link href="/insights" className={navLinkClass('/insights')} aria-current={isActive('/insights') ? 'page' : undefined}>Insights</Link>

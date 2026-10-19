@@ -280,6 +280,10 @@ export const websiteSchema = {
   '@type': 'WebSite',
   '@id': `${BASE}/#website`,
   name: COMPANY_NAME,
+  // Google's site-name system reads WebSite.name/alternateName on the home
+  // page; kept identical to orgSchema.alternateName and og:site_name.
+  alternateName: ['99 Visual', '99visual'],
+  // Matches the home page's rendered canonical (bare origin).
   url: BASE,
   inLanguage: 'en',
   publisher: { '@id': `${BASE}/#organization` },
