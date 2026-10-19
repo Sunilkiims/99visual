@@ -305,7 +305,10 @@ export default async function InsightPostPage({ params }: Props) {
 
               {/* fade={false}: title block is the above-the-fold LCP area. */}
               <Reveal fade={false}>
-                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-gray-500 mb-10 flex-wrap">
+                {/* Visually hidden (sr-only) by design choice, like /about:
+                    still in the HTML for screen readers and crawlers, and
+                    still described by the BreadcrumbList JSON-LD. */}
+                <nav aria-label="Breadcrumb" className="sr-only">
                   <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                   <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
