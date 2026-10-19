@@ -25,8 +25,10 @@
 //   https://search.google.com/test/rich-results
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { normaliseSchemaDates, type SchemaDateInput } from './schema-date';
+
 // ─── Site constants — edit once, reflected everywhere ────────────────────────
-export const BASE           = 'https://www.99visual.com'; // no trailing slash
+export const BASE          = 'https://www.99visual.com'; // no trailing slash
 export const CONTACT_EMAIL  = 'contact@99visual.com';     // single source of truth
 const COMPANY_NAME          = '99 Visual Solutions';
 const PHONE                 = '+91-9205737431';
@@ -68,11 +70,16 @@ function abs(path: string): string {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 0. buildGraph — ONE @context, ONE @graph, ONE <script> tag per page
+//
+// Every date property (dateModified, dateCreated, datePublished, datePosted,
+// uploadDate, …) in the graph is validated and serialised as an ISO 8601
+// date-time; invalid/empty values are dropped rather than emitted. See
+// lib/schema-date.ts for why (Search Console "Invalid datetime value").
 // ─────────────────────────────────────────────────────────────────────────────
 export function buildGraph(...nodes: object[]) {
   return {
     '@context': 'https://schema.org',
-    '@graph': nodes.flat(),
+    '@graph': normaliseSchemaDates(nodes.flat()),
   };
 }
 
@@ -383,8 +390,8 @@ export function webPage(opts: {
   pathname: string;
   name: string;
   description: string;
-  datePublished?: string;
-  dateModified?: string;
+  datePublished?: SchemaDateInput;
+  dateModified?: SchemaDateInput;
   image?: string;
   /** Label overrides forwarded to breadcrumb @id resolution */
   labelMap?: Record<string, string>;
@@ -478,8 +485,9 @@ export function articleSchema(opts: {
   headline: string;
   description: string;
   image: string;
-  datePublished: string;
-  dateModified: string;
+  datePublished: SchemaDateInput;
+  /** Omitted from output when missing/invalid — never defaulted to "now". */
+  dateModified?: SchemaDateInput;
   authorName: string;
 }) {
   return {
@@ -511,7 +519,7 @@ export function videoObjectSchema(opts: {
   description: string;
   thumbnailUrl: string;
   contentUrl: string;
-  uploadDate: string;
+  uploadDate: SchemaDateInput;
   duration: string; // ISO 8601 duration, e.g. 'PT16S'
 }) {
   return {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { FaQuestionCircle, FaHeadset, FaBookOpen, FaTools } from "react-icons/fa";
-import { buildGraph, orgSchema, websiteSchema, faqSchema } from "@/lib/schema";
+import { buildGraph, orgSchema, websiteSchema, faqSchema, jsonLdString } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FAQ content — single source of truth for BOTH the visible FAQ section
@@ -116,6 +116,12 @@ export const metadata: Metadata = {
 export default function HelpCenterPage() {
   return (
     <>
+      {/* helpGraph was built but never rendered, so this page shipped no
+          structured data at all. Same FAQ_ITEMS drive the visible FAQ below. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(helpGraph) }}
+      />
       <Header />
 
       {/* 🔥 HERO */}
@@ -182,10 +188,9 @@ export default function HelpCenterPage() {
         </h2>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          <FAQ question="What services does 99Visual offer?" answer="We provide web development, 3D visualization, digital marketing, SEO, and IT consulting services tailored to your business needs." />
-          <FAQ question="How can I contact support?" answer="You can reach our team via the contact page or directly request support through this help center." />
-          <FAQ question="Do you provide ongoing maintenance?" answer="Yes, we offer ongoing support, maintenance, and optimization services for all our solutions." />
-          <FAQ question="How quickly will I get a response?" answer="Our team typically responds within 24 hours, depending on the complexity of the request." />
+          {FAQ_ITEMS.map((item) => (
+            <FAQ key={item.question} question={item.question} answer={item.answer} />
+          ))}
         </div>
       </section>
 

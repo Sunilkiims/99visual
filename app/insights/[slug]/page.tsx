@@ -185,10 +185,12 @@ export default async function InsightPostPage({ params }: Props) {
 
   if (!post) notFound()
 
-  await prisma.post.update({
-    where: { id: post.id },
-    data: { viewCount: { increment: 1 } },
-  })
+  // View counter. Deliberately raw SQL: `updatedAt` is a Prisma @updatedAt
+  // field, so `prisma.post.update()` re-stamped it on EVERY page view. That
+  // made BlogPosting.dateModified, og:article:modified_time and the sitemap
+  // <lastmod> all report "last viewed" instead of "last edited". A raw UPDATE
+  // bypasses @updatedAt, so updatedAt now changes only when an editor saves.
+  await prisma.$executeRaw`UPDATE "posts" SET "viewCount" = "viewCount" + 1 WHERE "id" = ${post.id}`
 
   const [relatedPosts, allCategories] = await Promise.all([
     prisma.post.findMany({
@@ -264,8 +266,14 @@ export default async function InsightPostPage({ params }: Props) {
       inLanguage: 'en',
       author: { '@type': 'Person', name: post.author.name },
       publisher: { '@id': `${BASE}/#organization` },
-      ...(post.publishedAt && { datePublished: post.publishedAt.toISOString() }),
-      dateModified: post.updatedAt.toISOString(),
+      // Date objects; buildGraph() validates and serialises them (lib/schema-date.ts).
+      // dateModified is omitted if it would precede datePublished (possible
+      // when an editor back/forward-dates publishedAt), which Google treats
+      // as contradictory.
+      datePublished: post.publishedAt,
+      ...(!(post.publishedAt && post.updatedAt < post.publishedAt) && {
+        dateModified: post.updatedAt,
+      }),
       url: pageUrl,
       mainEntityOfPage: { '@id': `${pageUrl}#webpage` },
       isPartOf: { '@id': `${BASE}/#website` },
