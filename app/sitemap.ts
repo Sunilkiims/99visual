@@ -4,6 +4,7 @@ import { BASE } from '@/lib/schema'
 import { videos } from '@/lib/videos'
 import { PAGE_LAST_MODIFIED, type StaticPagePath } from '@/lib/page-dates'
 import { insightUrl, isProductionUrl, parseRobots } from '@/lib/seo'
+import { MIN_POSTS_FOR_INDEXABLE_TOPIC, topicUrl } from '@/lib/insights'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Regenerate at most hourly. Without this the sitemap was prerendered once at
@@ -62,6 +63,7 @@ const staticRoutes: {
 type PostRow = {
   slug: string
   updatedAt: Date
+  category: { slug: string }
   seo: { robots: string | null; canonicalUrl: string | null } | null
 }
 
@@ -85,12 +87,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // page itself, so those posts still count as self-canonical.)
   let insightEntries: MetadataRoute.Sitemap = []
   let insightsIndexLastModified: Date | undefined
+  let topicEntries: MetadataRoute.Sitemap = []
   try {
     const posts: PostRow[] = await prisma.post.findMany({
       where: { status: 'PUBLISHED' },
       select: {
         slug: true,
         updatedAt: true,
+        category: { select: { slug: true } },
         seo: { select: { robots: true, canonicalUrl: true } },
       },
       orderBy: { publishedAt: 'desc' },
@@ -110,6 +114,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       (latest, p) => (!latest || p.updatedAt > latest ? p.updatedAt : latest),
       undefined
     )
+
+    // Topic pages (/insights/category/<slug>) — only those with enough
+    // published articles to be indexable (same threshold the page uses for
+    // its robots tag). Counted from all published posts, not just the
+    // sitemap-eligible ones, to match the page. lastmod = newest article.
+    const byTopic = new Map<string, { count: number; latest: Date }>()
+    for (const p of posts) {
+      const t = byTopic.get(p.category.slug)
+      if (!t) byTopic.set(p.category.slug, { count: 1, latest: p.updatedAt })
+      else {
+        t.count++
+        if (p.updatedAt > t.latest) t.latest = p.updatedAt
+      }
+    }
+    topicEntries = [...byTopic]
+      .filter(([, t]) => t.count >= MIN_POSTS_FOR_INDEXABLE_TOPIC)
+      .map(([slug, t]) => ({
+        url: topicUrl(slug),
+        lastModified: t.latest,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      }))
   } catch (e) {
     console.error('Sitemap: failed to fetch insight posts', e)
   }
@@ -143,5 +169,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ],
   }))
 
-  return [...staticEntries, insightsIndex, ...insightEntries, ...videoEntries]
+  return [...staticEntries, insightsIndex, ...topicEntries, ...insightEntries, ...videoEntries]
 }

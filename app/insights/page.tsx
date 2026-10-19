@@ -1,13 +1,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import ConsultationCTA from '@/app/components/ConsultationCTA'
 import Reveal from '@/app/components/insights/Reveal'
 import { getCategoryIcon } from '@/app/components/insights/categoryIcon'
+import InsightCard from '@/app/components/insights/InsightCard'
+import TrendingInsights, { MIN_TRENDING_POSTS } from '@/app/components/insights/TrendingInsights'
+import { formatInsightDate, topicPath } from '@/lib/insights'
 import { BASE, buildGraph, orgSchema, websiteSchema, jsonLdString } from '@/lib/schema'
 import {
   Search,
@@ -126,7 +129,7 @@ async function getPosts(params: Awaited<Props['searchParams']>) {
     }),
   }
 
-  const [posts, total, categories, featuredPost] = await Promise.all([
+  const [posts, total, categories, featuredPost, trending] = await Promise.all([
     prisma.post.findMany({
       where,
       include: {
@@ -139,18 +142,31 @@ async function getPosts(params: Awaited<Props['searchParams']>) {
       skip: (page - 1) * perPage,
     }),
     prisma.post.count({ where }),
+    // Only topics with published articles (counts exclude drafts) — an empty
+    // topic page has nothing to offer readers or search engines.
     prisma.category.findMany({
+      where: { posts: { some: { status: 'PUBLISHED' } } },
       orderBy: { name: 'asc' },
-      include: { _count: { select: { posts: true } } },
+      include: { _count: { select: { posts: { where: { status: 'PUBLISHED' } } } } },
     }),
     prisma.post.findFirst({
       where: { status: 'PUBLISHED', featured: true },
       include: { author: true, category: true, featuredImage: true },
       orderBy: { publishedAt: 'desc' },
     }),
+    // Most-read articles (real view counts) for the "Trending Now" section.
+    prisma.post.findMany({
+      where: { status: 'PUBLISHED', viewCount: { gt: 0 } },
+      select: {
+        id: true, slug: true, title: true, viewCount: true, readingTime: true, publishedAt: true,
+        category: { select: { name: true, color: true } },
+      },
+      orderBy: [{ viewCount: 'desc' }, { publishedAt: 'desc' }],
+      take: 4,
+    }),
   ])
 
-  return { posts, total, categories, featuredPost, page, perPage }
+  return { posts, total, categories, featuredPost, trending, page, perPage }
 }
 
 // Builds a compact pagination window (e.g. 1 … 4 5 [6] 7 8 … 20) so the
@@ -170,13 +186,19 @@ function getPageWindow(current: number, total: number) {
   return range
 }
 
-function formatDate(d: Date) {
-  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-}
+const formatDate = formatInsightDate
 
 export default async function InsightsPage({ searchParams }: Props) {
   const params = await searchParams
-  const { posts, total, categories, featuredPost, page, perPage } = await getPosts(params)
+  // Category filtering now lives on real, indexable topic pages
+  // (/insights/category/<slug>). Old ?category= links (bookmarks, external
+  // links, Google's index) are permanently redirected there so their
+  // signals consolidate on one URL. Combined with search/tag it stays a
+  // (noindex) filtered view.
+  if (params.category && !params.search && !params.tag) {
+    permanentRedirect(topicPath(params.category))
+  }
+  const { posts, total, categories, featuredPost, trending, page, perPage } = await getPosts(params)
   const totalPages = Math.ceil(total / perPage)
   // A page number past the end is not a real page — return a 404 instead of
   // an empty, indexable listing (a soft 404).
@@ -463,7 +485,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     return (
                       <Link
                         key={cat.id}
-                        href={'/insights?category=' + cat.slug}
+                        href={topicPath(cat.slug)}
                         aria-current={active ? 'page' : undefined}
                         className={`shrink-0 snap-start inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                           active
@@ -573,6 +595,11 @@ export default async function InsightsPage({ searchParams }: Props) {
           </section>
         )}
 
+        {/* ═══════════════════════ TRENDING ═══════════════════════ */}
+        {!isFiltered && page === 1 && trending.length >= MIN_TRENDING_POSTS && (
+          <TrendingInsights posts={trending} />
+        )}
+
         {/* ═══════════════════════ POSTS GRID ═══════════════════════ */}
         <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto pb-16 sm:pb-20">
           {posts.length === 0 ? (
@@ -598,74 +625,9 @@ export default async function InsightsPage({ searchParams }: Props) {
               </Reveal>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                {posts.map((post, i) => {
-                  const Icon = getCategoryIcon(post.category.slug, post.category.name)
-                  const accent = post.category.color || '#f97316'
-                  return (
-                    <Reveal key={post.id} delay={Math.min(i, 6) * 0.06} y={16}>
-                      <Link
-                        href={'/insights/' + post.slug}
-                        className="group block h-full bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-gray-700 hover:shadow-xl hover:shadow-black/30"
-                      >
-                        <div className="relative aspect-[16/10] bg-gray-900 flex items-center justify-center overflow-hidden">
-                          {post.featuredImage ? (
-                            <Image
-                              src={post.featuredImage.url}
-                              alt={post.title}
-                              fill
-                              sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                              className="object-contain transition-transform duration-500 group-hover:scale-[1.04]"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className="text-5xl font-bold text-gray-700/50">99</span>
-                            </div>
-                          )}
-                          <div className="absolute top-3 left-3">
-                            <span
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium backdrop-blur-sm"
-                              style={{
-                                backgroundColor: accent + '20',
-                                color: accent,
-                              }}
-                            >
-                              <Icon className="w-3 h-3" strokeWidth={2} aria-hidden="true" />
-                              {post.category.name}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="p-4 sm:p-5">
-                          <h3 className="text-white font-semibold text-sm sm:text-base mb-2 leading-snug line-clamp-2 transition-colors group-hover:text-orange-400">
-                            {post.title}
-                          </h3>
-                          {post.excerpt && (
-                            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
-                          )}
-                          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-500 pt-3 border-t border-gray-800/80">
-                            <span className="truncate max-w-[45%]">{post.author.name}</span>
-                            <div className="flex items-center gap-2 whitespace-nowrap">
-                              <span className="inline-flex items-center gap-1">
-                                <Clock className="w-3 h-3" strokeWidth={2} aria-hidden="true" />
-                                {post.readingTime} min
-                              </span>
-                              {post.publishedAt && (
-                                <>
-                                  <span>·</span>
-                                  <span>
-                                    {new Date(post.publishedAt).toLocaleDateString('en-IN', {
-                                      day: 'numeric',
-                                      month: 'short',
-                                    })}
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </Reveal>
-                  )
-                })}
+                {posts.map((post, i) => (
+                  <InsightCard key={post.id} post={post} index={i} />
+                ))}
               </div>
 
               {totalPages > 1 && (

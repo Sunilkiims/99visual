@@ -24,7 +24,9 @@ import {
   Cpu,
   Sparkles,
   type LucideIcon,
+  type LucideProps,
 } from 'lucide-react'
+import { createElement } from 'react'
 
 export function getCategoryIcon(...labels: (string | null | undefined)[]): LucideIcon {
   const s = labels.filter(Boolean).join(' ').toLowerCase()
@@ -62,4 +64,16 @@ export function getRelatedService(
   if (/automat|testing|\bqa\b/.test(s)) return { href: '/services/automation-testing', label: 'QA & Automation Testing' }
 
   return null
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// <CategoryIcon labels={[slug, name]} … /> — renders getCategoryIcon()'s
+// icon. Use this in JSX instead of assigning the returned component to a
+// local variable during render (which the react-hooks lint rule flags).
+// ─────────────────────────────────────────────────────────────────────────────
+export function CategoryIcon({
+  labels,
+  ...props
+}: { labels: (string | null | undefined)[] } & LucideProps) {
+  return createElement(getCategoryIcon(...labels), props)
 }

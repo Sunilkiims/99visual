@@ -1274,7 +1274,7 @@ export default function WebsiteDevelopment() {
               From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the
               current, production-proven tools behind every build. For more on how we approach specific
               topics like Next.js and SEO, see our{" "}
-              <Link href="/insights?category=web-development">web development insights</Link>.
+              <Link href="/insights/category/web-development">web development insights</Link>.
             </p>
             <div className="wdev-tech__grid">
               {techStack.map((t) => (

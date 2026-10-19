@@ -13,6 +13,7 @@ import { getCategoryIcon, getRelatedService } from '@/app/components/insights/ca
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
 import { insightUrl, isProductionUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
+import { topicPath } from '@/lib/insights'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -206,9 +207,12 @@ export default async function InsightPostPage({ params }: Props) {
       take: 3,
       orderBy: { publishedAt: 'desc' },
     }),
+    // Topics with published articles only (empty topic pages are 404s);
+    // counts exclude drafts.
     prisma.category.findMany({
+      where: { posts: { some: { status: 'PUBLISHED' } } },
       orderBy: { name: 'asc' },
-      include: { _count: { select: { posts: true } } },
+      include: { _count: { select: { posts: { where: { status: 'PUBLISHED' } } } } },
     }),
   ])
 
@@ -242,6 +246,7 @@ export default async function InsightPostPage({ params }: Props) {
   const breadcrumbNode = breadcrumbFromItems([
     { name: 'Home', url: '/' },
     { name: 'Insights', url: '/insights' },
+    { name: post.category.name, url: topicPath(post.category.slug) },
     { name: post.title, url: `/insights/${post.slug}` },
   ])
   const jsonLd = buildGraph(
@@ -305,12 +310,14 @@ export default async function InsightPostPage({ params }: Props) {
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                   <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                  <Link href={topicPath(post.category.slug)} className="hover:text-orange-400 transition-colors">{post.category.name}</Link>
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                   <span className="text-gray-500 truncate max-w-xs" aria-current="page">{post.title}</span>
                 </nav>
 
                 <div className="flex items-center gap-2 flex-wrap mb-7">
                   <Link
-                    href={'/insights?category=' + post.category.slug}
+                    href={topicPath(post.category.slug)}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase transition-colors"
                     style={{
                       backgroundColor: accent + '18',
@@ -492,7 +499,7 @@ export default async function InsightPostPage({ params }: Props) {
                     {allCategories.map((cat) => (
                       <Link
                         key={cat.id}
-                        href={'/insights?category=' + cat.slug}
+                        href={topicPath(cat.slug)}
                         className="flex items-center justify-between group py-2.5 border-b border-gray-800/70 last:border-0"
                       >
                         <div className="flex items-center gap-2.5">
