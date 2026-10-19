@@ -39,7 +39,7 @@
 //      Emailing a resume to CONTACT_EMAIL is kept as the fallback option.
 //      All other FAQ items, JSON-LD, and job postings are unchanged.
 //
-//   Save your banner image to: /public/images/careers/careers-hero-banner.jpg
+//   Hero banner image: none yet (see .cr-hero CSS to add one).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
@@ -536,8 +536,10 @@ export default function CareersPage() {
           display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(0,0,0,.94) 0%, rgba(0,0,0,.78) 38%, rgba(0,0,0,.42) 64%, rgba(0,0,0,.18) 100%),
-            linear-gradient(180deg, rgba(0,0,0,.20) 0%, rgba(0,0,0,.10) 40%, rgba(0,0,0,.55) 100%),
-            url('/images/careers/careers-hero-banner.jpg') center center / cover no-repeat;
+            linear-gradient(180deg, rgba(0,0,0,.20) 0%, rgba(0,0,0,.10) 40%, rgba(0,0,0,.55) 100%);
+          /* Banner image layer removed: /images/careers/careers-hero-banner.jpg
+             does not exist, so every visit fired a 404 for it. To add a banner,
+             save the file there and re-add the url(...) layer here and below. */
           background-attachment:scroll;background-color:#000000;background-size:cover;
           overflow:hidden;
         }
@@ -547,8 +549,7 @@ export default function CareersPage() {
           .cr-hero {
             background:
               linear-gradient(180deg, rgba(0,0,0,.60) 0%, rgba(0,0,0,.38) 38%, rgba(0,0,0,.82) 100%),
-              linear-gradient(0deg, rgba(0,0,0,.30), rgba(0,0,0,.30)),
-              url('/images/careers/careers-hero-banner.jpg') center center / cover no-repeat;
+              linear-gradient(0deg, rgba(0,0,0,.30), rgba(0,0,0,.30));
             background-color:#000000;
           }
         }
