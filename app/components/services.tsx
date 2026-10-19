@@ -34,7 +34,6 @@ import "swiper/css/pagination";
    used across the rest of the site.
 ===================================================== */
 const GLOBAL_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
   .vs-scope {
     --vs-ink:      #12141A;

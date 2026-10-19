@@ -30,7 +30,6 @@ export default function WhyChooseUs() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         :root {
           --c-bg:         #080808;
@@ -256,7 +255,7 @@ export default function WhyChooseUs() {
             <div className="wcu-img-wrap">
               <Image
                 src="/teamwork.jpg"
-                alt="Teamwork"
+                alt="Four hands fitting blue and white puzzle pieces together, representing teamwork"
                 width={500}
                 height={600}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}

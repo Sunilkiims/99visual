@@ -256,8 +256,6 @@ export default function PartnersPage() {
       />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .pt-page{
           --pt-ink:#12141A; --pt-muted:#5B6172; --pt-paper:#F5F6F8; --pt-surface:#FFFFFF;

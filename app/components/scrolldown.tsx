@@ -53,7 +53,6 @@ export default function ScrollDownButton() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
 
         .sd-anchor {
           position:  fixed;

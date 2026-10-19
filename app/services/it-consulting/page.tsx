@@ -376,7 +376,6 @@ export default function ITConsulting() {
       />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
         .itc-page{
           --itc-ink:#12141A; --itc-muted:#5B6172; --itc-paper:#F5F6F8; --itc-surface:#FFFFFF;

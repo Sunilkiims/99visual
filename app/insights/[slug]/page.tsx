@@ -59,7 +59,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // featured image is preferred because it is what the article displays.
   const socialTitle = stripBrandSuffix(post.title)
   const socialDescription = post.excerpt || description
-  const ogImage = post.featuredImage?.url || seo?.ogImage || undefined
+  // Falls back to the site default (as /insights does): a page-level
+  // openGraph replaces the layout's, so articles without a featured image
+  // were shared with no preview image at all.
+  const ogImage = post.featuredImage?.url || seo?.ogImage || `${BASE}/images/home-og.jpg`
 
   return {
     title,

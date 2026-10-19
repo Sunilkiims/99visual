@@ -53,7 +53,6 @@ export default function WhyChooseUs() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&display=swap');
 
         @media (prefers-reduced-motion: reduce) {
           .wcu-animate { transition: none !important; opacity: 1 !important; transform: none !important; }

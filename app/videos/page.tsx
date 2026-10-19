@@ -36,7 +36,18 @@ export const metadata: Metadata = {
     description:
       'Watch 3D visualization, architectural animation, product rendering, and marketing showreel clips produced by 99 Visual Solutions.',
     url: `${BASE}/videos`,
+    siteName: '99 Visual Solutions',
     type: 'website',
+    // A page-level `openGraph` replaces the root layout's whole object, so
+    // without this the hub shared with no preview image at all.
+    images: [{ url: `${BASE}${videos[0].thumbnail}`, width: 1280, height: 720, alt: videos[0].thumbnailAlt }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Video Showcase | 99 Visual Solutions',
+    description:
+      'Watch 3D visualization, architectural animation, product rendering, and marketing showreel clips produced by 99 Visual Solutions.',
+    images: [`${BASE}${videos[0].thumbnail}`],
   },
 }
 

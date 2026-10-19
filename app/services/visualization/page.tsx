@@ -699,7 +699,6 @@ export default function VisualizationPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
         .viz-page{
           --viz-ink:#12141A; --viz-muted:#5B6172; --viz-paper:#F5F6F8; --viz-surface:#FFFFFF;

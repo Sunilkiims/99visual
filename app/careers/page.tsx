@@ -510,8 +510,6 @@ export default function CareersPage() {
       />
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .cr-page{
           --cr-ink:#12141A; --cr-muted:#5B6172; --cr-paper:#F5F6F8; --cr-surface:#FFFFFF;

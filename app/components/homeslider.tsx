@@ -189,7 +189,6 @@ const HomeSlider: React.FC = () => {
       className="relative w-full h-screen h-dvh min-h-[520px] max-h-[1000px] overflow-hidden bg-black select-none"
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
         .slider-label {
           font-family: 'DM Sans', sans-serif;
           letter-spacing: 0.18em;

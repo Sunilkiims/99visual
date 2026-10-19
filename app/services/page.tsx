@@ -306,7 +306,6 @@ export default function ServicesPage() {
       
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
         .sv-page{
           --sv-ink:#12141A; --sv-muted:#5B6172; --sv-paper:#F5F6F8; --sv-surface:#FFFFFF;

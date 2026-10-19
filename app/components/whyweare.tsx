@@ -25,7 +25,6 @@ export default function WhoWeAre() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .wwa-section {
           position: relative;
