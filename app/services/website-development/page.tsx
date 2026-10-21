@@ -29,6 +29,7 @@
 import RelatedInsights from '@/app/components/RelatedInsights';
 import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
+import { caseStudies } from '@/lib/case-studies';
 import Link from "next/link";
 import Image from "next/image";
 import Header         from "@/app/components/header";
@@ -547,6 +548,10 @@ const pipeline = [
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
+// Case studies filed under this service (lib/case-studies.ts), shown in the
+// "Recent Work" section.
+const webCaseStudies = caseStudies.filter((c) => c.service.href === '/services/website-development');
+
 export default function WebsiteDevelopment() {
   // The hero image is a CSS background, which the browser only discovers
   // after downloading and parsing the stylesheet. Preloading it lets the
@@ -813,6 +818,29 @@ export default function WebsiteDevelopment() {
         .wdev-tech__grid{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin-top:2.5rem;max-width:900px;margin-left:auto;margin-right:auto;}
         .wdev-tech__badge{display:flex;align-items:center;gap:.5rem;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.6rem 1.15rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
         .wdev-tech__badge svg{color:var(--wdev-blue);}
+        /* ── RECENT WORK — case studies from lib/case-studies.ts ── */
+        .wdev-work{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-work__inner{max-width:1100px;margin:0 auto;}
+        .wdev-work__head{margin-bottom:3rem;}
+        .wdev-work__grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+        @media(max-width:860px){.wdev-work__grid{grid-template-columns:1fr;}}
+        .wdev-work__card{display:flex;flex-direction:column;background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:18px;overflow:hidden;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
+        .wdev-work__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);box-shadow:0 14px 40px -24px rgba(18,20,26,.35);}
+        .wdev-work__shot{position:relative;aspect-ratio:16/8;background:var(--wdev-paper);border-bottom:1px solid var(--wdev-line);}
+        .wdev-work__shot img{object-fit:cover;object-position:top center;}
+        .wdev-work__body{display:flex;flex-direction:column;gap:.85rem;padding:1.6rem 1.6rem 1.75rem;flex:1;}
+        .wdev-work__kind{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--wdev-blue);}
+        .wdev-work__title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;line-height:1.3;color:var(--wdev-ink);margin:0;}
+        .wdev-work__desc{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
+        .wdev-work__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0;}
+        .wdev-work__tags li{font-family:'Inter',sans-serif;font-size:.74rem;font-weight:500;color:var(--wdev-ink);background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.35rem .8rem;}
+        .wdev-work__links{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;margin-top:auto;padding-top:.4rem;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;}
+        .wdev-work__links a{color:var(--wdev-blue);text-decoration:none;}
+        .wdev-work__links a:hover{text-decoration:underline;}
+        .wdev-work__links a.wdev-work__live{color:var(--wdev-muted);font-weight:500;}
+        .wdev-work__all{text-align:center;margin-top:2.5rem;font-family:'Inter',sans-serif;font-size:.92rem;}
+        .wdev-work__all a{color:var(--wdev-blue);font-weight:600;text-decoration:none;}
+        .wdev-work__all a:hover{text-decoration:underline;}
 
         /* ══ METRICS ═════════════════════════════════════════════════════ */
         .wdev-metrics{background:var(--wdev-paper);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
@@ -1283,6 +1311,57 @@ export default function WebsiteDevelopment() {
             </div>
           </div>
         </section>
+
+        {/* ══ RECENT WORK — case studies for this service, from lib/case-studies.ts.
+            Each card links to the full case study (where every claim cites
+            its evidence) and to the live site. ═══════════════════════════ */}
+        {webCaseStudies.length > 0 && (
+          <section className="wdev-work" aria-labelledby="wdev-work-heading">
+            <div className="wdev-work__inner">
+              <div className="wdev-work__head">
+                <span className="wdev-label">Recent Work</span>
+                <h2 className="wdev-h2" id="wdev-work-heading">Websites we&rsquo;ve <em>delivered</em></h2>
+                <p className="wdev-sub">
+                  Two recent builds — a full e-commerce store and a photographer&rsquo;s portfolio — with
+                  screenshots from the live sites and a breakdown of what each one does.
+                </p>
+              </div>
+              <div className="wdev-work__grid">
+                {webCaseStudies.map((c) => {
+                  const shot = c.gallery?.[0] ?? c.image;
+                  return (
+                    <article className="wdev-work__card" key={c.slug} aria-labelledby={`wdev-work-${c.slug}`}>
+                      <Link href={`/work/${c.slug}`} className="wdev-work__shot" aria-hidden="true" tabIndex={-1}>
+                        <Image src={shot.src} alt="" fill sizes="(max-width: 860px) 100vw, 540px" />
+                      </Link>
+                      <div className="wdev-work__body">
+                        <span className="wdev-work__kind">{c.client}</span>
+                        <h3 className="wdev-work__title" id={`wdev-work-${c.slug}`}>
+                          <Link href={`/work/${c.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{c.title}</Link>
+                        </h3>
+                        <p className="wdev-work__desc">{c.description}</p>
+                        <ul className="wdev-work__tags" aria-label="What we built">
+                          {c.workstreams.map((w) => <li key={w.name}>{w.name}</li>)}
+                        </ul>
+                        <div className="wdev-work__links">
+                          <Link href={`/work/${c.slug}`}>Read the case study →</Link>
+                          {c.liveUrl && (
+                            <a href={c.liveUrl} target="_blank" rel="noopener" className="wdev-work__live">
+                              Visit {c.liveUrl.replace(/^https?:\/\/(www\.)?/, '')} ↗
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+              <p className="wdev-work__all">
+                <Link href="/work">See all our work</Link>
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* ══ METRICS ═══════════════════════════════════════════════════ */}
         <section className="wdev-metrics" aria-labelledby="wdev-metrics-heading">
