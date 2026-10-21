@@ -5,6 +5,7 @@ import { videos } from '@/lib/videos'
 import { PAGE_LAST_MODIFIED, type StaticPagePath } from '@/lib/page-dates'
 import { insightUrl, parseRobots } from '@/lib/seo'
 import { MIN_POSTS_FOR_INDEXABLE_TOPIC, topicUrl } from '@/lib/insights'
+import { caseStudies, latestCaseStudyUpdate, workIndexIsIndexable } from '@/lib/case-studies'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Regenerate at most hourly. Without this the sitemap was prerendered once at
@@ -164,5 +165,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ],
   }))
 
-  return [...staticEntries, insightsIndex, ...topicEntries, ...insightEntries, ...videoEntries]
+  // ── Case studies ────────────────────────────────────────────────────────
+  // Every case-study page is indexable; the /work index joins the sitemap
+  // only once it lists enough studies to be indexable itself (same
+  // threshold its robots tag uses).
+  const caseStudyEntries: MetadataRoute.Sitemap = caseStudies.map((c) => ({
+    url: `${BASE}/work/${c.slug}`,
+    lastModified: c.updated,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+  const latestStudy = latestCaseStudyUpdate()
+  const workIndexEntries: MetadataRoute.Sitemap = workIndexIsIndexable()
+    ? [{
+        url: `${BASE}/work`,
+        ...(latestStudy && { lastModified: latestStudy }),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      }]
+    : []
+
+  return [
+    ...staticEntries,
+    ...workIndexEntries,
+    ...caseStudyEntries,
+    insightsIndex,
+    ...topicEntries,
+    ...insightEntries,
+    ...videoEntries,
+  ]
 }

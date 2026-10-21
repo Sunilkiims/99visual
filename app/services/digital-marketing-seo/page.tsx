@@ -1238,10 +1238,18 @@ export default function DigitalMarketing() {
                 </p>
               </div>
               <div className="dm-proof__note">
-                <span className="dm-proof__note-title">In progress</span>
+                <span className="dm-proof__note-title">Case study</span>
                 <p>
-                  We’re building out dedicated, verified SEO case studies with
-                  real before-and-after data. If you’d like to be one of the first
+                  See exactly how we work in our{" "}
+                  <Link href="/work/technical-seo-99visual">technical SEO case study</Link>:
+                  the audit-to-monitoring workflow we ran on our own Next.js site,
+                  with every fix traceable to the change that made it. It covers
+                  crawlability, canonicals and redirects, the XML sitemap,
+                  structured data and page speed, and states what it doesn’t claim.
+                </p>
+                <p>
+                  We’re also documenting client SEO case studies with real
+                  before-and-after data. If you’d like to be one of the first
                   featured, <Link href="/contact">get in touch</Link>.
                 </p>
                 <p>

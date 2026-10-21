@@ -36,6 +36,8 @@ const NAV_COMPANY = [
   // in-context "Watch more" links only appear on the specific pages
   // where each clip is embedded.
   { label: 'Videos',      href: '/videos'      },
+  // Sitewide crawlable entry point to /work and its case studies.
+  { label: 'Our Work',    href: '/work'        },
 ];
 
 const NAV_SERVICES = [
