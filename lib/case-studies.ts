@@ -61,8 +61,8 @@ export interface CaseStudy {
   client: string;
   /** Live URL of the delivered work, if public. */
   liveUrl?: string;
-  /** ISO dates from the evidence (e.g. first and last commit). */
-  period: { start: string; end: string };
+  /** ISO dates from the evidence (e.g. first and last commit). Omitted when the evidence doesn't date the work. */
+  period?: { start: string; end: string; ongoing?: boolean };
   /** Content dates for this case-study page itself. */
   published: string;
   updated: string;
@@ -71,8 +71,10 @@ export interface CaseStudy {
   image: { src: string; alt: string; width: number; height: number };
   /** The situation before the work started. */
   context: string[];
-  /** Ordered workflow, from audit to monitoring. */
-  workflow: { step: string; detail: string }[];
+  /** Ordered workflow or journey. Only where it is documented. */
+  workflow?: { heading: string; intro?: string; steps: { step: string; detail: string }[] };
+  /** Genuine screenshots of the delivered work. */
+  gallery?: { src: string; alt: string; caption: string; width: number; height: number }[];
   workstreams: Workstream[];
   /** Optional test matrix — only for work with real test evidence. */
   tests?: TestRow[];
@@ -93,7 +95,7 @@ export const caseStudies: CaseStudy[] = [
       'How we audited, rebuilt and now monitor the technical SEO of 99visual.com — crawlability, canonicals, sitemaps, redirects, structured data and page speed — with every change traceable in version control.',
     client: '99 Visual Solutions (our own website)',
     liveUrl: 'https://www.99visual.com',
-    period: { start: '2026-04-16', end: '2026-10-19' },
+    period: { start: '2026-04-16', end: '2026-10-19', ongoing: true },
     published: '2026-10-21',
     updated: '2026-10-21',
     service: { label: 'Digital Marketing & SEO services', href: '/services/digital-marketing-seo' },
@@ -107,7 +109,9 @@ export const caseStudies: CaseStudy[] = [
       'Our own website moved to a Next.js (App Router) build in 2026, replacing an older site whose URLs were still in Google’s index. A rebuild like this is where search visibility is most often lost: old URLs return 404s, new pages ship without canonicals, and JavaScript-driven navigation hides links from crawlers.',
       'We treated the site as we would a client engagement — audit first, fix in small traceable changes, check each fix against what Google actually receives, and keep monitoring in Google Search Console afterwards. This page documents that work. Because the client is us, every change below can be inspected in the site’s source history.',
     ],
-    workflow: [
+    workflow: {
+      heading: 'How we worked',
+      steps: [
       {
         step: 'Audit',
         detail:
@@ -133,7 +137,8 @@ export const caseStudies: CaseStudy[] = [
         detail:
           'Watch Search Console coverage and enhancement reports, and fix new issues as they surface. Monitoring is ongoing; several of the fixes below came directly from Search Console reports.',
       },
-    ],
+      ],
+    },
     workstreams: [
       {
         name: 'Crawlability & indexability',
@@ -279,6 +284,153 @@ export const caseStudies: CaseStudy[] = [
       'Core Web Vitals scores: the speed changes are implemented, but we haven’t published field data measuring their effect.',
     ],
     stack: ['Next.js App Router', 'TypeScript', 'Prisma / PostgreSQL', 'Vercel', 'Google Search Console', 'Schema.org JSON-LD'],
+  },
+  {
+    slug: 'shilpikala-ecommerce-platform',
+    title: 'ShilpiKala: An E-commerce Store for Handmade Indian Art',
+    metaTitle: 'ShilpiKala E-commerce Case Study',
+    navLabel: 'E-commerce: ShilpiKala',
+    description:
+      'The customer-facing store we built for ShilpiKala, which sells handmade Mandala and Lipan art: catalogue, accounts, cart, checkout with automatic discounts and shipping, and guest order tracking.',
+    client: 'ShilpiKala',
+    liveUrl: 'https://www.shilpikala.com',
+    published: '2026-10-21',
+    updated: '2026-10-21',
+    service: { label: 'Website Development services', href: '/services/website-development' },
+    image: {
+      src: '/images/work/shilpikala-product.jpg',
+      alt: 'ShilpiKala product page showing a discounted mandala artwork with quantity selector and Add to Cart button',
+      width: 1160,
+      height: 551,
+    },
+    context: [
+      'ShilpiKala sells handmade Indian art online — Mandala and Lipan (terracotta and mirror-work) pieces, wall and decorative art, gifts and custom commissions — to buyers across India. Many pieces are one-offs or made to order, so the store has to handle limited stock, custom work with longer lead times, and buyers who may not want to create an account to check on an order.',
+      'We built the store on Next.js. This case study covers what a customer sees and uses on the live site, checked page by page on 21 October 2026.',
+    ],
+    workflow: {
+      heading: 'The customer journey',
+      intro: 'Every stage below is live on shilpikala.com.',
+      steps: [
+        { step: 'Discover', detail: 'Eight browsable categories, search, a “Trending Now” shelf filterable by category, and a “New from the studio” section on the homepage.' },
+        { step: 'Choose', detail: 'Product pages with price, original price and discount badge, quantity, wishlist, stock status, related pieces and customer reviews.' },
+        { step: 'Buy', detail: 'A cart and checkout that recalculate savings, shipping and total as the order changes, then collect contact and delivery details before payment.' },
+        { step: 'Track', detail: 'Signed-in customers see their orders in their account; anyone can look up an order with its reference and checkout email.' },
+      ],
+    },
+    gallery: [
+      { src: '/images/work/shilpikala-product.jpg', alt: 'ShilpiKala product page with discount badge and Add to Cart', caption: 'Product page: offer price, original price, discount badge, quantity and wishlist.', width: 1160, height: 551 },
+      { src: '/images/work/shilpikala-cart.jpg', alt: 'ShilpiKala cart with one item and an order summary', caption: 'Cart: quantity controls and a live summary of savings, shipping and total.', width: 1160, height: 551 },
+      { src: '/images/work/shilpikala-checkout.jpg', alt: 'ShilpiKala checkout form beside the order summary and Pay Now button', caption: 'Checkout: delivery details beside the order summary, then Pay Now.', width: 1160, height: 551 },
+      { src: '/images/work/shilpikala-track-order.jpg', alt: 'ShilpiKala Track your order form with order reference and email fields', caption: 'Guest order tracking by order reference and checkout email.', width: 1160, height: 551 },
+    ],
+    workstreams: [
+      {
+        name: 'Catalogue & product pages',
+        summary: 'Helping buyers find a piece and decide on it.',
+        items: [
+          { title: 'Categories, search and curated shelves', detail: 'Eight category pages (Mandala, Lipan, handmade, wall and decorative art, custom art and gifts), product search, a category-filterable “Trending Now” shelf and a newest-pieces section.', evidence: 'Live site: /, /shop, /categories/*' },
+          { title: 'Promotional pricing', detail: 'Products can carry a sale price over an original price; the store shows the saving in rupees and as a percentage badge on cards, product pages, the cart and checkout.', evidence: 'Live site: /product/dotwork-lotus-mandala' },
+          { title: 'Stock status, related pieces and reviews', detail: 'Out-of-stock pieces are labelled as such, each product page suggests related pieces from the same category, and customers can write reviews.', evidence: 'Live site: product pages' },
+        ],
+      },
+      {
+        name: 'Customer accounts',
+        summary: 'Sign-in for returning buyers without forcing it on first-time ones.',
+        items: [
+          { title: 'Sign in, registration and password reset', detail: 'Customers can create an account, sign in and reset a forgotten password. The account area holds their orders, wishlist and saved delivery details.', evidence: 'Live site: /account, /account/orders' },
+          { title: 'Wishlist', detail: 'Pieces can be saved to a wishlist from product cards and product pages.', evidence: 'Live site: /wishlist' },
+        ],
+      },
+      {
+        name: 'Cart, checkout & order totals',
+        summary: 'Totals that are right before the customer pays.',
+        items: [
+          { title: 'Live cart totals', detail: 'Changing quantity or removing a piece updates the subtotal, the amount saved, shipping and the total immediately.', evidence: 'Live site: /cart' },
+          { title: 'Shipping rules applied automatically', detail: 'A flat ₹150 shipping charge is added below ₹5,000 and removed at or above it, matching the published shipping policy; the checkout tells the buyer about the free-shipping threshold.', evidence: 'Live site: /checkout, /shipping' },
+          { title: 'Checkout', detail: 'One page collects email, name, phone and a full delivery address beside the order summary, then hands over to payment with “Pay Now”.', evidence: 'Live site: /checkout' },
+        ],
+      },
+      {
+        name: 'Order tracking & policies',
+        summary: 'Answering “where is my order?” without an email to the shop.',
+        items: [
+          { title: 'Guest order tracking', detail: 'Any buyer can look up an order with the order reference from their confirmation email (format SK-1001) and the email they checked out with — no account needed.', evidence: 'Live site: /track-order' },
+          { title: 'Shipping and returns pages', detail: 'Dispatch and delivery timelines for in-stock and made-to-order pieces, shipping-notification emails with tracking numbers, and a 7-day returns and replacements policy linked from every product and the checkout.', evidence: 'Live site: /shipping, /return-refund-policy' },
+        ],
+      },
+    ],
+    outcomes: [
+      'Browsing, accounts, cart, checkout up to payment, and guest order tracking all work on the live site, checked page by page on 21 October 2026.',
+      'Discounts and shipping are calculated by the store itself and shown consistently on product cards, product pages, the cart and checkout.',
+    ],
+    notClaimed: [
+      'Sales, order volume or conversion figures: we haven’t published any.',
+      'Behind-the-login systems — the store’s admin, payment-gateway integration and order-processing workflow — aren’t visible on the public site, so this page doesn’t describe them.',
+      'Test coverage: this page documents what we checked by hand on the live site, not an automated test suite.',
+    ],
+    stack: ['Next.js', 'React', 'Responsive layout with mobile menu'],
+  },
+  {
+    slug: 'jacky-nayak-photography-studio-website',
+    title: 'Jacky Nayak Studio: A Minimal Portfolio Site for a Fashion Photographer',
+    metaTitle: 'Jacky Nayak Studio Website Case Study',
+    navLabel: 'Studio site: Jacky Nayak',
+    description:
+      'A portfolio website for Jacky Nayak Studio designed to stay out of the way of the photography: a single-image homepage, a dense editorial gallery, and one-click routes to contact and Instagram.',
+    client: 'Jacky Nayak Studio',
+    liveUrl: 'https://jackynayak.com',
+    published: '2026-10-21',
+    updated: '2026-10-21',
+    service: { label: 'Website Development services', href: '/services/website-development' },
+    image: {
+      src: '/images/work/jackynayak-home.jpg',
+      alt: 'Jacky Nayak Studio homepage: wordmark header and a single black-and-white portrait',
+      width: 1366,
+      height: 551,
+    },
+    context: [
+      'Jacky Nayak is a fashion and editorial photographer. For a photographer’s site the work is the brand: the design has to frame the images, not compete with them, and make it obvious how to get in touch.',
+      'This case study describes the site as it appears live at jackynayak.com, reviewed on 21 October 2026. All photography shown belongs to Jacky Nayak Studio.',
+    ],
+    gallery: [
+      { src: '/images/work/jackynayak-home.jpg', alt: 'Jacky Nayak homepage with one black-and-white portrait under the wordmark', caption: 'Homepage: wordmark, one image, one call to action.', width: 1366, height: 551 },
+      { src: '/images/work/jackynayak-gallery.jpg', alt: 'Jacky Nayak Overview gallery showing a grid of colourful fashion editorial photographs', caption: 'Overview: an edge-to-edge editorial grid of the studio’s work.', width: 1005, height: 395 },
+    ],
+    workstreams: [
+      {
+        name: 'Visual identity on screen',
+        summary: 'A restrained frame so the photographs carry the brand.',
+        items: [
+          { title: 'Wordmark-led header', detail: 'The studio’s name sits centred as a wide-tracked wordmark, with Instagram on the left and Contact on the right — the same three elements on every page.', evidence: 'Live site: all pages' },
+          { title: 'One typeface, white canvas', detail: 'A single geometric sans-serif (Europa) for navigation and text, set small and spaced out against plain white, so colour comes only from the photographs.', evidence: 'Live site: computed styles' },
+        ],
+      },
+      {
+        name: 'Portfolio presentation',
+        summary: 'Letting a large body of work be browsed quickly.',
+        items: [
+          { title: 'Single-image homepage', detail: 'The homepage shows one black-and-white portrait and a single “Overview” button, so the first impression is one strong image rather than a crowded grid.', evidence: 'Live site: /' },
+          { title: 'Editorial gallery', detail: 'The Overview page presents around 74 images in a tight four-column grid on desktop, mixing colour and monochrome work, with images loading in as the visitor scrolls.', evidence: 'Live site: /overview' },
+        ],
+      },
+      {
+        name: 'Contact & responsiveness',
+        summary: 'Making the next step obvious on any screen.',
+        items: [
+          { title: 'Contact from every page', detail: 'Contact is in the header of every page and leads to a page with the studio’s email address and phone number; the Instagram link points to the photographer’s profile.', evidence: 'Live site: /contact' },
+          { title: 'Responsive layout', detail: 'The theme adapts the layout at tablet (1024px) and phone (767px) widths, with a device-width viewport.', evidence: 'Live site: stylesheet breakpoints' },
+        ],
+      },
+    ],
+    outcomes: [
+      'The site presents the studio’s portfolio in two clicks or fewer from any page, with contact one click away.',
+      'The design uses one typeface and a white canvas throughout, so the photographs provide all the colour.',
+    ],
+    notClaimed: [
+      'The photography: every image belongs to Jacky Nayak Studio.',
+      'Enquiry, booking or traffic figures: we haven’t published any.',
+    ],
+    stack: ['WordPress', 'WPBakery Page Builder', 'Responsive theme'],
   },
 ];
 

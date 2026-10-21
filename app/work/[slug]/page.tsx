@@ -145,15 +145,26 @@ export default async function CaseStudyPage({ params }: Props) {
               <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Client</dt>
               <dd className="text-gray-200 text-sm">{study.client}</dd>
             </div>
-            <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
-              <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Period</dt>
-              <dd className="text-gray-200 text-sm">
-                <time dateTime={study.period.start}>{formatDate(study.period.start)}</time>
-                {' – '}
-                <time dateTime={study.period.end}>{formatDate(study.period.end)}</time>
-                <span className="text-gray-500"> · ongoing</span>
-              </dd>
-            </div>
+            {study.period ? (
+              <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
+                <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Period</dt>
+                <dd className="text-gray-200 text-sm">
+                  <time dateTime={study.period.start}>{formatDate(study.period.start)}</time>
+                  {' – '}
+                  <time dateTime={study.period.end}>{formatDate(study.period.end)}</time>
+                  {study.period.ongoing && <span className="text-gray-500"> · ongoing</span>}
+                </dd>
+              </div>
+            ) : study.liveUrl ? (
+              <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
+                <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Live site</dt>
+                <dd className="text-sm">
+                  <a href={study.liveUrl} target="_blank" rel="noopener" className="text-orange-400 hover:text-orange-300 transition-colors break-all">
+                    {study.liveUrl.replace(/^https?:\/\/(www\.)?/, '')}
+                  </a>
+                </dd>
+              </div>
+            ) : null}
             <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
               <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Service</dt>
               <dd className="text-sm">
@@ -164,9 +175,11 @@ export default async function CaseStudyPage({ params }: Props) {
             </div>
           </dl>
 
-          <div style={{ aspectRatio: `${study.image.width} / ${study.image.height}` }} className="relative w-full rounded-3xl overflow-hidden mb-12 bg-gray-800 border border-gray-800/60">
-            <Image src={study.image.src} alt={study.image.alt} fill priority sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
-          </div>
+          {!study.gallery?.length && (
+            <div style={{ aspectRatio: `${study.image.width} / ${study.image.height}` }} className="relative w-full rounded-3xl overflow-hidden mb-12 bg-gray-800 border border-gray-800/60">
+              <Image src={study.image.src} alt={study.image.alt} fill priority sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
+            </div>
+          )}
 
           <section aria-labelledby="context-heading" className="mb-14">
             <h2 id="context-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-5">The starting point</h2>
@@ -177,22 +190,44 @@ export default async function CaseStudyPage({ params }: Props) {
             </div>
           </section>
 
-          <section aria-labelledby="workflow-heading" className="mb-14">
-            <h2 id="workflow-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-6">How we worked</h2>
-            <ol className="space-y-4">
-              {study.workflow.map((w, i) => (
-                <li key={w.step} className="flex gap-4 p-5 rounded-2xl bg-gray-900/60 border border-gray-800">
-                  <span className="flex-none w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 text-sm font-bold flex items-center justify-center" aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <h3 className="text-white font-semibold mb-1">{w.step}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{w.detail}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </section>
+          {study.workflow && (
+            <section aria-labelledby="workflow-heading" className="mb-14">
+              <h2 id="workflow-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">{study.workflow.heading}</h2>
+              {study.workflow.intro && <p className="text-gray-500 text-sm mb-6">{study.workflow.intro}</p>}
+              <ol className={`space-y-4 ${study.workflow.intro ? '' : 'mt-6'}`}>
+                {study.workflow.steps.map((w, i) => (
+                  <li key={w.step} className="flex gap-4 p-5 rounded-2xl bg-gray-900/60 border border-gray-800">
+                    <span className="flex-none w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 text-sm font-bold flex items-center justify-center" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <h3 className="text-white font-semibold mb-1">{w.step}</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">{w.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {study.gallery && study.gallery.length > 0 && (
+            <section aria-labelledby="gallery-heading" className="mb-14">
+              <h2 id="gallery-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">Screenshots</h2>
+              <p className="text-gray-500 text-sm mb-6">
+                Captured from the live site{study.liveUrl && <>{' '}(<a href={study.liveUrl} target="_blank" rel="noopener" className="text-orange-400 hover:text-orange-300">visit it</a>)</>}.
+              </p>
+              <div className="grid grid-cols-1 gap-8">
+                {study.gallery.map((g) => (
+                  <figure key={g.src}>
+                    <div style={{ aspectRatio: `${g.width} / ${g.height}` }} className="relative w-full rounded-2xl overflow-hidden border border-gray-800 bg-gray-800">
+                      <Image src={g.src} alt={g.alt} fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
+                    </div>
+                    <figcaption className="text-gray-500 text-sm mt-3">{g.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section aria-labelledby="delivered-heading" className="mb-14">
             <h2 id="delivered-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">What we delivered</h2>
