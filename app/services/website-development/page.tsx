@@ -1363,26 +1363,12 @@ export default function WebsiteDevelopment() {
           </section>
         )}
 
-        {/* ══ METRICS ═══════════════════════════════════════════════════ */}
-        <section className="wdev-metrics" aria-labelledby="wdev-metrics-heading">
-          <div className="wdev-metrics__inner">
-            <h2 className="wdev-sr-only" id="wdev-metrics-heading">Our track record</h2>
-            <div className="wdev-metrics__grid">
-              {/* TODO(SS): replace placeholder figures with real, verifiable numbers before publishing. */}
-              {[
-                { value: 50, suffix: "+", label: "Projects delivered" },
-                { value: 98, suffix: "%", label: "On-time delivery rate" },
-                { value: 12, suffix: "+", label: "Industries served" },
-                { value: 6,  suffix: "",  label: "Countries served" },
-              ].map((s) => (
-                <div className="wdev-stat" data-target={s.value} data-suffix={s.suffix} key={s.label}>
-                  <div className="wdev-stat__num">{s.value}{s.suffix}</div>
-                  <div className="wdev-stat__label">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* ══ METRICS — removed. The block shipped placeholder figures
+            (50+ projects, 98% on-time, 12+ industries, 6 countries; its own
+            TODO said "replace placeholder figures … before publishing") that
+            also contradicted the 500+ / 200+ project counts used elsewhere.
+            Restore it only with verified numbers; the .wdev-metrics / .wdev-stat
+            styles and the counter script are left in place for that. ═══ */}
 
         {/* ══ FAQ — same copy as wdevFaqNode. Native <details>/<summary>
             accordion: no JS needed, so it works on every navigation type
