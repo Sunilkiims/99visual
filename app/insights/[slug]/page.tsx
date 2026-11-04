@@ -47,6 +47,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // The root layout template appends " | 99 Visual Solutions", so any brand
   // suffix already typed into the CMS meta title is stripped first.
   const title = stripBrandSuffix(seo?.metaTitle || post.title)
+  // Search engines cut titles at roughly 60 characters, and Bing flags
+  // longer ones as an error. When the brand suffix would push the title past
+  // that, it is left off and the article's own title is used as-is.
+  const BRAND_SUFFIX_TEXT = ' | 99 Visual Solutions'
+  const MAX_TITLE_LENGTH = 60
+  const pageTitle =
+    title.length + BRAND_SUFFIX_TEXT.length > MAX_TITLE_LENGTH ? { absolute: title } : title
   // A meta description that ends in " | 99 Visual Solutions" is a title
   // pasted into the wrong field (live on one article); the excerpt is the
   // better summary then. Either way it is fitted to ~155 characters.
@@ -70,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogImage = post.featuredImage?.url || seo?.ogImage || `${BASE}/images/home-og.jpg`
 
   return {
-    title,
+    title: pageTitle,
     description,
     alternates: { canonical },
     openGraph: {
