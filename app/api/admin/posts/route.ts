@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { insightUrl } from '@/lib/seo'
 import { revalidateInsightListings } from '@/lib/revalidate-insights'
+import { submitToIndexNow } from '@/lib/indexnow'
+import { BASE } from '@/lib/schema'
 
 function calculateReadingTime(content: string): number {
   const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length
@@ -62,6 +64,11 @@ export async function POST(request: NextRequest) {
     })
 
     revalidateInsightListings()
+    // Tell Bing about the article right away (after the response is sent).
+    // The listing page changes too whenever an article is published.
+    if (post.status === 'PUBLISHED') {
+      after(() => submitToIndexNow([insightUrl(post.slug), `${BASE}/insights`]))
+    }
     return NextResponse.json({ success: true, post }, { status: 201 })
   } catch (error) {
     console.error('Create post error:', error)

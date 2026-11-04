@@ -133,6 +133,65 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
+      // ── Old WordPress pages ────────────────────────────────────────────────
+      // Found in Bing's URL history from the WordPress site; no rule existed
+      // for them, so they were 404ing.
+      {
+        source: "/about-us",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/our-work",
+        destination: "/work",
+        permanent: true,
+      },
+      {
+        source: "/connecting-dots",
+        destination: "/insights",
+        permanent: true,
+      },
+
+      // ── Old WordPress sitemaps (Yoast / Rank Math / AIOSEO / core) ────────
+      // Search engines that still have these saved get sent to the real one.
+      {
+        source: "/sitemap_index.xml",
+        destination: "/sitemap.xml",
+        permanent: true,
+      },
+      {
+        source: "/:type(post|page|category|post_tag|author|attachment|elementor_library)-sitemap:n(\\d*).xml",
+        destination: "/sitemap.xml",
+        permanent: true,
+      },
+      {
+        source: "/wp-sitemap:rest(.*).xml",
+        destination: "/sitemap.xml",
+        permanent: true,
+      },
+
+      // ── Old WordPress feeds, tags and author archives ─────────────────────
+      {
+        source: "/feed/:path*",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/comments/feed",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/tag/:slug*",
+        destination: "/insights",
+        permanent: true,
+      },
+      {
+        source: "/author/:slug*",
+        destination: "/insights",
+        permanent: true,
+      },
+
       // ── Blog / insights redirects ──────────────────────────────────────────
       {
         source: "/blog",
