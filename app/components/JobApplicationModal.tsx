@@ -180,21 +180,21 @@ export default function JobApplicationModal({
         @keyframes jamSlideUp{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
         .jam-close{position:absolute;top:1.1rem;right:1.1rem;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s ease,color .2s ease;}
         .jam-close:hover{background:rgba(255,255,255,.1);color:#fff;}
-        .jam-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#f97316;margin-bottom:.6rem;display:block;}
+        .jam-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#386BFF;margin-bottom:.6rem;display:block;}
         .jam-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:#fff;margin:0 0 .3rem;line-height:1.2;}
         .jam-sub{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:300;color:rgba(255,255,255,.5);margin:0 0 1.75rem;}
         .jam-field{margin-bottom:1.1rem;}
         .jam-label{display:block;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:.45rem;}
         .jam-input,.jam-select,.jam-textarea{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.75rem .9rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:#fff;outline:none;transition:border-color .2s ease,background .2s ease;}
         .jam-input::placeholder,.jam-textarea::placeholder{color:rgba(255,255,255,.32);}
-        .jam-input:focus,.jam-select:focus,.jam-textarea:focus{border-color:#f97316;background:rgba(255,255,255,.06);}
+        .jam-input:focus,.jam-select:focus,.jam-textarea:focus{border-color:#386BFF;background:rgba(255,255,255,.06);}
         .jam-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23fff' stroke-opacity='.5' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;padding-right:2rem;}
         .jam-select option{background:#0f0f10;color:#fff;}
         .jam-textarea{resize:vertical;min-height:88px;font-family:'DM Sans',sans-serif;}
         .jam-row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
         @media(max-width:480px){.jam-row2{grid-template-columns:1fr;}}
         .jam-file{display:flex;align-items:center;gap:.75rem;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.18);border-radius:10px;padding:.7rem .9rem;cursor:pointer;transition:border-color .2s ease,background .2s ease;}
-        .jam-file:hover{border-color:#f97316;background:rgba(249,115,22,.05);}
+        .jam-file:hover{border-color:#386BFF;background:rgba(56,107,255,.05);}
         .jam-file input{display:none;}
         .jam-file__label{font-family:'DM Sans',sans-serif;font-size:.85rem;color:rgba(255,255,255,.6);}
         .jam-file__name{color:#fff;font-weight:500;}
@@ -202,10 +202,10 @@ export default function JobApplicationModal({
         .jam-error{font-family:'DM Sans',sans-serif;font-size:.8rem;color:#fb7185;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.25);border-radius:8px;padding:.6rem .8rem;margin-bottom:1rem;}
         .jam-captcha{display:flex;align-items:center;gap:.6rem;}
         .jam-captcha-q{font-family:'DM Sans',sans-serif;font-size:.85rem;color:rgba(255,255,255,.7);white-space:nowrap;}
-        .jam-captcha-refresh{background:none;border:none;color:#f97316;font-size:.75rem;cursor:pointer;text-decoration:underline;padding:0;}
+        .jam-captcha-refresh{background:none;border:none;color:#386BFF;font-size:.75rem;cursor:pointer;text-decoration:underline;padding:0;}
         .jam-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
-        .jam-submit{width:100%;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#fbbf24,#f97316);border:none;border-radius:10px;padding:.85rem 1rem;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;margin-top:.4rem;}
-        .jam-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 28px rgba(249,115,22,.35);}
+        .jam-submit{width:100%;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#fbbf24,#386BFF);border:none;border-radius:10px;padding:.85rem 1rem;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;margin-top:.4rem;}
+        .jam-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 28px rgba(56,107,255,.35);}
         .jam-submit:disabled{opacity:.6;cursor:not-allowed;}
         .jam-success{text-align:center;padding:1.5rem 0;}
         .jam-success h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;margin:0 0 .5rem;}
@@ -298,7 +298,7 @@ export default function JobApplicationModal({
                 <label className="jam-label" htmlFor="jam-resume">Resume</label>
                 <label className="jam-file" htmlFor="jam-resume">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-                    <path d="M9 12V3m0 0L5.5 6.5M9 3l3.5 3.5M3.5 12v1.5A1.5 1.5 0 005 15h8a1.5 1.5 0 001.5-1.5V12" stroke="#f97316" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 12V3m0 0L5.5 6.5M9 3l3.5 3.5M3.5 12v1.5A1.5 1.5 0 005 15h8a1.5 1.5 0 001.5-1.5V12" stroke="#386BFF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   <span className="jam-file__label">
                     {resume ? <span className="jam-file__name">{resume.name}</span> : "Click to upload your resume"}

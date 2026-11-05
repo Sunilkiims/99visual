@@ -55,8 +55,8 @@ export default function HowWeWork() {
     <section className="relative py-24 bg-black overflow-hidden">
 
       {/* GLOBAL BACKGROUND GLOW */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,115,0,0.15),transparent_40%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,115,0,0.12),transparent_40%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(56,107,255,0.15),transparent_40%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(56,107,255,0.12),transparent_40%)]"></div>
 
       <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
 
@@ -141,7 +141,7 @@ function TiltCard({ step, index }: any) {
         <div className="relative backdrop-blur-2xl bg-white/5 border border-white/10 p-6 rounded-2xl shadow-2xl transition-all duration-300">
 
           {/* SPOTLIGHT EFFECT */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(255,115,0,0.25),transparent_60%)]"></div>
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(56,107,255,0.25),transparent_60%)]"></div>
 
           {/* STEP NUMBER */}
           <div className="absolute top-4 right-4 text-xs font-bold text-gray-600 group-hover:text-orange-400">

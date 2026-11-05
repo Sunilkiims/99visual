@@ -33,19 +33,21 @@
 //   revision) are unchanged. No copy, schema, or metadata changes.
 //   Save your banner image to: /public/images/services/services-hub-hero-banner.jpg
 //
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header           from "@/app/components/header";
 import Footer           from "@/app/components/footer";
-import ScrollDown       from "@/app/components/scrolldown";
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
+import Image from "next/image";
+import GlowCard from "@/app/components/ui/GlowCard";
+import { SectionHeading } from "@/app/components/ui/primitives";
+import { Breadcrumbs, ServiceIntro, ServiceCTA, StickyCTA } from "@/app/components/premium/service/ServiceBlocks";
 
 
 
 import {
-  FaCode, FaBullhorn, FaBug, FaLaptopCode,
-  FaCubes, FaDraftingCompass, FaCloud, FaCheckCircle,
+  FaCode, FaBullhorn, FaBug,
+  FaCubes, FaDraftingCompass, FaCloud,
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
@@ -215,7 +217,7 @@ const services = [
     title:       "Digital Marketing & SEO",
     description: "Full-spectrum digital marketing: SEO, PPC, Meta Ads, social media, content marketing, email automation, local SEO, link building, and promotional video — engineered for ROI.",
     bullets:     ["Search Engine Optimization", "PPC & Meta Ads Management", "Content & Email Marketing"],
-    accent:      "#f97316",
+    accent:      "#386BFF",
   },
   {
     id:          "automation-testing",
@@ -263,12 +265,6 @@ const services = [
   },
 ];
 
-const stats = [
-  { value: "200+", label: "Projects Delivered" },
-  { value: "50+",  label: "Global Clients" },
-  { value: "6",    label: "Core Services" },
-  { value: "5+",   label: "Years of Excellence" },
-];
 
 const whyUs = [
   "End-to-end delivery — strategy through execution",
@@ -279,423 +275,107 @@ const whyUs = [
   "Proven results across 4 continents",
 ];
 
-// Illustrative one-line-per-discipline ticker, tying back to the six
-// service cards below. Docked to the bottom edge of the hero, same
-// mechanism as the tickers on the individual service pages.
-const pipeline = [
-  { cmd: "web_development",  out: "shipped on time" },
-  { cmd: "seo_campaign",     out: "organic traffic up" },
-  { cmd: "qa_suite",         out: "94% test coverage" },
-  { cmd: "cloud_migration",  out: "zero downtime" },
-  { cmd: "render_export",    out: "photoreal delivery" },
-  { cmd: "lidar_scan",       out: "±2cm accuracy" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ServicesPage() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/services-hub-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
-      
-
-      <style>{`
-
-        .sv-page{
-          --sv-ink:#12141A; --sv-muted:#5B6172; --sv-paper:#F5F6F8; --sv-surface:#FFFFFF;
-          --sv-line:#E4E6EC; --sv-blue:#2E5CFF; --sv-green:#37D67A; --sv-orange:#F97316;
-          background:var(--sv-paper);
-        }
-        .sv-sr-only {
-          position:absolute!important;width:1px!important;height:1px!important;
-          padding:0!important;margin:-1px!important;overflow:hidden!important;
-          clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
-        }
-
-        .sv-hero {
-          position:relative;height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/services-hub-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .sv-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .sv-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .sv-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/services-hub-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-        .sv-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .sv-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .sv-corner--tl{top:28px;left:28px;border-top:1px solid var(--sv-blue);border-left:1px solid var(--sv-blue);}
-        .sv-corner--tr{top:28px;right:28px;border-top:1px solid var(--sv-blue);border-right:1px solid var(--sv-blue);}
-        .sv-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--sv-blue);border-left:1px solid var(--sv-blue);}
-        @media(max-width:480px){ .sv-corner--bl{ left:28px; } }
-        .sv-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--sv-blue);border-right:1px solid var(--sv-blue);}
-
-        .sv-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:9rem 1.5rem 1.5rem;
-          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .sv-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .sv-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .sv-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        @media(max-height:520px){
-          .sv-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .sv-hero__eyebrow{ margin-bottom:1.1rem; }
-          .sv-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .sv-hero__rule{ margin-bottom:.8rem; }
-          .sv-hero__sub{ margin-bottom:1.2rem; }
-        }
-
-        .sv-hero__content{animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes svFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.sv-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        .sv-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--sv-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .sv-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--sv-orange);animation:svPulse 2s ease-in-out infinite;}
-        @keyframes svPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .sv-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .sv-hero__h1 em{font-style:normal;color:var(--sv-blue);}
-        .sv-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--sv-blue),transparent);margin:0 0 1.4rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.sv-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--sv-blue),transparent);}}
-        .sv-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.sv-hero__sub{margin:0 auto 2.6rem;}}
-        .sv-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:svFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.sv-hero__actions{justify-content:center;}}
-        .sv-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--sv-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;}
-        .sv-hero__btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .sv-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;cursor:pointer;}
-        .sv-hero__btn--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
-
-        .sv-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .sv-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .sv-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:svScroll 34s linear infinite;}
-        .sv-hero__ticker-bar:hover .sv-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .sv-ticker__track{ animation-duration:22s; } }
-        @keyframes svScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .sv-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .sv-ticker__item b{color:rgba(255,255,255,.45);}
-        .sv-ticker__pass{color:var(--sv-green);}
-        .sv-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
-        @media(max-height:520px){
-          .sv-hero__ticker-bar{ padding-top:.75rem; }
-          .sv-ticker__caption{ display:none; }
-        }
-
-        .sv-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--sv-line);}
-        @media(max-width:760px){.sv-sticky-cta{display:flex;justify-content:center;}}
-        .sv-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        .sv-stats{background:var(--sv-surface);border-top:1px solid var(--sv-line);border-bottom:1px solid var(--sv-line);padding:2.8rem 1.5rem;}
-        .sv-stats__inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;}
-        @media(max-width:640px){.sv-stats__inner{grid-template-columns:repeat(2,1fr);}}
-        .sv-stat__val{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.4vw,2.4rem);font-weight:700;line-height:1;color:var(--sv-ink);margin-bottom:.3rem;}
-        .sv-stat__val span{color:var(--sv-blue);}
-        .sv-stat__lbl{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:400;color:var(--sv-muted);}
-
-        .sv-intro{background:var(--sv-paper);border-bottom:1px solid var(--sv-line);padding:5.5rem 1.5rem;}
-        .sv-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .sv-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);margin-bottom:1.2rem;display:block;}
-        .sv-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.7rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1.5rem;}
-        .sv-intro__h2 em{font-style:normal;color:var(--sv-blue);}
-        .sv-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--sv-muted);max-width:660px;margin:0 auto .9rem;}
-        .sv-intro__p strong{color:var(--sv-ink);font-weight:500;}
-
-        .sv-services{background:var(--sv-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--sv-line);}
-        .sv-services__inner{max-width:1240px;margin:0 auto;}
-        .sv-services__head{text-align:center;margin-bottom:4rem;}
-        .sv-services__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);margin-bottom:1rem;display:block;}
-        .sv-services__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1rem;}
-        .sv-services__h2 em{font-style:normal;color:var(--sv-blue);}
-        .sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
-        @media(max-width:1100px){.sv-grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:680px){.sv-grid{grid-template-columns:1fr;}}
-        .sv-card{background:var(--sv-paper);border:1px solid var(--sv-line);border-radius:20px;padding:2.4rem 2rem 2rem;text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;}
-        .sv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sv-accent,#2E5CFF);opacity:0;transition:opacity .3s ease;}
-        .sv-card::after{content:attr(data-num);font-family:'Space Grotesk',sans-serif;font-size:6rem;font-weight:700;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(18,20,26,.05);position:absolute;bottom:-1.2rem;right:1.2rem;pointer-events:none;user-select:none;transition:-webkit-text-stroke .3s ease;}
-        .sv-card:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--sv-accent,#2E5CFF) 40%,transparent);box-shadow:0 24px 48px -20px rgba(18,20,26,.2);}
-        .sv-card:hover::before{opacity:1;}
-        .sv-card:hover::after{-webkit-text-stroke:1px color-mix(in srgb,var(--sv-accent,#2E5CFF) 16%,transparent);}
-        .sv-card__top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.6rem;}
-        .sv-card__icon-wrap{width:48px;height:48px;border-radius:12px;flex-shrink:0;background:color-mix(in srgb,var(--sv-accent,#2E5CFF) 12%,transparent);border:1px solid color-mix(in srgb,var(--sv-accent,#2E5CFF) 25%,transparent);display:flex;align-items:center;justify-content:center;color:var(--sv-accent,#2E5CFF);font-size:1.15rem;transition:background .3s ease;}
-        .sv-card:hover .sv-card__icon-wrap{background:color-mix(in srgb,var(--sv-accent,#2E5CFF) 22%,transparent);}
-        .sv-card__tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--sv-accent,#2E5CFF);border:1px solid color-mix(in srgb,var(--sv-accent,#2E5CFF) 30%,transparent);background:color-mix(in srgb,var(--sv-accent,#2E5CFF) 8%,transparent);padding:4px 10px;border-radius:100px;}
-        .sv-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.12rem;font-weight:600;line-height:1.3;letter-spacing:-.01em;color:var(--sv-ink);margin:0 0 .8rem;transition:color .2s ease;}
-        .sv-card__rule{width:28px;height:1px;background:linear-gradient(90deg,var(--sv-accent,#2E5CFF),transparent);margin-bottom:1rem;transition:width .3s ease;}
-        .sv-card:hover .sv-card__rule{width:48px;}
-        .sv-card__desc{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--sv-muted);margin-bottom:1.4rem;flex:1;}
-        .sv-card__bullets{list-style:none;padding:0;margin:0 0 1.6rem;display:flex;flex-direction:column;gap:.4rem;}
-        .sv-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;font-weight:400;color:var(--sv-ink);display:flex;align-items:center;gap:.5rem;}
-        .sv-card__bullets li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--sv-accent,#2E5CFF);flex-shrink:0;}
-        .sv-card__link{display:inline-flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:var(--sv-accent,#2E5CFF);transition:gap .2s ease;margin-top:auto;}
-        .sv-card:hover .sv-card__link{gap:11px;}
-        .sv-card__link svg{transition:transform .2s ease;}
-        .sv-card:hover .sv-card__link svg{transform:translateX(3px);}
-
-        .sv-why{background:var(--sv-paper);border-top:1px solid var(--sv-line);padding:6rem 1.5rem;}
-        .sv-why__inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
-        @media(max-width:860px){.sv-why__inner{grid-template-columns:1fr;gap:3rem;}}
-        .sv-why__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);margin-bottom:1rem;display:block;}
-        .sv-why__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:700;line-height:1.22;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1.2rem;}
-        .sv-why__h2 em{font-style:normal;color:var(--sv-blue);}
-        .sv-why__p{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.85;color:var(--sv-muted);margin-bottom:2rem;}
-        .sv-why__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:13px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .sv-why__cta:hover{background:var(--sv-blue);transform:translateY(-2px);}
-        .sv-why__list{display:flex;flex-direction:column;gap:.9rem;}
-        .sv-why__item{display:flex;align-items:flex-start;gap:.9rem;padding:1.1rem 1.3rem;background:var(--sv-surface);border:1px solid var(--sv-line);border-radius:12px;transition:border-color .2s ease,transform .2s ease;}
-        .sv-why__item:hover{border-color:rgba(46,92,255,.3);transform:translateX(4px);}
-        .sv-why__item-icon{color:var(--sv-blue);font-size:1rem;flex-shrink:0;margin-top:.15rem;}
-        .sv-why__item-text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:400;line-height:1.6;color:var(--sv-ink);}
-
-        .sv-cta{background:var(--sv-surface);border-top:1px solid var(--sv-line);padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
-        .sv-cta__orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--sv-blue),transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(70px);pointer-events:none;}
-        .sv-cta__inner{position:relative;z-index:10;max-width:580px;margin:0 auto;}
-        .sv-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--sv-blue);margin-bottom:1.2rem;display:block;}
-        .sv-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--sv-ink);margin:0 0 1rem;}
-        .sv-cta__h2 em{font-style:normal;color:var(--sv-blue);}
-        .sv-cta__sub{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--sv-muted);margin-bottom:2.6rem;}
-        .sv-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--sv-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .sv-cta__btn:hover{background:var(--sv-blue);transform:translateY(-2px);}
-
-        @media(max-width:480px){.sv-hero__actions{flex-direction:column;align-items:stretch;}.sv-hero__btn--primary,.sv-hero__btn--ghost{justify-content:center;}}
-        @media(prefers-reduced-motion:reduce){
-          .sv-page *,.sv-page *::before,.sv-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
       <script
         id="schema-services-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(svGraph) }}
       />
-
-      <div className="sv-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section className="sv-hero" aria-labelledby="sv-hero-heading">
-          <div aria-hidden="true">
-            <div className="sv-hero__grain" />
-          </div>
-          <div className="sv-corner sv-corner--tl" aria-hidden="true" />
-          <div className="sv-corner sv-corner--tr" aria-hidden="true" />
-          <div className="sv-corner sv-corner--bl" aria-hidden="true" />
-          <div className="sv-corner sv-corner--br" aria-hidden="true" />
-
-          <nav className="sv-sr-only" aria-label="Breadcrumb">
-            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li>
-                <a href="/"><span>Home</span></a>
-              </li>
-              <li>
-                <a href="/services" aria-current="page"><span>Services</span></a>
-              </li>
-            </ol>
-          </nav>
-
-          <div className="sv-hero__inner">
-            <div className="sv-hero__content">
-              <div className="sv-hero__eyebrow" aria-hidden="true">
-                <span className="sv-hero__dot" />
-                What We Do
-              </div>
-              <h1 className="sv-hero__h1" id="sv-hero-heading">
-                End-to-end solutions<br />built for the <em>intelligent era</em>
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <section className="vz-shero vz-shero--hub" aria-labelledby="sv-hero-heading">
+            <div className="vz-shero__media">
+              <Image src="/images/services/services-hub-hero-banner.jpg" alt="99 Visual Solutions services: web, 3D, QA, SEO and IT consulting" fill priority fetchPriority="high" sizes="100vw" />
+            </div>
+            <div className="vz-grid-bg" aria-hidden="true" />
+            <div className="vz-container vz-shero__inner">
+              <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/services", label: "Services" }]} />
+              <p className="vz-eyebrow">What We Do</p>
+              <h1 id="sv-hero-heading" className="vz-h1 vz-shero__tagline">
+                End-to-end solutions built for the <em>intelligent era</em>
               </h1>
-              <div className="sv-hero__rule" aria-hidden="true" />
-              <p className="sv-hero__sub">
-                From pixel-perfect web experiences and AI-powered QA to data-driven
-                marketing, geospatial intelligence, and strategic IT consulting — 99 Visual
-                Solutions is your single partner for the full technology stack.
+              <p className="vz-lead vz-shero__sub">
+                From pixel-perfect web experiences and AI-powered QA to data-driven marketing, geospatial intelligence, and strategic IT consulting — 99 Visual Solutions is your single partner for the full technology stack.
               </p>
-              <div className="sv-hero__actions">
-                <a href="#sv-grid" className="sv-hero__btn--primary" aria-label="Browse all 99 Visual Solutions services">
-                  Browse Services
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
-                <ConsultationCTA className="sv-hero__btn--ghost" ariaLabel="Contact 99 Visual Solutions">
-                  Get a Free Consultation
-                </ConsultationCTA>
+              <div className="vz-btn-row">
+                <a href="#sv-grid" className="vz-btn vz-btn--primary" aria-label="Browse all 99 Visual Solutions services">Browse Services</a>
+                <ConsultationCTA className="vz-btn vz-btn--ghost" postTitle="Services" postUrl="/services">Get a Free Consultation</ConsultationCTA>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className="sv-hero__ticker-bar" aria-hidden="true">
-            <div className="sv-ticker">
-              <div className="sv-ticker__track">
-                {[...pipeline, ...pipeline].map((p, i) => (
-                  <span className="sv-ticker__item" key={i}>
-                    <b>$</b> {p.cmd} <span className="sv-ticker__pass">→ {p.out} ✓</span>
-                  </span>
+          <ServiceIntro id="sv-intro-heading" eyebrow="Our Approach" title={<>One partner. The <em>full spectrum</em> of modern technology.</>}>
+            <p className="vz-lead">
+              At <strong>99 Visual Solutions</strong>, we believe great technology is indistinguishable from great design. Our multidisciplinary teams combine <strong>creative excellence, engineering rigour, and AI-native thinking</strong> to deliver outcomes that move the needle — not just deliverables.
+            </p>
+            <p>
+              Whether you are a startup launching your first product or an enterprise modernising a legacy stack, we scale with your ambition and operate as a <strong>true extension of your team</strong>.
+            </p>
+          </ServiceIntro>
+
+          <section className="vz-section vz-section--surface" id="sv-grid" aria-labelledby="sv-services-heading">
+            <div className="vz-container">
+              <SectionHeading id="sv-services-heading" eyebrow="Our Services" title={<>Everything you need to build, grow &amp; <em>dominate</em></>} />
+              <ul className="vz-svc-grid vz-svc-grid--3" role="list">
+                {services.map((svc) => (
+                  <li key={svc.id}>
+                    <GlowCard as="article" className="vz-svc-card">
+                      <div className="vz-svc-card__top">
+                        <span className="vz-icon-tile">{svc.icon}</span>
+                        <span className="vz-chip">{svc.tag}</span>
+                      </div>
+                      <h3 className="vz-h3">
+                        <Link href={svc.href} className="vz-stretched" aria-label={`Learn more about ${svc.title}`}>{svc.title}</Link>
+                      </h3>
+                      <p className="vz-body">{svc.description}</p>
+                      <ul className="vz-checks">
+                        {svc.bullets.map((b) => <li key={b}>{b}</li>)}
+                      </ul>
+                      <span className="vz-link-arrow" aria-hidden="true">Explore Service →</span>
+                    </GlowCard>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ══ STATS STRIP ═════════════════════════════════════════════════ */}
-        <div className="sv-stats" aria-label="Company statistics">
-          <div className="sv-stats__inner">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <div className="sv-stat__val">
-                  {s.value.includes("+")
-                    ? <>{s.value.replace("+", "")}<span>+</span></>
-                    : s.value}
-                </div>
-                <div className="sv-stat__lbl">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ══ INTRO ════════════════════════════════════════════════════════ */}
-        <section className="sv-intro" aria-labelledby="sv-intro-heading">
-          <div className="sv-intro__inner">
-            <span className="sv-intro__label">Our Approach</span>
-            <h2 className="sv-intro__h2" id="sv-intro-heading">
-              One partner.<br />The <em>full spectrum</em> of modern technology.
-            </h2>
-            <p className="sv-intro__p">
-              At <strong>99 Visual Solutions</strong>, we believe great technology is indistinguishable
-              from great design. Our multidisciplinary teams combine <strong>creative excellence,
-              engineering rigour, and AI-native thinking</strong> to deliver outcomes that move
-              the needle — not just deliverables.
+          <ServiceIntro
+            id="sv-why-heading"
+            eyebrow="Why 99 Visual?"
+            title={<>We don&apos;t just deliver projects — we deliver <em>outcomes</em></>}
+            aside={
+              <>
+                <ul className="vz-checks">
+                  {whyUs.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+                <ConsultationCTA className="vz-btn vz-btn--primary" postTitle="Services" postUrl="/services">Start a Project</ConsultationCTA>
+              </>
+            }
+          >
+            <p className="vz-lead">
+              Partnering with 99 Visual Solutions means you get a team that is as invested in your success as you are. We combine deep domain expertise with agile execution to turn complex requirements into elegant, high-performing solutions — on time and within budget.
             </p>
-            <p className="sv-intro__p">
-              Whether you are a startup launching your first product or an enterprise modernising
-              a legacy stack, we scale with your ambition and operate as a{" "}
-              <strong>true extension of your team</strong>.
-            </p>
-          </div>
-        </section>
+          </ServiceIntro>
 
-        {/* ══ SERVICES GRID ════════════════════════════════════════════════ */}
-        <section id="sv-grid" className="sv-services" aria-labelledby="sv-services-heading">
-          <div className="sv-services__inner">
-            <div className="sv-services__head">
-              <span className="sv-services__label">Our Services</span>
-              <h2 className="sv-services__h2" id="sv-services-heading">
-                Everything you need to build,<br />grow &amp; <em>dominate</em>
-              </h2>
-            </div>
-            <div className="sv-grid">
-              {services.map((svc) => (
-                <Link
-                  key={svc.id}
-                  href={svc.href}
-                  className="sv-card"
-                  data-num={svc.num}
-                  style={{ "--sv-accent": svc.accent } as React.CSSProperties}
-                  aria-label={`Learn more about ${svc.title}`}
-                >
-                  <div className="sv-card__top">
-                    <div className="sv-card__icon-wrap" aria-hidden="true">{svc.icon}</div>
-                    <span className="sv-card__tag">{svc.tag}</span>
-                  </div>
-                  <h3 className="sv-card__title">{svc.title}</h3>
-                  <div className="sv-card__rule" aria-hidden="true" />
-                  <p className="sv-card__desc">{svc.description}</p>
-                  <ul className="sv-card__bullets" aria-label={`Key capabilities for ${svc.title}`}>
-                    {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                  </ul>
-                  <span className="sv-card__link" aria-hidden="true">
-                    Explore Service
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ WHY US ═══════════════════════════════════════════════════════ */}
-        <section className="sv-why" aria-labelledby="sv-why-heading">
-          <div className="sv-why__inner">
-            <div>
-              <span className="sv-why__label">Why 99 Visual?</span>
-              <h2 className="sv-why__h2" id="sv-why-heading">
-                We don't just deliver<br />projects — we deliver <em>outcomes</em>
-              </h2>
-              <p className="sv-why__p">
-                Partnering with 99 Visual Solutions means you get a team that is as invested
-                in your success as you are. We combine deep domain expertise with agile
-                execution to turn complex requirements into elegant, high-performing solutions
-                — on time and within budget.
-              </p>
-              <ConsultationCTA className="sv-why__cta" ariaLabel="Start a project with 99 Visual Solutions">
-                Start a Project
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </ConsultationCTA>
-            </div>
-            <ul className="sv-why__list" aria-label="Reasons to choose 99 Visual Solutions">
-              {whyUs.map((item) => (
-                <li key={item} className="sv-why__item">
-                  <FaCheckCircle className="sv-why__item-icon" aria-hidden="true" />
-                  <span className="sv-why__item-text">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* ══ CTA STRIP ════════════════════════════════════════════════════ */}
-        <section className="sv-cta" aria-labelledby="sv-cta-heading">
-          <div className="sv-cta__orb" aria-hidden="true" />
-          <div className="sv-cta__inner">
-            <span className="sv-cta__eyebrow">Let's Build Together</span>
-            <h2 className="sv-cta__h2" id="sv-cta-heading">
-              Ready to start your next<br /><em>big project?</em>
-            </h2>
-            <p className="sv-cta__sub">
-              Talk to our team for a free, no-obligation strategy consultation. We'll
-              help you choose the right services, scope your project, and map a clear
-              path to launch.
-            </p>
-            <ConsultationCTA className="sv-cta__btn" ariaLabel="Get a free consultation from 99 Visual Solutions">
-              Get a Free Consultation
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </ConsultationCTA>
-          </div>
-        </section>
-
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="sv-sticky-cta">
-          <ConsultationCTA className="sv-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
-        </div>
+          <ServiceCTA
+            id="sv-cta-heading"
+            eyebrow="Let's Build Together"
+            title={<>Ready to start your next <em>big project?</em></>}
+            sub="Talk to our team for a free, no-obligation strategy consultation. We'll help you choose the right services, scope your project, and map a clear path to launch."
+            postTitle="Services"
+            postUrl="/services"
+          />
+        </main>
+        <Footer />
+        <StickyCTA postTitle="Services" postUrl="/services" label="Get a Free Consultation" />
       </div>
-
-      <Footer />
-      <ScrollDown />
     </>
   );
 }

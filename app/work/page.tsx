@@ -4,6 +4,10 @@ import type { Metadata } from 'next'
 import Header from '@/app/components/header'
 import Footer from '@/app/components/footer'
 import { caseStudies, workIndexIsIndexable, latestCaseStudyUpdate } from '@/lib/case-studies'
+import { videos } from '@/lib/videos'
+import { SectionHeading } from '@/app/components/ui/primitives'
+import { Breadcrumbs } from '@/app/components/premium/service/ServiceBlocks'
+import { CTASection } from '@/app/components/premium/home/HomeSections'
 import {
   BASE,
   buildGraph,
@@ -74,50 +78,79 @@ export default function WorkIndexPage() {
 
   return (
     <>
-      <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }} />
-      <main className="min-h-screen bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-[1.1] tracking-tight">
-            Our Work
-          </h1>
-          <p className="text-gray-400 mb-12 max-w-2xl">
-            Case studies of work we’ve delivered. Each one sets out what we did and how, points to where it
-            can be checked, and says plainly what it doesn’t claim.
-          </p>
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <section className="vz-hero vz-hero--page" aria-labelledby="work-hero-heading">
+            <div className="vz-grid-bg" aria-hidden="true" />
+            <div className="vz-aurora vz-hero__aurora-a" aria-hidden="true" />
+            <div className="vz-container vz-page-hero">
+              <Breadcrumbs items={[{ href: '/', label: 'Home' }, { href: '/work', label: 'Our Work' }]} />
+              <p className="vz-eyebrow">Portfolio</p>
+              <h1 id="work-hero-heading" className="vz-display">Our <span className="vz-grad-text">Work</span></h1>
+              <p className="vz-lead vz-page-hero__lead">
+                Case studies of work we’ve delivered. Each one sets out what we did and how, points to where it
+                can be checked, and says plainly what it doesn’t claim.
+              </p>
+            </div>
+          </section>
 
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {caseStudies.map((c) => (
-              <li key={c.slug}>
-                <Link href={`/work/${c.slug}`} className="group block h-full rounded-3xl overflow-hidden bg-gray-900/60 border border-gray-800 hover:border-orange-500/40 transition-colors">
-                  <div className="relative aspect-video bg-gray-800">
-                    <Image
-                      src={c.image.src}
-                      alt={c.image.alt}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <p className="text-orange-400 text-xs font-semibold uppercase tracking-widest mb-2">{c.service.label.replace(/ services$/i, '')}</p>
-                    <h2 className="text-white text-xl font-semibold group-hover:text-orange-400 transition-colors leading-snug mb-2">{c.title}</h2>
-                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">{c.description}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <section className="vz-section vz-section--surface" aria-labelledby="work-cs-heading">
+            <div className="vz-container">
+              <SectionHeading id="work-cs-heading" eyebrow="Case studies" title="Documented projects" />
+              <ul className="vz-work vz-work--2" role="list">
+                {caseStudies.map((c) => (
+                  <li key={c.slug}>
+                    <article className="vz-work__card">
+                      <div className="vz-work__media">
+                        <Image src={c.image.src} alt={c.image.alt} fill sizes="(max-width: 900px) 100vw, 50vw" />
+                      </div>
+                      <div className="vz-work__meta">
+                        <span className="vz-chip">{c.service.label.replace(/ services$/i, '')}</span>
+                        <h2 className="vz-h3"><Link href={`/work/${c.slug}`} className="vz-stretched">{c.title}</Link></h2>
+                        <p className="vz-body">{c.description}</p>
+                        <ul className="vz-chips" role="list">
+                          {c.stack.slice(0, 5).map((t) => <li key={t} className="vz-chip">{t}</li>)}
+                        </ul>
+                      </div>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
 
-          <div className="mt-16 p-7 bg-gray-900/60 border border-gray-800 rounded-3xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p className="text-gray-300">Looking for something specific? Browse <Link href="/services" className="text-orange-400 hover:text-orange-300">all our services</Link>.</p>
-            <Link href="/contact" className="self-start sm:self-auto px-5 py-2.5 rounded-full text-sm font-semibold bg-orange-500 text-white hover:bg-orange-400 transition-colors">
-              Start a project
-            </Link>
-          </div>
-        </div>
-      </main>
-      <Footer />
+          <section className="vz-section" aria-labelledby="work-video-heading">
+            <div className="vz-container">
+              <div className="vz-row-head">
+                <SectionHeading id="work-video-heading" eyebrow="3D visualization" title="Video showcase" lead="Rendered walkthroughs, animation and product visualization from our studio." />
+                <Link href="/videos" className="vz-btn vz-btn--ghost">All videos →</Link>
+              </div>
+              <ul className="vz-posts" role="list">
+                {videos.slice(0, 3).map((v) => (
+                  <li key={v.slug}>
+                    <article className="vz-post">
+                      <div className="vz-post__media">
+                        <Image src={v.thumbnail} alt={v.thumbnailAlt} fill sizes="(min-width: 768px) 33vw, 100vw" />
+                        <span className="vz-work__play" aria-hidden="true">▶</span>
+                      </div>
+                      <h3 className="vz-h3"><Link href={`/videos/${v.slug}`} className="vz-stretched">{v.title}</Link></h3>
+                      <p className="vz-body vz-post__excerpt">{v.description}</p>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          <CTASection
+            title="Looking for something specific?"
+            body="Browse all our services, or tell us about your project and we’ll reply within 24 business hours."
+          />
+        </main>
+        <Footer />
+      </div>
     </>
   )
 }

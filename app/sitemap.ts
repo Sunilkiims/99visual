@@ -46,6 +46,7 @@ const staticRoutes: {
   { path: '/contact',                          priority: 0.7, changeFrequency: 'monthly' },
   { path: '/partner',                          priority: 0.6, changeFrequency: 'monthly' },
   { path: '/careers',                          priority: 0.6, changeFrequency: 'monthly' },
+  { path: '/industries',                       priority: 0.7, changeFrequency: 'monthly' },
   { path: '/videos',                           priority: 0.6, changeFrequency: 'monthly' },
   { path: '/press',                            priority: 0.4, changeFrequency: 'monthly' },
   { path: '/help-center',                      priority: 0.4, changeFrequency: 'monthly' },

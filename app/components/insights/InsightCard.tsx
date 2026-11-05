@@ -27,7 +27,7 @@ export interface InsightCardPost {
 }
 
 export default function InsightCard({ post, index = 0 }: { post: InsightCardPost; index?: number }) {
-  const accent = post.category.color || '#f97316'
+  const accent = post.category.color || '#386BFF'
   return (
     <Reveal delay={Math.min(index, 6) * 0.06} y={16}>
       <Link
@@ -59,7 +59,7 @@ export default function InsightCard({ post, index = 0 }: { post: InsightCardPost
           </div>
         </div>
         <div className="p-4 sm:p-5 flex flex-col flex-1">
-          <h3 className="text-white font-semibold text-sm sm:text-base mb-2 leading-snug line-clamp-2 transition-colors group-hover:text-orange-400">
+          <h3 className="text-white font-semibold text-sm sm:text-base mb-2 leading-snug line-clamp-2 transition-colors group-hover:text-[#9bb6ff]">
             {post.title}
           </h3>
           {post.excerpt && (

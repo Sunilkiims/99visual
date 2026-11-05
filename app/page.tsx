@@ -37,6 +37,7 @@ import Footer from './components/footer';
 import Chatbot from './components/chatbot';
 import WhatsAppButton from './components/wahtsappbutton';
 import CinematicHero from './components/premium/home/CinematicHero';
+import ClientLogos from './components/premium/home/ClientLogos';
 import {
   CompanyIntro,
   ServiceBentoGrid,
@@ -212,6 +213,7 @@ export default function Home() {
         <Header />
         <main id="main">
           <CinematicHero />
+          <ClientLogos />
           <CompanyIntro />
           <ServiceBentoGrid />
           <PortfolioShowcase />

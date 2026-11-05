@@ -28,32 +28,27 @@ const HELPFUL_LINKS = [
 
 export default function NotFound() {
   return (
-    <>
+    <div className="vz">
       <Header />
-      <main className="mx-auto flex min-h-[60vh] w-full max-w-2xl flex-col items-center justify-center px-6 py-24 text-center">
-        <p className="text-sm font-semibold tracking-wide text-neutral-500">
-          404 error
-        </p>
-        <h1 className="mt-3 text-3xl font-bold text-neutral-900 sm:text-4xl">
-          We couldn&apos;t find that page
-        </h1>
-        <p className="mt-4 max-w-md text-neutral-600">
-          The page you&apos;re looking for may have been moved, renamed, or
-          no longer exists. Here are a few places to pick up from instead.
-        </p>
-        <nav aria-label="Suggested pages" className="mt-8 flex flex-wrap justify-center gap-3">
-          {HELPFUL_LINKS.map(({ label, href }) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded-full border border-neutral-300 px-5 py-2 text-sm font-medium text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+      <main id="main" className="vz-hero vz-hero--page vz-404">
+        <div className="vz-grid-bg" aria-hidden="true" />
+        <div className="vz-container vz-page-hero vz-404__inner">
+          <p className="vz-eyebrow">404 error</p>
+          <h1 className="vz-h1">We couldn&apos;t find that page</h1>
+          <p className="vz-lead">
+            The page you&apos;re looking for may have been moved, renamed, or no longer exists. Here are a few places
+            to pick up from instead.
+          </p>
+          <nav aria-label="Suggested pages">
+            <ul className="vz-jump" role="list">
+              {HELPFUL_LINKS.map(({ label, href }) => (
+                <li key={href}><Link href={href}>{label}</Link></li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

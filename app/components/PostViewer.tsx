@@ -61,26 +61,26 @@ export default function PostViewer({ html, postTitle, postUrl }: Props) {
         .article-content h2 { font-size: 1.5rem; }
         .article-content h3 { font-size: 1.25rem; }
         .article-content p  { margin-bottom: 1.25rem; color: #d1d5db; }
-        .article-content a  { color: #f97316; text-decoration: none; }
-        .article-content a:hover { color: #fb923c; }
+        .article-content a  { color: #386BFF; text-decoration: none; }
+        .article-content a:hover { color: #9bb6ff; }
         .article-content strong { color: #ffffff; font-weight: 600; }
         .article-content ul,
         .article-content ol  { color: #d1d5db; padding-left: 1.5rem; margin-bottom: 1.25rem; }
         .article-content li  { margin-bottom: 0.5rem; }
-        .article-content blockquote { border-left: 3px solid #f97316; padding-left: 1rem; color: #9ca3af; margin: 1.5rem 0; }
-        .article-content code { color: #fb923c; background: #1f2937; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+        .article-content blockquote { border-left: 3px solid #386BFF; padding-left: 1rem; color: #9ca3af; margin: 1.5rem 0; }
+        .article-content code { color: #9bb6ff; background: #1f2937; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
         .article-content pre { background: #1f2937; border: 1px solid #374151; border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
         .article-content img { border-radius: 12px; max-width: 100%; }
 
         /* ── Editor-inserted CTA text link ─────────────────────────────── */
         .article-content a[data-contact-popup="true"] {
-          color: #f97316;
+          color: #386BFF;
           text-decoration: underline;
           text-underline-offset: 3px;
           cursor: pointer;
           font-weight: 500;
         }
-        .article-content a[data-contact-popup="true"]:hover { color: #fb923c; }
+        .article-content a[data-contact-popup="true"]:hover { color: #9bb6ff; }
 
         /* ── Editor-inserted CTA button ────────────────────────────────── */
         .article-content a.contact-cta-btn {
@@ -88,7 +88,7 @@ export default function PostViewer({ html, postTitle, postUrl }: Props) {
           align-items: center;
           gap: 8px;
           padding: 12px 28px !important;
-          background: #f97316 !important;
+          background: #386BFF !important;
           color: #fff !important;
           border-radius: 10px;
           font-size: 15px;

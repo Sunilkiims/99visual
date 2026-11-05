@@ -104,12 +104,12 @@ export default async function VideoWatchPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }}
       />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
         <div className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-24">
 
           <Link
             href="/videos"
-            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full text-sm font-semibold bg-gray-900 border border-gray-800 text-gray-300 transition-all hover:border-orange-500/50 hover:text-orange-400 hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full text-sm font-semibold bg-gray-900 border border-gray-800 text-gray-300 transition-all hover:border-[#386BFF]/50 hover:text-[#9bb6ff] hover:-translate-y-0.5"
           >
             <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
@@ -117,7 +117,7 @@ export default async function VideoWatchPage({ params }: Props) {
             Video Showcase
           </Link>
 
-          <h1 className="font-serif text-2xl md:text-4xl font-bold text-white mb-4 leading-[1.15] tracking-tight">
+          <h1 className="font-[family-name:var(--font-display)] text-2xl md:text-4xl font-bold text-white mb-4 leading-[1.15] tracking-tight">
             {video.title}
           </h1>
 
@@ -159,7 +159,7 @@ export default async function VideoWatchPage({ params }: Props) {
             <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">See the full service</p>
             <Link
               href={video.relatedService.href}
-              className="text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+              className="text-[#9bb6ff] hover:text-[#9bb6ff] font-semibold transition-colors"
             >
               {video.relatedService.label} →
             </Link>
@@ -170,7 +170,7 @@ export default async function VideoWatchPage({ params }: Props) {
               <h2 className="mb-5 text-xs uppercase tracking-widest">
                 <Link
                   href="/videos"
-                  className="text-white hover:text-orange-400 font-semibold transition-colors"
+                  className="text-white hover:text-[#9bb6ff] font-semibold transition-colors"
                 >
                   More videos →
                 </Link>
@@ -186,7 +186,7 @@ export default async function VideoWatchPage({ params }: Props) {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <p className="text-gray-300 text-sm font-medium group-hover:text-orange-400 transition-colors leading-snug">
+                    <p className="text-gray-300 text-sm font-medium group-hover:text-[#9bb6ff] transition-colors leading-snug">
                       {v.title}
                     </p>
                   </Link>

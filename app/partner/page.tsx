@@ -24,7 +24,6 @@ import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Header           from "@/app/components/header";
 import Footer           from "@/app/components/footer";
-import ScrollDown       from "@/app/components/scrolldown";
 
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
 
@@ -212,7 +211,7 @@ const partnerGraph = buildGraph(
 // PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const partnerTypes = [
-  { icon: FaHandshake, accent: "#f97316", label: "Business Partners",   desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
+  { icon: FaHandshake, accent: "#386BFF", label: "Business Partners",   desc: "Collaborate with enterprises to deliver tailored IT and visualization solutions at scale." },
   { icon: FaGlobe,     accent: "#22d3ee", label: "Global Partners",     desc: "Expand your reach with international collaborations and worldwide digital impact." },
   { icon: FaUsers,     accent: "#a78bfa", label: "Technology Partners", desc: "Work with innovators to build next-gen digital transformation solutions." },
   { icon: FaLightbulb, accent: "#fbbf24", label: "Creative Partners",   desc: "Partner with agencies and designers to create unforgettable digital experiences." },
@@ -226,7 +225,6 @@ const whyItems = [
 
 // Illustrative ticker, mirrors the mechanism on Services/About.
 const pipeline = [
-  { cmd: "global_partners",  out: "30+ active" },
   { cmd: "white_label",      out: "nda protected" },
   { cmd: "response_time",    out: "< 24h" },
   { cmd: "delivery_model",   out: "agile · offshore" },
@@ -235,8 +233,6 @@ const pipeline = [
 ];
 
 const stats = [
-  { value: "30+",  label: "Global Partners" },
-  { value: "500+", label: "Projects Delivered" },
   { value: "5+",   label: "Years of Expertise" },
   { value: "6",    label: "Core Service Domains" },
 ];
@@ -257,9 +253,9 @@ export default function PartnersPage() {
 
         .pt-page{
           --pt-ink:#12141A; --pt-muted:#5B6172; --pt-paper:#F5F6F8; --pt-surface:#FFFFFF;
-          --pt-line:#E4E6EC; --pt-blue:#2E5CFF; --pt-green:#37D67A; --pt-orange:#F97316;
+          --pt-line:#E4E6EC; --pt-blue:#2E5CFF; --pt-green:#37D67A; --pt-orange:#386BFF;
           --c-bg:#080808;--c-surface:#0f0f0f;--c-border:rgba(255,255,255,0.07);
-          --c-orange:#f97316;--c-muted:rgba(255,255,255,0.45);
+          --c-orange:#386BFF;--c-muted:rgba(255,255,255,0.45);
           --ff-serif:'Cormorant Garamond',serif;--ff-sans:'DM Sans',sans-serif;
         }
 
@@ -315,7 +311,7 @@ export default function PartnersPage() {
         @keyframes ptFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.pt-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .pt-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--pt-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:ptFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .pt-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--pt-orange);border:1px solid rgba(56,107,255,.28);background:rgba(56,107,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:ptFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .pt-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--pt-orange);animation:ptPulse 2s ease-in-out infinite;}
         @keyframes ptPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .pt-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:ptFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -381,7 +377,7 @@ export default function PartnersPage() {
         .p-why__num{font-family:var(--ff-serif);font-size:1.1rem;font-weight:600;color:var(--c-orange);opacity:.6;flex-shrink:0;padding-top:2px;}
         .p-why__item-title{font-family:var(--ff-serif);font-size:1.25rem;font-weight:600;color:#fff;margin-bottom:.4rem;}
         .p-why__item-desc{font-family:var(--ff-sans);font-size:.88rem;font-weight:300;line-height:1.7;color:var(--c-muted);}
-        .p-why__visual{position:relative;background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(249,115,22,.02));border:1px solid rgba(249,115,22,.15);border-radius:20px;padding:2.5rem;display:flex;flex-direction:column;gap:1.2rem;}
+        .p-why__visual{position:relative;background:linear-gradient(135deg,rgba(56,107,255,.08),rgba(56,107,255,.02));border:1px solid rgba(56,107,255,.15);border-radius:20px;padding:2.5rem;display:flex;flex-direction:column;gap:1.2rem;}
         .p-why__stats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.2rem;}
         .p-why__stat{display:flex;flex-direction:column;}
         .p-why__stat-num{font-family:var(--ff-serif);font-size:clamp(2.2rem,4vw,3rem);font-weight:700;color:var(--c-orange);line-height:1;margin-bottom:4px;display:block;}
@@ -427,7 +423,8 @@ export default function PartnersPage() {
 
       <Header />
 
-      <div className="pt-page">
+      <div className="vz vz-legacy-type">
+      <main id="main" className="pt-page">
         {/* ══ HERO ════════════════════════════════════════════════════════════ */}
         <section className="pt-hero" aria-labelledby="pt-hero-heading" id="partner-hero">
           <div aria-hidden="true">
@@ -550,10 +547,6 @@ export default function PartnersPage() {
                 <dl className="p-why__stats">
                   <div className="p-why__stat"><dt className="p-why__stat-label">Years of Expertise</dt><dd className="p-why__stat-num">5+</dd></div>
                   <div className="p-why__divider" aria-hidden="true" />
-                  <div className="p-why__stat"><dt className="p-why__stat-label">Projects Delivered</dt><dd className="p-why__stat-num">500+</dd></div>
-                  <div className="p-why__divider" aria-hidden="true" />
-                  <div className="p-why__stat"><dt className="p-why__stat-label">Global Partners</dt><dd className="p-why__stat-num">30+</dd></div>
-                  <div className="p-why__divider" aria-hidden="true" />
                   <div className="p-why__stat"><dt className="p-why__stat-label">Core Service Domains</dt><dd className="p-why__stat-num">6</dd></div>
                 </dl>
               </div>
@@ -617,10 +610,10 @@ export default function PartnersPage() {
         <div className="pt-sticky-cta">
           <ConsultationCTA className="pt-sticky-cta__btn">Partner With Us</ConsultationCTA>
         </div>
-      </div>
+      </main>
 
       <Footer />
-      <ScrollDown />
+      </div>
    
     </>
   );

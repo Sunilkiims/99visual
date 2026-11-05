@@ -70,15 +70,17 @@ export default function TermsPage() {
   return (
     <>
       <Header />
+      <div className="vz vz-legacy-type">
+      <main id="main">
 
       {/* 🔥 HERO */}
       <section className="relative py-24 text-center overflow-hidden bg-black text-white">
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,115,0,0.25),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,107,255,0.25),transparent_60%)]"></div>
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            Terms & <span className="text-orange-500">Conditions</span>
+            Terms & <span className="text-[#386BFF]">Conditions</span>
           </h1>
 
           <p className="text-lg text-gray-300">
@@ -88,8 +90,8 @@ export default function TermsPage() {
       </section>
 
       {/* 📄 CONTENT */}
-      <section className="py-20 px-6 bg-white dark:bg-black">
-        <div className="max-w-5xl mx-auto space-y-10 text-gray-700 dark:text-gray-300">
+      <section className="py-20 px-6 bg-[#111827] dark:bg-black">
+        <div className="max-w-5xl mx-auto space-y-10 text-[#d3d9e8] dark:text-gray-300">
 
           <TermSection
             title="1. Acceptance of Terms"
@@ -157,24 +159,28 @@ export default function TermsPage() {
       {/* 🚀 CTA */}
       <section className="relative py-20 text-center bg-black text-white overflow-hidden">
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,115,0,0.2),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,107,255,0.2),transparent_60%)]"></div>
 
         <div className="relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Have Questions About Our Terms?
           </h2>
-          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+          <p className="text-[#8a94ad] mb-8 max-w-xl mx-auto">
             Our team is here to clarify everything and ensure complete transparency.
           </p>
 
           <a
             href="/contact"
-            className="bg-white text-black px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-gray-200 transition"
+            className="bg-[#111827] text-[#F4F6FC] px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-[#1d2740] transition"
           >
             Contact Us →
           </a>
         </div>
       </section>
+
+      </main>
+
+      </div>
 
       <Footer />
     </>
@@ -188,7 +194,7 @@ export default function TermsPage() {
 function TermSection({ title, desc }: any) {
   return (
     <div>
-      <h2 className="text-xl md:text-2xl font-semibold mb-3 text-gray-900 dark:text-white">
+      <h2 className="text-xl md:text-2xl font-semibold mb-3 text-[#F4F6FC] dark:text-white">
         {title}
       </h2>
       <p className="text-sm md:text-base leading-relaxed">

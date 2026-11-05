@@ -29,6 +29,7 @@ export const PAGE_LAST_MODIFIED = {
   '/services/it-consulting':          '2026-07-28',
   '/services/visualization':          '2026-07-28',
   '/services/cad-gis-photogrammetry': '2026-09-25',
+  '/industries':                     '2026-11-05',
   '/privacy-policy':                  '2026-04-01',
   '/terms':                           '2026-04-01',
 } as const;

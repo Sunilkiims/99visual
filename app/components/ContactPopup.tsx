@@ -242,7 +242,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
             what guarantees the card never exceeds the viewport and the form
             never gets visually cut off — it scrolls internally instead. */}
         <div
-          className="relative flex flex-col border border-gray-200 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.35)]"
+          className="relative flex flex-col border border-white/10 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.35)]"
           style={{
             width: '100%',
             maxWidth: '28rem',
@@ -259,7 +259,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute top-4 right-4 z-10 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/40"
+            className="absolute top-4 right-4 z-10 rounded-full p-2 text-[#8a94ad] transition-colors hover:bg-white/10 hover:text-[#d3d9e8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/40"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -267,22 +267,22 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
           </button>
 
           {/* ── Header ──────────────────────────────────────────────────────── */}
-          <div className="relative shrink-0 overflow-hidden border-b border-gray-100 px-6 pt-7 pb-6">
+          <div className="relative shrink-0 overflow-hidden border-b border-white/10 px-6 pt-7 pb-6">
             <div className="relative flex items-center gap-3.5">
               {/* Icon badge — blue-to-orange gradient echoes the logo's twin-pin mark */}
               <div
                 className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl"
-                style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #F97316 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #386BFF 100%)' }}
               >
                 <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-semibold leading-tight tracking-tight text-gray-900">
+                <h2 className="text-lg font-semibold leading-tight tracking-tight text-[#F4F6FC]">
                   Let's talk
                 </h2>
-                <p className="mt-0.5 text-xs text-gray-500">
+                <p className="mt-0.5 text-xs text-[#A7B0C6]">
                   Typically replies within a business day
                 </p>
               </div>
@@ -296,8 +296,8 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
             {(stage === 'form' || stage === 'sending' || stage === 'error') && (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-500">
-                    Full name <span className="text-[#F97316]">*</span>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
+                    Full name <span className="text-[#386BFF]">*</span>
                   </label>
                   <input
                     ref={firstInputRef}
@@ -306,13 +306,13 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Jordan Lee"
                     disabled={stage === 'sending'}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-[16px] text-gray-900 placeholder-gray-400 transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-gray-50 disabled:opacity-60"
+                    className="w-full rounded-xl border border-white/15 bg-[#111827] px-4 py-3 text-[16px] text-[#F4F6FC] placeholder-[#7d87a0] transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-[#0d1322] disabled:opacity-60"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-500">
-                    Email address <span className="text-[#F97316]">*</span>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
+                    Email address <span className="text-[#386BFF]">*</span>
                   </label>
                   <input
                     type="email"
@@ -320,13 +320,13 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jordan@company.com"
                     disabled={stage === 'sending'}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-[16px] text-gray-900 placeholder-gray-400 transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-gray-50 disabled:opacity-60"
+                    className="w-full rounded-xl border border-white/15 bg-[#111827] px-4 py-3 text-[16px] text-[#F4F6FC] placeholder-[#7d87a0] transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-[#0d1322] disabled:opacity-60"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-500">
-                    Message <span className="text-[#F97316]">*</span>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
+                    Message <span className="text-[#386BFF]">*</span>
                   </label>
                   <textarea
                     rows={4}
@@ -334,7 +334,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell us how we can help..."
                     disabled={stage === 'sending'}
-                    className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-[16px] text-gray-900 placeholder-gray-400 transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-gray-50 disabled:opacity-60"
+                    className="w-full resize-none rounded-xl border border-white/15 bg-[#111827] px-4 py-3 text-[16px] text-[#F4F6FC] placeholder-[#7d87a0] transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-[#0d1322] disabled:opacity-60"
                   />
                 </div>
 
@@ -359,9 +359,9 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
 
                 {/* Captcha */}
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
                     {captchaLoading ? 'Loading question…' : captchaQuestion || 'Verification'}{' '}
-                    <span className="text-[#F97316]">*</span>
+                    <span className="text-[#386BFF]">*</span>
                   </label>
                   <input
                     type="text"
@@ -370,7 +370,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     onChange={(e) => setCaptchaAnswer(e.target.value)}
                     placeholder="Your answer"
                     disabled={stage === 'sending' || captchaLoading}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-[16px] text-gray-900 placeholder-gray-400 transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-gray-50 disabled:opacity-60"
+                    className="w-full rounded-xl border border-white/15 bg-[#111827] px-4 py-3 text-[16px] text-[#F4F6FC] placeholder-[#7d87a0] transition-colors focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 disabled:bg-[#0d1322] disabled:opacity-60"
                   />
                 </div>
 
@@ -389,7 +389,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                   type="button"
                   onClick={handleSubmit}
                   disabled={!isValid || stage === 'sending'}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-black py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-black py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#2f5be0] active:bg-[#386BFF] disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
                 >
                   {stage === 'sending' ? (
                     <>
@@ -409,7 +409,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                   )}
                 </button>
 
-                <p className="text-center text-xs text-gray-400">
+                <p className="text-center text-xs text-[#8a94ad]">
                   Your information is kept private and never shared.
                 </p>
               </div>
@@ -423,19 +423,19 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold tracking-tight text-gray-900">
+                <h3 className="mb-2 text-xl font-semibold tracking-tight text-[#F4F6FC]">
                   Message sent
                 </h3>
-                <p className="mb-1 text-sm leading-relaxed text-gray-500">
+                <p className="mb-1 text-sm leading-relaxed text-[#A7B0C6]">
                   Thanks, <span className="font-medium text-[#4F46E5]">{name}</span> — we've got it.
                 </p>
-                <p className="mb-7 text-sm text-gray-500">
-                  We'll follow up at <span className="text-gray-700">{email}</span> shortly.
+                <p className="mb-7 text-sm text-[#A7B0C6]">
+                  We'll follow up at <span className="text-[#d3d9e8]">{email}</span> shortly.
                 </p>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-full bg-black px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
+                  className="rounded-full bg-black px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#2f5be0] active:bg-[#386BFF] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
                 >
                   Close
                 </button>

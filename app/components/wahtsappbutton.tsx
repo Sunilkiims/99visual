@@ -147,7 +147,7 @@ export default function WhatsAppButton() {
           right: 2px;
           width: 13px;
           height: 13px;
-          background: #f97316;
+          background: #386BFF;
           border-radius: 50%;
           border: 2px solid #080808;
           animation: waDotPulse 2s ease-in-out infinite;

@@ -113,7 +113,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
   if (page > totalPages) notFound()
 
   const { title } = topicCopy(topic)
-  const accent = topic.color || '#f97316'
+  const accent = topic.color || '#386BFF'
   const relatedService = getRelatedService(topic.name, topic.slug)
   const path = topicPath(topic.slug)
   const pageUrl = page > 1 ? `${topicUrl(topic.slug)}?page=${page}` : topicUrl(topic.slug)
@@ -152,7 +152,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <Header />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
         {/* ═══════════════════════ HERO ═══════════════════════ */}
         <section className="relative pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-12 overflow-hidden">
           <div
@@ -167,9 +167,9 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   /about; still read by screen readers and crawlers, and the
                   BreadcrumbList JSON-LD is unchanged. */}
               <nav aria-label="Breadcrumb" className="sr-only">
-                <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
+                <Link href="/" className="hover:text-[#9bb6ff] transition-colors">Home</Link>
                 <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
-                <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
+                <Link href="/insights" className="hover:text-[#9bb6ff] transition-colors">Insights</Link>
                 <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                 <span className="text-gray-400" aria-current="page">{topic.name}</span>
               </nav>
@@ -195,7 +195,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   {relatedService && (
                     <Link
                       href={relatedService.href}
-                      className="inline-flex items-center gap-1 text-orange-400 hover:text-orange-300 transition-colors"
+                      className="inline-flex items-center gap-1 text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors"
                     >
                       Explore our {relatedService.label} services
                       <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
@@ -213,7 +213,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
           {posts.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
               <p className="text-gray-500 text-base sm:text-lg mb-4">No articles in this topic yet.</p>
-              <Link href="/insights" className="text-orange-400 hover:text-orange-300 transition-colors">
+              <Link href="/insights" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                 Browse all insights
               </Link>
             </div>
@@ -274,7 +274,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   })}
                   <Link
                     href="/insights"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-orange-500 text-white hover:bg-orange-400 transition-all duration-200"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-[#386BFF] text-white hover:bg-[#9bb6ff] transition-all duration-200"
                   >
                     All insights <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
                   </Link>

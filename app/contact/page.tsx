@@ -21,7 +21,6 @@ import type { Metadata } from "next";
 import ContactPageClient from "../components/ContactPageClient";
 import Header         from "../components/header";
 import Footer         from "../components/footer";
-import ScrollDown     from "../components/scrolldown";
 
 
 import ContactForm    from "../components/contactform";
@@ -222,7 +221,7 @@ const faqStyles = `
     --c-surface:  #0c0c10;
     --c-surface2: #111118;
     --c-border:   rgba(255,255,255,0.06);
-    --c-orange:   #f97316;
+    --c-orange:   #386BFF;
     --c-muted:    rgba(255,255,255,0.42);
     --c-muted2:   rgba(255,255,255,0.22);
     --ff-serif:   'Cormorant Garamond', serif;
@@ -377,6 +376,8 @@ export default function ContactPage() {
       <style dangerouslySetInnerHTML={{ __html: faqStyles }} />
 
       <Header />
+      <div className="vz vz-legacy-type">
+      <main id="main" className="ct-page-wrap">
 
       {/*
         ContactPageClient renders:
@@ -448,9 +449,9 @@ export default function ContactPage() {
           </dl>
         </div>
       </section>
-
+      </main>
       <Footer />
-      <ScrollDown />
+      </div>
       </>
   );
 }

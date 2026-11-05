@@ -81,18 +81,18 @@ export default function WhyChooseUs() {
           font-size: clamp(2.1rem, 4.2vw, 3.1rem);
           font-weight: 700;
           line-height: 1.12;
-          color: #0f172a;
+          color: var(--vz-text, #F4F6FC);
           margin: 0 0 8px;
           letter-spacing: -.02em;
         }
         .wcu-title span {
           font-style: italic;
-          color: #f97316;
+          color: #6d8fff;
         }
 
         .wcu-divider {
           width: 48px; height: 3px;
-          background: linear-gradient(to right, #f97316, #fbbf24);
+          background: linear-gradient(to right, #6d8fff, #8657FF);
           border-radius: 2px;
           margin: 16px 0 28px;
         }
@@ -100,14 +100,14 @@ export default function WhyChooseUs() {
         .wcu-para {
           font-size: 15px;
           line-height: 1.75;
-          color: #475569;
+          color: var(--vz-muted, #A7B0C6);
           margin: 0 0 14px;
         }
         .wcu-para.highlight {
           font-size: 15px;
           font-weight: 600;
-          color: #1e293b;
-          border-left: 3px solid #f97316;
+          color: var(--vz-text, #F4F6FC);
+          border-left: 3px solid #6d8fff;
           padding-left: 14px;
           margin-top: 20px;
         }
@@ -121,21 +121,21 @@ export default function WhyChooseUs() {
           content: '';
           position: absolute; inset: 0;
           border-radius: 24px;
-          background: linear-gradient(135deg, rgba(249,115,22,0.06) 0%, transparent 60%);
+          background: linear-gradient(135deg, rgba(56,107,255,0.06) 0%, transparent 60%);
           z-index: 1; pointer-events: none;
         }
 
         .wcu-glow-ring {
           position: absolute; inset: -2px;
           border-radius: 26px;
-          background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(251,191,36,0.2), transparent 60%);
+          background: linear-gradient(135deg, rgba(56,107,255,0.3), rgba(251,191,36,0.2), transparent 60%);
           z-index: -1;
         }
 
         .wcu-float-tag {
           position: absolute;
           bottom: 24px; left: -20px;
-          background: #fff;
+          background: var(--vz-bg-2, #111827);
           border-radius: 14px;
           padding: 10px 16px;
           box-shadow: 0 8px 32px rgba(0,0,0,0.12);
@@ -158,13 +158,13 @@ export default function WhyChooseUs() {
           50%       { box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
         }
 
-        .wcu-float-text-main { font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1; }
-        .wcu-float-text-sub  { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .wcu-float-text-main { font-size: 13px; font-weight: 700; color: var(--vz-text, #F4F6FC); line-height: 1; }
+        .wcu-float-text-sub  { font-size: 11px; color: var(--vz-muted, #A7B0C6); margin-top: 2px; }
 
         /* ── Section: top padding only, zero bottom ── */
         .wcu-section {
           padding: 96px 0 0;
-          background: #f8fafc;
+          background: var(--vz-bg, #080B12);
           overflow: hidden;
           border: none;
           outline: none;

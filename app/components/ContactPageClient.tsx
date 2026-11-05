@@ -45,7 +45,7 @@ const testimonials = [
     company: "Stacklane Technologies",
     initial: "P",
     imgSlug: "priya",
-    palette: { bg: "#1a0e00", border: "#f97316", text: "#fb923c" },
+    palette: { bg: "#1a0e00", border: "#386BFF", text: "#9bb6ff" },
   },
   {
     quote:
@@ -103,9 +103,11 @@ const testimonials = [
 // STATS DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: 150, suffix: "+",   label: "Projects delivered" },
-  { value: 8,   suffix: "yrs", label: "Industry experience" },
-  { value: 6,   suffix: "+",   label: "Countries served" },
+  // Verifiable, consistent figures only (founding year and countries match
+  // the Organization schema; response time matches the 24-business-hour promise).
+  { value: 2020, suffix: "",   label: "Founded in Bengaluru" },
+  { value: 6,   suffix: "",    label: "Core services" },
+  { value: 5,   suffix: "",    label: "Countries served" },
   { value: 1,   suffix: "day", label: "Response guarantee" },
 ];
 
@@ -222,8 +224,8 @@ export default function ContactPageClient() {
           --c-surface2: #111118;
           --c-border:   rgba(255,255,255,0.06);
           --c-border2:  rgba(255,255,255,0.10);
-          --c-orange:   #f97316;
-          --c-orange2:  #fb923c;
+          --c-orange:   #386BFF;
+          --c-orange2:  #9bb6ff;
           --c-indigo:   #6366f1;
           --c-muted:    rgba(255,255,255,0.42);
           --c-muted2:   rgba(255,255,255,0.22);
@@ -293,7 +295,7 @@ export default function ContactPageClient() {
         @keyframes ctFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.ct-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .ct-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--c-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .ct-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--c-orange);border:1px solid rgba(56,107,255,.28);background:rgba(56,107,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .ct-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--c-orange);animation:ctPulse 2s ease-in-out infinite;}
         @keyframes ctPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .ct-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:ctFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -336,7 +338,7 @@ export default function ContactPageClient() {
         .ct-proof::before {
           content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
           width:700px;height:200px;border-radius:50%;
-          background:radial-gradient(ellipse at center,rgba(249,115,22,.07) 0%,transparent 70%);
+          background:radial-gradient(ellipse at center,rgba(56,107,255,.07) 0%,transparent 70%);
           pointer-events:none;
         }
         .ct-proof__inner {
@@ -350,7 +352,7 @@ export default function ContactPageClient() {
         }
         .ct-proof__stat:first-child{padding-left:0;}
         .ct-proof__stat:last-child{border-right:none;}
-        .ct-proof__stat:hover{background:rgba(249,115,22,.03);}
+        .ct-proof__stat:hover{background:rgba(56,107,255,.03);}
         .ct-proof__num {
           font-family:var(--ff-serif);font-size:clamp(2rem,3.5vw,3rem);font-weight:700;
           line-height:1;color:#fff;display:flex;align-items:baseline;gap:3px;margin-bottom:.5rem;
@@ -400,7 +402,7 @@ export default function ContactPageClient() {
         }
         .ct-testi__masthead-rule {
           flex:1;height:1px;margin:0 16px;
-          background:linear-gradient(90deg,rgba(249,115,22,.3),transparent);
+          background:linear-gradient(90deg,rgba(56,107,255,.3),transparent);
         }
         .ct-testi__masthead-issue {
           font-family:var(--ff-sans);font-size:9px;font-weight:500;
@@ -465,7 +467,7 @@ export default function ContactPageClient() {
           position:absolute;
           inset:-3px;
           border-radius:50%;
-          background:conic-gradient(var(--avatar-ring, #f97316) 0deg 270deg, transparent 270deg);
+          background:conic-gradient(var(--avatar-ring, #386BFF) 0deg 270deg, transparent 270deg);
           z-index:0;
         }
         .ct-testi__avatar-wrap::after {
@@ -547,7 +549,7 @@ export default function ContactPageClient() {
         }
         .ct-testi__nav-btn:hover {
           border-color:var(--c-orange);color:var(--c-orange);
-          background:rgba(249,115,22,.08);
+          background:rgba(56,107,255,.08);
         }
 
         /* ══ RIGHT HALF — unchanged ═════════════════════════════════════════ */
@@ -573,12 +575,12 @@ export default function ContactPageClient() {
         .ct-reach__strip-divider{width:1px;background:var(--c-border);align-self:stretch;flex-shrink:0;}
         .ct-reach__strip-icon {
           width:44px;height:44px;border-radius:12px;
-          background:rgba(249,115,22,.10);border:1px solid rgba(249,115,22,.20);
+          background:rgba(56,107,255,.10);border:1px solid rgba(56,107,255,.20);
           display:flex;align-items:center;justify-content:center;
           color:var(--c-orange);flex-shrink:0;
           transition:background .18s,border-color .18s;
         }
-        .ct-reach__strip-item:hover .ct-reach__strip-icon{background:rgba(249,115,22,.18);border-color:rgba(249,115,22,.4);}
+        .ct-reach__strip-item:hover .ct-reach__strip-icon{background:rgba(56,107,255,.18);border-color:rgba(56,107,255,.4);}
         .ct-reach__strip-label{font-family:var(--ff-sans);font-size:9px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--c-muted2);display:block;margin-bottom:4px;}
         .ct-reach__strip-value{font-family:var(--ff-sans);font-size:.95rem;font-weight:500;color:#fff;display:block;line-height:1.3;}
         .ct-reach__commit {

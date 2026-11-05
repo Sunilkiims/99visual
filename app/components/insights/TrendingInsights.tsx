@@ -31,21 +31,21 @@ export default function TrendingInsights({ posts }: { posts: TrendingPost[] }) {
     >
       <Reveal>
         <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-gray-500">
-          <span className="h-px w-8 bg-gradient-to-r from-orange-500 to-transparent" aria-hidden="true" />
-          <Flame className="w-3.5 h-3.5 text-orange-400" strokeWidth={2} aria-hidden="true" />
+          <span className="h-px w-8 bg-gradient-to-r from-[#386BFF] to-transparent" aria-hidden="true" />
+          <Flame className="w-3.5 h-3.5 text-[#9bb6ff]" strokeWidth={2} aria-hidden="true" />
           <h2 id="trending-heading" className="font-semibold">Trending Now</h2>
         </div>
         <ol className="grid grid-cols-1 md:grid-cols-2 gap-px rounded-2xl overflow-hidden border border-gray-800 bg-gray-800">
           {posts.map((post, i) => {
-            const accent = post.category.color || '#f97316'
+            const accent = post.category.color || '#386BFF'
             return (
-              <li key={post.id} className="bg-gray-950">
+              <li key={post.id} className="bg-[#080B12]">
                 <Link
                   href={'/insights/' + post.slug}
                   className="group flex items-start gap-4 sm:gap-5 p-4 sm:p-5 h-full transition-colors hover:bg-gray-900/70"
                 >
                   <span
-                    className="shrink-0 text-2xl sm:text-3xl font-semibold leading-none tabular-nums text-gray-700 transition-colors group-hover:text-orange-400"
+                    className="shrink-0 text-2xl sm:text-3xl font-semibold leading-none tabular-nums text-gray-700 transition-colors group-hover:text-[#9bb6ff]"
                     aria-hidden="true"
                   >
                     {String(i + 1).padStart(2, '0')}
@@ -57,7 +57,7 @@ export default function TrendingInsights({ posts }: { posts: TrendingPost[] }) {
                     >
                       {post.category.name}
                     </span>
-                    <span className="block text-sm sm:text-[15px] font-semibold text-white leading-snug line-clamp-2 transition-colors group-hover:text-orange-400">
+                    <span className="block text-sm sm:text-[15px] font-semibold text-white leading-snug line-clamp-2 transition-colors group-hover:text-[#9bb6ff]">
                       {post.title}
                     </span>
                     <span className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-gray-500">

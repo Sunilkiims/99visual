@@ -100,10 +100,10 @@ export default function VideosIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }}
       />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
 
-          <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-[1.1] tracking-tight">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-5xl font-bold text-white mb-4 leading-[1.1] tracking-tight">
             Video Showcase
           </h1>
           <p className="text-gray-400 mb-12 max-w-2xl">
@@ -129,7 +129,7 @@ export default function VideosIndexPage() {
                     </div>
                   </div>
                 </div>
-                <p className="text-white font-semibold group-hover:text-orange-400 transition-colors leading-snug mb-1">
+                <p className="text-white font-semibold group-hover:text-[#9bb6ff] transition-colors leading-snug mb-1">
                   {video.title}
                 </p>
                 <p className="text-gray-500 text-sm line-clamp-2">{video.description}</p>

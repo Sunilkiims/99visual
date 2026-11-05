@@ -157,7 +157,7 @@ function ShareButtons({ slug, title }: { slug: string; title: string }) {
     encodeURIComponent(title + ' ' + url)
 
   const cls =
-    'group flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 border border-gray-800 text-gray-400 transition-all hover:border-orange-500/50 hover:text-orange-400 hover:-translate-y-0.5'
+    'group flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 border border-gray-800 text-gray-400 transition-all hover:border-[#386BFF]/50 hover:text-[#9bb6ff] hover:-translate-y-0.5'
 
   return (
     <div className="flex items-center gap-2.5">
@@ -243,7 +243,7 @@ export default async function InsightPostPage({ params }: Props) {
   ])
   const relatedPosts = [...sameTopicPosts, ...latestPosts].slice(0, RELATED_LIMIT)
 
-  const accent = post.category.color || '#f97316'
+  const accent = post.category.color || '#386BFF'
   const CategoryIcon = getCategoryIcon(post.category.slug, post.category.name)
   // Title first: it is the most specific signal of what the article covers.
   const relatedService =
@@ -323,7 +323,7 @@ export default async function InsightPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
 
@@ -336,11 +336,11 @@ export default async function InsightPostPage({ params }: Props) {
                     still in the HTML for screen readers and crawlers, and
                     still described by the BreadcrumbList JSON-LD. */}
                 <nav aria-label="Breadcrumb" className="sr-only">
-                  <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
+                  <Link href="/" className="hover:text-[#9bb6ff] transition-colors">Home</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
-                  <Link href="/insights" className="hover:text-orange-400 transition-colors">Insights</Link>
+                  <Link href="/insights" className="hover:text-[#9bb6ff] transition-colors">Insights</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
-                  <Link href={topicPath(post.category.slug)} className="hover:text-orange-400 transition-colors">{post.category.name}</Link>
+                  <Link href={topicPath(post.category.slug)} className="hover:text-[#9bb6ff] transition-colors">{post.category.name}</Link>
                   <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
                   <span className="text-gray-500 truncate max-w-xs" aria-current="page">{post.title}</span>
                 </nav>
@@ -371,7 +371,7 @@ export default async function InsightPostPage({ params }: Props) {
                 {/* Fluid title — scales continuously between mobile and
                     desktop instead of jumping at a single breakpoint. */}
                 <h1
-                  className="font-serif font-bold text-white mb-5 leading-[1.08] tracking-tight"
+                  className="font-[family-name:var(--font-display)] font-bold text-white mb-5 leading-[1.08] tracking-tight"
                   style={{ fontSize: 'clamp(1.4rem, 1.1rem + 1.3vw, 2.1rem)', textWrap: 'balance' as any }}
                 >
                   {post.title}
@@ -395,8 +395,8 @@ export default async function InsightPostPage({ params }: Props) {
                 <div className="flex items-center justify-between gap-6 mb-10 pb-8 border-b border-gray-800 flex-wrap">
                   <div className="flex items-center gap-4 flex-wrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
-                        <span className="text-orange-400 text-sm font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-[#386BFF]/15 border border-[#386BFF]/30 flex items-center justify-center">
+                        <span className="text-[#9bb6ff] text-sm font-semibold">
                           {post.author.name.charAt(0)}
                         </span>
                       </div>
@@ -494,8 +494,8 @@ export default async function InsightPostPage({ params }: Props) {
               {post.author.bio && (
                 <div className="mt-8 p-7 bg-gray-900/60 border border-gray-800 rounded-3xl">
                   <div className="flex items-start gap-5">
-                    <div className="w-14 h-14 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-orange-400 text-xl font-semibold">
+                    <div className="w-14 h-14 rounded-full bg-[#386BFF]/15 border border-[#386BFF]/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#9bb6ff] text-xl font-semibold">
                         {post.author.name.charAt(0)}
                       </span>
                     </div>
@@ -535,7 +535,7 @@ export default async function InsightPostPage({ params }: Props) {
                         <div className="flex items-center gap-2.5">
                           <div
                             className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: cat.color || '#f97316' }}
+                            style={{ backgroundColor: cat.color || '#386BFF' }}
                           />
                           <span className="text-gray-400 group-hover:text-white text-sm transition-colors">
                             {cat.name}
@@ -553,7 +553,7 @@ export default async function InsightPostPage({ params }: Props) {
                   <h3 className="text-white font-semibold mb-3 text-xs uppercase tracking-widest">Related Service</h3>
                   <Link
                     href={relatedService.href}
-                    className="group flex items-center justify-between gap-3 text-gray-300 hover:text-orange-400 transition-colors text-sm font-medium"
+                    className="group flex items-center justify-between gap-3 text-gray-300 hover:text-[#9bb6ff] transition-colors text-sm font-medium"
                   >
                     <span>{relatedService.label} services</span>
                     <ChevronRight className="w-4 h-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5" strokeWidth={2} aria-hidden="true" />
@@ -585,7 +585,7 @@ export default async function InsightPostPage({ params }: Props) {
                             </div>
                           )}
                         </div>
-                        <p className="text-gray-300 text-sm font-medium group-hover:text-orange-400 transition-colors line-clamp-2 leading-snug">
+                        <p className="text-gray-300 text-sm font-medium group-hover:text-[#9bb6ff] transition-colors line-clamp-2 leading-snug">
                           {related.title}
                         </p>
                         <p className="text-gray-600 text-xs mt-1.5">{related.readingTime} min read</p>

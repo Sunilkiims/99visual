@@ -246,13 +246,13 @@ export default async function InsightsPage({ searchParams }: Props) {
         />
       )}
       <Header />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
 
         {/* ═══════════════════════ HERO ═══════════════════════ */}
         <section className="relative pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-12 px-4 sm:px-6 md:px-8 overflow-hidden">
           {/* Ambient glow + faint grid, same visual language as howwework.tsx
               elsewhere on the site — CSS-only, no extra image assets. */}
-          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_0%,rgba(249,115,22,0.14),transparent_45%)]" />
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_0%,rgba(56,107,255,0.14),transparent_45%)]" />
           <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_20%,rgba(56,189,248,0.10),transparent_42%)]" />
           <div
             className="pointer-events-none absolute inset-0 -z-10 opacity-60"
@@ -268,7 +268,7 @@ export default async function InsightsPage({ searchParams }: Props) {
           <div className="max-w-6xl mx-auto">
             <Reveal>
               <div className="text-center mb-9 sm:mb-11">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-4 sm:mb-5">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-[#386BFF]/10 text-[#9bb6ff] border border-[#386BFF]/20 mb-4 sm:mb-5">
                   Insights &amp; Perspectives
                 </span>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold text-white mb-3 leading-[1.15] tracking-tight">
@@ -312,7 +312,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     </div>
 
                     <Search
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-orange-400 z-10"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-[#9bb6ff] z-10"
                       strokeWidth={2}
                     />
                     <input
@@ -321,7 +321,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                       aria-label="Search articles"
                       defaultValue={params.search}
                       placeholder="Search articles..."
-                      className="relative z-10 w-full bg-gray-900/70 rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:bg-gray-900 focus:ring-4 focus:ring-orange-500/10"
+                      className="relative z-10 w-full bg-gray-900/70 rounded-full pl-11 pr-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-200 focus:bg-gray-900 focus:ring-4 focus:ring-[#386BFF]/10"
                     />
                   </div>
                 </form>
@@ -473,7 +473,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     aria-current={!params.category ? 'page' : undefined}
                     className={`shrink-0 snap-start px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                       !params.category
-                        ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                        ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
                         : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                     }`}
                   >
@@ -489,7 +489,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                         aria-current={active ? 'page' : undefined}
                         className={`shrink-0 snap-start inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                           active
-                            ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                            ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
                             : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                         }`}
                       >
@@ -510,7 +510,7 @@ export default async function InsightsPage({ searchParams }: Props) {
           <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto mb-12 sm:mb-16">
             <Reveal>
               <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-gray-500">
-                <span className="h-px w-8 bg-gradient-to-r from-orange-500 to-transparent" aria-hidden="true" />
+                <span className="h-px w-8 bg-gradient-to-r from-[#386BFF] to-transparent" aria-hidden="true" />
                 Featured Read
               </div>
               <Link href={'/insights/' + featuredPost.slug} className="group block">
@@ -524,7 +524,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                       <div
                         className="absolute inset-0"
                         style={{
-                          background: `radial-gradient(circle at 50% 50%, ${featuredPost.category.color || '#f97316'}14, transparent 65%)`,
+                          background: `radial-gradient(circle at 50% 50%, ${featuredPost.category.color || '#386BFF'}14, transparent 65%)`,
                         }}
                       />
                       {featuredPost.featuredImage ? (
@@ -537,20 +537,20 @@ export default async function InsightsPage({ searchParams }: Props) {
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-6xl sm:text-8xl font-bold text-orange-500/10">99</span>
+                          <span className="text-6xl sm:text-8xl font-bold text-[#386BFF]/10">99</span>
                         </div>
                       )}
                     </div>
                     <div className="p-6 sm:p-8 lg:p-11 flex flex-col justify-center">
                       <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#386BFF]/10 text-[#9bb6ff] border border-[#386BFF]/20">
                           Featured
                         </span>
                         <span
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
                           style={{
-                            backgroundColor: (featuredPost.category.color || '#f97316') + '15',
-                            color: featuredPost.category.color || '#f97316',
+                            backgroundColor: (featuredPost.category.color || '#386BFF') + '15',
+                            color: featuredPost.category.color || '#386BFF',
                           }}
                         >
                           {(() => {
@@ -560,7 +560,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                           {featuredPost.category.name}
                         </span>
                       </div>
-                      <h2 className="text-xl sm:text-2xl lg:text-[1.75rem] font-semibold text-white mb-3 leading-snug tracking-tight transition-colors group-hover:text-orange-400">
+                      <h2 className="text-xl sm:text-2xl lg:text-[1.75rem] font-semibold text-white mb-3 leading-snug tracking-tight transition-colors group-hover:text-[#9bb6ff]">
                         {featuredPost.title}
                       </h2>
                       {featuredPost.excerpt && (
@@ -606,7 +606,7 @@ export default async function InsightsPage({ searchParams }: Props) {
             <Reveal>
               <div className="text-center py-16 sm:py-20">
                 <p className="text-gray-500 text-base sm:text-lg mb-4">No articles found</p>
-                <Link href="/insights" className="text-orange-400 hover:text-orange-300 transition-colors">
+                <Link href="/insights" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                   View all articles
                 </Link>
               </div>
@@ -660,7 +660,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                         aria-current={p === page ? 'page' : undefined}
                         className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                           p === page
-                            ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/30'
+                            ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
                             : 'bg-gray-900/70 border border-gray-800 text-gray-400 hover:border-gray-700 hover:text-white'
                         }`}
                       >
@@ -688,11 +688,11 @@ export default async function InsightsPage({ searchParams }: Props) {
         <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto pb-20 sm:pb-28">
           <Reveal>
             <div className="relative rounded-[28px] sm:rounded-[32px] border border-gray-800 bg-gradient-to-br from-gray-900 to-gray-950 overflow-hidden p-7 sm:p-10 lg:p-14">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(249,115,22,0.14),transparent_45%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,107,255,0.14),transparent_45%)]" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_80%,rgba(56,189,248,0.10),transparent_45%)]" />
 
               <div className="relative max-w-2xl">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-orange-500/10 text-orange-400 border border-orange-500/20 mb-4 sm:mb-5">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium tracking-wide bg-[#386BFF]/10 text-[#9bb6ff] border border-[#386BFF]/20 mb-4 sm:mb-5">
                   Turn Insight Into Action
                 </span>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white mb-3 sm:mb-4 leading-snug tracking-tight">
@@ -722,7 +722,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                 </div>
 
                 <ConsultationCTA
-                  className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-orange-500 text-white text-sm font-semibold transition-all duration-200 hover:bg-orange-400 hover:-translate-y-0.5 shadow-lg shadow-orange-500/20"
+                  className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#386BFF] text-white text-sm font-semibold transition-all duration-200 hover:bg-[#9bb6ff] hover:-translate-y-0.5 shadow-lg shadow-[#386BFF]/20"
                   ariaLabel="Book a free consultation with 99 Visual Solutions"
                   postTitle="Insights Page CTA"
                   postUrl="/insights"

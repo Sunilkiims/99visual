@@ -44,9 +44,9 @@ const PartnerMarquee = () => {
           font-weight: 500;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #f97316;
-          background: rgba(249, 115, 22, 0.08);
-          border: 1px solid rgba(249, 115, 22, 0.2);
+          color: #386BFF;
+          background: rgba(56,107,255, 0.08);
+          border: 1px solid rgba(56,107,255, 0.2);
           padding: 5px 14px;
           border-radius: 100px;
         }
@@ -55,7 +55,7 @@ const PartnerMarquee = () => {
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: #f97316;
+          background: #386BFF;
           display: inline-block;
           animation: pmPulse 2s ease-in-out infinite;
         }
@@ -76,7 +76,7 @@ const PartnerMarquee = () => {
 
         .pm-title em {
           font-style: normal;
-          background: linear-gradient(135deg, #f97316, #fb923c);
+          background: linear-gradient(135deg, #386BFF, #9bb6ff);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -85,7 +85,7 @@ const PartnerMarquee = () => {
         .pm-divider {
           width: 48px;
           height: 3px;
-          background: linear-gradient(to right, #f97316, #fbbf24);
+          background: linear-gradient(to right, #386BFF, #fbbf24);
           border-radius: 2px;
         }
 
@@ -93,8 +93,8 @@ const PartnerMarquee = () => {
         .pm-strip {
           position: relative;
           overflow: hidden;
-          border-top: 1px solid rgba(249, 115, 22, 0.15);
-          border-bottom: 1px solid rgba(249, 115, 22, 0.15);
+          border-top: 1px solid rgba(56,107,255, 0.15);
+          border-bottom: 1px solid rgba(56,107,255, 0.15);
           background: #fff;
         }
 

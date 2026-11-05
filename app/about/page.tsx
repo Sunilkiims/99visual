@@ -30,13 +30,14 @@ import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
 import Header           from "../components/header";
 import Footer           from "../components/footer";
-import ScrollDown       from "../components/scrolldown";
 
 
 import TabAbout         from "../components/tabstory";
 import WhyChooseUs      from "../components/Story";
 import DataPrivacy      from "../components/dataprivacy";
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
+import { Breadcrumbs, ServiceCTA, StickyCTA } from "@/app/components/premium/service/ServiceBlocks";
+import { TechnologyCloud } from "@/app/components/premium/home/HomeSections";
 
 import {
   BASE,
@@ -181,25 +182,20 @@ const aboutGraph = buildGraph(
 // PAGE DATA — hero ticker + stats strip (content-only, no copy changes to
 // existing sections below)
 // ─────────────────────────────────────────────────────────────────────────────
-const pipeline = [
-  { cmd: "founded_2020",     out: "bengaluru, india" },
-  { cmd: "projects_shipped", out: "500+ delivered" },
-  { cmd: "specializations",  out: "6 core domains" },
-  { cmd: "global_reach",     out: "india · usa · uk · uae · au" },
-  { cmd: "response_time",    out: "< 24h" },
-  { cmd: "client_model",     out: "true team extension" },
-];
 
-const stats = [
-  { value: "5+",   label: "Years Active" },
-  { value: "500+", label: "Projects Delivered" },
-  { value: "6",    label: "Specializations" },
-  { value: "5",    label: "Countries Served" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
+// Facts shown here are the verifiable ones (founding year, disciplines,
+// countries in the Organization schema). A project count is not shown until
+// a single confirmed figure exists (the site previously said both 200+ and 500+).
+const facts = [
+  { value: "2020", label: "Founded in Bengaluru" },
+  { value: "6", label: "Specializations" },
+  { value: "5", label: "Countries served" },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -208,254 +204,56 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(aboutGraph) }}
       />
-
-      <style>{`
-
-        .ab-page{
-          --ab-ink:#12141A; --ab-muted:#5B6172; --ab-paper:#F5F6F8; --ab-surface:#FFFFFF;
-          --ab-line:#E4E6EC; --ab-blue:#2E5CFF; --ab-green:#37D67A; --ab-orange:#F97316;
-        }
-        .ab-sr-only {
-          position:absolute!important;width:1px!important;height:1px!important;
-          padding:0!important;margin:-1px!important;overflow:hidden!important;
-          clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
-        }
-
-        /* ══ HERO — same mechanism as Services: fixed viewport height,
-           docked ticker bar. Background is now a flat black screen at
-           every breakpoint (no banner image / no gradient overlays). ══ */
-        .ab-hero {
-          position:relative;height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background-color:#000;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .ab-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .ab-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .ab-hero {
-            background-color:#000;
-          }
-        }
-        .ab-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .ab-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .ab-corner--tl{top:28px;left:28px;border-top:1px solid var(--ab-blue);border-left:1px solid var(--ab-blue);}
-        .ab-corner--tr{top:28px;right:28px;border-top:1px solid var(--ab-blue);border-right:1px solid var(--ab-blue);}
-        .ab-corner--bl{bottom:120px;left:28px;border-bottom:1px solid var(--ab-blue);border-left:1px solid var(--ab-blue);}
-        .ab-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--ab-blue);border-right:1px solid var(--ab-blue);}
-
-        .ab-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:9rem 1.5rem 1.5rem;
-          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .ab-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .ab-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .ab-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        @media(max-height:520px){
-          .ab-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .ab-hero__eyebrow{ margin-bottom:1.1rem; }
-          .ab-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .ab-hero__rule{ margin-bottom:.8rem; }
-          .ab-hero__sub{ margin-bottom:1.2rem; }
-        }
-
-        .ab-hero__content{animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes abFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.ab-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        .ab-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--ab-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .ab-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--ab-orange);animation:abPulse 2s ease-in-out infinite;}
-        @keyframes abPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .ab-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .ab-hero__h1 em{font-style:normal;color:var(--ab-blue);}
-        .ab-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--ab-blue),transparent);margin:0 0 1.4rem;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.ab-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--ab-blue),transparent);}}
-        .ab-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.ab-hero__sub{margin:0 auto 2.6rem;}}
-        .ab-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.ab-hero__actions{justify-content:center;}}
-        .ab-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--ab-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;border:none;cursor:pointer;}
-        .ab-hero__btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .ab-hero__btn--ghost{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;border-radius:10px;text-decoration:none;transition:background .2s ease,border-color .2s ease;}
-        .ab-hero__btn--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);}
-
-        .ab-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .ab-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .ab-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:abScroll 34s linear infinite;}
-        .ab-hero__ticker-bar:hover .ab-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .ab-ticker__track{ animation-duration:22s; } }
-        @keyframes abScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .ab-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .ab-ticker__item b{color:rgba(255,255,255,.45);}
-        .ab-ticker__pass{color:var(--ab-green);}
-        .ab-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
-        @media(max-height:520px){
-          .ab-hero__ticker-bar{ padding-top:.75rem; }
-          .ab-ticker__caption{ display:none; }
-        }
-
-        /* ══ STATS STRIP ═════════════════════════════════════════════════ */
-        .ab-stats{background:var(--ab-surface);border-top:1px solid var(--ab-line);border-bottom:1px solid var(--ab-line);padding:2.8rem 1.5rem;}
-        .ab-stats__inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;}
-        @media(max-width:640px){.ab-stats__inner{grid-template-columns:repeat(2,1fr);}}
-        .ab-stat__val{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.4vw,2.4rem);font-weight:700;line-height:1;color:var(--ab-ink);margin-bottom:.3rem;}
-        .ab-stat__val span{color:var(--ab-blue);}
-        .ab-stat__lbl{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:400;color:var(--ab-muted);}
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .ab-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--ab-line);}
-        @media(max-width:760px){.ab-sticky-cta{display:flex;justify-content:center;}}
-        .ab-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--ab-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        /* ══ CTA STRIP — matches Services .sv-cta exactly ══════════════ */
-        .ab-cta{background:var(--ab-surface);border-top:1px solid var(--ab-line);padding:6rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
-        .ab-cta__orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--ab-blue),transparent 70%);opacity:.05;top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(70px);pointer-events:none;}
-        .ab-cta__inner{position:relative;z-index:10;max-width:580px;margin:0 auto;}
-        .ab-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--ab-blue);margin-bottom:1.2rem;display:block;}
-        .ab-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.5vw,2.8rem);font-weight:700;line-height:1.18;letter-spacing:-.015em;color:var(--ab-ink);margin:0 0 1rem;}
-        .ab-cta__h2 em{font-style:normal;color:var(--ab-blue);}
-        .ab-cta__sub{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--ab-muted);margin-bottom:2.6rem;}
-        .ab-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--ab-ink);padding:14px 32px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .ab-cta__btn:hover{background:var(--ab-blue);transform:translateY(-2px);}
-
-        @media(max-width:480px){.ab-hero__actions{flex-direction:column;align-items:stretch;}.ab-hero__btn--primary,.ab-hero__btn--ghost{justify-content:center;}}
-        @media(prefers-reduced-motion:reduce){
-          .ab-page *,.ab-page *::before,.ab-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
-      <div className="ab-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section
-          className="ab-hero"
-          aria-labelledby="ab-hero-heading"
-          id="about-hero"
-        >
-          <div aria-hidden="true">
-            <div className="ab-hero__grain" />
-          </div>
-          <div className="ab-corner ab-corner--tl" aria-hidden="true" />
-          <div className="ab-corner ab-corner--tr" aria-hidden="true" />
-          <div className="ab-corner ab-corner--bl" aria-hidden="true" />
-          <div className="ab-corner ab-corner--br" aria-hidden="true" />
-
-          <nav className="ab-sr-only" aria-label="Breadcrumb">
-            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li>
-                <a href="/"><span>Home</span></a>
-              </li>
-              <li>
-                <a href="/about" aria-current="page"><span>About</span></a>
-              </li>
-            </ol>
-          </nav>
-
-          <div className="ab-hero__inner">
-            <div className="ab-hero__content">
-              <div className="ab-hero__eyebrow" aria-hidden="true">
-                <span className="ab-hero__dot" />
-                Est. 2020 · Bangalore, India
-              </div>
-              <h1 className="ab-hero__h1" id="ab-hero-heading">
-                We build what<br /><em>matters</em>
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <section className="vz-hero vz-hero--page" aria-labelledby="ab-hero-heading">
+            <div className="vz-grid-bg" aria-hidden="true" />
+            <div className="vz-aurora vz-hero__aurora-a" aria-hidden="true" />
+            <div className="vz-container vz-page-hero">
+              <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/about", label: "About" }]} />
+              <p className="vz-eyebrow">Est. 2020 · Bangalore, India</p>
+              <h1 id="ab-hero-heading" className="vz-display">
+                We build what <span className="vz-grad-text">matters</span>
               </h1>
-              <div className="ab-hero__rule" aria-hidden="true" />
-              <p className="ab-hero__sub">
-                From bold web experiences to precise spatial data — 99 Visual
-                Solutions turns complex ideas into digital realities that
-                drive real, measurable growth.
+              <p className="vz-lead vz-page-hero__lead">
+                From bold web experiences to precise spatial data — 99 Visual Solutions turns complex ideas into digital realities that drive real, measurable growth.
               </p>
-              <div className="ab-hero__actions">
-                <ConsultationCTA className="ab-hero__btn--primary" ariaLabel="Get a free project quote from 99 Visual Solutions">
-                  Get a Free Quote
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </ConsultationCTA>
-                <a href="/services" className="ab-hero__btn--ghost" aria-label="Explore all services offered by 99 Visual Solutions">
-                  Our Services
-                </a>
+              <div className="vz-btn-row">
+                <ConsultationCTA className="vz-btn vz-btn--primary" postTitle="About" postUrl="/about">Get a Free Quote</ConsultationCTA>
+                <a href="/services" className="vz-btn vz-btn--ghost" aria-label="Explore all services offered by 99 Visual Solutions">Our Services</a>
               </div>
-            </div>
-          </div>
-
-          <div className="ab-hero__ticker-bar" aria-hidden="true">
-            <div className="ab-ticker">
-              <div className="ab-ticker__track">
-                {[...pipeline, ...pipeline].map((p, i) => (
-                  <span className="ab-ticker__item" key={i}>
-                    <b>$</b> {p.cmd} <span className="ab-ticker__pass">→ {p.out} ✓</span>
-                  </span>
+              <ul className="vz-hero__facts" aria-label="Company at a glance">
+                {facts.map((f) => (
+                  <li key={f.label}><strong>{f.value}</strong><span>{f.label}</span></li>
                 ))}
-              </div>
+              </ul>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ══ STATS STRIP ═════════════════════════════════════════════════ */}
-        <div className="ab-stats" aria-label="Company statistics">
-          <div className="ab-stats__inner">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <div className="ab-stat__val">
-                  {s.value.includes("+")
-                    ? <>{s.value.replace("+", "")}<span>+</span></>
-                    : s.value}
-                </div>
-                <div className="ab-stat__lbl">{s.label}</div>
-              </div>
-            ))}
+          <div id="about-content" className="vz-legacy">
+            <TabAbout />
+            <WhyChooseUs />
           </div>
-        </div>
 
-        {/* ══ MAIN CONTENT — unchanged ══════════════════════════════════════ */}
-        <main id="about-content" aria-label="About page content">
-          <TabAbout />
-          <WhyChooseUs />
-          <DataPrivacy />
+          <TechnologyCloud />
+
+          <div className="vz-legacy">
+            <DataPrivacy />
+          </div>
+
+          <ServiceCTA
+            id="ab-cta-heading"
+            eyebrow="Let's Build Together"
+            title={<>Ready to bring your <em>vision to life?</em></>}
+            sub="Talk to our team for a free, no-obligation strategy consultation. We'll help you scope your project and map a clear path to launch."
+            postTitle="About"
+            postUrl="/about"
+          />
         </main>
-
-        {/* ══ CTA STRIP ════════════════════════════════════════════════════ */}
-        <section className="ab-cta" aria-labelledby="ab-cta-heading">
-          <div className="ab-cta__orb" aria-hidden="true" />
-          <div className="ab-cta__inner">
-            <span className="ab-cta__eyebrow">Let's Build Together</span>
-            <h2 className="ab-cta__h2" id="ab-cta-heading">
-              Ready to bring your<br /><em>vision to life?</em>
-            </h2>
-            <p className="ab-cta__sub">
-              Talk to our team for a free, no-obligation strategy consultation.
-              We'll help you scope your project and map a clear path to launch.
-            </p>
-            <ConsultationCTA className="ab-cta__btn" ariaLabel="Get a free consultation from 99 Visual Solutions">
-              Get a Free Consultation
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </ConsultationCTA>
-          </div>
-        </section>
-
-        {/* ══ STICKY MOBILE CTA ═══════════════════════════════════════════ */}
-        <div className="ab-sticky-cta">
-          <ConsultationCTA className="ab-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
-        </div>
+        <Footer />
+        <StickyCTA postTitle="About" postUrl="/about" />
       </div>
-
-      <Footer />
-      <ScrollDown />
-     
     </>
   );
 }

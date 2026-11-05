@@ -47,7 +47,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Header           from "@/app/components/header";
 import Footer           from "@/app/components/footer";
-import ScrollDown       from "@/app/components/scrolldown";
 
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
 import JobApplyButton   from "@/app/components/JobApplyButton";
@@ -446,7 +445,7 @@ const careerAreas = [
   },
   {
     icon:     FaRocket,
-    accent:   "#f97316",
+    accent:   "#386BFF",
     label:    "Digital Marketing",
     jobTitle: "Digital Marketing Specialist",
     desc:     "Drive measurable growth with SEO, paid campaigns, and data-backed creative strategies.",
@@ -490,9 +489,7 @@ const pipeline = [
 
 const stats = [
   { value: "4",    label: "Open Roles" },
-  { value: "500+", label: "Projects Delivered" },
   { value: "5+",   label: "Years Active" },
-  { value: "50+",  label: "Team Members" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -511,11 +508,11 @@ export default function CareersPage() {
 
         .cr-page{
           --cr-ink:#12141A; --cr-muted:#5B6172; --cr-paper:#F5F6F8; --cr-surface:#FFFFFF;
-          --cr-line:#E4E6EC; --cr-blue:#2E5CFF; --cr-green:#37D67A; --cr-orange:#F97316;
+          --cr-line:#E4E6EC; --cr-blue:#2E5CFF; --cr-green:#37D67A; --cr-orange:#386BFF;
           --c-bg:      #080808;
           --c-surface: #0f0f0f;
           --c-border:  rgba(255,255,255,0.07);
-          --c-orange:  #f97316;
+          --c-orange:  #386BFF;
           --c-indigo:  #6366f1;
           --c-muted:   rgba(255,255,255,0.45);
           --ff-serif:  'Cormorant Garamond', serif;
@@ -581,7 +578,7 @@ export default function CareersPage() {
         @keyframes crFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:960px){.cr-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
 
-        .cr-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cr-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
+        .cr-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cr-orange);border:1px solid rgba(56,107,255,.28);background:rgba(56,107,255,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
         .cr-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cr-orange);animation:crPulse 2s ease-in-out infinite;}
         @keyframes crPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
         .cr-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:crFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
@@ -648,7 +645,7 @@ export default function CareersPage() {
         .c-why__num{font-family:var(--ff-serif);font-size:1.1rem;font-weight:600;color:var(--c-orange);opacity:.6;flex-shrink:0;padding-top:2px;}
         .c-why__item-title{font-family:var(--ff-serif);font-size:1.25rem;font-weight:600;color:#fff;margin-bottom:.4rem;}
         .c-why__item-desc{font-family:var(--ff-sans);font-size:.88rem;font-weight:300;line-height:1.7;color:var(--c-muted);}
-        .c-why__visual{position:relative;background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(249,115,22,.02));border:1px solid rgba(249,115,22,.15);border-radius:20px;padding:2.5rem;display:flex;flex-direction:column;gap:1.2rem;}
+        .c-why__visual{position:relative;background:linear-gradient(135deg,rgba(56,107,255,.08),rgba(56,107,255,.02));border:1px solid rgba(56,107,255,.15);border-radius:20px;padding:2.5rem;display:flex;flex-direction:column;gap:1.2rem;}
         .c-why__stat{display:flex;flex-direction:column;}
         .c-why__stat-num{font-family:var(--ff-serif);font-size:clamp(2.2rem,4vw,3rem);font-weight:700;color:var(--c-orange);line-height:1;margin-bottom:4px;display:block;}
         .c-why__stat-label{font-family:var(--ff-sans);font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--c-muted);display:block;}
@@ -664,8 +661,8 @@ export default function CareersPage() {
         .c-role-row__title{font-family:var(--ff-serif);font-size:1.3rem;font-weight:600;color:#fff;letter-spacing:-.01em;}
         .c-role-row__meta{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;}
         .c-role-row__tag{font-family:var(--ff-sans);font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:100px;border:1px solid var(--c-border);color:var(--c-muted);}
-        .c-role-row__tag--open{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3);color:var(--c-orange);}
-        .c-role-row__apply{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;border:1px solid rgba(249,115,22,.3);background:rgba(249,115,22,.07);backdrop-filter:blur(8px);padding:10px 22px;border-radius:100px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s ease;}
+        .c-role-row__tag--open{background:rgba(56,107,255,.1);border-color:rgba(56,107,255,.3);color:var(--c-orange);}
+        .c-role-row__apply{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;border:1px solid rgba(56,107,255,.3);background:rgba(56,107,255,.07);backdrop-filter:blur(8px);padding:10px 22px;border-radius:100px;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .2s ease;}
         .c-role-row__apply:hover{background:var(--c-orange);color:#080808;border-color:var(--c-orange);transform:translateY(-1px);}
 
         /* ══ FAQ — unchanged ════════════════════════════════════════════════ */
@@ -708,7 +705,8 @@ export default function CareersPage() {
 
       <Header />
 
-      <div className="cr-page">
+      <div className="vz vz-legacy-type">
+      <main id="main" className="cr-page">
         {/* ══ HERO ════════════════════════════════════════════════════════════ */}
         <section className="cr-hero" aria-labelledby="cr-hero-heading" id="careers-hero">
           <div aria-hidden="true">
@@ -830,10 +828,6 @@ export default function CareersPage() {
               <dl className="c-why__visual" aria-label="99 Visual Solutions — company highlights">
                 <div className="c-why__stat"><dt className="c-why__stat-label">Years of expertise</dt><dd className="c-why__stat-num">5+</dd></div>
                 <div className="c-why__divider" aria-hidden="true" />
-                <div className="c-why__stat"><dt className="c-why__stat-label">Projects delivered</dt><dd className="c-why__stat-num">500+</dd></div>
-                <div className="c-why__divider" aria-hidden="true" />
-                <div className="c-why__stat"><dt className="c-why__stat-label">Team members globally</dt><dd className="c-why__stat-num">50+</dd></div>
-                <div className="c-why__divider" aria-hidden="true" />
                 <div className="c-why__stat"><dt className="c-why__stat-label">Core service domains</dt><dd className="c-why__stat-num">6</dd></div>
               </dl>
             </div>
@@ -946,10 +940,10 @@ export default function CareersPage() {
         <div className="cr-sticky-cta">
           <Link href="/contact" className="cr-sticky-cta__btn">Apply Today</Link>
         </div>
-      </div>
+      </main>
 
       <Footer />
-      <ScrollDown />
+      </div>
       </>
   );
 }

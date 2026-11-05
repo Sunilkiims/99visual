@@ -126,17 +126,17 @@ export default async function CaseStudyPage({ params }: Props) {
     <>
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }} />
-      <main className="min-h-screen bg-gray-950">
+      <main id="main" className="vz min-h-screen">
         <article className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-24">
 
           <nav aria-label="Breadcrumb" className="mb-8 text-sm text-gray-500">
-            <Link href="/work" className="hover:text-orange-400 transition-colors">Our Work</Link>
+            <Link href="/work" className="hover:text-[#9bb6ff] transition-colors">Our Work</Link>
             <span className="mx-2" aria-hidden="true">/</span>
             <span className="text-gray-400">Case study</span>
           </nav>
 
-          <p className="text-orange-400 text-xs font-semibold uppercase tracking-widest mb-3">Case study</p>
-          <h1 className="font-serif text-3xl md:text-5xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+          <p className="text-[#9bb6ff] text-xs font-semibold uppercase tracking-widest mb-3">Case study</p>
+          <h1 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
             {study.title}
           </h1>
           <p className="text-gray-300 text-lg leading-relaxed mb-8">{study.description}</p>
@@ -160,7 +160,7 @@ export default async function CaseStudyPage({ params }: Props) {
               <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
                 <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Live site</dt>
                 <dd className="text-sm">
-                  <a href={study.liveUrl} target="_blank" rel="noopener" className="text-orange-400 hover:text-orange-300 transition-colors break-all">
+                  <a href={study.liveUrl} target="_blank" rel="noopener" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors break-all">
                     {study.liveUrl.replace(/^https?:\/\/(www\.)?/, '')}
                   </a>
                 </dd>
@@ -169,7 +169,7 @@ export default async function CaseStudyPage({ params }: Props) {
             <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
               <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Service</dt>
               <dd className="text-sm">
-                <Link href={study.service.href} className="text-orange-400 hover:text-orange-300 transition-colors">
+                <Link href={study.service.href} className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                   {study.service.label}
                 </Link>
               </dd>
@@ -183,7 +183,7 @@ export default async function CaseStudyPage({ params }: Props) {
           )}
 
           <section aria-labelledby="context-heading" className="mb-14">
-            <h2 id="context-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-5">The starting point</h2>
+            <h2 id="context-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-5">The starting point</h2>
             <div className="space-y-5">
               {study.context.map((p, i) => (
                 <p key={i} className="text-gray-400 leading-relaxed">{p}</p>
@@ -193,12 +193,12 @@ export default async function CaseStudyPage({ params }: Props) {
 
           {study.workflow && (
             <section aria-labelledby="workflow-heading" className="mb-14">
-              <h2 id="workflow-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">{study.workflow.heading}</h2>
+              <h2 id="workflow-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">{study.workflow.heading}</h2>
               {study.workflow.intro && <p className="text-gray-500 text-sm mb-6">{study.workflow.intro}</p>}
               <ol className={`space-y-4 ${study.workflow.intro ? '' : 'mt-6'}`}>
                 {study.workflow.steps.map((w, i) => (
                   <li key={w.step} className="flex gap-4 p-5 rounded-2xl bg-gray-900/60 border border-gray-800">
-                    <span className="flex-none w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 text-sm font-bold flex items-center justify-center" aria-hidden="true">
+                    <span className="flex-none w-8 h-8 rounded-full bg-[#386BFF]/15 text-[#9bb6ff] text-sm font-bold flex items-center justify-center" aria-hidden="true">
                       {i + 1}
                     </span>
                     <div>
@@ -213,9 +213,9 @@ export default async function CaseStudyPage({ params }: Props) {
 
           {study.gallery && study.gallery.length > 0 && (
             <section aria-labelledby="gallery-heading" className="mb-14">
-              <h2 id="gallery-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">Screenshots</h2>
+              <h2 id="gallery-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">Screenshots</h2>
               <p className="text-gray-500 text-sm mb-6">
-                Captured from the live site{study.liveUrl && <>{' '}(<a href={study.liveUrl} target="_blank" rel="noopener" className="text-orange-400 hover:text-orange-300">visit it</a>)</>}.
+                Captured from the live site{study.liveUrl && <>{' '}(<a href={study.liveUrl} target="_blank" rel="noopener" className="text-[#9bb6ff] hover:text-[#9bb6ff]">visit it</a>)</>}.
               </p>
               <div className="grid grid-cols-1 gap-8">
                 {study.gallery.map((g) => (
@@ -231,7 +231,7 @@ export default async function CaseStudyPage({ params }: Props) {
           )}
 
           <section aria-labelledby="delivered-heading" className="mb-14">
-            <h2 id="delivered-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">What we delivered</h2>
+            <h2 id="delivered-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">What we delivered</h2>
             <p className="text-gray-500 text-sm mb-8">Each item lists where it can be verified.</p>
             <div className="space-y-10">
               {study.workstreams.map((ws) => (
@@ -256,7 +256,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
           {study.tests && study.tests.length > 0 && (
             <section aria-labelledby="tests-heading" className="mb-14">
-              <h2 id="tests-heading" className="font-serif text-2xl md:text-3xl font-bold text-white mb-2">Test coverage</h2>
+              <h2 id="tests-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">Test coverage</h2>
               <p className="text-gray-500 text-sm mb-6">
                 Status is stated per row: a defined scenario, a test written in code, or a test with a run on record.
               </p>
@@ -324,10 +324,10 @@ export default async function CaseStudyPage({ params }: Props) {
               <p className="text-gray-400 text-sm">See the full service, or tell us what you’re working with.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href={study.service.href} className="px-5 py-2.5 rounded-full text-sm font-semibold border border-gray-700 text-gray-200 hover:border-orange-500/50 hover:text-orange-400 transition-colors">
+              <Link href={study.service.href} className="px-5 py-2.5 rounded-full text-sm font-semibold border border-gray-700 text-gray-200 hover:border-[#386BFF]/50 hover:text-[#9bb6ff] transition-colors">
                 View the service
               </Link>
-              <Link href="/contact" className="px-5 py-2.5 rounded-full text-sm font-semibold bg-orange-500 text-white hover:bg-orange-400 transition-colors">
+              <Link href="/contact" className="px-5 py-2.5 rounded-full text-sm font-semibold bg-[#386BFF] text-white hover:bg-[#9bb6ff] transition-colors">
                 Get in touch
               </Link>
             </div>
@@ -336,13 +336,13 @@ export default async function CaseStudyPage({ params }: Props) {
           {others.length > 0 && (
             <nav aria-labelledby="more-heading">
               <h2 id="more-heading" className="mb-5 text-xs uppercase tracking-widest">
-                <Link href="/work" className="text-white hover:text-orange-400 font-semibold transition-colors">More of our work →</Link>
+                <Link href="/work" className="text-white hover:text-[#9bb6ff] font-semibold transition-colors">More of our work →</Link>
               </h2>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {others.map((c) => (
                   <li key={c.slug}>
-                    <Link href={`/work/${c.slug}`} className="group block p-5 rounded-2xl bg-gray-900/60 border border-gray-800 hover:border-orange-500/40 transition-colors">
-                      <p className="text-gray-200 font-medium group-hover:text-orange-400 transition-colors mb-1">{c.title}</p>
+                    <Link href={`/work/${c.slug}`} className="group block p-5 rounded-2xl bg-gray-900/60 border border-gray-800 hover:border-[#386BFF]/40 transition-colors">
+                      <p className="text-gray-200 font-medium group-hover:text-[#9bb6ff] transition-colors mb-1">{c.title}</p>
                       <p className="text-gray-500 text-sm line-clamp-2">{c.description}</p>
                     </Link>
                   </li>

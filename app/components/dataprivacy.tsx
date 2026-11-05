@@ -45,8 +45,8 @@ export default function DataPrivacy() {
           --c-surface:    #0f0f0f;
           --c-surface2:   #141414;
           --c-border:     rgba(255,255,255,0.07);
-          --c-orange:     #f97316;
-          --c-orange-dim: rgba(249,115,22,0.12);
+          --c-orange:     #386BFF;
+          --c-orange-dim: rgba(56,107,255,0.12);
           --c-muted:      rgba(255,255,255,0.45);
           --c-muted2:     rgba(255,255,255,0.65);
           --ff-serif:     'Cormorant Garamond', serif;
@@ -81,7 +81,7 @@ export default function DataPrivacy() {
         }
         .dp-orb--1 {
           width: 440px; height: 440px;
-          background: radial-gradient(circle, #f97316, transparent 70%);
+          background: radial-gradient(circle, #386BFF, transparent 70%);
           top: -160px; right: -120px; opacity: .06;
         }
         .dp-orb--2 {
@@ -113,8 +113,8 @@ export default function DataPrivacy() {
           font-family: var(--ff-sans); font-size: 10px; font-weight: 500;
           letter-spacing: .22em; text-transform: uppercase;
           color: var(--c-orange);
-          border: 1px solid rgba(249,115,22,.28);
-          background: rgba(249,115,22,.07);
+          border: 1px solid rgba(56,107,255,.28);
+          background: rgba(56,107,255,.07);
           padding: 6px 16px; border-radius: 100px;
           margin-bottom: 1.6rem;
           backdrop-filter: blur(8px);
@@ -168,11 +168,11 @@ export default function DataPrivacy() {
         .dp-card::before {
           content: ''; position: absolute;
           top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(249,115,22,.5), transparent);
+          background: linear-gradient(90deg, transparent, rgba(56,107,255,.5), transparent);
           opacity: 0; transition: opacity .25s ease;
         }
         .dp-card:hover {
-          border-color: rgba(249,115,22,.25);
+          border-color: rgba(56,107,255,.25);
           transform: translateY(-4px);
           box-shadow: 0 20px 40px rgba(0,0,0,.4);
         }
@@ -181,7 +181,7 @@ export default function DataPrivacy() {
         .dp-card__icon {
           width: 44px; height: 44px; border-radius: 10px;
           background: var(--c-orange-dim);
-          border: 1px solid rgba(249,115,22,.2);
+          border: 1px solid rgba(56,107,255,.2);
           display: flex; align-items: center; justify-content: center;
           color: var(--c-orange);
           margin-bottom: 1.2rem; flex-shrink: 0;
@@ -215,14 +215,14 @@ export default function DataPrivacy() {
           font-family: var(--ff-sans); font-size: 11px; font-weight: 600;
           letter-spacing: .12em; text-transform: uppercase;
           color: #080808;
-          background: linear-gradient(135deg, #fb923c, #f97316);
+          background: linear-gradient(135deg, #9bb6ff, #386BFF);
           padding: 14px 34px; border-radius: 100px; text-decoration: none;
-          box-shadow: 0 8px 32px rgba(249,115,22,.35);
+          box-shadow: 0 8px 32px rgba(56,107,255,.35);
           transition: transform .2s ease, box-shadow .2s ease;
         }
         .dp-cta__btn:hover {
           transform: translateY(-2px) scale(1.04);
-          box-shadow: 0 14px 40px rgba(249,115,22,.5);
+          box-shadow: 0 14px 40px rgba(56,107,255,.5);
         }
       `}</style>
 

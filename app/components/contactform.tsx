@@ -150,10 +150,10 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                     </span>
                     {/* h2, not h1: /contact already has its page H1 in the hero
                         (ContactPageClient). Same classes, so it looks identical. */}
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 mb-3 leading-[1.15] tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#F4F6FC] mb-3 leading-[1.15] tracking-tight">
                         Let&apos;s build something great together
                     </h2>
-                    <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
+                    <p className="text-[#A7B0C6] text-sm sm:text-base leading-relaxed">
                         We&apos;d love to hear about your project. Send us a message and we&apos;ll get back to you within 24 hours.
                     </p>
                 </div>
@@ -163,19 +163,19 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                     {/* Form card */}
                     <motion.form
                         onSubmit={handleSubmit}
-                        className="lg:col-span-3 bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300 p-5 sm:p-8 space-y-4"
+                        className="lg:col-span-3 bg-[#111827] border border-white/10 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300 p-5 sm:p-8 space-y-4"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
                         <div>
-                            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Send a message</h2>
-                            <p className="text-gray-500 text-sm mt-1">Fill in the form below and we&apos;ll respond shortly.</p>
+                            <h2 className="text-lg sm:text-xl font-semibold text-[#F4F6FC]">Send a message</h2>
+                            <p className="text-[#A7B0C6] text-sm mt-1">Fill in the form below and we&apos;ll respond shortly.</p>
                         </div>
 
                         <div className="space-y-4 pt-1">
                             <div>
-                                <label htmlFor="name" className="block text-xs font-medium text-gray-600 mb-1.5">
+                                <label htmlFor="name" className="block text-xs font-medium text-[#A7B0C6] mb-1.5">
                                     Your name
                                 </label>
                                 <input
@@ -193,7 +193,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                             </div>
 
                             <div>
-                                <label htmlFor="email" className="block text-xs font-medium text-gray-600 mb-1.5">
+                                <label htmlFor="email" className="block text-xs font-medium text-[#A7B0C6] mb-1.5">
                                     Your email
                                 </label>
                                 <input
@@ -211,7 +211,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                             </div>
 
                             <div>
-                                <label htmlFor="message" className="block text-xs font-medium text-gray-600 mb-1.5">
+                                <label htmlFor="message" className="block text-xs font-medium text-[#A7B0C6] mb-1.5">
                                     Your message
                                 </label>
                                 <textarea
@@ -228,9 +228,9 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                             </div>
 
                             <div>
-                                <label htmlFor="captcha" className="block text-xs font-medium text-gray-600 mb-1.5">
+                                <label htmlFor="captcha" className="block text-xs font-medium text-[#A7B0C6] mb-1.5">
                                     Quick check: solve{' '}
-                                    <span className="font-semibold text-gray-800">
+                                    <span className="font-semibold text-[#F4F6FC]">
                                         {captchaLoading ? 'Loading…' : captchaQuestion || 'Unavailable'}
                                     </span>
                                 </label>
@@ -291,17 +291,17 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
                     >
-                        <div className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-sm p-5 sm:p-7">
-                            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-5">
+                        <div className="bg-[#111827] border border-white/10 rounded-2xl sm:rounded-3xl shadow-sm p-5 sm:p-7">
+                            <h2 className="text-lg sm:text-xl font-semibold text-[#F4F6FC] mb-4 sm:mb-5">
                                 Why reach out to us?
                             </h2>
-                            <div className="space-y-4 text-sm text-gray-600">
+                            <div className="space-y-4 text-sm text-[#A7B0C6]">
                                 <div className="flex items-start gap-3.5">
                                     <span className="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
                                         <FaHandshake className="text-blue-500" size={16} />
                                     </span>
                                     <p className="pt-1.5 leading-relaxed">
-                                        <strong className="text-gray-900">Trusted by clients</strong> across industries — from startups to enterprise.
+                                        <strong className="text-[#F4F6FC]">Trusted by clients</strong> across industries — from startups to enterprise.
                                     </p>
                                 </div>
                                 <div className="flex items-start gap-3.5">
@@ -309,7 +309,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                         <FaPhoneFlip className="text-blue-500" size={14} />
                                     </span>
                                     <p className="pt-1.5 leading-relaxed">
-                                        <strong className="text-gray-900">Phone:</strong>{' '}
+                                        <strong className="text-[#F4F6FC]">Phone:</strong>{' '}
                                         <a href="tel:+919205737431" className="hover:text-blue-600 transition-colors">
                                             +91-9205737431
                                         </a>
@@ -320,7 +320,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                         <FaEnvelope className="text-blue-500" size={14} />
                                     </span>
                                     <p className="pt-1.5 leading-relaxed break-all">
-                                        <strong className="text-gray-900">Email:</strong>{' '}
+                                        <strong className="text-[#F4F6FC]">Email:</strong>{' '}
                                         <a href="mailto:info@99visual.com" className="hover:text-blue-600 transition-colors">
                                             info@99visual.com
                                         </a>
@@ -331,7 +331,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                         <FaLocationDot className="text-blue-500" size={14} />
                                     </span>
                                     <p className="pt-1.5 leading-relaxed">
-                                        <strong className="text-gray-900">Address:</strong>
+                                        <strong className="text-[#F4F6FC]">Address:</strong>
                                         <br />
                                         Site No-13, Ground Floor, Idgha Road,
                                         <br />
@@ -355,20 +355,20 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                 href="https://calendly.com/sunilkiims"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center w-full mt-6 bg-gray-900 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-900/10"
+                                className="inline-flex items-center justify-center w-full mt-6 bg-[#386BFF] text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-[#2f5be0] focus:outline-none focus:ring-4 focus:ring-gray-900/10"
                             >
                                 📞 Schedule a Free Call
                             </a>
                         </div>
 
-                        <div className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl shadow-sm p-5 sm:p-7 flex items-center justify-between gap-4 flex-wrap">
+                        <div className="bg-[#111827] border border-white/10 rounded-2xl sm:rounded-3xl shadow-sm p-5 sm:p-7 flex items-center justify-between gap-4 flex-wrap">
                             <div className="flex gap-2.5">
                                 <a
                                     href="https://www.facebook.com/profile.php?id=100093639888151"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label="Follow us on Facebook"
-                                    className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
+                                    className="w-10 h-10 rounded-xl bg-[#0d1322] flex items-center justify-center text-[#A7B0C6] transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
                                 >
                                     <FaFacebookF size={16} />
                                 </a>
@@ -377,7 +377,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label="Follow us on LinkedIn"
-                                    className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
+                                    className="w-10 h-10 rounded-xl bg-[#0d1322] flex items-center justify-center text-[#A7B0C6] transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
                                 >
                                     <FaLinkedinIn size={16} />
                                 </a>
@@ -386,7 +386,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label="Follow us on Instagram"
-                                    className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
+                                    className="w-10 h-10 rounded-xl bg-[#0d1322] flex items-center justify-center text-[#A7B0C6] transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
                                 >
                                     <FaInstagram size={16} />
                                 </a>
@@ -395,12 +395,12 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label="Follow us on X"
-                                    className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
+                                    className="w-10 h-10 rounded-xl bg-[#0d1322] flex items-center justify-center text-[#A7B0C6] transition-colors duration-200 hover:bg-blue-50 hover:text-blue-600"
                                 >
                                     <FaXTwitter size={16} />
                                 </a>
                             </div>
-                            <p className="text-xs text-gray-400 italic">We typically respond within 24 hours.</p>
+                            <p className="text-xs text-[#8a94ad] italic">We typically respond within 24 hours.</p>
                         </div>
                     </motion.div>
                 </div>

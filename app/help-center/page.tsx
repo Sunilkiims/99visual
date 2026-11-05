@@ -123,16 +123,18 @@ export default function HelpCenterPage() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(helpGraph) }}
       />
       <Header />
+      <div className="vz vz-legacy-type">
+      <main id="main">
 
       {/* 🔥 HERO */}
       <section className="relative py-24 text-center overflow-hidden bg-black text-white">
 
         {/* Glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,115,0,0.25),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(56,107,255,0.25),transparent_60%)]"></div>
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            How Can We <span className="text-orange-500">Help You?</span>
+            How Can We <span className="text-[#386BFF]">Help You?</span>
           </h1>
 
           <p className="text-lg text-gray-300">
@@ -141,7 +143,7 @@ export default function HelpCenterPage() {
 
           <Link
             href="#support"
-            className="inline-block mt-8 bg-gradient-to-r from-orange-500 to-orange-400 px-8 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
+            className="inline-block mt-8 bg-gradient-to-r from-[#386BFF] to-[#9bb6ff] px-8 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition"
           >
             Get Support
           </Link>
@@ -156,7 +158,7 @@ export default function HelpCenterPage() {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-10 w-10 text-orange-400"
+            className="h-10 w-10 text-[#9bb6ff]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -168,13 +170,13 @@ export default function HelpCenterPage() {
       </section>
 
       {/* 📚 SUPPORT OPTIONS */}
-      <section id="support" className="py-20 px-6 bg-white dark:bg-black">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-gray-900 dark:text-white">
+      <section id="support" className="py-20 px-6 bg-[#111827] dark:bg-black">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-[#F4F6FC] dark:text-white">
           Support Categories
         </h2>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
-          <Card icon={<FaQuestionCircle />} color="text-orange-500" title="FAQs" desc="Find quick answers to commonly asked questions about our services." />
+          <Card icon={<FaQuestionCircle />} color="text-[#386BFF]" title="FAQs" desc="Find quick answers to commonly asked questions about our services." />
           <Card icon={<FaBookOpen />} color="text-indigo-500" title="Guides" desc="Step-by-step tutorials to help you use our services effectively." />
           <Card icon={<FaTools />} color="text-green-500" title="Technical Help" desc="Resolve issues related to websites, apps, and IT infrastructure." />
           <Card icon={<FaHeadset />} color="text-red-500" title="Contact Support" desc="Reach out to our experts for personalized assistance." />
@@ -182,8 +184,8 @@ export default function HelpCenterPage() {
       </section>
 
       {/* 💡 FAQ SECTION */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-zinc-950">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-gray-900 dark:text-white">
+      <section className="py-20 px-6 bg-[#0d1322] dark:bg-zinc-950">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14 text-[#F4F6FC] dark:text-white">
           Frequently Asked Questions
         </h2>
 
@@ -197,24 +199,28 @@ export default function HelpCenterPage() {
       {/* 🚀 CTA */}
       <section className="relative py-20 text-center bg-black text-white overflow-hidden">
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,115,0,0.2),transparent_60%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,107,255,0.2),transparent_60%)]"></div>
 
         <div className="relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Still Need Help?
           </h2>
-          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+          <p className="text-[#8a94ad] mb-8 max-w-xl mx-auto">
             Our experts are ready to assist you with tailored solutions and quick support.
           </p>
 
           <Link
             href="/contact"
-            className="bg-white text-black px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-gray-200 transition"
+            className="bg-[#111827] text-[#F4F6FC] px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-[#1d2740] transition"
           >
             Contact Support →
           </Link>
         </div>
       </section>
+
+      </main>
+
+      </div>
 
       <Footer />
     </>
@@ -227,19 +233,19 @@ export default function HelpCenterPage() {
 
 function Card({ icon, title, desc, color }: any) {
   return (
-    <div className="group relative p-[1px] rounded-2xl bg-gradient-to-br from-orange-500/20 to-transparent hover:from-orange-500/40 transition">
+    <div className="group relative p-[1px] rounded-2xl bg-gradient-to-br from-[#386BFF]/20 to-transparent hover:from-[#386BFF]/40 transition">
 
-      <div className="bg-white dark:bg-zinc-900 border border-white/20 dark:border-white/10 backdrop-blur-xl p-6 rounded-2xl text-center shadow-lg hover:shadow-2xl transition transform group-hover:-translate-y-2">
+      <div className="bg-[#111827] dark:bg-zinc-900 border border-white/20 dark:border-white/10 backdrop-blur-xl p-6 rounded-2xl text-center shadow-lg hover:shadow-2xl transition transform group-hover:-translate-y-2">
 
-        <div className={`w-14 h-14 flex items-center justify-center mx-auto mb-4 rounded-xl bg-gray-100 dark:bg-zinc-800 ${color} text-xl group-hover:scale-110 transition`}>
+        <div className={`w-14 h-14 flex items-center justify-center mx-auto mb-4 rounded-xl bg-[#161f33] dark:bg-zinc-800 ${color} text-xl group-hover:scale-110 transition`}>
           {icon}
         </div>
 
-        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white group-hover:text-orange-500 transition">
+        <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white group-hover:text-[#386BFF] transition">
           {title}
         </h3>
 
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <p className="text-[#A7B0C6] dark:text-[#8a94ad] text-sm">
           {desc}
         </p>
       </div>
@@ -253,11 +259,11 @@ function Card({ icon, title, desc, color }: any) {
 
 function FAQ({ question, answer }: any) {
   return (
-    <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-md border border-gray-100 dark:border-zinc-800">
-      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+    <div className="bg-[#111827] dark:bg-zinc-900 p-6 rounded-xl shadow-md border border-white/10 dark:border-zinc-800">
+      <h3 className="font-semibold text-[#F4F6FC] dark:text-white mb-2">
         {question}
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 text-sm">
+      <p className="text-[#A7B0C6] dark:text-[#8a94ad] text-sm">
         {answer}
       </p>
     </div>
