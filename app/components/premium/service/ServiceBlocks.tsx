@@ -41,7 +41,6 @@ export function ServiceHero({
   image,
   imageAlt,
   ctaLabel = 'Get a Free Quote',
-  ctaAria,
   postTitle,
   postUrl,
   secondary,
@@ -55,6 +54,7 @@ export function ServiceHero({
   image: string;
   imageAlt: string;
   ctaLabel?: string;
+  /** Ignored: the visible label is the accessible name (WCAG 2.5.3). */
   ctaAria?: string;
   postTitle: string;
   postUrl: string;
@@ -341,7 +341,6 @@ export function ServiceCTA({
   title,
   sub,
   ctaLabel = 'Get a Free Consultation',
-  ctaAria,
   postTitle,
   postUrl,
 }: {
@@ -350,6 +349,7 @@ export function ServiceCTA({
   title: ReactNode;
   sub: ReactNode;
   ctaLabel?: string;
+  /** Ignored: the visible label is the accessible name (WCAG 2.5.3). */
   ctaAria?: string;
   postTitle: string;
   postUrl: string;

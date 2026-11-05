@@ -808,3 +808,9 @@
   --c-orange: #7d9cff;
 }
 .vz :is(.c-area-card__job, .p-why__num, .c-why__num) { opacity: 1 !important; }
+.vz-svcdetail { margin-top: clamp(56px, 7vw, 96px); display: grid; gap: 28px; }
+.vz-svcdetail ul { display: grid; gap: 0; border-top: 1px solid var(--vz-line); }
+@media (min-width: 900px) { .vz-svcdetail ul { grid-template-columns: 1fr 1fr; column-gap: 56px; } }
+.vz-svcdetail li { display: grid; gap: 12px; align-content: start; justify-items: start; padding: 28px 0; border-bottom: 1px solid var(--vz-line); }
+.vz-svcdetail .vz-body { font-size: 0.95rem; }
+.vz-svcdetail .vz-link-arrow { color: #9bb6ff; font-size: 0.9rem; }

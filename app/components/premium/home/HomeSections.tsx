@@ -13,6 +13,7 @@ import { INDUSTRIES } from '@/lib/industries';
 import { caseStudies } from '@/lib/case-studies';
 import { videos } from '@/lib/videos';
 import { CONTACT_EMAIL, PHONE } from '@/lib/schema';
+import { SERVICE_DETAILS } from '@/lib/service-details';
 
 const svc = (k: ServiceKey) => SERVICES.find((s) => s.key === k)!;
 
@@ -90,6 +91,19 @@ export function ServiceBentoGrid() {
             );
           })}
         </ul>
+
+        <div className="vz-svcdetail">
+          <h3 className="vz-eyebrow">Services in detail</h3>
+          <ul role="list">
+            {SERVICE_DETAILS.map((d) => (
+              <li key={d.href}>
+                <h4 className="vz-h3">{d.heading}</h4>
+                <p className="vz-body">{d.body}</p>
+                <Link href={d.href} className="vz-link-arrow">{d.anchor} →</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
