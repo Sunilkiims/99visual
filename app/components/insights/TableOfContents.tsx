@@ -65,7 +65,7 @@ export default function TableOfContents({ headings, accent, variant }: Props) {
   const linkClasses = (id: string, level: 2 | 3) =>
     `block py-1.5 border-l text-sm leading-snug transition-colors ${
       level === 3 ? 'pl-7' : 'pl-4'
-    } ${activeId === id ? 'font-medium' : 'border-transparent text-gray-500 hover:text-gray-300'}`
+    } ${activeId === id ? 'font-medium' : 'border-transparent text-[#8a94ad] hover:text-gray-300'}`
 
   if (variant === 'desktop') {
     return (

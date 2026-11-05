@@ -134,7 +134,7 @@ export default function HelpCenterPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            How Can We <span className="text-[#386BFF]">Help You?</span>
+            How Can We <span className="text-[#9bb6ff]">Help You?</span>
           </h1>
 
           <p className="text-lg text-gray-300">
@@ -176,7 +176,7 @@ export default function HelpCenterPage() {
         </h2>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
-          <Card icon={<FaQuestionCircle />} color="text-[#386BFF]" title="FAQs" desc="Find quick answers to commonly asked questions about our services." />
+          <Card icon={<FaQuestionCircle />} color="text-[#9bb6ff]" title="FAQs" desc="Find quick answers to commonly asked questions about our services." />
           <Card icon={<FaBookOpen />} color="text-indigo-500" title="Guides" desc="Step-by-step tutorials to help you use our services effectively." />
           <Card icon={<FaTools />} color="text-green-500" title="Technical Help" desc="Resolve issues related to websites, apps, and IT infrastructure." />
           <Card icon={<FaHeadset />} color="text-red-500" title="Contact Support" desc="Reach out to our experts for personalized assistance." />
@@ -241,7 +241,7 @@ function Card({ icon, title, desc, color }: any) {
           {icon}
         </div>
 
-        <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white group-hover:text-[#386BFF] transition">
+        <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white group-hover:text-[#9bb6ff] transition">
           {title}
         </h3>
 

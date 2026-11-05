@@ -419,7 +419,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <dl className="ct-faq__list">
+          <div className="ct-faq__list">
             {faqItems.map(({ question, answer }, i) => (
               <details
                 key={i}
@@ -446,7 +446,7 @@ export default function ContactPage() {
                 </div>
               </details>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
       </main>

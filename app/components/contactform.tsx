@@ -355,7 +355,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
                                 href="https://calendly.com/sunilkiims"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center w-full mt-6 bg-[#386BFF] text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-[#2f5be0] focus:outline-none focus:ring-4 focus:ring-gray-900/10"
+                                className="inline-flex items-center justify-center w-full mt-6 bg-[#2f5be0] text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-[#2a4fc4] focus:outline-none focus:ring-4 focus:ring-gray-900/10"
                             >
                                 📞 Schedule a Free Call
                             </a>

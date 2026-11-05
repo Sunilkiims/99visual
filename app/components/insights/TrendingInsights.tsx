@@ -30,14 +30,14 @@ export default function TrendingInsights({ posts }: { posts: TrendingPost[] }) {
       className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto mb-12 sm:mb-16"
     >
       <Reveal>
-        <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-gray-500">
+        <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-[#8a94ad]">
           <span className="h-px w-8 bg-gradient-to-r from-[#386BFF] to-transparent" aria-hidden="true" />
           <Flame className="w-3.5 h-3.5 text-[#9bb6ff]" strokeWidth={2} aria-hidden="true" />
           <h2 id="trending-heading" className="font-semibold">Trending Now</h2>
         </div>
         <ol className="grid grid-cols-1 md:grid-cols-2 gap-px rounded-2xl overflow-hidden border border-gray-800 bg-gray-800">
           {posts.map((post, i) => {
-            const accent = post.category.color || '#386BFF'
+            const accent = post.category.color || '#7d9cff'
             return (
               <li key={post.id} className="bg-[#080B12]">
                 <Link
@@ -45,7 +45,7 @@ export default function TrendingInsights({ posts }: { posts: TrendingPost[] }) {
                   className="group flex items-start gap-4 sm:gap-5 p-4 sm:p-5 h-full transition-colors hover:bg-gray-900/70"
                 >
                   <span
-                    className="shrink-0 text-2xl sm:text-3xl font-semibold leading-none tabular-nums text-gray-700 transition-colors group-hover:text-[#9bb6ff]"
+                    className="shrink-0 text-2xl sm:text-3xl font-semibold leading-none tabular-nums text-[#A7B0C6] transition-colors group-hover:text-[#9bb6ff]"
                     aria-hidden="true"
                   >
                     {String(i + 1).padStart(2, '0')}
@@ -60,7 +60,7 @@ export default function TrendingInsights({ posts }: { posts: TrendingPost[] }) {
                     <span className="block text-sm sm:text-[15px] font-semibold text-white leading-snug line-clamp-2 transition-colors group-hover:text-[#9bb6ff]">
                       {post.title}
                     </span>
-                    <span className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-gray-500">
+                    <span className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-[#8a94ad]">
                       <span className="inline-flex items-center gap-1">
                         <Eye className="w-3 h-3" strokeWidth={2} aria-hidden="true" />
                         {post.viewCount.toLocaleString('en-IN')} reads

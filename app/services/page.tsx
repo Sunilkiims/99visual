@@ -305,7 +305,7 @@ export default function ServicesPage() {
                 From pixel-perfect web experiences and AI-powered QA to data-driven marketing, geospatial intelligence, and strategic IT consulting — 99 Visual Solutions is your single partner for the full technology stack.
               </p>
               <div className="vz-btn-row">
-                <a href="#sv-grid" className="vz-btn vz-btn--primary" aria-label="Browse all 99 Visual Solutions services">Browse Services</a>
+                <a href="#sv-grid" className="vz-btn vz-btn--primary">Browse Services</a>
                 <ConsultationCTA className="vz-btn vz-btn--ghost" postTitle="Services" postUrl="/services">Get a Free Consultation</ConsultationCTA>
               </div>
             </div>
@@ -332,7 +332,7 @@ export default function ServicesPage() {
                         <span className="vz-chip">{svc.tag}</span>
                       </div>
                       <h3 className="vz-h3">
-                        <Link href={svc.href} className="vz-stretched" aria-label={`Learn more about ${svc.title}`}>{svc.title}</Link>
+                        <Link href={svc.href} className="vz-stretched">{svc.title}</Link>
                       </h3>
                       <p className="vz-body">{svc.description}</p>
                       <ul className="vz-checks">

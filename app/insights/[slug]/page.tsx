@@ -243,7 +243,7 @@ export default async function InsightPostPage({ params }: Props) {
   ])
   const relatedPosts = [...sameTopicPosts, ...latestPosts].slice(0, RELATED_LIMIT)
 
-  const accent = post.category.color || '#386BFF'
+  const accent = post.category.color || '#7d9cff'
   const CategoryIcon = getCategoryIcon(post.category.slug, post.category.name)
   // Title first: it is the most specific signal of what the article covers.
   const relatedService =
@@ -337,12 +337,12 @@ export default async function InsightPostPage({ params }: Props) {
                     still described by the BreadcrumbList JSON-LD. */}
                 <nav aria-label="Breadcrumb" className="sr-only">
                   <Link href="/" className="hover:text-[#9bb6ff] transition-colors">Home</Link>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                  <ChevronRight className="w-3.5 h-3.5 text-[#A7B0C6]" strokeWidth={2} aria-hidden="true" />
                   <Link href="/insights" className="hover:text-[#9bb6ff] transition-colors">Insights</Link>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                  <ChevronRight className="w-3.5 h-3.5 text-[#A7B0C6]" strokeWidth={2} aria-hidden="true" />
                   <Link href={topicPath(post.category.slug)} className="hover:text-[#9bb6ff] transition-colors">{post.category.name}</Link>
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
-                  <span className="text-gray-500 truncate max-w-xs" aria-current="page">{post.title}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-[#A7B0C6]" strokeWidth={2} aria-hidden="true" />
+                  <span className="text-[#8a94ad] truncate max-w-xs" aria-current="page">{post.title}</span>
                 </nav>
 
                 <div className="flex items-center gap-2 flex-wrap mb-7">
@@ -361,7 +361,7 @@ export default async function InsightPostPage({ params }: Props) {
                     <Link
                       key={tag.id}
                       href={'/insights?tag=' + tag.slug}
-                      className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-500 hover:text-white hover:border-gray-700 transition-colors"
+                      className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-[#8a94ad] hover:text-white hover:border-gray-700 transition-colors"
                     >
                       {tag.name}
                     </Link>
@@ -403,7 +403,7 @@ export default async function InsightPostPage({ params }: Props) {
                       <div className="leading-tight">
                         <p className="text-white text-sm font-medium">{post.author.name}</p>
                         {post.publishedAt && (
-                          <time dateTime={post.publishedAt.toISOString()} className="text-gray-500 text-xs">
+                          <time dateTime={post.publishedAt.toISOString()} className="text-[#8a94ad] text-xs">
                             {new Date(post.publishedAt).toLocaleDateString('en-IN', {
                               day: 'numeric',
                               month: 'long',
@@ -417,8 +417,8 @@ export default async function InsightPostPage({ params }: Props) {
 
                   <div className="flex items-center gap-5">
                     <ReadingMeter minutes={post.readingTime} color={accent} />
-                    <span className="text-gray-700">·</span>
-                    <span className="text-sm text-gray-500">{post.viewCount.toLocaleString('en-IN')} views</span>
+                    <span className="text-[#A7B0C6]">·</span>
+                    <span className="text-sm text-[#8a94ad]">{post.viewCount.toLocaleString('en-IN')} views</span>
                   </div>
                 </div>
               </Reveal>
@@ -500,7 +500,7 @@ export default async function InsightPostPage({ params }: Props) {
                       </span>
                     </div>
                     <div>
-                      <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Written by</p>
+                      <p className="text-[#8a94ad] text-xs uppercase tracking-wider mb-1">Written by</p>
                       <p className="text-white font-semibold mb-1.5">{post.author.name}</p>
                       <p className="text-gray-400 text-sm leading-relaxed">{post.author.bio}</p>
                     </div>
@@ -541,7 +541,7 @@ export default async function InsightPostPage({ params }: Props) {
                             {cat.name}
                           </span>
                         </div>
-                        <span className="text-gray-600 text-xs tabular-nums">{cat._count.posts}</span>
+                        <span className="text-[#8a94ad] text-xs tabular-nums">{cat._count.posts}</span>
                       </Link>
                     ))}
                   </div>
@@ -581,14 +581,14 @@ export default async function InsightPostPage({ params }: Props) {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-2xl font-bold text-gray-700">99</span>
+                              <span className="text-2xl font-bold text-[#A7B0C6]">99</span>
                             </div>
                           )}
                         </div>
                         <p className="text-gray-300 text-sm font-medium group-hover:text-[#9bb6ff] transition-colors line-clamp-2 leading-snug">
                           {related.title}
                         </p>
-                        <p className="text-gray-600 text-xs mt-1.5">{related.readingTime} min read</p>
+                        <p className="text-[#8a94ad] text-xs mt-1.5">{related.readingTime} min read</p>
                       </Link>
                     ))}
                   </div>

@@ -132,7 +132,7 @@ export default function VideosIndexPage() {
                 <p className="text-white font-semibold group-hover:text-[#9bb6ff] transition-colors leading-snug mb-1">
                   {video.title}
                 </p>
-                <p className="text-gray-500 text-sm line-clamp-2">{video.description}</p>
+                <p className="text-[#8a94ad] text-sm line-clamp-2">{video.description}</p>
               </Link>
             ))}
           </div>

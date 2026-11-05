@@ -739,13 +739,13 @@ export default function CareersPage() {
                 shape the future of digital experiences together.
               </p>
               <div className="cr-hero__actions">
-                <a href="#open-roles" className="cr-hero__btn--primary" aria-label="View open remote positions at 99 Visual Solutions">
+                <a href="#open-roles" className="cr-hero__btn--primary">
                   View Open Positions
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </a>
-                <ConsultationCTA className="cr-hero__btn--ghost" ariaLabel="Ask 99 Visual Solutions about working here">
+                <ConsultationCTA className="cr-hero__btn--ghost">
                   Ask Us Anything
                 </ConsultationCTA>
               </div>
@@ -864,7 +864,7 @@ export default function CareersPage() {
                     jobTitle={title}
                     jobOptions={openRoles.map((r) => r.title)}
                     className="c-role-row__apply"
-                    ariaLabel={`Apply for the remote ${title} position at 99 Visual Solutions`}
+                    ariaLabel={`Apply Today: ${title} (remote)`}
                   >
                     Apply Today
                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -927,7 +927,7 @@ export default function CareersPage() {
               excellence across web development, design, and digital marketing.
               We invest in people who are curious, driven, and bold.
             </p>
-            <Link href="/contact" className="cr-cta__btn" aria-label="Apply for a remote job at 99 Visual Solutions">
+            <Link href="/contact" className="cr-cta__btn">
               Join Our Team
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>

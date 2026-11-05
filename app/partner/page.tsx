@@ -458,13 +458,13 @@ export default function PartnersPage() {
                 trust and shared ambition.
               </p>
               <div className="pt-hero__actions">
-                <a href="#partner-types" className="pt-hero__btn--primary" aria-label="Explore partnership types with 99 Visual Solutions">
+                <a href="#partner-types" className="pt-hero__btn--primary">
                   Become a Partner
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                     <path d="M7 2v10M3 8l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </a>
-                <ConsultationCTA className="pt-hero__btn--ghost" ariaLabel="Contact 99 Visual Solutions to start a partnership">
+                <ConsultationCTA className="pt-hero__btn--ghost">
                   Talk to Us
                 </ConsultationCTA>
               </div>
@@ -597,7 +597,7 @@ export default function PartnersPage() {
               Join our ecosystem and grow your business through strategic,
               long-term collaboration with a team that's invested in your success.
             </p>
-            <ConsultationCTA className="pt-cta__btn" ariaLabel="Start a partnership with 99 Visual Solutions">
+            <ConsultationCTA className="pt-cta__btn">
               Partner With Us
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>

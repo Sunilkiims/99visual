@@ -221,7 +221,7 @@ export default function AboutPage() {
               </p>
               <div className="vz-btn-row">
                 <ConsultationCTA className="vz-btn vz-btn--primary" postTitle="About" postUrl="/about">Get a Free Quote</ConsultationCTA>
-                <a href="/services" className="vz-btn vz-btn--ghost" aria-label="Explore all services offered by 99 Visual Solutions">Our Services</a>
+                <a href="/services" className="vz-btn vz-btn--ghost">Our Services</a>
               </div>
               <ul className="vz-hero__facts" aria-label="Company at a glance">
                 {facts.map((f) => (

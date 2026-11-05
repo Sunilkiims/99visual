@@ -129,7 +129,7 @@ export default async function CaseStudyPage({ params }: Props) {
       <main id="main" className="vz min-h-screen">
         <article className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-24">
 
-          <nav aria-label="Breadcrumb" className="mb-8 text-sm text-gray-500">
+          <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[#8a94ad]">
             <Link href="/work" className="hover:text-[#9bb6ff] transition-colors">Our Work</Link>
             <span className="mx-2" aria-hidden="true">/</span>
             <span className="text-gray-400">Case study</span>
@@ -143,22 +143,22 @@ export default async function CaseStudyPage({ params }: Props) {
 
           <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
-              <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Client</dt>
+              <dt className="text-[#8a94ad] text-xs uppercase tracking-wider mb-1">Client</dt>
               <dd className="text-gray-200 text-sm">{study.client}</dd>
             </div>
             {study.period ? (
               <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
-                <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Period</dt>
+                <dt className="text-[#8a94ad] text-xs uppercase tracking-wider mb-1">Period</dt>
                 <dd className="text-gray-200 text-sm">
                   <time dateTime={study.period.start}>{formatDate(study.period.start)}</time>
                   {' – '}
                   <time dateTime={study.period.end}>{formatDate(study.period.end)}</time>
-                  {study.period.ongoing && <span className="text-gray-500"> · ongoing</span>}
+                  {study.period.ongoing && <span className="text-[#8a94ad]"> · ongoing</span>}
                 </dd>
               </div>
             ) : study.liveUrl ? (
               <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
-                <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Live site</dt>
+                <dt className="text-[#8a94ad] text-xs uppercase tracking-wider mb-1">Live site</dt>
                 <dd className="text-sm">
                   <a href={study.liveUrl} target="_blank" rel="noopener" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors break-all">
                     {study.liveUrl.replace(/^https?:\/\/(www\.)?/, '')}
@@ -167,7 +167,7 @@ export default async function CaseStudyPage({ params }: Props) {
               </div>
             ) : null}
             <div className="p-4 rounded-2xl bg-gray-900/60 border border-gray-800">
-              <dt className="text-gray-500 text-xs uppercase tracking-wider mb-1">Service</dt>
+              <dt className="text-[#8a94ad] text-xs uppercase tracking-wider mb-1">Service</dt>
               <dd className="text-sm">
                 <Link href={study.service.href} className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                   {study.service.label}
@@ -194,7 +194,7 @@ export default async function CaseStudyPage({ params }: Props) {
           {study.workflow && (
             <section aria-labelledby="workflow-heading" className="mb-14">
               <h2 id="workflow-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">{study.workflow.heading}</h2>
-              {study.workflow.intro && <p className="text-gray-500 text-sm mb-6">{study.workflow.intro}</p>}
+              {study.workflow.intro && <p className="text-[#8a94ad] text-sm mb-6">{study.workflow.intro}</p>}
               <ol className={`space-y-4 ${study.workflow.intro ? '' : 'mt-6'}`}>
                 {study.workflow.steps.map((w, i) => (
                   <li key={w.step} className="flex gap-4 p-5 rounded-2xl bg-gray-900/60 border border-gray-800">
@@ -214,7 +214,7 @@ export default async function CaseStudyPage({ params }: Props) {
           {study.gallery && study.gallery.length > 0 && (
             <section aria-labelledby="gallery-heading" className="mb-14">
               <h2 id="gallery-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">Screenshots</h2>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="text-[#8a94ad] text-sm mb-6">
                 Captured from the live site{study.liveUrl && <>{' '}(<a href={study.liveUrl} target="_blank" rel="noopener" className="text-[#9bb6ff] hover:text-[#9bb6ff]">visit it</a>)</>}.
               </p>
               <div className="grid grid-cols-1 gap-8">
@@ -223,7 +223,7 @@ export default async function CaseStudyPage({ params }: Props) {
                     <div style={{ aspectRatio: `${g.width} / ${g.height}` }} className="relative w-full rounded-2xl overflow-hidden border border-gray-800 bg-gray-800">
                       <Image src={g.src} alt={g.alt} fill sizes="(max-width: 896px) 100vw, 896px" className="object-cover" />
                     </div>
-                    <figcaption className="text-gray-500 text-sm mt-3">{g.caption}</figcaption>
+                    <figcaption className="text-[#8a94ad] text-sm mt-3">{g.caption}</figcaption>
                   </figure>
                 ))}
               </div>
@@ -232,18 +232,18 @@ export default async function CaseStudyPage({ params }: Props) {
 
           <section aria-labelledby="delivered-heading" className="mb-14">
             <h2 id="delivered-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">What we delivered</h2>
-            <p className="text-gray-500 text-sm mb-8">Each item lists where it can be verified.</p>
+            <p className="text-[#8a94ad] text-sm mb-8">Each item lists where it can be verified.</p>
             <div className="space-y-10">
               {study.workstreams.map((ws) => (
                 <div key={ws.name}>
                   <h3 className="text-xl font-semibold text-white mb-1">{ws.name}</h3>
-                  <p className="text-gray-500 mb-4">{ws.summary}</p>
+                  <p className="text-[#8a94ad] mb-4">{ws.summary}</p>
                   <ul className="space-y-3">
                     {ws.items.map((item) => (
                       <li key={item.title} className="p-5 rounded-2xl bg-gray-900/60 border border-gray-800">
                         <p className="text-gray-100 font-medium mb-1">{item.title}</p>
                         <p className="text-gray-400 text-sm leading-relaxed mb-3">{item.detail}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[#8a94ad]">
                           Evidence: <code className="text-gray-400 bg-gray-800/80 px-1.5 py-0.5 rounded">{item.evidence}</code>
                         </p>
                       </li>
@@ -257,7 +257,7 @@ export default async function CaseStudyPage({ params }: Props) {
           {study.tests && study.tests.length > 0 && (
             <section aria-labelledby="tests-heading" className="mb-14">
               <h2 id="tests-heading" className="font-[family-name:var(--font-display)] text-2xl md:text-3xl font-bold text-white mb-2">Test coverage</h2>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="text-[#8a94ad] text-sm mb-6">
                 Status is stated per row: a defined scenario, a test written in code, or a test with a run on record.
               </p>
               <div className="overflow-x-auto rounded-2xl border border-gray-800">
@@ -275,7 +275,7 @@ export default async function CaseStudyPage({ params }: Props) {
                         <td className="px-4 py-3 text-gray-300 align-top">{t.area}</td>
                         <td className="px-4 py-3 text-gray-400 align-top">
                           {t.scenario}
-                          {t.evidence && <span className="block text-xs text-gray-500 mt-1">Evidence: {t.evidence}</span>}
+                          {t.evidence && <span className="block text-xs text-[#8a94ad] mt-1">Evidence: {t.evidence}</span>}
                         </td>
                         <td className="px-4 py-3 align-top">
                           <span className={`inline-block whitespace-nowrap px-2.5 py-1 rounded-full border text-xs ${STATUS_STYLE[t.status]}`}>
@@ -310,7 +310,7 @@ export default async function CaseStudyPage({ params }: Props) {
           </section>
 
           <section aria-labelledby="stack-heading" className="mb-14">
-            <h2 id="stack-heading" className="text-xs uppercase tracking-widest text-gray-500 mb-3">Stack &amp; tools</h2>
+            <h2 id="stack-heading" className="text-xs uppercase tracking-widest text-[#8a94ad] mb-3">Stack &amp; tools</h2>
             <ul className="flex flex-wrap gap-2">
               {study.stack.map((s) => (
                 <li key={s} className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-400">{s}</li>
@@ -327,7 +327,7 @@ export default async function CaseStudyPage({ params }: Props) {
               <Link href={study.service.href} className="px-5 py-2.5 rounded-full text-sm font-semibold border border-gray-700 text-gray-200 hover:border-[#386BFF]/50 hover:text-[#9bb6ff] transition-colors">
                 View the service
               </Link>
-              <Link href="/contact" className="px-5 py-2.5 rounded-full text-sm font-semibold bg-[#386BFF] text-white hover:bg-[#9bb6ff] transition-colors">
+              <Link href="/contact" className="px-5 py-2.5 rounded-full text-sm font-semibold bg-[#2f5be0] text-white hover:bg-[#9bb6ff] transition-colors">
                 Get in touch
               </Link>
             </div>
@@ -343,7 +343,7 @@ export default async function CaseStudyPage({ params }: Props) {
                   <li key={c.slug}>
                     <Link href={`/work/${c.slug}`} className="group block p-5 rounded-2xl bg-gray-900/60 border border-gray-800 hover:border-[#386BFF]/40 transition-colors">
                       <p className="text-gray-200 font-medium group-hover:text-[#9bb6ff] transition-colors mb-1">{c.title}</p>
-                      <p className="text-gray-500 text-sm line-clamp-2">{c.description}</p>
+                      <p className="text-[#8a94ad] text-sm line-clamp-2">{c.description}</p>
                     </Link>
                   </li>
                 ))}

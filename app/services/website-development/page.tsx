@@ -621,7 +621,7 @@ export default function WebsiteDevelopment() {
               />
               <ul className="vz-jump" role="list">
                 {services.map((svc) => (
-                  <li key={svc.id}><a href={`#${svc.id}`}>{svc.icon}{svc.title}</a></li>
+                  <li key={svc.id}><a href={`#${svc.id}`}><span aria-hidden="true">{svc.icon}</span>{svc.title}</a></li>
                 ))}
               </ul>
             </div>
@@ -705,7 +705,7 @@ export default function WebsiteDevelopment() {
               />
               <ul className="vz-jump" role="list">
                 {techStack.map((t) => (
-                  <li key={t.name}><span className="vz-chip vz-chip--lg">{t.icon} {t.name}</span></li>
+                  <li key={t.name}><span className="vz-chip vz-chip--lg"><span aria-hidden="true">{t.icon}</span> {t.name}</span></li>
                 ))}
               </ul>
             </div>

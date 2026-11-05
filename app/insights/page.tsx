@@ -281,7 +281,7 @@ export default async function InsightsPage({ searchParams }: Props) {
 
                 {/* Quick stats — grounds the "premium agency" framing in a
                     couple of real numbers instead of pure decoration. */}
-                <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500">
+                <div className="flex items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-[#8a94ad]">
                   <span className="whitespace-nowrap">
                     <strong className="text-white font-semibold">{total}</strong>{' '}
                     {total === 1 ? 'Article' : 'Articles'}
@@ -312,7 +312,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     </div>
 
                     <Search
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none transition-colors group-focus-within:text-[#9bb6ff] z-10"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a94ad] pointer-events-none transition-colors group-focus-within:text-[#9bb6ff] z-10"
                       strokeWidth={2}
                     />
                     <input
@@ -473,7 +473,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     aria-current={!params.category ? 'page' : undefined}
                     className={`shrink-0 snap-start px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                       !params.category
-                        ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
+                        ? 'bg-[#2f5be0] text-white shadow-sm shadow-[#386BFF]/30'
                         : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                     }`}
                   >
@@ -489,7 +489,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                         aria-current={active ? 'page' : undefined}
                         className={`shrink-0 snap-start inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                           active
-                            ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
+                            ? 'bg-[#2f5be0] text-white shadow-sm shadow-[#386BFF]/30'
                             : 'bg-gray-900/70 text-gray-400 border border-gray-800 hover:text-gray-200 hover:border-gray-700'
                         }`}
                       >
@@ -509,7 +509,7 @@ export default async function InsightsPage({ searchParams }: Props) {
         {showFeatured && (
           <section className="px-4 sm:px-6 md:px-8 max-w-6xl mx-auto mb-12 sm:mb-16">
             <Reveal>
-              <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-gray-500">
+              <div className="mb-4 sm:mb-5 flex items-center gap-3 text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-[#8a94ad]">
                 <span className="h-px w-8 bg-gradient-to-r from-[#386BFF] to-transparent" aria-hidden="true" />
                 Featured Read
               </div>
@@ -524,7 +524,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                       <div
                         className="absolute inset-0"
                         style={{
-                          background: `radial-gradient(circle at 50% 50%, ${featuredPost.category.color || '#386BFF'}14, transparent 65%)`,
+                          background: `radial-gradient(circle at 50% 50%, ${featuredPost.category.color || '#7d9cff'}14, transparent 65%)`,
                         }}
                       />
                       {featuredPost.featuredImage ? (
@@ -537,7 +537,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-6xl sm:text-8xl font-bold text-[#386BFF]/10">99</span>
+                          <span className="text-6xl sm:text-8xl font-bold text-[#9bb6ff]/10">99</span>
                         </div>
                       )}
                     </div>
@@ -549,8 +549,8 @@ export default async function InsightsPage({ searchParams }: Props) {
                         <span
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
                           style={{
-                            backgroundColor: (featuredPost.category.color || '#386BFF') + '15',
-                            color: featuredPost.category.color || '#386BFF',
+                            backgroundColor: (featuredPost.category.color || '#7d9cff') + '15',
+                            color: featuredPost.category.color || '#7d9cff',
                           }}
                         >
                           {(() => {
@@ -566,16 +566,16 @@ export default async function InsightsPage({ searchParams }: Props) {
                       {featuredPost.excerpt && (
                         <p className="text-gray-400 text-sm sm:text-[15px] leading-relaxed mb-5 line-clamp-3">{featuredPost.excerpt}</p>
                       )}
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500 mb-6">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#8a94ad] mb-6">
                         <span className="text-gray-400">{featuredPost.author.name}</span>
-                        <span className="text-gray-700">·</span>
+                        <span className="text-[#A7B0C6]">·</span>
                         <span className="inline-flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
                           {featuredPost.readingTime} min read
                         </span>
                         {featuredPost.publishedAt && (
                           <>
-                            <span className="text-gray-700">·</span>
+                            <span className="text-[#A7B0C6]">·</span>
                             <span className="inline-flex items-center gap-1">
                               <CalendarDays className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
                               {formatDate(featuredPost.publishedAt)}
@@ -605,7 +605,7 @@ export default async function InsightsPage({ searchParams }: Props) {
           {posts.length === 0 ? (
             <Reveal>
               <div className="text-center py-16 sm:py-20">
-                <p className="text-gray-500 text-base sm:text-lg mb-4">No articles found</p>
+                <p className="text-[#8a94ad] text-base sm:text-lg mb-4">No articles found</p>
                 <Link href="/insights" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                   View all articles
                 </Link>
@@ -618,7 +618,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                   <h2 className="text-lg sm:text-xl font-semibold text-white tracking-tight">
                     {isFiltered ? 'Results' : 'Latest Insights'}
                   </h2>
-                  <p className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+                  <p className="text-xs sm:text-sm text-[#8a94ad] whitespace-nowrap">
                     Showing {rangeStart}–{rangeEnd} of {total}
                   </p>
                 </div>
@@ -649,7 +649,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                     p === 'dots' ? (
                       <span
                         key={'dots-' + i}
-                        className="w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center text-gray-600 text-sm"
+                        className="w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center text-[#8a94ad] text-sm"
                       >
                         …
                       </span>
@@ -660,7 +660,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                         aria-current={p === page ? 'page' : undefined}
                         className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                           p === page
-                            ? 'bg-[#386BFF] text-white shadow-sm shadow-[#386BFF]/30'
+                            ? 'bg-[#2f5be0] text-white shadow-sm shadow-[#386BFF]/30'
                             : 'bg-gray-900/70 border border-gray-800 text-gray-400 hover:border-gray-700 hover:text-white'
                         }`}
                       >
@@ -722,7 +722,7 @@ export default async function InsightsPage({ searchParams }: Props) {
                 </div>
 
                 <ConsultationCTA
-                  className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#386BFF] text-white text-sm font-semibold transition-all duration-200 hover:bg-[#9bb6ff] hover:-translate-y-0.5 shadow-lg shadow-[#386BFF]/20"
+                  className="inline-flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#2f5be0] text-white text-sm font-semibold transition-all duration-200 hover:bg-[#9bb6ff] hover:-translate-y-0.5 shadow-lg shadow-[#386BFF]/20"
                   ariaLabel="Book a free consultation with 99 Visual Solutions"
                   postTitle="Insights Page CTA"
                   postUrl="/insights"

@@ -27,7 +27,7 @@ export interface InsightCardPost {
 }
 
 export default function InsightCard({ post, index = 0 }: { post: InsightCardPost; index?: number }) {
-  const accent = post.category.color || '#386BFF'
+  const accent = post.category.color || '#7d9cff'
   return (
     <Reveal delay={Math.min(index, 6) * 0.06} y={16}>
       <Link
@@ -45,7 +45,7 @@ export default function InsightCard({ post, index = 0 }: { post: InsightCardPost
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-5xl font-bold text-gray-700/50">99</span>
+              <span className="text-5xl font-bold text-[#A7B0C6]/50">99</span>
             </div>
           )}
           <div className="absolute top-3 left-3">
@@ -65,7 +65,7 @@ export default function InsightCard({ post, index = 0 }: { post: InsightCardPost
           {post.excerpt && (
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">{post.excerpt}</p>
           )}
-          <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-gray-500 pt-3 border-t border-gray-800/80">
+          <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-[#8a94ad] pt-3 border-t border-gray-800/80">
             <span className="truncate max-w-[45%]">{post.author.name}</span>
             <div className="flex items-center gap-2 whitespace-nowrap">
               <span className="inline-flex items-center gap-1">

@@ -73,7 +73,7 @@ export function ServiceHero({
         <p className="vz-h1 vz-shero__tagline">{tagline}</p>
         <p className="vz-lead vz-shero__sub">{sub}</p>
         <div className="vz-btn-row">
-          <ConsultationCTA className="vz-btn vz-btn--primary" ariaLabel={ctaAria} postTitle={postTitle} postUrl={postUrl}>
+          <ConsultationCTA className="vz-btn vz-btn--primary" postTitle={postTitle} postUrl={postUrl}>
             {ctaLabel}
           </ConsultationCTA>
           {secondary && (
@@ -165,7 +165,7 @@ export function ServiceCluster({
                     <Image src={s.media.src} alt={s.media.alt} fill sizes="(min-width: 1100px) 380px, (min-width: 768px) 50vw, 100vw" />
                   </div>
                 )}
-                {s.icon && <span className="vz-icon-tile">{s.icon}</span>}
+                {s.icon && <span className="vz-icon-tile" aria-hidden="true">{s.icon}</span>}
                 <h3 className="vz-h3">{s.title}</h3>
                 <p className="vz-body">{s.description}</p>
                 {s.highlight && <p className="vz-svc-card__hl">{s.highlight}</p>}
@@ -213,7 +213,7 @@ export function FeatureGrid({
               {numbered ? (
                 <span className="vz-feature__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
               ) : (
-                f.icon && <span className="vz-icon-tile">{f.icon}</span>
+                f.icon && <span className="vz-icon-tile" aria-hidden="true">{f.icon}</span>
               )}
               <h3 className="vz-h3">{f.title}</h3>
               <p className="vz-body">{f.description}</p>
@@ -365,7 +365,7 @@ export function ServiceCTA({
             <p className="vz-lead">{sub}</p>
           </div>
           <div className="vz-cta__actions">
-            <ConsultationCTA className="vz-btn vz-btn--primary" ariaLabel={ctaAria} postTitle={postTitle} postUrl={postUrl}>
+            <ConsultationCTA className="vz-btn vz-btn--primary" postTitle={postTitle} postUrl={postUrl}>
               {ctaLabel}
             </ConsultationCTA>
             <Link href="/contact" className="vz-link-arrow">Or use the contact page →</Link>
@@ -476,7 +476,7 @@ export function IconLabelGrid({
         <ul className="vz-iconlist" role="list">
           {items.map((it) => (
             <li key={it.label}>
-              {it.icon && <span className="vz-icon-tile">{it.icon}</span>}
+              {it.icon && <span className="vz-icon-tile" aria-hidden="true">{it.icon}</span>}
               <div>
                 <h3 className="vz-iconlist__label">{it.label}</h3>
                 {it.description && <p className="vz-body">{it.description}</p>}

@@ -508,7 +508,7 @@ export default function Chatbot() {
           white-space: nowrap;
           border-right: 2px solid #386BFF;
           width: 0;
-          color: #386BFF;
+          color:#7d9cff;
           animation:
             cbTypeIn 1s steps(8, end) .1s forwards,
             cbCursorBlink .65s step-end .1s 4,
@@ -527,7 +527,7 @@ export default function Chatbot() {
         }
         .cb-hello__sub {
           font-size: .72rem;
-          color: rgba(255,255,255,0.4);
+          color: rgba(255,255,255,0.62);
           margin-top: 3px;
           line-height: 1;
         }
@@ -607,7 +607,7 @@ export default function Chatbot() {
           transition: color .2s, border-color .2s;
           letter-spacing: .04em; text-transform: uppercase;
         }
-        .cb-header__btn:hover { color: #386BFF; border-color: rgba(56,107,255,0.3); }
+        .cb-header__btn:hover { color:#7d9cff; border-color: rgba(56,107,255,0.3); }
         .cb-header__close {
           background: transparent; border: none; cursor: pointer;
           color: rgba(255,255,255,0.35); padding: 4px;
@@ -681,7 +681,7 @@ export default function Chatbot() {
 
         /* ── Inline link inside bot bubble ── */
         .cb-inline-link {
-          color: #386BFF;
+          color:#7d9cff;
           text-decoration: underline;
           text-underline-offset: 2px;
           text-decoration-color: rgba(56,107,255,0.4);
@@ -724,7 +724,7 @@ export default function Chatbot() {
         .cb-nav-chip:hover {
           background: rgba(56,107,255,0.12);
           border-color: rgba(56,107,255,0.6);
-          color: #386BFF;
+          color:#7d9cff;
         }
         .cb-nav-chip__icon { font-size: .78rem; line-height: 1; }
         .cb-nav-chip__label { line-height: 1; }
@@ -787,7 +787,7 @@ export default function Chatbot() {
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0; transition: transform .15s ease, border-color .2s, color .2s, background .2s;
         }
-        .cb-mic:hover { border-color: rgba(56,107,255,0.4); color: #386BFF; }
+        .cb-mic:hover { border-color: rgba(56,107,255,0.4); color:#7d9cff; }
         .cb-mic:active { transform: scale(.93); }
         .cb-mic--listening {
           background: #ef4444; border-color: #ef4444; color: #fff;
@@ -821,7 +821,7 @@ export default function Chatbot() {
           font-size: .68rem; font-weight: 500; padding: 3px 9px; border-radius: 6px;
           cursor: pointer; transition: color .2s, border-color .2s; flex-shrink: 0;
         }
-        .cb-voice-bar__action:hover { color: #386BFF; border-color: rgba(56,107,255,0.4); }
+        .cb-voice-bar__action:hover { color:#7d9cff; border-color: rgba(56,107,255,0.4); }
 
         .cb-voice-wave {
           display: flex; align-items: center; gap: 2px; height: 14px; flex-shrink: 0;

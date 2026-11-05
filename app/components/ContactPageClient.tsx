@@ -714,7 +714,7 @@ export default function ContactPageClient() {
         <div className="ct-corner ct-corner--bl" aria-hidden="true" />
         <div className="ct-corner ct-corner--br" aria-hidden="true" />
 
-        <nav className="sr-only" aria-label="Breadcrumb" aria-hidden="true">
+        <nav className="sr-only" aria-label="Breadcrumb">
           <ol style={{ listStyle:"none", margin:0, padding:0 }}>
             <li>
               <a href="/"><span>Home</span></a>

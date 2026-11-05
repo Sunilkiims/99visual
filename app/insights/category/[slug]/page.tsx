@@ -113,7 +113,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
   if (page > totalPages) notFound()
 
   const { title } = topicCopy(topic)
-  const accent = topic.color || '#386BFF'
+  const accent = topic.color || '#7d9cff'
   const relatedService = getRelatedService(topic.name, topic.slug)
   const path = topicPath(topic.slug)
   const pageUrl = page > 1 ? `${topicUrl(topic.slug)}?page=${page}` : topicUrl(topic.slug)
@@ -168,9 +168,9 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   BreadcrumbList JSON-LD is unchanged. */}
               <nav aria-label="Breadcrumb" className="sr-only">
                 <Link href="/" className="hover:text-[#9bb6ff] transition-colors">Home</Link>
-                <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#A7B0C6]" strokeWidth={2} aria-hidden="true" />
                 <Link href="/insights" className="hover:text-[#9bb6ff] transition-colors">Insights</Link>
-                <ChevronRight className="w-3.5 h-3.5 text-gray-700" strokeWidth={2} aria-hidden="true" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#A7B0C6]" strokeWidth={2} aria-hidden="true" />
                 <span className="text-gray-400" aria-current="page">{topic.name}</span>
               </nav>
 
@@ -188,7 +188,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
                 {topic.description && (
                   <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-5 max-w-2xl">{topic.description}</p>
                 )}
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-gray-500">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm text-[#8a94ad]">
                   <span>
                     <strong className="text-white font-semibold">{total}</strong> {total === 1 ? 'article' : 'articles'}
                   </span>
@@ -212,7 +212,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
           <h2 id="topic-articles" className="sr-only">Articles about {topic.name}</h2>
           {posts.length === 0 ? (
             <div className="text-center py-16 sm:py-20">
-              <p className="text-gray-500 text-base sm:text-lg mb-4">No articles in this topic yet.</p>
+              <p className="text-[#8a94ad] text-base sm:text-lg mb-4">No articles in this topic yet.</p>
               <Link href="/insights" className="text-[#9bb6ff] hover:text-[#9bb6ff] transition-colors">
                 Browse all insights
               </Link>
@@ -235,7 +235,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" /> Prev
                 </Link>
               )}
-              <span className="px-3 text-sm text-gray-500">
+              <span className="px-3 text-sm text-[#8a94ad]">
                 Page {page} of {totalPages}
               </span>
               {page < totalPages && (
@@ -274,7 +274,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
                   })}
                   <Link
                     href="/insights"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-[#386BFF] text-white hover:bg-[#9bb6ff] transition-all duration-200"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-[#2f5be0] text-white hover:bg-[#9bb6ff] transition-all duration-200"
                   >
                     All insights <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
                   </Link>

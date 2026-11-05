@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            Privacy <span className="text-[#386BFF]">Policy</span>
+            Privacy <span className="text-[#9bb6ff]">Policy</span>
           </h1>
 
           <p className="text-lg text-gray-300">

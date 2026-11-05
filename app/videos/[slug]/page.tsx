@@ -148,7 +148,7 @@ export default async function VideoWatchPage({ params }: Props) {
             {video.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-gray-500"
+                className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 border border-gray-800 text-[#8a94ad]"
               >
                 {tag}
               </span>
@@ -156,7 +156,7 @@ export default async function VideoWatchPage({ params }: Props) {
           </div>
 
           <div className="p-7 bg-gray-900/60 border border-gray-800 rounded-3xl mb-12">
-            <p className="text-gray-500 text-xs uppercase tracking-wider mb-2">See the full service</p>
+            <p className="text-[#8a94ad] text-xs uppercase tracking-wider mb-2">See the full service</p>
             <Link
               href={video.relatedService.href}
               className="text-[#9bb6ff] hover:text-[#9bb6ff] font-semibold transition-colors"

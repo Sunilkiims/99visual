@@ -297,7 +297,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
               <div className="space-y-4">
                 <div>
                   <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
-                    Full name <span className="text-[#386BFF]">*</span>
+                    Full name <span className="text-[#9bb6ff]">*</span>
                   </label>
                   <input
                     ref={firstInputRef}
@@ -312,7 +312,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
 
                 <div>
                   <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
-                    Email address <span className="text-[#386BFF]">*</span>
+                    Email address <span className="text-[#9bb6ff]">*</span>
                   </label>
                   <input
                     type="email"
@@ -326,7 +326,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
 
                 <div>
                   <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
-                    Message <span className="text-[#386BFF]">*</span>
+                    Message <span className="text-[#9bb6ff]">*</span>
                   </label>
                   <textarea
                     rows={4}
@@ -361,7 +361,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                 <div>
                   <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[#A7B0C6]">
                     {captchaLoading ? 'Loading question…' : captchaQuestion || 'Verification'}{' '}
-                    <span className="text-[#386BFF]">*</span>
+                    <span className="text-[#9bb6ff]">*</span>
                   </label>
                   <input
                     type="text"
@@ -389,7 +389,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                   type="button"
                   onClick={handleSubmit}
                   disabled={!isValid || stage === 'sending'}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-black py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#2f5be0] active:bg-[#386BFF] disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-black py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#2a4fc4] active:bg-[#2f5be0] disabled:cursor-not-allowed disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
                 >
                   {stage === 'sending' ? (
                     <>
@@ -435,7 +435,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-full bg-black px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#2f5be0] active:bg-[#386BFF] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
+                  className="rounded-full bg-black px-8 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#2a4fc4] active:bg-[#2f5be0] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/50 focus-visible:ring-offset-2"
                 >
                   Close
                 </button>

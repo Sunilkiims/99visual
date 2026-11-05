@@ -80,7 +80,7 @@ export default function TermsPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            Terms & <span className="text-[#386BFF]">Conditions</span>
+            Terms & <span className="text-[#9bb6ff]">Conditions</span>
           </h1>
 
           <p className="text-lg text-gray-300">

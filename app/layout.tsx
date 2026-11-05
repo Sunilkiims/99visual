@@ -44,17 +44,6 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
-// Union of every Google Fonts family/weight the components reference.
-const GOOGLE_FONTS_CSS =
-  "https://fonts.googleapis.com/css2" +
-  "?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400" +
-  "&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600" +
-  "&family=IBM+Plex+Mono:wght@400;500" +
-  "&family=Inter:wght@300;400;500;600" +
-  "&family=Outfit:wght@300;400;500" +
-  "&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400" +
-  "&family=Space+Grotesk:wght@500;600;700" +
-  "&display=swap";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ROOT METADATA — sitewide defaults / fallback only.
@@ -170,9 +159,6 @@ export default function RootLayout({
           them; the family names are unchanged, so no component CSS changes.
           Browsers only download font files a page actually uses.
         */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={GOOGLE_FONTS_CSS} />
         {/* Scroll-reveal content is server-rendered at opacity 0 and animated
             in with JavaScript; without JS, show it immediately. */}
         <noscript>

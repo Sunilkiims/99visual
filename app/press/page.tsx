@@ -82,7 +82,7 @@ export default function PressPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <h1 className="text-2xl md:text-4xl font-bold mb-6">
-            Press & <span className="text-[#386BFF]">Media</span>
+            Press & <span className="text-[#9bb6ff]">Media</span>
           </h1>
 
           <p className="text-lg text-gray-300">
@@ -138,7 +138,7 @@ export default function PressPage() {
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
           <Card icon={<FaNewspaper />} title="Press Releases" desc="Official company announcements and updates." color="text-indigo-500" />
-          <Card icon={<FaBullhorn />} title="Media Kit" desc="Download logos, brand assets, and company information." color="text-[#386BFF]" />
+          <Card icon={<FaBullhorn />} title="Media Kit" desc="Download logos, brand assets, and company information." color="text-[#9bb6ff]" />
           <Card icon={<FaChartLine />} title="Company Insights" desc="Key metrics, growth data, and performance highlights." color="text-green-500" />
           <Card icon={<FaEnvelope />} title="Press Contact" desc="Get in touch with our media relations team." color="text-red-500" />
         </div>
@@ -182,7 +182,7 @@ export default function PressPage() {
 function PressCard({ title, date, desc }: any) {
   return (
     <div className="bg-[#111827] dark:bg-zinc-900 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition border border-white/10 dark:border-zinc-800">
-      <p className="text-xs text-[#386BFF] mb-2">{date}</p>
+      <p className="text-xs text-[#9bb6ff] mb-2">{date}</p>
       <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white">
         {title}
       </h3>
@@ -207,7 +207,7 @@ function Card({ icon, title, desc, color }: any) {
           {icon}
         </div>
 
-        <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white group-hover:text-[#386BFF] transition">
+        <h3 className="text-lg font-semibold mb-2 text-[#F4F6FC] dark:text-white group-hover:text-[#9bb6ff] transition">
           {title}
         </h3>
 
