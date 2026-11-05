@@ -56,6 +56,7 @@ import {
   localBusinessSchema,
   websiteSchema,
   breadcrumbFromItems,
+  jsonLdString,
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,9 +121,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: {
-    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
-  },
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -491,7 +489,7 @@ export default function ServicesPage() {
       <script
         id="schema-services-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(svGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(svGraph) }}
       />
 
       <div className="sv-page">

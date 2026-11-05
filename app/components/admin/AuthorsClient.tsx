@@ -70,7 +70,12 @@ export default function AuthorsClient({ authors: initial }: { authors: Author[] 
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this author?')) return
-    await fetch(`/api/admin/authors/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/admin/authors/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error || 'Delete failed')
+      return
+    }
     router.refresh()
     window.location.reload()
   }

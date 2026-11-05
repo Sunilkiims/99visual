@@ -34,6 +34,7 @@ import {
   localBusinessSchema,
   websiteSchema,
   breadcrumbFromItems,
+  jsonLdString,
 } from "@/lib/schema";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -97,7 +98,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
 
   authors:         [{ name: "99 Visual Solutions", url: BASE }],
   creator:         "99 Visual Solutions",
@@ -370,7 +370,7 @@ export default function ContactPage() {
       <script
         id="schema-contact-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(contactGraph) }}
       />
 
       {/* FAQ section styles — injected once, server-side */}

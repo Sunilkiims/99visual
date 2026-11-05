@@ -57,6 +57,7 @@ import {
   localBusinessSchema,
   breadcrumbFromPath,
   webPage,
+  jsonLdString,
 } from '@/lib/schema';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -69,7 +70,8 @@ export const metadata: Metadata = {
     template: '%s | 99 Visual Solutions',
   },
   description:
-    'Bengaluru IT company delivering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting for clients in India, USA, UK, UAE & Australia.',
+    // 151 chars — fits the ~155-character snippet width without truncating.
+    'Bengaluru IT company delivering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting across India, USA, UK, UAE & Australia.',
 
   metadataBase: new URL(BASE),
 
@@ -125,9 +127,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: {
-    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? '',
-  },
 
   applicationName: '99 Visual Solutions',
   category:        'technology',
@@ -193,7 +192,7 @@ export default function Home() {
       {/* Single JSON-LD script — one @context, @graph array, fully valid */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(homeGraph) }}
       />
 
       <HomeContent insights={<InsightsSectionAsync />} />

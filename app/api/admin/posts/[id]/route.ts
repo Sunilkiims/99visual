@@ -5,11 +5,8 @@ import { insightUrl } from '@/lib/seo'
 import { revalidateInsightListings } from '@/lib/revalidate-insights'
 import { submitToIndexNow } from '@/lib/indexnow'
 import { BASE } from '@/lib/schema'
-
-function calculateReadingTime(content: string): number {
-  const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length
-  return Math.max(1, Math.ceil(words / 200))
-}
+import { readJson, ValidationError } from '@/lib/validation'
+import { parsePostInput, calculateReadingTime, resolvePublishedAt } from '@/lib/post-input'
 
 export async function PATCH(
   request: NextRequest,
@@ -23,58 +20,83 @@ export async function PATCH(
   const { id } = await params
 
   try {
-    const body = await request.json()
+    const body = await readJson(request)
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+
+    const current = await prisma.post.findUnique({
+      where: { id },
+      select: { slug: true, status: true, publishedAt: true },
+    })
+    if (!current) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+
+    const input = parsePostInput(body, current.slug)
     const {
       title, slug, excerpt, content,
       categoryId, authorId, tags,
-      status, featured, featuredImageId, publishedAt, seo,
-    } = body
+      status, featured, featuredImageId, seo,
+    } = input
 
-    await prisma.postTag.deleteMany({ where: { postId: id } })
+    if (slug !== current.slug) {
+      const clash = await prisma.post.findUnique({ where: { slug }, select: { id: true } })
+      if (clash) return NextResponse.json({ error: 'Slug already exists' }, { status: 400 })
+    }
 
-    const post = await prisma.post.update({
-      where: { id },
-      data: {
-        title,
-        slug,
-        excerpt,
-        content,
-        categoryId,
-        authorId,
-        status,
-        featured,
-        featuredImageId: featuredImageId || null,
-        readingTime: calculateReadingTime(content),
-        publishedAt: publishedAt ? new Date(publishedAt) : status === 'PUBLISHED' ? new Date() : null,
-        tags: {
-          create: tags?.map((tagId: string) => ({ tagId })) || [],
-        },
-        seo: seo ? {
-          upsert: {
-            create: {
-              metaTitle: seo.metaTitle || title,
-              metaDescription: seo.metaDescription || excerpt,
-              // Always the production URL of this article. (This previously
-              // hard-coded https://99visualsolutions.com — a different domain.)
-              canonicalUrl: insightUrl(slug),
-              robots: 'index, follow',
-            },
-            update: {
-              metaTitle: seo.metaTitle || title,
-              metaDescription: seo.metaDescription || excerpt,
-              canonicalUrl: insightUrl(slug),
-              // The editor has no fields for these, so they can only ever be
-              // stale copies from an earlier title. Clearing them lets the
-              // article page derive social text from the current post.
-              ogTitle: null,
-              ogDescription: null,
-              twitterTitle: null,
-              twitterDescription: null,
-            },
+    // Tag replacement and the post update run in one transaction. Before,
+    // the tags were deleted first on their own, so a failed update left the
+    // post with no tags.
+    const [, post] = await prisma.$transaction([
+      prisma.postTag.deleteMany({ where: { postId: id } }),
+      prisma.post.update({
+        where: { id },
+        data: {
+          title,
+          slug,
+          excerpt,
+          content,
+          categoryId,
+          authorId,
+          status,
+          featured,
+          featuredImageId: featuredImageId || null,
+          readingTime: calculateReadingTime(content),
+          // Keeps the original publish date on re-save (see resolvePublishedAt).
+          publishedAt: resolvePublishedAt(input, current),
+          tags: {
+            create: tags?.map((tagId: string) => ({ tagId })) || [],
           },
-        } : undefined,
-      },
-    })
+          seo: seo ? {
+            upsert: {
+              create: {
+                metaTitle: seo.metaTitle || title,
+                metaDescription: seo.metaDescription || excerpt,
+                // Always the production URL of this article. (This previously
+                // hard-coded https://99visualsolutions.com — a different domain.)
+                canonicalUrl: insightUrl(slug),
+                robots: 'index, follow',
+              },
+              update: {
+                metaTitle: seo.metaTitle || title,
+                metaDescription: seo.metaDescription || excerpt,
+                canonicalUrl: insightUrl(slug),
+                // The editor has no fields for these, so they can only ever be
+                // stale copies from an earlier title. Clearing them lets the
+                // article page derive social text from the current post.
+                ogTitle: null,
+                ogDescription: null,
+                twitterTitle: null,
+                twitterDescription: null,
+              },
+            },
+          } : undefined,
+        },
+      }),
+    ])
+
+    if (slug !== current.slug && current.status === 'PUBLISHED') {
+      // The old article URL now 404s. Logged so it can be redirected in
+      // next.config.ts; a stored redirect table is planned for a later phase.
+      console.warn(`[posts] Published slug changed: /insights/${current.slug} -> /insights/${slug}`)
+    }
 
     revalidateInsightListings()
     // Tell Bing about the article right away (after the response is sent).
@@ -84,6 +106,9 @@ export async function PATCH(
     }
     return NextResponse.json({ success: true, post })
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
     console.error('Update post error:', error)
     return NextResponse.json({ error: 'Failed to update post' }, { status: 500 })
   }
@@ -99,7 +124,12 @@ export async function DELETE(
   }
 
   const { id } = await params
-  await prisma.post.delete({ where: { id } })
+  try {
+    await prisma.post.delete({ where: { id } })
+  } catch (error) {
+    console.error('Delete post error:', error)
+    return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 })
+  }
   revalidateInsightListings()
 
   return NextResponse.json({ success: true })

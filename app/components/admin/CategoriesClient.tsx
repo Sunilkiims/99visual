@@ -88,7 +88,12 @@ export default function CategoriesClient({ categories: initial }: Props) {
   async function handleDelete(id: string) {
     if (!confirm('Delete this category? Posts in this category will be affected.')) return
 
-    await fetch(`/api/admin/categories/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/admin/categories/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error || 'Delete failed')
+      return
+    }
     router.refresh()
     window.location.reload()
   }

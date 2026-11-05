@@ -5,11 +5,8 @@ import { insightUrl } from '@/lib/seo'
 import { revalidateInsightListings } from '@/lib/revalidate-insights'
 import { submitToIndexNow } from '@/lib/indexnow'
 import { BASE } from '@/lib/schema'
-
-function calculateReadingTime(content: string): number {
-  const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length
-  return Math.max(1, Math.ceil(words / 200))
-}
+import { readJson, ValidationError } from '@/lib/validation'
+import { parsePostInput, calculateReadingTime, resolvePublishedAt } from '@/lib/post-input'
 
 export async function POST(request: NextRequest) {
   const session = await getSession()
@@ -18,16 +15,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json()
+    const body = await readJson(request)
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+
+    const input = parsePostInput(body)
     const {
       title, slug, excerpt, content,
       categoryId, authorId, tags,
-      status, featured, featuredImageId, publishedAt, seo,
-    } = body
-
-    if (!title || !slug || !content || !categoryId || !authorId) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
+      status, featured, featuredImageId, seo,
+    } = input
 
     const existing = await prisma.post.findUnique({ where: { slug } })
     if (existing) {
@@ -42,11 +38,11 @@ export async function POST(request: NextRequest) {
         content,
         categoryId,
         authorId,
-        status,
+        status: status ?? 'DRAFT',
         featured: featured || false,
         featuredImageId: featuredImageId || null,
         readingTime: calculateReadingTime(content),
-        publishedAt: publishedAt ? new Date(publishedAt) : status === 'PUBLISHED' ? new Date() : null,
+        publishedAt: resolvePublishedAt(input, null),
         tags: {
           create: tags?.map((tagId: string) => ({ tagId })) || [],
         },
@@ -71,6 +67,9 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ success: true, post }, { status: 201 })
   } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
     console.error('Create post error:', error)
     return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
   }

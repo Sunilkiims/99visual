@@ -117,6 +117,13 @@ export const metadata: Metadata = {
   // site.webmanifest exists but was never linked from metadata, so it was
   // never discovered by browsers.
   manifest: "/site.webmanifest",
+
+  // Google Search Console ownership tag, set once for the whole site (it was
+  // previously repeated on 12 pages). Emitted only when the variable is set,
+  // so a missing value no longer produces an empty verification tag.
+  ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION && {
+    verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION },
+  }),
 };
 
 export default function RootLayout({

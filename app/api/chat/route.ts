@@ -3,6 +3,7 @@ import { openai } from "@/lib/openai";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { retrieveContextString } from "@/lib/retrieve"; // ← RAG retrieval
+import { saveLead } from "@/lib/leads";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ENV VALIDATION
@@ -1085,6 +1086,22 @@ export async function POST(req: Request): Promise<NextResponse<ChatSuccessRespon
           // un-awaited promise (including the Gmail retry's 3s delay) risks
           // never completing. Awaiting guarantees both sends finish first.
           await Promise.all([
+            // Also store the lead (best-effort; never throws) so it survives
+            // an email failure and can be counted later.
+            saveLead({
+              name: lead.name,
+              email: lead.email,
+              phone: lead.phone,
+              service: lead.requirement,
+              message: lead.query || lead.requirement || "Lead captured by the website chat assistant",
+              channel: "chatbot",
+              attribution: {
+                intent: intentLevel,
+                language: detectedLanguage,
+                city: location?.city,
+                country: location?.country,
+              },
+            }),
             sendLeadEmail(lead, convState, location).catch((err) =>
               console.error("[99Visual] Lead email failed after retry:", err)
             ),

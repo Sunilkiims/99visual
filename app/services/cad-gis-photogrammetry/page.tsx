@@ -59,6 +59,7 @@ import {
   websiteSchema,
   breadcrumbFromItems,
   faqSchema,
+  jsonLdString,
 } from "@/lib/schema";
 
 const BASE_SAFE = BASE.replace(/\/$/, "");
@@ -126,9 +127,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: {
-    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
-  },
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -491,7 +489,7 @@ export default function CADGISPhotogrammetry() {
       <script
         id="schema-cg-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cgGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(cgGraph) }}
       />
 
       <style>{`

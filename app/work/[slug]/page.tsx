@@ -13,6 +13,7 @@ import {
   websiteSchema,
   breadcrumbFromPath,
   webPage,
+  jsonLdString,
 } from '@/lib/schema'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -124,7 +125,7 @@ export default async function CaseStudyPage({ params }: Props) {
   return (
     <>
       <Header />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }} />
       <main className="min-h-screen bg-gray-950">
         <article className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-24">
 
