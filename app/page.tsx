@@ -32,9 +32,22 @@
 
 import type { ReactElement } from 'react';
 import type { Metadata } from 'next';
-import HomeContent from './components/HomeContent';
+import Header from './components/header';
+import Footer from './components/footer';
+import Chatbot from './components/chatbot';
+import WhatsAppButton from './components/wahtsappbutton';
+import CinematicHero from './components/premium/home/CinematicHero';
+import {
+  CompanyIntro,
+  ServiceBentoGrid,
+  PortfolioShowcase,
+  IndustryGrid,
+  TechnologyCloud,
+  WhyChoose,
+  CTASection,
+} from './components/premium/home/HomeSections';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
-import InsightsSection from './components/InsightsSection';
+import InsightsGrid from './components/premium/InsightsGrid';
 
 // InsightsSection is an async Server Component (it awaits a Prisma query
 // before returning JSX). Some @types/react versions don't model async
@@ -45,7 +58,7 @@ import InsightsSection from './components/InsightsSection';
 // `React.ReactElement` (imported directly) instead of the ambient `JSX`
 // namespace, since that namespace isn't globally available in every
 // React/TypeScript version combination.
-const InsightsSectionAsync = InsightsSection as unknown as () => ReactElement;
+const InsightsGridAsync = InsightsGrid as unknown as () => ReactElement;
 
 export const revalidate = 60
 
@@ -195,7 +208,23 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(homeGraph) }}
       />
 
-      <HomeContent insights={<InsightsSectionAsync />} />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <CinematicHero />
+          <CompanyIntro />
+          <ServiceBentoGrid />
+          <PortfolioShowcase />
+          <IndustryGrid />
+          <TechnologyCloud />
+          <WhyChoose />
+          <InsightsGridAsync />
+          <CTASection />
+        </main>
+        <Footer />
+      </div>
+      <Chatbot />
+      <WhatsAppButton />
     </>
   );
 }

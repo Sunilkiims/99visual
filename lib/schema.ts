@@ -31,16 +31,16 @@ import { normaliseSchemaDates, type SchemaDateInput } from './schema-date';
 export const BASE          = 'https://www.99visual.com'; // no trailing slash
 export const CONTACT_EMAIL  = 'contact@99visual.com';     // single source of truth
 const COMPANY_NAME          = '99 Visual Solutions';
-const PHONE                 = '+91-9205737431';
+export const PHONE          = '+91-9205737431';
 // Matches the Google Business Profile address exactly (consistent NAP —
 // name, address, phone — across the site, GBP and directories).
-const STREET_ADDRESS        = 'Site No-13, Ground Floor, Idgha Road, Varthur, Devasthanagalu';
+export const STREET_ADDRESS = 'Site No-13, Ground Floor, Idgha Road, Varthur, Devasthanagalu';
 // Google Maps listing for the Business Profile (CID decoded from the
 // profile's own directions link).
 export const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=1351165665399132315';
-const LOCALITY              = 'Bengaluru';
-const REGION                = 'Karnataka';
-const POSTAL_CODE           = '560087';
+export const LOCALITY       = 'Bengaluru';
+export const REGION         = 'Karnataka';
+export const POSTAL_CODE    = '560087';
 const COUNTRY               = 'IN';
 const LAT                   =  12.941076388702841;
 const LNG                   =  77.74127158138299;

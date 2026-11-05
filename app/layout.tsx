@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./global.css";
+import "./styles/premium.css";
 import { BASE } from "@/lib/schema";
 import RouteProgressBar from "@/app/components/RouteProgressBar";
 import GoogleAnalytics from "@/app/components/GoogleAnalytics";
@@ -11,6 +13,22 @@ import { isValidGaId } from "@/lib/analytics";
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const ANALYTICS_ENABLED =
   process.env.VERCEL_ENV === "production" && isValidGaId(GA_ID);
+
+// Redesign typefaces — Sora (display) and Manrope (text), both geometric and
+// OFL-licensed (see app/fonts/OFL-*.txt). Self-hosted variable fonts: no
+// render-blocking third-party request and no build-time network access.
+const displayFont = localFont({
+  src: "./fonts/sora-latin-wght-normal.woff2",
+  variable: "--font-display",
+  weight: "100 800",
+  display: "swap",
+});
+const textFont = localFont({
+  src: "./fonts/manrope-latin-wght-normal.woff2",
+  variable: "--font-text",
+  weight: "200 800",
+  display: "swap",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -155,6 +173,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href={GOOGLE_FONTS_CSS} />
+        {/* Scroll-reveal content is server-rendered at opacity 0 and animated
+            in with JavaScript; without JS, show it immediately. */}
+        <noscript>
+          <style>{`.vz [style*="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
       </head>
       {/*
         Pannellum's CSS/JS previously loaded here for every route. It's only
@@ -164,7 +187,7 @@ export default function RootLayout({
         CDN stylesheet + beforeInteractive script it never needed.
       */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${displayFont.variable} ${textFont.variable} antialiased`}
       >
         {/*
           Site-wide page-transition system:
