@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 // Pure data-collection utility — no UI impact. See lib/leadTracking.ts
 import { getTrackingData, type TrackingData } from '@/lib/leadTracking';
 import { GOOGLE_MAPS_URL } from '@/lib/schema';
+import { trackLead } from '@/lib/analytics';
 
 type FormData = {
     name: string;
@@ -116,6 +117,7 @@ export default function ContactForm({ blogTitle, blogSlug }: ContactFormProps = 
             const result = await res.json();
 
             if (res.ok) {
+                trackLead('contact_form');
                 setStatus('✅ Thanks for contacting us! We will get back to you soon.');
                 setForm({ name: '', email: '', message: '' });
                 setUserCaptcha('');

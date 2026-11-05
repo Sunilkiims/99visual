@@ -3,6 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./global.css";
 import { BASE } from "@/lib/schema";
 import RouteProgressBar from "@/app/components/RouteProgressBar";
+import GoogleAnalytics from "@/app/components/GoogleAnalytics";
+import { isValidGaId } from "@/lib/analytics";
+
+// GA4 runs only on the production deployment (never previews or local dev)
+// and only once a valid measurement ID is configured in Vercel.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const ANALYTICS_ENABLED =
+  process.env.VERCEL_ENV === "production" && isValidGaId(GA_ID);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -173,6 +181,7 @@ export default function RootLayout({
         */}
         <RouteProgressBar />
         {children}
+        {ANALYTICS_ENABLED && <GoogleAnalytics gaId={GA_ID as string} />}
       </body>
     </html>
   );

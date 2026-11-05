@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { trackLead } from "@/lib/analytics";
 
 /* ── Animated Robot SVG Icon ── */
 function RobotIcon({ size = 28 }: { size?: number }) {
@@ -218,6 +219,9 @@ export default function Chatbot() {
         }),
       });
       const data = await res.json();
+      // The API returns a non-null `lead` only on the reply where the visitor's
+      // contact details were captured.
+      if (data.lead) trackLead('chatbot');
       setMessages((prev) => [
         ...prev,
         { role: "bot", text: data.reply, navLinks: data.navLinks ?? [] },
