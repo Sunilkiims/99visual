@@ -128,12 +128,12 @@ const FAQ_ITEMS = [
   {
     question: "Can international agencies partner with 99 Visual?",
     answer:
-      "Absolutely. We work with partners across India, the USA, UK, UAE, and Australia, providing offshore IT collaboration with competitive pricing and fast turnaround. Our team ensures time-zone overlap, real-time communication via Slack or Teams, and agile delivery cycles that work for international partners. We have successfully managed long-term white-label relationships with agencies across multiple continents.",
+      "Absolutely. We work with partners across India, the USA, UK, UAE, Australia, South Korea, and Japan, providing offshore IT collaboration with competitive pricing and fast turnaround. Our team ensures time-zone overlap, real-time communication via Slack or Teams, and agile delivery cycles that work for international partners. We have successfully managed long-term white-label relationships with agencies across multiple continents.",
   },
   {
     question: "How many global partners does 99 Visual Solutions currently work with?",
     answer:
-      "99 Visual Solutions has an active network of over 30 global partners across various industries and regions, including agencies, startups, and enterprises in the USA, UK, UAE, and Australia. Our partner relationships are built on long-term mutual success, transparent communication, and consistent delivery quality. We prioritise depth of partnership over volume.",
+      "99 Visual Solutions has an active network of over 30 global partners across various industries and regions, including agencies, startups, and enterprises in the USA, UK, UAE, Australia, South Korea, and Japan. Our partner relationships are built on long-term mutual success, transparent communication, and consistent delivery quality. We prioritise depth of partnership over volume.",
   },
   {
     question: "How do I start a partnership with 99 Visual Solutions?",
@@ -228,7 +228,7 @@ const pipeline = [
   { cmd: "white_label",      out: "nda protected" },
   { cmd: "response_time",    out: "< 24h" },
   { cmd: "delivery_model",   out: "agile · offshore" },
-  { cmd: "regions_served",   out: "india · usa · uk · uae · au" },
+  { cmd: "regions_served",   out: "india · usa · uk · uae · au · kr · jp" },
   { cmd: "partnership_types", out: "4 collaboration models" },
 ];
 

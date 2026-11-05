@@ -9,7 +9,7 @@
 //   on mobile.
 // - prefers-reduced-motion: no auto-rotation (drag still works).
 // Markers: Bengaluru HQ plus the five markets in the Organization schema's
-// areaServed (India, USA, UK, UAE, Australia).
+// areaServed (India, USA, UK, UAE, Australia, South Korea, Japan).
 import { useEffect, useRef } from 'react';
 import createGlobe, { type Arc, type Marker } from 'cobe';
 
@@ -19,6 +19,8 @@ const MARKETS: [number, number][] = [
   [51.5, -0.12],    // UK (London)
   [25.2, 55.27],    // UAE (Dubai)
   [-33.87, 151.21], // Australia (Sydney)
+  [37.57, 126.98],  // South Korea (Seoul)
+  [35.68, 139.69],  // Japan (Tokyo)
   [28.61, 77.2],    // India (Delhi)
 ];
 
@@ -47,7 +49,8 @@ export default function InteractiveGlobe() {
       { location: HQ, size: 0.09, color: [0.16, 0.85, 0.95] },
       ...MARKETS.map((location) => ({ location, size: 0.05 })),
     ];
-    const arcs: Arc[] = MARKETS.slice(0, 4).map((to) => ({ from: HQ, to }));
+    // Arcs to every overseas market; Delhi (last entry) is too close to draw.
+    const arcs: Arc[] = MARKETS.slice(0, -1).map((to) => ({ from: HQ, to }));
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: dpr,
@@ -146,7 +149,7 @@ export default function InteractiveGlobe() {
         ref={canvasRef}
         className="vz-globe__canvas"
         role="img"
-        aria-label="Rotating globe marking our Bengaluru studio and client regions in the USA, UK, UAE, Australia and India. Drag to rotate."
+        aria-label="Rotating globe marking our Bengaluru studio and client regions in the USA, UK, UAE, Sydney (Australia), South Korea, Japan and India. Drag to rotate."
         style={{ cursor: 'grab' }}
       />
     </div>

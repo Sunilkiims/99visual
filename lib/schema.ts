@@ -45,13 +45,16 @@ const COUNTRY               = 'IN';
 const LAT                   =  12.941076388702841;
 const LNG                   =  77.74127158138299;
 const DEFAULT_IMAGE         = `${BASE}/images/home-og.jpg`;
-const AREA_SERVED           = ['IN', 'US', 'GB', 'AE', 'AU'];
+const AREA_SERVED           = ['IN', 'US', 'GB', 'AE', 'AU', 'KR', 'JP'];
 const AREA_SERVED_FULL      = [
   { '@type': 'Country', name: 'India' },
   { '@type': 'Country', name: 'United States' },
   { '@type': 'Country', name: 'United Kingdom' },
   { '@type': 'Country', name: 'United Arab Emirates' },
   { '@type': 'Country', name: 'Australia' },
+  { '@type': 'City', name: 'Sydney' },
+  { '@type': 'Country', name: 'South Korea' },
+  { '@type': 'Country', name: 'Japan' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -127,7 +130,7 @@ export const orgSchema = {
   },
   image: DEFAULT_IMAGE,
   description:
-    'India-based global IT company delivering 3D visualisation, custom web & app development, CAD drafting, GIS & LiDAR mapping, SEO, and IT consulting to businesses across India, USA, UK, UAE & Australia.',
+    'India-based global IT company delivering 3D visualisation, custom web & app development, CAD drafting, GIS & LiDAR mapping, SEO, and IT consulting to businesses across India, USA, UK, UAE, Australia, Korea & Japan.',
   foundingDate: '2020',
   numberOfEmployees: { '@type': 'QuantitativeValue', minValue: 10, maxValue: 50 },
   address: {

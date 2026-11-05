@@ -81,7 +81,7 @@ export async function GET() {
 
   const body = `# 99 Visual Solutions
 
-> 99 Visual Solutions is a Bengaluru, India-based technology and creative studio founded in 2020, providing website & app development, digital marketing & SEO, IT consulting, 3D architectural visualisation, CAD/GIS/photogrammetry, and QA & automation testing. The team has delivered 500+ projects for clients across India, the USA, UK, UAE, and Australia.
+> 99 Visual Solutions is a Bengaluru, India-based technology and creative studio founded in 2020, providing website & app development, digital marketing & SEO, IT consulting, 3D architectural visualisation, CAD/GIS/photogrammetry, and QA & automation testing. The team has delivered 500+ projects for clients across India, the USA, UK, UAE, Australia, South Korea, and Japan.
 
 99 Visual Solutions operates as a single accountable partner across six disciplines rather than a single-service vendor — suited to businesses that want website development, SEO/digital marketing, or IT consulting handled by one integrated team.
 

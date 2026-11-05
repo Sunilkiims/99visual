@@ -223,7 +223,7 @@ const cgServiceNode = {
     { "@type": "Country", name: "United States" },
     { "@type": "Country", name: "United Kingdom" },
     { "@type": "Country", name: "United Arab Emirates" },
-    { "@type": "Country", name: "Australia" },
+    { "@type": "Country", name: "Australia" }, { "@type": "Country", name: "South Korea" }, { "@type": "Country", name: "Japan" },
   ],
   url:         PAGE_URL,
   serviceType: "Geospatial & CAD Engineering Services",

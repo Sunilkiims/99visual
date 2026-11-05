@@ -107,7 +107,7 @@ const STATS = [
   // the Organization schema; response time matches the 24-business-hour promise).
   { value: 2020, suffix: "",   label: "Founded in Bengaluru" },
   { value: 6,   suffix: "",    label: "Core services" },
-  { value: 5,   suffix: "",    label: "Countries served" },
+  { value: 7,   suffix: "",    label: "Countries served" },
   { value: 1,   suffix: "day", label: "Response guarantee" },
 ];
 
@@ -117,7 +117,7 @@ const STATS = [
 const pipeline = [
   { cmd: "response_time", out: "< 24h" },
   { cmd: "consultation",  out: "100% free" },
-  { cmd: "global_reach",  out: "india · usa · uk · uae · au" },
+  { cmd: "global_reach",  out: "india · usa · uk · uae · au · kr · jp" },
   { cmd: "contact_form",  out: "instant confirmation" },
   { cmd: "whatsapp",      out: "reply within minutes" },
   { cmd: "commitment",    out: "zero obligation" },
@@ -961,7 +961,7 @@ export default function ContactPageClient() {
                     ["Within 24 hours",          "All form & email enquiries"],
                     ["Instant WhatsApp reply",   "Fastest way to reach us"],
                     ["Free initial consultation","No commitment, no pressure"],
-                    ["India · USA · UK · UAE · AU","Clients served globally"],
+                    ["India · USA · UK · UAE · AU · KR · JP","Clients served globally"],
                   ] as [string, string][]).map(([strong, sub]) => (
                     <li key={strong} className="ct-reach__commit-item">
                       <svg

@@ -185,7 +185,7 @@ const dmAreaServed = [
   { "@type": "Country", name: "United States" },
   { "@type": "Country", name: "United Kingdom" },
   { "@type": "Country", name: "United Arab Emirates" },
-  { "@type": "Country", name: "Australia" },
+  { "@type": "Country", name: "Australia" }, { "@type": "Country", name: "South Korea" }, { "@type": "Country", name: "Japan" },
 ];
 
 const dmServiceNode = {
@@ -436,7 +436,7 @@ export default function DigitalMarketing() {
             postTitle={T}
             postUrl={P}
             secondary={{ href: "#dm-cluster-h-seo-services", label: "Explore SEO services" }}
-            points={["Bengaluru, India", "Est. 2020", "Serving India · USA · UK · UAE · Australia"]}
+            points={["Bengaluru, India", "Est. 2020", "Serving India · USA · UK · UAE · Australia · Korea · Japan"]}
           />
 
           <ServiceIntro

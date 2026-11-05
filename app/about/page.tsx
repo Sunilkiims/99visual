@@ -99,7 +99,7 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "About 99 Visual Solutions | IT & 3D Visualization Bangalore",
-    description: "Founded 2020 · 500+ projects · 6 specialisations. Bengaluru IT company serving India, USA, UK, UAE & Australia.",
+    description: "Founded 2020 · 500+ projects · 6 specialisations. Bengaluru IT company serving India, USA, UK, UAE, Australia, Korea & Japan.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
@@ -193,7 +193,7 @@ const aboutGraph = buildGraph(
 const facts = [
   { value: "2020", label: "Founded in Bengaluru" },
   { value: "6", label: "Specializations" },
-  { value: "5", label: "Countries served" },
+  { value: "7", label: "Countries served" },
 ];
 
 export default function AboutPage() {

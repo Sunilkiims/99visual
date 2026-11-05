@@ -84,8 +84,8 @@ export const metadata: Metadata = {
     template: '%s | 99 Visual Solutions',
   },
   description:
-    // 151 chars — fits the ~155-character snippet width without truncating.
-    'Bengaluru IT company delivering 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting across India, USA, UK, UAE & Australia.',
+    // 154 chars — fits the ~155-character snippet width without truncating.
+    'Bengaluru IT company for 3D visualisation, web & app development, CAD, GIS, LiDAR, SEO and IT consulting in India, USA, UK, UAE, Australia, Korea & Japan.',
 
   metadataBase: new URL(BASE),
 

@@ -136,12 +136,12 @@ const faqItems = [
   {
     question: "Does 99 Visual Solutions work with international clients?",
     answer:
-      "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, and Australia. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at highly competitive Indian IT market rates.",
+      "Yes, 99 Visual Solutions actively serves startups and enterprises across India, the USA, UK, UAE, Australia, South Korea, and Japan. We offer competitive offshore IT services with fast turnaround times, dedicated account managers, and working-hours overlap for real-time communication. Our international clients benefit from world-class quality at highly competitive Indian IT market rates.",
   },
   {
     question: "Where is 99 Visual Solutions located?",
     answer:
-      "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India. As a remote-first agency, we have successfully delivered over 150 projects for clients both locally in Bangalore and globally across the USA, UK, UAE, and Australia. We use agile delivery methods and time-zone-friendly communication to ensure smooth collaboration with every client.",
+      "99 Visual Solutions is headquartered in Bengaluru (Bangalore), Karnataka, India. As a remote-first agency, we have successfully delivered over 150 projects for clients both locally in Bangalore and globally across the USA, UK, UAE, Australia, South Korea, and Japan. We use agile delivery methods and time-zone-friendly communication to ensure smooth collaboration with every client.",
   },
 ];
 

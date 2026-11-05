@@ -22,7 +22,7 @@ export default function CinematicHero() {
           <p className="vz-lead vz-hero__lead">
             99 Visual Solutions is a Bengaluru technology studio. We create architectural visualization, build
             websites and web applications, and deliver SEO, CAD/GIS/LiDAR mapping, QA automation and IT consulting
-            for clients across India, the USA, UK, UAE and Australia.
+            for clients across India, the USA, UK, UAE, Australia (Sydney), South Korea and Japan.
           </p>
           <div className="vz-btn-row">
             <Button href="/contact" arrow>Start a project</Button>
@@ -31,7 +31,7 @@ export default function CinematicHero() {
           <ul className="vz-hero__facts" aria-label="Company at a glance">
             <li><strong>2020</strong><span>Founded in Bengaluru</span></li>
             <li><strong>6</strong><span>Disciplines, one team</span></li>
-            <li><strong>5</strong><span>Countries served</span></li>
+            <li><strong>7</strong><span>Countries served</span></li>
           </ul>
         </div>
 

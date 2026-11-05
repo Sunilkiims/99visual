@@ -170,7 +170,7 @@ const wdevServiceNode = {
     { "@type": "Country", name: "United States" },
     { "@type": "Country", name: "United Kingdom" },
     { "@type": "Country", name: "United Arab Emirates" },
-    { "@type": "Country", name: "Australia" },
+    { "@type": "Country", name: "Australia" }, { "@type": "Country", name: "South Korea" }, { "@type": "Country", name: "Japan" },
   ],
   provider: { "@id": `${BASE_SAFE}/#organization` },
   "@id": `${BASE_SAFE}/services/website-development#service`,
@@ -503,7 +503,7 @@ const faqItems = [
   {
     question: "Are you a website development company based in India?",
     answer:
-      "Yes. 99 Visual Solutions is a website development company headquartered in Bengaluru (Bangalore), Karnataka, India. Being based here doesn't limit who we work with — our team also builds and supports websites and web applications for clients in the US, UK, UAE, and Australia, all from the same India-based delivery team.",
+      "Yes. 99 Visual Solutions is a website development company headquartered in Bengaluru (Bangalore), Karnataka, India. Being based here doesn't limit who we work with — our team also builds and supports websites and web applications for clients in the US, UK, UAE, Australia, South Korea, and Japan, all from the same India-based delivery team.",
   },
   {
     question: "What's the difference between a business website and a custom web application?",
@@ -607,7 +607,7 @@ export default function WebsiteDevelopment() {
 
           <ServiceIntro id="wdev-location-heading" eyebrow="Where We're Based" title={<>A website development company in <em>Bengaluru, India</em></>}>
             <p className="vz-lead">
-              99 Visual Solutions is a <strong>website development company in Bangalore</strong> — headquartered in Bengaluru, Karnataka, and working as a <strong>business website development company</strong> and <strong>web application development company in India</strong> for clients across the country. Being a <strong>web development company in Bangalore</strong> also means our full design and engineering team sits together in one time zone, which keeps communication and turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE, and Australia. Read more about our team and background on the <Link className="vz-prose-link" href="/about">About 99 Visual Solutions</Link> page.
+              99 Visual Solutions is a <strong>website development company in Bangalore</strong> — headquartered in Bengaluru, Karnataka, and working as a <strong>business website development company</strong> and <strong>web application development company in India</strong> for clients across the country. Being a <strong>web development company in Bangalore</strong> also means our full design and engineering team sits together in one time zone, which keeps communication and turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE, Australia, South Korea, and Japan. Read more about our team and background on the <Link className="vz-prose-link" href="/about">About 99 Visual Solutions</Link> page.
             </p>
           </ServiceIntro>
 

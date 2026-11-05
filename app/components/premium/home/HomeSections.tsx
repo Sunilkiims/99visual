@@ -231,7 +231,7 @@ const WHY = [
   { title: 'Scope before production', body: 'Deliverables, formats and a dated schedule are confirmed before work starts, so you know what arrives and when.' },
   { title: 'Built in-house', body: 'Renders, code and data processing are produced by our own team in Bengaluru, not subcontracted.' },
   { title: 'Review checkpoints', body: 'Drafts are shared early for sign-off, so feedback lands before final production time is spent.' },
-  { title: 'Global hours', body: 'Working from India (UTC+5:30) for clients in the USA, UK, UAE and Australia, with overlap for live reviews.' },
+  { title: 'Global hours', body: 'Working from India (UTC+5:30) for clients in the USA, UK, UAE, Australia, South Korea and Japan, with overlap for live reviews.' },
   { title: 'Honest reporting', body: 'Case studies list what the evidence supports and what it does not — no inflated numbers.' },
 ];
 

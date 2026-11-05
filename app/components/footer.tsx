@@ -22,7 +22,7 @@ export default function Footer() {
             <p className="vz-footer__tagline">Immersive Experience · Intelligent Solutions</p>
             <p className="vz-body">
               3D visualization, web development, digital marketing, geospatial and QA engineering from one
-              Bengaluru team, for clients in India, the USA, UK, UAE and Australia.
+              Bengaluru team, for clients in India, the USA, UK, UAE, Australia (Sydney), South Korea and Japan.
             </p>
             <div className="vz-footer__nl">
               <p className="vz-footer__label">Newsletter</p>

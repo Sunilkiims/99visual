@@ -203,7 +203,7 @@ const vizFaqs = [
   {
     question: "Do you serve clients outside India?",
     answer:
-      "Yes. We currently deliver projects to architecture and real estate clients across India, the USA, UK, UAE, and Australia, coordinating entirely through email, scheduled video reviews, and cloud file transfer. Time zone differences are handled with async review checkpoints so a project doesn't stall waiting on a live call.",
+      "Yes. We currently deliver projects to architecture and real estate clients across India, the USA, UK, UAE, Australia, South Korea, and Japan, coordinating entirely through email, scheduled video reviews, and cloud file transfer. Time zone differences are handled with async review checkpoints so a project doesn't stall waiting on a live call.",
   },
 ];
 

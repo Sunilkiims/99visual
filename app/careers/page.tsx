@@ -257,7 +257,7 @@ const faqItems = [
   {
     question: "What is the salary range for jobs at 99 Visual Solutions?",
     answer:
-      "Compensation is competitive and commensurate with experience and role. Typical annual packages range from ₹3 LPA for entry-level positions to ₹12 LPA or more for senior roles. Benefits include a professional development budget, mentorship programme, and exposure to global projects across India, USA, UK, UAE, and Australia. Final compensation is discussed during the interview process.",
+      "Compensation is competitive and commensurate with experience and role. Typical annual packages range from ₹3 LPA for entry-level positions to ₹12 LPA or more for senior roles. Benefits include a professional development budget, mentorship programme, and exposure to global projects across India, USA, UK, UAE, Australia, South Korea, and Japan. Final compensation is discussed during the interview process.",
   },
   {
     question: "What technologies does the web development team at 99 Visual Solutions use?",
@@ -466,7 +466,7 @@ const whyItems = [
   {
     num:   "03",
     title: "Impactful Projects",
-    desc:  "Work on meaningful projects for clients in the US, UK, AU, and UAE that create tangible business impact and push your craft further.",
+    desc:  "Work on meaningful projects for clients in the US, UK, AU, UAE, South Korea and Japan that create tangible business impact and push your craft further.",
   },
 ];
 
