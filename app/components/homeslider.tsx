@@ -220,7 +220,14 @@ const HomeSlider: React.FC = () => {
         }
       `}</style>
 
-      <AnimatePresence mode="wait" custom={direction}>
+      {/*
+        initial={false}: the first slide is server-rendered already visible
+        (opacity 1, no offset) instead of at the "enter" state (opacity 0).
+        Previously the hero image — the page's LCP element — stayed invisible
+        until JavaScript hydrated and ran the 1.1s entrance animation, which
+        delays Largest Contentful Paint. Later slide changes still animate.
+      */}
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
           key={currentSlide.id}
           className="absolute inset-0 w-full h-full will-change-transform"
