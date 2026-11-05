@@ -55,8 +55,8 @@ export const metadata: Metadata = {
     description:
       "Discover news, press releases, and updates from 99Visual.",
 
-    site: "@99visual",
-    creator: "@99visual",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
 
     images: ["https://www.99visual.com/images/og/press-og.jpg"],
   },

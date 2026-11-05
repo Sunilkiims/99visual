@@ -100,8 +100,8 @@ export const metadata: Metadata = {
     description:
       "Explore FAQs, troubleshooting guides, and expert support at 99Visual Help Center.",
 
-    site: "@99visual",
-    creator: "@99visual",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
 
     images: ["https://www.99visual.com/images/og/help-center-og.jpg"],
   },

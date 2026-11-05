@@ -53,8 +53,8 @@ export const metadata: Metadata = {
     description:
       "Review the terms and conditions for using 99Visual services.",
 
-    site: "@99visual",
-    creator: "@99visual",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
 
     images: ["https://www.99visual.com/images/og/terms-og.jpg"],
   },

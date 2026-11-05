@@ -54,8 +54,8 @@ export const metadata: Metadata = {
     description:
       "Your data matters. Learn how 99Visual protects and manages your information responsibly.",
 
-    site: "@99visual",
-    creator: "@99visual",
+    site: "@99VisualSoluti1",
+    creator: "@99VisualSoluti1",
 
     images: ["https://www.99visual.com/images/og/privacy-policy-og.jpg"],
   },
