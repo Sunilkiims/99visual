@@ -587,3 +587,42 @@ export function videoObjectSchema(opts: {
 //   type="application/ld+json"
 //   dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
 // />
+// ─────────────────────────────────────────────────────────────────────────────
+// Article author (Person)
+//
+// Google's article guidance recommends identifying the author with more than
+// a bare name — a profile URL / sameAs links let search engines (and AI
+// answer engines) tie the byline to a real, verifiable person (E-E-A-T).
+// Every extra field is optional and only emitted when the CMS has a value.
+// twitter / linkedin may be stored as full URLs or as bare handles.
+// ─────────────────────────────────────────────────────────────────────────────
+type AuthorInput = {
+  name: string;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  twitter?: string | null;
+  linkedin?: string | null;
+};
+
+function profileUrl(value: string | null | undefined, base: string): string | null {
+  const v = (value || '').trim();
+  if (!v) return null;
+  if (/^https?:\/\//i.test(v)) return v;
+  const handle = v.replace(/^@/, '').replace(/^\/+|\/+$/g, '');
+  return handle ? `${base}${handle}` : null;
+}
+
+export function authorSchema(author: AuthorInput) {
+  const sameAs = [
+    profileUrl(author.linkedin, 'https://www.linkedin.com/in/'),
+    profileUrl(author.twitter, 'https://x.com/'),
+  ].filter((u): u is string => Boolean(u));
+  const bio = (author.bio || '').replace(/\s+/g, ' ').trim();
+  return {
+    '@type': 'Person',
+    name: author.name,
+    ...(bio && { description: bio }),
+    ...(author.avatarUrl && { image: abs(author.avatarUrl) }),
+    ...(sameAs.length > 0 && { sameAs }),
+  };
+}

@@ -13,7 +13,7 @@ import { getCategoryIcon, getRelatedService } from '@/app/components/insights/ca
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { stripForeignImages } from '@/app/components/insights/stripForeignImages'
 import { sanitizeArticleHtml } from '@/lib/sanitize-html'
-import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
+import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString, authorSchema } from '@/lib/schema'
 import { insightUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
 import { topicPath } from '@/lib/insights'
 
@@ -299,7 +299,7 @@ export default async function InsightPostPage({ params }: Props) {
       ...(post.tags.length > 0 && { keywords: post.tags.map(({ tag }: { tag: { name: string } }) => tag.name).join(', ') }),
       articleSection: post.category.name,
       inLanguage: 'en',
-      author: { '@type': 'Person', name: post.author.name },
+      author: authorSchema(post.author),
       publisher: { '@id': `${BASE}/#organization` },
       // Date objects; buildGraph() validates and serialises them (lib/schema-date.ts).
       // dateModified is omitted if it would precede datePublished (possible
