@@ -2,15 +2,17 @@
 
 import Image from "next/image";
 
+// Names match the logos in /public/partners (previously "Partner 1"–"Partner 8",
+// which gave every logo a meaningless alt text).
 const partners = [
-  { name: "Partner 1", logo: "/partners/partner1.png" },
-  { name: "Partner 2", logo: "/partners/partner2.png" },
-  { name: "Partner 3", logo: "/partners/partner3.png" },
-  { name: "Partner 4", logo: "/partners/partner4.png" },
-  { name: "Partner 5", logo: "/partners/partner5.png" },
-  { name: "Partner 6", logo: "/partners/partner6.png" },
-  { name: "Partner 7", logo: "/partners/partner7.png" },
-  { name: "Partner 8", logo: "/partners/partner8.png" },
+  { name: "Agmatel", logo: "/partners/partner1.png" },
+  { name: "Team Computers", logo: "/partners/partner2.png" },
+  { name: "Transcorp", logo: "/partners/partner3.png" },
+  { name: "Ind Innovation", logo: "/partners/partner4.png" },
+  { name: "Transline Technologies", logo: "/partners/partner5.png" },
+  { name: "Orient Technologies", logo: "/partners/partner6.png" },
+  { name: "Hitachi", logo: "/partners/partner7.png" },
+  { name: "Uniserved", logo: "/partners/partner8.png" },
 ];
 
 const PartnerMarquee = () => {
@@ -171,11 +173,18 @@ const PartnerMarquee = () => {
 
         <div className="pm-strip">
           <div className="pm-marquee">
+            {/* The list is rendered twice for the seamless loop; the second
+                copy is decorative, so it's hidden from assistive tech and
+                given empty alt text (each client is announced once). */}
             {[...partners, ...partners].map((partner, index) => (
-              <div key={index} className="pm-item">
+              <div
+                key={index}
+                className="pm-item"
+                aria-hidden={index >= partners.length ? true : undefined}
+              >
                 <Image
                   src={partner.logo}
-                  alt={partner.name}
+                  alt={index >= partners.length ? "" : `${partner.name} logo`}
                   fill
                   sizes="130px"
                   className="object-contain"
