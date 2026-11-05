@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { UAParser } from "ua-parser-js";
+import { saveLead } from "@/lib/leads";
+import { escapeHtml } from "@/lib/validation";
+
+// Upper bounds for visitor input. The form's own fields are far shorter; this
+// only stops oversized payloads from being emailed or stored.
+const MAX_NAME = 200;
+const MAX_EMAIL = 254;
+const MAX_MESSAGE = 10_000;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ─── Captcha verification ────────────────────────────────────────────────
 function sign(value: string) {
@@ -47,7 +56,7 @@ async function getGeoFromIp(ip: string) {
   }
   try {
     const res = await fetch(
-      `http://ip-api.com/json/${ip}?fields=status,city,regionName,country,query`
+      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,city,regionName,country,query`
     );
     const data = await res.json();
     if (data.status === "success") {
@@ -126,7 +135,7 @@ function formatTrackingSectionHtml(tracking?: TrackingPayload): string {
   const row = (label: string, value?: string) => `
           <tr>
             <td style="padding:4px 12px 4px 0;color:#6b7280;font-size:12px;white-space:nowrap;vertical-align:top;"><strong>${label}</strong></td>
-            <td style="padding:4px 0;color:#111827;font-size:12px;word-break:break-all;">${value || "—"}</td>
+            <td style="padding:4px 0;color:#111827;font-size:12px;word-break:break-all;">${value ? escapeHtml(value) : "—"}</td>
           </tr>`;
 
   return `
@@ -181,8 +190,21 @@ export async function POST(req: NextRequest) {
       postUrl?: string;
     } = await req.json();
 
-    if (!name || !email || !message) {
+    if (
+      typeof name !== "string" || !name.trim() ||
+      typeof email !== "string" || !email.trim() ||
+      typeof message !== "string" || !message.trim()
+    ) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+    }
+
+    if (
+      name.length > MAX_NAME ||
+      email.length > MAX_EMAIL ||
+      message.length > MAX_MESSAGE ||
+      !EMAIL_PATTERN.test(email.trim())
+    ) {
+      return NextResponse.json({ message: "Please check your name, email and message" }, { status: 400 });
     }
 
     if (honeypot) {
@@ -192,6 +214,24 @@ export async function POST(req: NextRequest) {
     if (!verifyCaptcha(captcha, captchaToken)) {
       return NextResponse.json({ message: "Invalid or expired captcha" }, { status: 400 });
     }
+
+    // Store the enquiry before emailing it, so it is kept even if the email
+    // step fails. Best-effort: saveLead never throws.
+    await saveLead({
+      name,
+      email,
+      message,
+      channel: "contact-form",
+      attribution: {
+        landing: tracking?.landingPage,
+        page: tracking?.currentPage || postUrl,
+        blog: tracking?.blogTitle || postTitle,
+        referrer: tracking?.referrer,
+        utm_source: tracking?.utmSource,
+        utm_medium: tracking?.utmMedium,
+        utm_campaign: tracking?.utmCampaign,
+      },
+    });
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.error("Missing EMAIL_USER or EMAIL_PASS");
@@ -248,26 +288,27 @@ export async function POST(req: NextRequest) {
     const leadSourceHtml = formatTrackingSectionHtml(trackingWithFallback);
 
     await transporter.sendMail({
-      from: `"${name}" <${process.env.EMAIL_USER}>`,
+      from: { name: name.replace(/[\r\n"]/g, " ").trim(), address: process.env.EMAIL_USER },
       to: process.env.EMAIL_USER,
-      replyTo: email,
-      subject: `📩 New Contact Form Message from ${name}`,
+      replyTo: email.trim(),
+      subject: `📩 New Contact Form Message from ${name.replace(/[\r\n]/g, " ").trim()}`,
+      // Visitor-typed values are escaped: they were previously inserted into
+      // the HTML raw, so a message could inject links or markup into the
+      // email the team reads.
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2 style="color:#333;">New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
           <p><strong>Message:</strong></p>
-          <div style="background:#f5f5f5;padding:10px;border-radius:8px;">
-            ${message}
-          </div>
+          <div style="background:#f5f5f5;padding:10px;border-radius:8px;white-space:pre-wrap;">${escapeHtml(message)}</div>
           <hr style="margin:20px 0;" />
           <p style="font-size:12px;color:gray;">
-            <strong>IP Address:</strong> ${ip}<br/>
-            <strong>Location:</strong> ${geo.city}, ${geo.region}, ${geo.country}<br/>
-            <strong>Device:</strong> ${device.deviceType} (${device.deviceLabel})<br/>
-            <strong>OS:</strong> ${device.os}<br/>
-            <strong>Browser:</strong> ${device.browser}
+            <strong>IP Address:</strong> ${escapeHtml(ip)}<br/>
+            <strong>Location:</strong> ${escapeHtml(geo.city)}, ${escapeHtml(geo.region)}, ${escapeHtml(geo.country)}<br/>
+            <strong>Device:</strong> ${escapeHtml(device.deviceType)} (${escapeHtml(device.deviceLabel)})<br/>
+            <strong>OS:</strong> ${escapeHtml(device.os)}<br/>
+            <strong>Browser:</strong> ${escapeHtml(device.browser)}
           </p>
           ${leadSourceHtml}
           <p style="font-size:12px;color:gray;margin-top:20px;">Sent from 99Visual Contact Form</p>
@@ -276,10 +317,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ message: "Email sent successfully!" });
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ Email send error:", error);
     return NextResponse.json(
-      { message: "Failed to send email", error: error?.message || "Unknown error" },
+      // Internal error details stay in the server log, not the response.
+      { message: "Failed to send email" },
       { status: 500 }
     );
   }
