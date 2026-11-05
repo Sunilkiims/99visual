@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse, after } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSession } from '@/lib/auth'
+import { requireRole, canSetStatus, forbidden } from '@/lib/admin-access'
 import { insightUrl } from '@/lib/seo'
 import { revalidateInsightListings } from '@/lib/revalidate-insights'
 import { submitToIndexNow } from '@/lib/indexnow'
 import { BASE } from '@/lib/schema'
 import { readJson, ValidationError } from '@/lib/validation'
+import { sanitizeArticleHtml } from '@/lib/sanitize-html'
 import { parsePostInput, calculateReadingTime, resolvePublishedAt } from '@/lib/post-input'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const access = await requireRole('EDITOR')
+  if (!access.ok) return access.response
 
   const { id } = await params
 
@@ -29,12 +28,24 @@ export async function PATCH(
     })
     if (!current) return NextResponse.json({ error: 'Post not found' }, { status: 404 })
 
+    // Editors may only work on drafts: changing a live or archived article,
+    // or setting any status other than Draft, is an admin action.
+    if (access.user.role !== 'ADMIN' && current.status !== 'DRAFT') {
+      return forbidden('Only admins can change a published or archived post.')
+    }
+
     const input = parsePostInput(body, current.slug)
     const {
-      title, slug, excerpt, content,
+      title, slug, excerpt,
       categoryId, authorId, tags,
       status, featured, featuredImageId, seo,
     } = input
+    // Stored clean, and cleaned again when rendered (insights/[slug]).
+    const content = sanitizeArticleHtml(input.content)
+
+    if (!canSetStatus(access.user.role, status)) {
+      return forbidden('Only admins can publish. Save it as a draft and an admin will publish it.')
+    }
 
     if (slug !== current.slug) {
       const clash = await prisma.post.findUnique({ where: { slug }, select: { id: true } })
@@ -118,10 +129,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const access = await requireRole('ADMIN')
+  if (!access.ok) return access.response
 
   const { id } = await params
   try {

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSession } from '@/lib/auth'
+import { requireRole } from '@/lib/admin-access'
 import { readJson, Validator, ValidationError } from '@/lib/validation'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const access = await requireRole('ADMIN')
+  if (!access.ok) return access.response
 
   const { id } = await params
   try {
