@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { readJson, Validator, ValidationError } from '@/lib/validation'
 
 export async function GET() {
   const session = await getSession()
@@ -19,11 +20,12 @@ export async function POST(request: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { name, slug } = await request.json()
-
-    if (!name || !slug) {
-      return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 })
-    }
+    const body = await readJson(request)
+    if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    const v = new Validator()
+    const name = v.requiredString(body.name, 'name', 100)
+    const slug = v.slug(body.slug)
+    v.throwIfAny()
 
     const existing = await prisma.tag.findUnique({ where: { slug } })
     if (existing) {
@@ -36,6 +38,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, tag }, { status: 201 })
   } catch (error) {
+    if (error instanceof ValidationError) return NextResponse.json({ error: error.message }, { status: 400 })
     console.error('Create tag error:', error)
     return NextResponse.json({ error: 'Failed to create tag' }, { status: 500 })
   }
