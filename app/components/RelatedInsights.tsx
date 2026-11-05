@@ -43,51 +43,31 @@ export default async function RelatedInsights({ serviceHref }: { serviceHref: st
   if (related.length === 0) return null
 
   return (
-    <section
-      aria-labelledby="related-insights-heading"
-      style={{ background: '#000', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '4rem 1.5rem' }}
-    >
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <h2
-          id="related-insights-heading"
-          style={{ color: '#fff', fontSize: '1.5rem', fontWeight: 600, margin: '0 0 1.5rem' }}
-        >
-          Related insights
-        </h2>
-        <ul
-          style={{
-            listStyle: 'none',
-            margin: 0,
-            padding: 0,
-            display: 'grid',
-            gap: '1rem',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          }}
-        >
+    <section className="vz-section vz-section--tight vz-section--surface" aria-labelledby="related-insights-heading">
+      <div className="vz-container">
+        <div className="vz-row-head">
+          <div className="vz-heading">
+            <p className="vz-eyebrow">Insights</p>
+            <h2 id="related-insights-heading" className="vz-h2">Related insights</h2>
+          </div>
+          <Link href="/insights" className="vz-btn vz-btn--ghost">Browse all Insights articles</Link>
+        </div>
+        <ul className="vz-related" role="list">
           {related.map((post) => (
-            <li
-              key={post.slug}
-              style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '1.25rem' }}
-            >
-              <Link
-                href={`/insights/${post.slug}`}
-                style={{ color: '#fb923c', fontWeight: 600, textDecoration: 'none', lineHeight: 1.4 }}
-              >
-                {post.title}
-              </Link>
-              {post.excerpt && (
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', lineHeight: 1.6, margin: '0.5rem 0 0' }}>
-                  {post.excerpt.length > 140 ? `${post.excerpt.slice(0, 137).trimEnd()}…` : post.excerpt}
-                </p>
-              )}
+            <li key={post.slug}>
+              <article className="vz-card vz-related__card">
+                <h3 className="vz-h3">
+                  <Link href={`/insights/${post.slug}`} className="vz-stretched">{post.title}</Link>
+                </h3>
+                {post.excerpt && (
+                  <p className="vz-body">
+                    {post.excerpt.length > 140 ? `${post.excerpt.slice(0, 137).trimEnd()}…` : post.excerpt}
+                  </p>
+                )}
+              </article>
             </li>
           ))}
         </ul>
-        <p style={{ margin: '1.5rem 0 0' }}>
-          <Link href="/insights" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem' }}>
-            Browse all Insights articles
-          </Link>
-        </p>
       </div>
     </section>
   )

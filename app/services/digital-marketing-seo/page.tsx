@@ -44,13 +44,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
-import ConsultationCTA from "@/app/components/ConsultationCTA";
+import { ServiceHero, ServiceIntro, ServiceCluster, FeatureGrid, ProcessList, FaqList, ServiceCTA, StickyCTA, IconLabelGrid } from "@/app/components/premium/service/ServiceBlocks";
 
 
 import type { Metadata } from "next";
@@ -380,18 +378,6 @@ const clusters = [
   },
 ];
 
-// ── Hero ticker — plain list of disciplines we offer. No invented
-//    keyword-ranking numbers; this is decorative and aria-hidden. ─────────
-const pipeline = [
-  "Technical SEO",
-  "On-Page & Content SEO",
-  "Local SEO — Bangalore",
-  "Off-Page SEO & Digital PR",
-  "Google Ads (PPC)",
-  "Meta & LinkedIn Ads",
-  "Core Web Vitals",
-  "GA4 & Search Console Reporting",
-];
 
 // ── Why 99 Visual — SEO + website dev + digital marketing pillars ─────────
 const pillars = [
@@ -423,957 +409,291 @@ const industries = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FAQ SECTION — visible content stays in exact parity with dmFaqNode schema.
-// ─────────────────────────────────────────────────────────────────────────────
-function FaqSection() {
-  return (
-    <section className="dm-faq" aria-labelledby="dm-faq-heading" id="dm-faq">
-      <div className="dm-faq__inner">
-        <div className="dm-faq__head">
-          <span className="dm-faq__label">FAQ</span>
-          <h2 className="dm-faq__h2" id="dm-faq-heading">
-            Common <em>questions</em>
-          </h2>
-        </div>
-        <div className="dm-faq__list">
-          {dmFaqs.map((f) => (
-            <div className="dm-faq-item" key={f.question}>
-              <h3 className="dm-faq-item__q">{f.question}</h3>
-              <p className="dm-faq-item__a">{f.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function DigitalMarketing() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/digital-marketing-seo-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
+  const T = "Digital Marketing & SEO";
+  const P = "/services/digital-marketing-seo";
   return (
     <>
-      <style>{`
-
-        .dm-page{
-          --dm-ink:#12141A; --dm-muted:#5B6172; --dm-paper:#F5F6F8; --dm-surface:#FFFFFF;
-          --dm-line:#E4E6EC; --dm-blue:#2E5CFF; --dm-green:#37D67A;
-          background:var(--dm-paper);
-        }
-        .dm-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
-
-        /* ══ HERO — matched exactly to the /services hub page hero.
-           Save your banner image to:
-           /public/images/services/digital-marketing-seo-hero-banner.jpg ── */
-        .dm-hero{
-          position:relative;height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/digital-marketing-seo-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .dm-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .dm-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .dm-hero{
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/digital-marketing-seo-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-
-        .dm-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:9rem 1.5rem 1.5rem;
-          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .dm-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .dm-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .dm-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        @media(max-height:520px){
-          .dm-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .dm-hero__eyebrow{ margin-bottom:1.1rem; }
-          .dm-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .dm-hero__rule{ margin-bottom:.8rem; }
-          .dm-hero__sub{ margin-bottom:1.2rem; }
-        }
-
-        .dm-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .dm-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .dm-corner--tl{top:28px;left:28px;border-top:1px solid var(--dm-blue);border-left:1px solid var(--dm-blue);}
-        .dm-corner--tr{top:28px;right:28px;border-top:1px solid var(--dm-blue);border-right:1px solid var(--dm-blue);}
-        .dm-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--dm-blue);border-left:1px solid var(--dm-blue);}
-        @media(max-width:480px){ .dm-corner--bl{ left:28px; } }
-        .dm-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--dm-blue);border-right:1px solid var(--dm-blue);}
-
-        .dm-hero__content{animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes dmFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.dm-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        /* Eyebrow badge — orange (#FF8A2E), independent of --dm-blue */
-        .dm-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .dm-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
-        .dm-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
-        .dm-breadcrumb li{display:flex;align-items:center;gap:6px;}
-        .dm-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
-        .dm-breadcrumb a:hover{color:#FF8A2E;}
-        .dm-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
-        .dm-breadcrumb__sep{color:rgba(255,255,255,.25);}
-        @media(max-width:640px){.dm-breadcrumb{padding-top:1.1rem;}}
-        .dm-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:dmPulse 2s ease-in-out infinite;}
-        @keyframes dmPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .dm-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .dm-hero__h1 em{font-style:normal;color:var(--dm-blue);}
-        .dm-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--dm-blue),transparent);margin:0 0 1.4rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.dm-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--dm-blue),transparent);}}
-        .dm-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:580px;margin:0 0 1.6rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.dm-hero__sub{margin:0 auto 1.6rem;}}
-
-        .dm-hero__trust{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 2rem;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .4s both;}
-        @media(max-width:960px){.dm-hero__trust{justify-content:center;}}
-        .dm-hero__trust-item{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05);padding:6px 12px;border-radius:100px;backdrop-filter:blur(6px);}
-
-        .dm-hero__ctas{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:dmFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.dm-hero__ctas{justify-content:center;}}
-        .dm-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--dm-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
-        .dm-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .dm-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
-        .dm-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
-
-        .dm-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .dm-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .dm-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:dmScroll 32s linear infinite;}
-        .dm-hero__ticker-bar:hover .dm-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .dm-ticker__track{ animation-duration:20s; } }
-        @keyframes dmScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .dm-ticker__item{display:flex;align-items:center;gap:.5rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .dm-ticker__item::before{content:'•';color:var(--dm-blue);}
-        @media(max-height:520px){
-          .dm-hero__ticker-bar{ padding-top:.75rem; }
-        }
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .dm-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--dm-line);}
-        @media(max-width:760px){.dm-sticky-cta{display:flex;justify-content:center;}}
-        .dm-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--dm-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        /* INTRO / DEFINITION */
-        .dm-intro{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);background:var(--dm-surface);}
-        .dm-intro__inner{max-width:920px;margin:0 auto;}
-        .dm-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--dm-blue);margin-bottom:1rem;display:block;}
-        .dm-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0 0 1.2rem;max-width:640px;}
-        .dm-intro__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--dm-muted);max-width:680px;margin:0 0 2.5rem;}
-        .dm-intro__p a,.dm-card__desc a,.dm-card__highlight a,.dm-benefits__sub a,.dm-local__p a,.dm-india__p a,.dm-proof__p a,.dm-measure__p a,.dm-geo__p a,.dm-why__p a{color:var(--dm-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
-        .dm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
-        @media(max-width:768px){.dm-stats{grid-template-columns:1fr;}}
-        .dm-stat{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:14px;padding:1.4rem 1.5rem;}
-        .dm-stat__num{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--dm-ink);}
-        .dm-stat__label{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--dm-muted);margin-top:.3rem;}
-
-        /* WHY 99 VISUAL */
-        .dm-why{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);background:var(--dm-paper);}
-        .dm-why__inner{max-width:1180px;margin:0 auto;}
-        .dm-why__head{max-width:720px;margin-bottom:2rem;}
-        .dm-why__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-why__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 1rem;}
-        .dm-why__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-why__p{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.85;color:var(--dm-muted);margin:0 0 3rem;max-width:760px;}
-        .dm-why__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
-        @media(max-width:1024px){.dm-why__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:560px){.dm-why__grid{grid-template-columns:1fr;}}
-        .dm-why__card{background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:16px;padding:1.7rem 1.6rem;transition:border-color .2s ease,transform .2s ease;}
-        .dm-why__card:hover{border-color:var(--dm-blue);transform:translateY(-3px);}
-        .dm-why__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--dm-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1rem;}
-        .dm-why__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--dm-ink);margin:0 0 .6rem;}
-        .dm-why__desc{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-
-        /* SERVICE CLUSTERS */
-        .dm-cluster{padding:4.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
-        .dm-cluster:nth-child(even){background:var(--dm-surface);}
-        .dm-cluster__inner{max-width:1180px;margin:0 auto;}
-        .dm-cluster__head{max-width:640px;margin-bottom:2.5rem;}
-        .dm-cluster__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
-        .dm-cluster__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:700;line-height:1.25;color:var(--dm-ink);margin:0 0 .6rem;}
-        .dm-cluster__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-cluster__intro{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:var(--dm-muted);margin:0;}
-        .dm-cluster__grid{display:grid;gap:1.25rem;}
-        .dm-cluster__grid--2{grid-template-columns:repeat(2,1fr);}
-        .dm-cluster__grid--3{grid-template-columns:repeat(3,1fr);}
-        @media(max-width:1060px){.dm-cluster__grid--3{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:860px){.dm-cluster__grid--2,.dm-cluster__grid--3{grid-template-columns:1fr;}}
-
-        .dm-card{background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
-        .dm-cluster:nth-child(even) .dm-card{background:var(--dm-paper);}
-        .dm-card:hover{border-color:var(--dm-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
-        .dm-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--dm-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
-        .dm-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.08rem;font-weight:600;color:var(--dm-ink);margin:0 0 .7rem;}
-        .dm-card__desc{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0 0 .8rem;}
-        .dm-card__highlight{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:400;line-height:1.7;color:var(--dm-ink);border-left:2px solid var(--dm-blue);padding-left:.9rem;margin:0 0 1.2rem;}
-        .dm-card__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
-        .dm-card__bullets li{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--dm-ink);display:flex;align-items:flex-start;gap:.55rem;}
-        .dm-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--dm-blue);margin-top:.5rem;flex-shrink:0;}
-
-        /* MINDTRICK SPOTLIGHT */
-        .dm-spotlight{padding:5rem 1.5rem;background:var(--dm-ink);border-bottom:1px solid var(--dm-line);}
-        .dm-spotlight__inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.2fr .8fr;gap:3rem;align-items:center;}
-        @media(max-width:860px){.dm-spotlight__inner{grid-template-columns:1fr;}}
-        .dm-spotlight__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-green);letter-spacing:.04em;display:block;margin-bottom:1rem;}
-        .dm-spotlight__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:#fff;margin:0 0 1rem;}
-        .dm-spotlight__p{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:rgba(255,255,255,.62);margin:0 0 1rem;}
-        .dm-spotlight__highlight{font-family:'Inter',sans-serif;font-size:.88rem;line-height:1.75;color:rgba(255,255,255,.8);border-left:2px solid var(--dm-green);padding-left:1rem;margin:0 0 1.5rem;}
-        .dm-spotlight__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;}
-        .dm-spotlight__bullets li{font-family:'Inter',sans-serif;font-size:.85rem;color:rgba(255,255,255,.85);display:flex;gap:.6rem;}
-        .dm-spotlight__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--dm-green);margin-top:.55rem;flex-shrink:0;}
-        .dm-spotlight__panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:2rem;display:flex;flex-direction:column;gap:1.3rem;}
-        .dm-spotlight__stat{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:1.1rem;}
-        .dm-spotlight__stat:last-child{border-bottom:none;padding-bottom:0;}
-        .dm-spotlight__stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:#fff;}
-        .dm-spotlight__stat-label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:rgba(255,255,255,.5);}
-
-        /* WEBSITE DEVELOPMENT + SEO */
-        .dm-webdev{padding:5.5rem 1.5rem;background:var(--dm-surface);border-bottom:1px solid var(--dm-line);}
-        .dm-webdev__inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
-        @media(max-width:900px){.dm-webdev__inner{grid-template-columns:1fr;}}
-        .dm-webdev__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.9rem;}
-        .dm-webdev__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,2.8vw,2.05rem);font-weight:700;line-height:1.24;color:var(--dm-ink);margin:0 0 1.1rem;}
-        .dm-webdev__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-webdev__p{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin:0 0 1.2rem;}
-        .dm-webdev__link{display:inline-flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;color:var(--dm-blue);text-decoration:none;}
-        .dm-webdev__link:hover{text-decoration:underline;}
-        .dm-webdev__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.9rem;}
-        .dm-webdev__list li{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.6;color:var(--dm-ink);display:flex;gap:.7rem;background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:12px;padding:.9rem 1.1rem;}
-        .dm-webdev__list li b{color:var(--dm-blue);font-weight:600;}
-
-        /* PROCESS */
-        .dm-process{background:var(--dm-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
-        .dm-process__inner{max-width:900px;margin:0 auto;}
-        .dm-process__head{margin-bottom:3rem;max-width:640px;}
-        .dm-process__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-process__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
-        .dm-process__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-process__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-        .dm-process__steps{display:flex;flex-direction:column;gap:0;}
-        .dm-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
-        .dm-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--dm-line);}
-        .dm-process__num{width:56px;height:56px;border-radius:50%;border:1px solid var(--dm-line);background:var(--dm-surface);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:500;color:var(--dm-blue);flex-shrink:0;}
-        .dm-process__title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--dm-ink);margin-bottom:.5rem;}
-        .dm-process__text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--dm-muted);max-width:560px;}
-
-        /* INDUSTRIES */
-        .dm-industries{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
-        .dm-industries__inner{max-width:1100px;margin:0 auto;}
-        .dm-industries__head{margin-bottom:2.5rem;max-width:680px;}
-        .dm-industries__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-industries__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
-        .dm-industries__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-industries__sub{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-        .dm-industries__grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:1.5rem;}
-        @media(max-width:900px){.dm-industries__grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:480px){.dm-industries__grid{grid-template-columns:repeat(2,1fr);}}
-        .dm-industries__card{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:16px;padding:1.5rem 1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
-        .dm-industries__card:hover{border-color:var(--dm-blue);transform:translateY(-3px);}
-        .dm-industries__icon{color:var(--dm-blue);font-size:1.2rem;margin-bottom:.8rem;}
-        .dm-industries__name{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--dm-ink);}
-        .dm-industries__note{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-
-        /* BANGALORE / INDIA SECTIONS */
-        .dm-local,.dm-india{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
-        .dm-local{background:var(--dm-paper);}
-        .dm-india{background:var(--dm-surface);}
-        .dm-local__inner,.dm-india__inner{max-width:820px;margin:0 auto;}
-        .dm-local__label,.dm-india__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.9rem;}
-        .dm-local__h2,.dm-india__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,2.8vw,2.05rem);font-weight:700;line-height:1.24;color:var(--dm-ink);margin:0 0 1.2rem;}
-        .dm-local__h2 em,.dm-india__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-local__p,.dm-india__p{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.85;color:var(--dm-muted);margin:0 0 1.3rem;}
-        .dm-india__list{list-style:none;padding:0;margin:0 0 1.3rem;display:flex;flex-direction:column;gap:.7rem;}
-        .dm-india__list li{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--dm-ink);display:flex;align-items:flex-start;gap:.6rem;line-height:1.6;}
-        .dm-india__list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--dm-blue);margin-top:.55rem;flex-shrink:0;}
-        .dm-local__note{font-family:'Inter',sans-serif;font-size:.85rem;font-style:italic;color:var(--dm-ink);border-left:2px solid var(--dm-blue);padding-left:1rem;margin:0;}
-
-        /* MEASUREMENT & REPORTING */
-        .dm-measure{padding:5.5rem 1.5rem;background:var(--dm-paper);border-bottom:1px solid var(--dm-line);}
-        .dm-measure__inner{max-width:1100px;margin:0 auto;}
-        .dm-measure__head{max-width:680px;margin-bottom:2.5rem;}
-        .dm-measure__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-measure__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
-        .dm-measure__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-measure__p{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0 0 2.5rem;max-width:760px;}
-        .dm-measure__grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;}
-        @media(max-width:860px){.dm-measure__grid{grid-template-columns:1fr;}}
-        .dm-measure__col{background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:16px;padding:1.8rem 1.9rem;}
-        .dm-measure__col-title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--dm-ink);margin:0 0 1rem;}
-        .dm-measure__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.65rem;}
-        .dm-measure__list li{font-family:'Inter',sans-serif;font-size:.86rem;color:var(--dm-ink);display:flex;align-items:flex-start;gap:.6rem;line-height:1.6;}
-        .dm-measure__list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--dm-blue);margin-top:.5rem;flex-shrink:0;}
-        .dm-measure__tools{display:flex;flex-wrap:wrap;gap:.6rem;}
-        .dm-measure__tool{font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--dm-ink);background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:100px;padding:.5rem 1rem;}
-
-        /* PROOF / APPROACH */
-        .dm-proof{padding:5.5rem 1.5rem;background:var(--dm-surface);border-bottom:1px solid var(--dm-line);}
-        .dm-proof__inner{max-width:1100px;margin:0 auto;}
-        .dm-proof__head{max-width:720px;margin-bottom:2.5rem;}
-        .dm-proof__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-proof__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 1rem;}
-        .dm-proof__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-proof__p{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin:0 0 1rem;}
-        .dm-proof__grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;margin-top:2rem;}
-        @media(max-width:860px){.dm-proof__grid{grid-template-columns:1fr;}}
-        .dm-proof__quote{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:16px;padding:2rem;}
-        .dm-proof__quote-text{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:500;line-height:1.6;color:var(--dm-ink);margin:0 0 1.2rem;}
-        .dm-proof__quote-who{font-family:'Inter',sans-serif;font-size:.82rem;color:var(--dm-muted);}
-        .dm-proof__quote-who b{color:var(--dm-ink);font-weight:600;}
-        .dm-proof__note{background:var(--dm-paper);border:1px dashed var(--dm-line);border-radius:16px;padding:2rem;}
-        .dm-proof__note-title{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.04em;color:var(--dm-blue);display:block;margin-bottom:.9rem;}
-        .dm-proof__note p{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0 0 .8rem;}
-
-        /* AI SEARCH / GEO */
-        .dm-geo{padding:5.5rem 1.5rem;background:var(--dm-paper);border-bottom:1px solid var(--dm-line);}
-        .dm-geo__inner{max-width:820px;margin:0 auto;}
-        .dm-geo__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.9rem;}
-        .dm-geo__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,2.8vw,2.05rem);font-weight:700;line-height:1.24;color:var(--dm-ink);margin:0 0 1.2rem;}
-        .dm-geo__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-geo__p{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.85;color:var(--dm-muted);margin:0 0 1.2rem;}
-
-        /* BENEFITS */
-        .dm-benefits{padding:5.5rem 1.5rem;}
-        .dm-benefits__inner{max-width:1180px;margin:0 auto;}
-        .dm-benefits__head{max-width:560px;margin-bottom:3rem;}
-        .dm-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .dm-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
-        .dm-benefits__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-benefits__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-        .dm-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:1024px){.dm-benefits__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.dm-benefits__grid{grid-template-columns:1fr;}}
-        .dm-benefit-card{background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
-        .dm-benefit-card:hover{border-color:var(--dm-blue);transform:translateY(-3px);}
-        .dm-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--dm-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
-        .dm-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--dm-ink);margin-bottom:.5rem;}
-        .dm-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--dm-muted);}
-
-        /* FAQ */
-        .dm-faq{background:var(--dm-surface);border-top:1px solid var(--dm-line);border-bottom:1px solid var(--dm-line);padding:5.5rem 1.5rem;}
-        .dm-faq__inner{max-width:820px;margin:0 auto;}
-        .dm-faq__head{margin-bottom:2.5rem;}
-        .dm-faq__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
-        .dm-faq__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.1rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0;}
-        .dm-faq__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-faq__list{display:flex;flex-direction:column;gap:1rem;}
-        .dm-faq-item{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:14px;padding:1.5rem 1.7rem;}
-        .dm-faq-item__q{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--dm-ink);margin:0 0 .6rem;}
-        .dm-faq-item__a{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin:0;}
-
-        /* CTA */
-        .dm-cta{padding:5.5rem 1.5rem;text-align:center;background:var(--dm-surface);border-top:1px solid var(--dm-line);}
-        .dm-cta__inner{max-width:600px;margin:0 auto;}
-        .dm-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
-        .dm-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0 0 1rem;}
-        .dm-cta__h2 em{font-style:normal;color:var(--dm-blue);}
-        .dm-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin-bottom:2.2rem;}
-        .dm-cta__actions{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
-        .dm-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--dm-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .dm-cta__btn:hover{background:var(--dm-blue);transform:translateY(-2px);}
-        .dm-cta__btn--ghost{color:var(--dm-ink);background:var(--dm-surface);border:1px solid var(--dm-line);}
-        .dm-cta__btn--ghost:hover{background:var(--dm-paper);color:var(--dm-ink);}
-
-        @media(prefers-reduced-motion:reduce){
-          .dm-page *,.dm-page *::before,.dm-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
       <script
         id="schema-dm-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(dmGraph) }}
       />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <ServiceHero
+            id="dm-hero-heading"
+            crumbs={[{ href: "/", label: "Home" }, { href: "/services", label: "Services" }, { href: P, label: "Digital Marketing & SEO" }]}
+            title="Digital Marketing & SEO Company in Bangalore, India"
+            tagline={<>Search, paid and content, run as <em>one growth system</em></>}
+            sub="99 Visual Solutions is a Bengaluru-based digital marketing and SEO company that combines search strategy, paid media, content and conversion-focused web development — turning digital channels into measurable growth for businesses across Bangalore, India and beyond."
+            image="/images/services/digital-marketing-seo-hero-banner.jpg"
+            imageAlt="Digital marketing and SEO analytics dashboard"
+            ctaLabel="Get a Free SEO Consultation"
+            postTitle={T}
+            postUrl={P}
+            secondary={{ href: "#dm-cluster-h-seo-services", label: "Explore SEO services" }}
+            points={["Bengaluru, India", "Est. 2020", "Serving India · USA · UK · UAE · Australia"]}
+          />
 
-      <div className="dm-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section className="dm-hero" aria-labelledby="dm-hero-heading">
-          <div aria-hidden="true">
-            <div className="dm-hero__grain" />
-          </div>
-          <div className="dm-corner dm-corner--tl" aria-hidden="true" />
-          <div className="dm-corner dm-corner--tr" aria-hidden="true" />
-          <div className="dm-corner dm-corner--bl" aria-hidden="true" />
-          <div className="dm-corner dm-corner--br" aria-hidden="true" />
-
-          <nav className="dm-breadcrumb" aria-label="Breadcrumb">
-            <ol>
-              <li>
-                <Link href="/"><span>Home</span></Link>
-              </li>
-              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services"><span>Services</span></Link>
-              </li>
-              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services/digital-marketing-seo" aria-current="page">
-                  <span>Digital Marketing &amp; SEO</span>
-                </Link>
-              </li>
-            </ol>
-          </nav>
-
-          <div className="dm-hero__inner">
-            <div className="dm-hero__content">
-              <div className="dm-hero__eyebrow">
-                <span className="dm-hero__dot" />
-                Services · Digital Marketing &amp; SEO
-              </div>
-              <h1 className="dm-hero__h1" id="dm-hero-heading">
-                Digital Marketing &amp; SEO Company<br />in <em>Bangalore</em>, India
-              </h1>
-              <div className="dm-hero__rule" aria-hidden="true" />
-              <p className="dm-hero__sub">
-                99 Visual Solutions is a Bengaluru-based digital marketing and SEO
-                company that combines search strategy, paid media, content and
-                conversion-focused web development — turning digital channels into
-                measurable growth for businesses across Bangalore, India and beyond.
-              </p>
-
-              <div className="dm-hero__trust" aria-label="Company facts">
-                <span className="dm-hero__trust-item">Bengaluru, India</span>
-                <span className="dm-hero__trust-item">Est. 2020</span>
-                <span className="dm-hero__trust-item">Serving India · USA · UK · UAE · Australia</span>
-              </div>
-
-              <div className="dm-hero__ctas">
-                <ConsultationCTA
-                  className="dm-hero__cta"
-                  ariaLabel="Get a free SEO consultation from 99 Visual Solutions"
-                  postTitle="Digital Marketing & SEO — Hero (Primary)"
-                  postUrl="/services/digital-marketing-seo"
-                >
-                  Get a Free SEO Consultation
-                </ConsultationCTA>
-                <ConsultationCTA
-                  className="dm-hero__cta dm-hero__cta--ghost"
-                  ariaLabel="Request a digital marketing audit from 99 Visual Solutions"
-                  postTitle="Digital Marketing & SEO — Hero (Secondary)"
-                  postUrl="/services/digital-marketing-seo"
-                >
-                  Request a Digital Marketing Audit
-                </ConsultationCTA>
-              </div>
-            </div>
-          </div>
-
-          <div className="dm-hero__ticker-bar" aria-hidden="true">
-            <div className="dm-ticker">
-              <div className="dm-ticker__track">
-                {[...pipeline, ...pipeline].map((t, i) => (
-                  <span className="dm-ticker__item" key={i}>
-                    <b>{t}</b>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* INTRO / DEFINITION (GEO-ready clear answer) */}
-        <section className="dm-intro" aria-labelledby="dm-intro-heading">
-          <div className="dm-intro__inner">
-            <span className="dm-intro__label">What we do</span>
-            <h2 className="dm-intro__h2" id="dm-intro-heading">
-              Full-funnel marketing, <em>run like a product</em>
-            </h2>
-            <p className="dm-intro__p">
-              99 Visual Solutions is a digital marketing and SEO partner
-              headquartered in Bengaluru that plans, builds, and manages search,
-              paid, social, content, and email programs under a single strategy —
-              so every channel compounds the others instead of competing with
-              them for budget and attention.
+          <ServiceIntro
+            id="dm-intro-heading"
+            eyebrow="What we do"
+            title={<>Full-funnel marketing, run like a <em>product</em></>}
+            aside={
+              <ul className="vz-checks">
+                <li>Three disciplines working as one: SEO, digital marketing &amp; web development</li>
+                <li>One reporting cadence, with full visibility across every channel</li>
+                <li>Decisions backed by data, not guesses</li>
+              </ul>
+            }
+          >
+            <p className="vz-lead">
+              99 Visual Solutions is a digital marketing and SEO partner headquartered in Bengaluru that plans, builds, and manages search, paid, social, content, and email programs under a single strategy — so every channel compounds the others instead of competing with them for budget and attention.
             </p>
-            <p className="dm-intro__p">
-              Whether you are a startup launching your first product in Bangalore
-              or an enterprise modernising a legacy stack across India, we scale
-              with your ambition and operate as a{" "}
-              <strong>true extension of your team</strong>.
+            <p>
+              Whether you are a startup launching your first product in Bangalore or an enterprise modernising a legacy stack across India, we scale with your ambition and operate as a <strong>true extension of your team</strong>.
             </p>
-            <div className="dm-stats">
-              <div className="dm-stat">
-                <div className="dm-stat__num">3</div>
-                <div className="dm-stat__label">Disciplines working as one: SEO, digital marketing &amp; web development</div>
-              </div>
-              <div className="dm-stat">
-                <div className="dm-stat__num">1</div>
-                <div className="dm-stat__label">Reporting cadence, full visibility across every channel</div>
-              </div>
-              <div className="dm-stat">
-                <div className="dm-stat__num">100%</div>
-                <div className="dm-stat__label">Decisions backed by data, not guesses</div>
-              </div>
-            </div>
-          </div>
-        </section>
+          </ServiceIntro>
 
-        {/* WHY 99 VISUAL */}
-        <section className="dm-why" aria-labelledby="dm-why-heading">
-          <div className="dm-why__inner">
-            <div className="dm-why__head">
-              <span className="dm-why__label">Why 99 Visual</span>
-              <h2 className="dm-why__h2" id="dm-why-heading">
-                SEO, website development and digital marketing — <em>engineered together</em>
-              </h2>
-            </div>
-            <p className="dm-why__p">
-              Many agencies treat SEO as something bolted onto whatever website
-              already exists. We think that’s backwards: SEO performs better, and
-              holds its rankings for longer, when the underlying site architecture,
-              performance, content and conversion journey are engineered correctly
-              from the start. Because 99 Visual Solutions builds websites as well as
-              running SEO and digital marketing, we can align the technical
-              foundation and the search strategy under one roof — instead of you
-              coordinating between separate vendors who don’t talk to each other.
-            </p>
-            <div className="dm-why__grid">
-              {pillars.map((p) => (
-                <div className="dm-why__card" key={p.title}>
-                  <div className="dm-why__icon" aria-hidden="true">{p.icon}</div>
-                  <div className="dm-why__title">{p.title}</div>
-                  <p className="dm-why__desc">{p.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          <FeatureGrid
+            id="dm-why-heading"
+            eyebrow="Why 99 Visual"
+            title={<>SEO, website development and digital marketing — <em>engineered together</em></>}
+            lead="Many agencies treat SEO as something bolted onto whatever website already exists. We think that’s backwards: SEO performs better, and holds its rankings for longer, when the underlying site architecture, performance, content and conversion journey are engineered correctly from the start. Because 99 Visual Solutions builds websites as well as running SEO and digital marketing, we can align the technical foundation and the search strategy under one roof — instead of you coordinating between separate vendors who don’t talk to each other."
+            items={pillars.map((p) => ({ title: p.title, description: p.description, icon: p.icon }))}
+            surface
+          />
 
-        {/* SERVICE CLUSTERS — SEO Services, then Digital Marketing Services */}
-        <div id="services">
-          {clusters.map((cluster) => (
-            <section key={cluster.id} className="dm-cluster" aria-labelledby={`dm-cluster-h-${cluster.id}`}>
-              <div className="dm-cluster__inner">
-                <div className="dm-cluster__head">
-                  <span className="dm-cluster__eyebrow">{cluster.eyebrow}</span>
-                  <h2 className="dm-cluster__h2" id={`dm-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
-                  <p className="dm-cluster__intro">{cluster.intro}</p>
-                </div>
-                <div className={`dm-cluster__grid dm-cluster__grid--${cluster.cols}`}>
-                  {cluster.list.map((svc) => (
-                    <article className="dm-card" id={svc.id} key={svc.id} aria-labelledby={`dm-card-h-${svc.id}`}>
-                      <div className="dm-card__icon" aria-hidden="true">{svc.icon}</div>
-                      <h3 className="dm-card__title" id={`dm-card-h-${svc.id}`}>{svc.title}</h3>
-                      <p className="dm-card__desc">{svc.description}</p>
-                      <p className="dm-card__highlight">{svc.highlight}</p>
-                      <ul className="dm-card__bullets">
-                        {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </section>
+          {clusters.map((cluster, ci) => (
+            <ServiceCluster
+              key={cluster.id}
+              id={`dm-cluster-h-${cluster.id}`}
+              eyebrow={cluster.eyebrow}
+              title={cluster.heading}
+              intro={cluster.intro}
+              surface={ci % 2 === 1}
+              columns={3}
+              items={cluster.list.map((svc) => ({ id: svc.id, title: svc.title, description: svc.description, highlight: svc.highlight, bullets: svc.bullets, icon: svc.icon }))}
+            />
           ))}
 
-          {/* MINDTRICK SPOTLIGHT -- structurally distinct, so it gets its own layout */}
-          <section className="dm-spotlight" id="mindtrick" aria-labelledby="dm-spotlight-heading">
-            <div className="dm-spotlight__inner">
-              <div>
-                <span className="dm-spotlight__eyebrow">Our Platform</span>
-                <h2 className="dm-spotlight__h2" id="dm-spotlight-heading">
-                  MindTrick.io – Our Dedicated Digital Marketing Hub
-                </h2>
-                <p className="dm-spotlight__p">
-                  At MindTrick.io, we bring together innovation, creativity, and
-                  data-driven strategies to power digital growth. As our dedicated
-                  digital marketing hub, MindTrick.io delivers result-oriented
-                  solutions that help businesses build strong online visibility and
-                  pursue sustainable growth.
-                </p>
-                <p className="dm-spotlight__highlight">
-                  From performance marketing to brand storytelling, we combine
-                  practical tools with expert judgement to run campaigns aimed at
-                  making a measurable impact on your business’s digital presence.
-                </p>
-                <ul className="dm-spotlight__bullets">
+          <ServiceIntro
+            id="dm-spotlight-heading"
+            sectionId="mindtrick"
+            eyebrow="Our Platform"
+            title={<>MindTrick.io – Our Dedicated <em>Digital Marketing Hub</em></>}
+            surface
+            aside={
+              <>
+                <ul className="vz-checks">
                   <li>End-to-end digital marketing coordination under one platform</li>
                   <li>Data-driven campaigns focused on growth &amp; ROI</li>
                   <li>Strategy, creative execution &amp; continuous optimisation</li>
                 </ul>
-              </div>
-              <div className="dm-spotlight__panel" aria-hidden="true">
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">10+</span>
-                  <span className="dm-spotlight__stat-label">Channels unified</span>
-                </div>
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">1</span>
-                  <span className="dm-spotlight__stat-label">Strategy, cross-channel</span>
-                </div>
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">∞</span>
-                  <span className="dm-spotlight__stat-label">Iteration, always optimising</span>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        {/* WHERE WEBSITE DEVELOPMENT MEETS SEO */}
-        <section className="dm-webdev" aria-labelledby="dm-webdev-heading">
-          <div className="dm-webdev__inner">
-            <div>
-              <span className="dm-webdev__label">The Differentiator</span>
-              <h2 className="dm-webdev__h2" id="dm-webdev-heading">
-                Where <em>website development</em> meets SEO
-              </h2>
-              <p className="dm-webdev__p">
-                An SEO strategy is only as strong as the website it’s built on. A
-                site that’s slow, hard to crawl, or badly structured will always
-                fight against the strategy layered on top of it. That’s why we
-                pair SEO and digital marketing with our own{" "}
-                <Link href="/services/website-development">website development</Link>{" "}
-                team, building in Next.js and React — rather than handing you off
-                to optimise a site neither of us built.
-              </p>
-              <Link href="/services/website-development" className="dm-webdev__link">
-                See how we build SEO-ready websites
-                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </div>
-            <ul className="dm-webdev__list">
-              <li><b>Modern architecture —</b> Next.js/React builds that are fast, crawlable and easy to extend as content and campaigns grow.</li>
-              <li><b>Core Web Vitals —</b> page speed and stability engineered in, not patched on after launch.</li>
-              <li><b>Structured data &amp; accessibility —</b> semantic HTML and schema markup that help both search engines and assistive technology understand the page.</li>
-              <li><b>Conversion-focused UX —</b> pages designed around the action you actually want a visitor to take.</li>
-              <li><b>Analytics from day one —</b> Google Analytics 4 and conversion tracking set up at launch, not months later.</li>
-              <li><b>QA before it ships —</b> supported by our <Link href="/services/automation-testing">automation &amp; QA testing</Link> team, so changes don’t break what’s already working.</li>
-            </ul>
-          </div>
-        </section>
-
-        {/* SEO PROCESS */}
-        <section className="dm-process" aria-labelledby="dm-process-heading">
-          <div className="dm-process__inner">
-            <div className="dm-process__head">
-              <span className="dm-process__label">How We Work</span>
-              <h2 className="dm-process__h2" id="dm-process-heading">A process built to <em>remove guesswork</em></h2>
-              <p className="dm-process__sub">
-                Six steps, repeated on a cycle — because SEO and digital marketing
-                are never really “done.”
-              </p>
-            </div>
-            <div className="dm-process__steps">
-              {processSteps.map((s) => (
-                <div className="dm-process__step" key={s.step}>
-                  <div className="dm-process__num" aria-hidden="true">{s.step}</div>
-                  <div>
-                    <div className="dm-process__title">{s.title}</div>
-                    <p className="dm-process__text">{s.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* INDUSTRIES */}
-        <section className="dm-industries" aria-labelledby="dm-industries-heading">
-          <div className="dm-industries__inner">
-            <div className="dm-industries__head">
-              <span className="dm-industries__label">Who We Work With</span>
-              <h2 className="dm-industries__h2" id="dm-industries-heading">Industries we <em>serve</em></h2>
-              <p className="dm-industries__sub">
-                The same industries we support across our other services —
-                approached here through SEO, content and paid media.
-              </p>
-            </div>
-            <div className="dm-industries__grid">
-              {industries.map((ind) => (
-                <div className="dm-industries__card" key={ind.name}>
-                  <div className="dm-industries__icon" aria-hidden="true">{ind.icon}</div>
-                  <div className="dm-industries__name">{ind.name}</div>
-                </div>
-              ))}
-            </div>
-            <p className="dm-industries__note">
-              Working in real estate, architecture or construction? Our{" "}
-              <Link href="/services/cad-gis-photogrammetry">CAD, GIS &amp; photogrammetry</Link>{" "}
-              team can support the visual and mapping side of a project alongside
-              the marketing that promotes it.
-            </p>
-          </div>
-        </section>
-
-        {/* BANGALORE / BENGALURU SEO */}
-        <section className="dm-local" aria-labelledby="dm-local-heading">
-          <div className="dm-local__inner">
-            <span className="dm-local__label">Local SEO</span>
-            <h2 className="dm-local__h2" id="dm-local-heading">Built for how <em>Bangalore</em> searches</h2>
-            <p className="dm-local__p">
-              Bangalore is one of India’s most competitive digital markets — a
-              dense mix of technology companies, startups, retail, real estate and
-              professional services all competing for attention across
-              neighbourhoods from Koramangala and Indiranagar to Whitefield, HSR
-              Layout, Electronic City and Jayanagar. Winning local search here
-              takes more than adding “Bangalore” to a page title.
-            </p>
-            <p className="dm-local__p">
-              We combine an accurate, well-maintained Google Business Profile with
-              location-relevant on-page content, consistent citations and
-              genuine organic authority — so a business shows up for the specific
-              searches its customers are actually making, whether that’s a broad
-              service search or something highly local.
-            </p>
-            <p className="dm-local__note">
-              As a Bengaluru-headquartered team, we work with local businesses
-              directly and understand the market we’re optimising for.
-            </p>
-          </div>
-        </section>
-
-        {/* INDIA SEO */}
-        <section className="dm-india" aria-labelledby="dm-india-heading">
-          <div className="dm-india__inner">
-            <span className="dm-india__label">National SEO</span>
-            <h2 className="dm-india__h2" id="dm-india-heading">SEO strategy that works <em>across India</em></h2>
-            <p className="dm-india__p">
-              India isn’t one search market. Search behaviour, competition and
-              language preferences shift significantly between cities and
-              regions, so a national SEO strategy has to account for where your
-              customers actually are and how competitive the results are in each
-              market you’re targeting.
-            </p>
-            <ul className="dm-india__list">
-              <li>Location-based search &amp; regional search-behaviour differences</li>
-              <li>Multilingual and regional-language considerations where relevant</li>
-              <li>National keyword research &amp; content strategy</li>
-              <li>Dedicated city or region pages only where there’s a genuine business reason for them</li>
-              <li>Market-by-market competitive SERP analysis</li>
-            </ul>
-            <p className="dm-india__p">
-              We’d rather build a smaller number of genuinely useful pages than
-              dozens of thin, near-identical city pages that dilute a site’s
-              authority and risk being treated as doorway pages by search engines.
-            </p>
-          </div>
-        </section>
-
-        {/* MEASUREMENT & REPORTING */}
-        <section className="dm-measure" aria-labelledby="dm-measure-heading">
-          <div className="dm-measure__inner">
-            <div className="dm-measure__head">
-              <span className="dm-measure__label">Measurement &amp; Reporting</span>
-              <h2 className="dm-measure__h2" id="dm-measure-heading">Reported against numbers that <em>matter</em></h2>
-              <p className="dm-measure__p">
-                SEO and digital marketing performance is only useful if it’s
-                measured properly. We report on a regular cadence using Google
-                Search Console, Google Analytics 4 and Google Ads’ own reporting,
-                so you always know what’s actually happening — not just a summary
-                at the end of a quarter.
-              </p>
-            </div>
-            <div className="dm-measure__grid">
-              <div className="dm-measure__col">
-                <div className="dm-measure__col-title">What we track</div>
-                <ul className="dm-measure__list">
-                  <li>Organic clicks &amp; impressions</li>
-                  <li>Search visibility &amp; keyword positions</li>
-                  <li>Organic conversions &amp; leads</li>
-                  <li>Cost per lead &amp; conversion rate</li>
-                  <li>Google Ads performance, including ROAS where applicable</li>
-                  <li>Landing-page &amp; engagement performance</li>
+                <ul className="vz-statline" role="list">
+                  <li><strong>10+</strong> Channels unified</li>
+                  <li><strong>1</strong> Strategy, cross-channel</li>
+                  <li><strong>∞</strong> Iteration, always optimising</li>
                 </ul>
-              </div>
-              <div className="dm-measure__col">
-                <div className="dm-measure__col-title">Tools we report from</div>
-                <div className="dm-measure__tools">
-                  <span className="dm-measure__tool">Google Search Console</span>
-                  <span className="dm-measure__tool">Google Analytics 4</span>
-                  <span className="dm-measure__tool">Google Ads</span>
-                  <span className="dm-measure__tool">Reporting dashboards (e.g. Looker Studio)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROOF / OUR APPROACH */}
-        <section className="dm-proof" aria-labelledby="dm-proof-heading">
-          <div className="dm-proof__inner">
-            <div className="dm-proof__head">
-              <span className="dm-proof__label">Our Approach</span>
-              <h2 className="dm-proof__h2" id="dm-proof-heading">What we <em>measure</em>, and what’s still being built</h2>
-              <p className="dm-proof__p">
-                We won’t invent client results to fill this section. Here’s what
-                we can genuinely show you today: direct feedback from a client we
-                worked with on SEO, and an honest note on what’s still coming.
-              </p>
-            </div>
-            <div className="dm-proof__grid">
-              <div className="dm-proof__quote">
-                <p className="dm-proof__quote-text">
-                  “We hired them for SEO and ended up rebuilding our entire
-                  digital presence. Page-one rankings for seventeen target
-                  keywords within four months. Exceptional results, full stop.”
-                </p>
-                <p className="dm-proof__quote-who">
-                  <b>Kavitha R.</b> — VP Digital Strategy, Meridian Finance ·{" "}
-                  <Link href="/contact">more client feedback on our Contact page</Link>
-                </p>
-              </div>
-              <div className="dm-proof__note">
-                <span className="dm-proof__note-title">Case study</span>
-                <p>
-                  See exactly how we work in our{" "}
-                  <Link href="/work/technical-seo-99visual">technical SEO case study</Link>:
-                  the audit-to-monitoring workflow we ran on our own Next.js site,
-                  with every fix traceable to the change that made it. It covers
-                  crawlability, canonicals and redirects, the XML sitemap,
-                  structured data and page speed, and states what it doesn’t claim.
-                </p>
-                <p>
-                  We’re also documenting client SEO case studies with real
-                  before-and-after data. If you’d like to be one of the first
-                  featured, <Link href="/contact">get in touch</Link>.
-                </p>
-                <p>
-                  In the meantime, our <Link href="/insights">Insights blog</Link>{" "}
-                  covers how we think about search and digital strategy, and our{" "}
-                  <Link href="/about">About page</Link> has more on who we are and
-                  how we work.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* AI SEARCH / GEO */}
-        <section className="dm-geo" aria-labelledby="dm-geo-heading">
-          <div className="dm-geo__inner">
-            <span className="dm-geo__label">AI Search &amp; GEO</span>
-            <h2 className="dm-geo__h2" id="dm-geo-heading">Preparing for how <em>AI-powered search</em> is changing</h2>
-            <p className="dm-geo__p">
-              Search is no longer just a list of ten blue links. Google’s AI
-              Overviews and other AI-powered systems increasingly summarise
-              answers directly, and tools like ChatGPT, Gemini and Perplexity are
-              becoming discovery surfaces of their own. The common thread across
-              all of them is the same fundamentals good SEO has always relied on:
-              clear, well-structured content; accurate, first-party information
-              about a business; consistent entities and brand mentions; and
-              technical implementation — structured data, clean HTML, crawlable
-              pages — that makes it easy for any system, human or AI, to
-              understand what a business actually does.
-            </p>
-            <p className="dm-geo__p">
-              We build with that in mind — clear entity information, structured
-              data and genuinely useful content — as part of standard SEO
-              practice, not a separate service. We won’t claim this guarantees
-              visibility inside any specific AI system; no one can honestly
-              promise that. What we can do is make sure a business is represented
-              accurately and clearly wherever people, or the AI systems
-              increasingly answering on their behalf, go looking.
-            </p>
-          </div>
-        </section>
-
-        {/* BENEFITS */}
-        <section className="dm-benefits" aria-labelledby="dm-benefits-heading">
-          <div className="dm-benefits__inner">
-            <div className="dm-benefits__head">
-              <span className="dm-benefits__label">Why Choose Us?</span>
-              <h2 className="dm-benefits__h2" id="dm-benefits-heading">
-                Benefits of partnering with <em>99 Visual</em>
-              </h2>
-              <p className="dm-benefits__sub">
-                Digital marketing here means more than running ads — it’s about
-                building visibility and connections that compound into long-term
-                growth.
-              </p>
-            </div>
-            <div className="dm-benefits__grid">
-              {benefits.map((b, i) => (
-                <div className="dm-benefit-card" key={i}>
-                  <div className="dm-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                  <div className="dm-benefit-card__title">{b.title}</div>
-                  <p className="dm-benefit-card__desc">{b.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <FaqSection />
-
-        {/* CTA STRIP */}
-        <section className="dm-cta" aria-labelledby="dm-cta-heading">
-          <div className="dm-cta__inner">
-            <span className="dm-cta__eyebrow">Start a Project</span>
-            <h2 className="dm-cta__h2" id="dm-cta-heading">
-              Ready to grow your business <em>online</em>?
-            </h2>
-            <p className="dm-cta__sub">
-              Get in touch for a free SEO consultation or digital marketing audit.
-              We’ll map out the right strategy for your goals in Bangalore, across
-              India, or internationally — and how we’ll measure it.
-            </p>
-            <div className="dm-cta__actions">
-              <ConsultationCTA
-                className="dm-cta__btn"
-                ariaLabel="Get a free SEO consultation from 99 Visual Solutions"
-                postTitle="Digital Marketing & SEO — CTA Strip (Primary)"
-                postUrl="/services/digital-marketing-seo"
-              >
-                Get a Free SEO Consultation
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </ConsultationCTA>
-              <ConsultationCTA
-                className="dm-cta__btn dm-cta__btn--ghost"
-                ariaLabel="Request a digital marketing audit from 99 Visual Solutions"
-                postTitle="Digital Marketing & SEO — CTA Strip (Secondary)"
-                postUrl="/services/digital-marketing-seo"
-              >
-                Request a Digital Marketing Audit
-              </ConsultationCTA>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="dm-sticky-cta">
-          <ConsultationCTA
-            className="dm-sticky-cta__btn"
-            postTitle="Digital Marketing & SEO — Sticky Mobile CTA"
-            postUrl="/services/digital-marketing-seo"
+              </>
+            }
           >
-            Get a Free SEO Consultation
-          </ConsultationCTA>
-        </div>
+            <p className="vz-lead">
+              At MindTrick.io, we bring together innovation, creativity, and data-driven strategies to power digital growth. As our dedicated digital marketing hub, MindTrick.io delivers result-oriented solutions that help businesses build strong online visibility and pursue sustainable growth.
+            </p>
+            <p>
+              From performance marketing to brand storytelling, we combine practical tools with expert judgement to run campaigns aimed at making a measurable impact on your business’s digital presence.
+            </p>
+          </ServiceIntro>
+
+          <ServiceIntro
+            id="dm-webdev-heading"
+            eyebrow="The Differentiator"
+            title={<>Where <em>website development</em> meets SEO</>}
+            aside={
+              <>
+                <ul className="vz-checks">
+                  <li><strong>Modern architecture —</strong> Next.js/React builds that are fast, crawlable and easy to extend as content and campaigns grow.</li>
+                  <li><strong>Core Web Vitals —</strong> page speed and stability engineered in, not patched on after launch.</li>
+                  <li><strong>Structured data &amp; accessibility —</strong> semantic HTML and schema markup that help both search engines and assistive technology understand the page.</li>
+                  <li><strong>Conversion-focused UX —</strong> pages designed around the action you actually want a visitor to take.</li>
+                  <li><strong>Analytics from day one —</strong> Google Analytics 4 and conversion tracking set up at launch, not months later.</li>
+                  <li><strong>QA before it ships —</strong> supported by our <Link className="vz-prose-link" href="/services/automation-testing">automation &amp; QA testing</Link> team, so changes don’t break what’s already working.</li>
+                </ul>
+                <Link href="/services/website-development" className="vz-link-arrow">See how we build SEO-ready websites →</Link>
+              </>
+            }
+          >
+            <p className="vz-lead">
+              An SEO strategy is only as strong as the website it’s built on. A site that’s slow, hard to crawl, or badly structured will always fight against the strategy layered on top of it. That’s why we pair SEO and digital marketing with our own <Link className="vz-prose-link" href="/services/website-development">website development</Link> team, building in Next.js and React — rather than handing you off to optimise a site neither of us built.
+            </p>
+          </ServiceIntro>
+
+          <ProcessList
+            id="dm-process-heading"
+            title={<>A process built to <em>remove guesswork</em></>}
+            lead="Six steps, repeated on a cycle — because SEO and digital marketing are never really “done.”"
+            steps={processSteps.map((s) => ({ title: s.title, description: s.text }))}
+            surface
+          />
+
+          <IconLabelGrid
+            id="dm-industries-heading"
+            eyebrow="Who We Work With"
+            title={<>Industries we <em>serve</em></>}
+            lead="The same industries we support across our other services — approached here through SEO, content and paid media."
+            items={industries.map((ind) => ({ label: ind.name, icon: ind.icon }))}
+            note={
+              <>
+                Working in real estate, architecture or construction? Our <Link className="vz-prose-link" href="/services/cad-gis-photogrammetry">CAD, GIS &amp; photogrammetry</Link> team can support the visual and mapping side of a project alongside the marketing that promotes it.
+              </>
+            }
+          />
+
+          <ServiceIntro id="dm-local-heading" eyebrow="Local SEO" title={<>Built for how <em>Bangalore</em> searches</>} surface>
+            <p className="vz-lead">
+              Bangalore is one of India’s most competitive digital markets — a dense mix of technology companies, startups, retail, real estate and professional services all competing for attention across neighbourhoods from Koramangala and Indiranagar to Whitefield, HSR Layout, Electronic City and Jayanagar. Winning local search here takes more than adding “Bangalore” to a page title.
+            </p>
+            <p>
+              We combine an accurate, well-maintained Google Business Profile with location-relevant on-page content, consistent citations and genuine organic authority — so a business shows up for the specific searches its customers are actually making, whether that’s a broad service search or something highly local.
+            </p>
+            <p>As a Bengaluru-headquartered team, we work with local businesses directly and understand the market we’re optimising for.</p>
+          </ServiceIntro>
+
+          <ServiceIntro
+            id="dm-india-heading"
+            eyebrow="National SEO"
+            title={<>SEO strategy that works <em>across India</em></>}
+            aside={
+              <>
+                <ul className="vz-checks">
+                  <li>Location-based search &amp; regional search-behaviour differences</li>
+                  <li>Multilingual and regional-language considerations where relevant</li>
+                  <li>National keyword research &amp; content strategy</li>
+                  <li>Dedicated city or region pages only where there’s a genuine business reason for them</li>
+                  <li>Market-by-market competitive SERP analysis</li>
+                </ul>
+                <p>We’d rather build a smaller number of genuinely useful pages than dozens of thin, near-identical city pages that dilute a site’s authority and risk being treated as doorway pages by search engines.</p>
+              </>
+            }
+          >
+            <p className="vz-lead">
+              India isn’t one search market. Search behaviour, competition and language preferences shift significantly between cities and regions, so a national SEO strategy has to account for where your customers actually are and how competitive the results are in each market you’re targeting.
+            </p>
+          </ServiceIntro>
+
+          <ServiceIntro
+            id="dm-measure-heading"
+            eyebrow="Measurement & Reporting"
+            title={<>Reported against numbers that <em>matter</em></>}
+            surface
+            aside={
+              <div className="vz-measure">
+                <div>
+                  <h3 className="vz-tech__label">What we track</h3>
+                  <ul className="vz-checks">
+                    <li>Organic clicks &amp; impressions</li>
+                    <li>Search visibility &amp; keyword positions</li>
+                    <li>Organic conversions &amp; leads</li>
+                    <li>Cost per lead &amp; conversion rate</li>
+                    <li>Google Ads performance, including ROAS where applicable</li>
+                    <li>Landing-page &amp; engagement performance</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="vz-tech__label">Tools we report from</h3>
+                  <ul className="vz-chips" role="list">
+                    <li className="vz-chip">Google Search Console</li>
+                    <li className="vz-chip">Google Analytics 4</li>
+                    <li className="vz-chip">Google Ads</li>
+                    <li className="vz-chip">Reporting dashboards (e.g. Looker Studio)</li>
+                  </ul>
+                </div>
+              </div>
+            }
+          >
+            <p className="vz-lead">
+              SEO and digital marketing performance is only useful if it’s measured properly. We report on a regular cadence using Google Search Console, Google Analytics 4 and Google Ads’ own reporting, so you always know what’s actually happening — not just a summary at the end of a quarter.
+            </p>
+          </ServiceIntro>
+
+          <ServiceIntro
+            id="dm-proof-heading"
+            eyebrow="Our Approach"
+            title={<>What we <em>measure</em>, and what’s still being built</>}
+            aside={
+              <div className="vz-proof">
+                <figure className="vz-quote">
+                  <blockquote>
+                    <p>“We hired them for SEO and ended up rebuilding our entire digital presence. Page-one rankings for seventeen target keywords within four months. Exceptional results, full stop.”</p>
+                  </blockquote>
+                  <figcaption>
+                    Kavitha R. — VP Digital Strategy, Meridian Finance · <Link className="vz-prose-link" href="/contact">more client feedback on our Contact page</Link>
+                  </figcaption>
+                </figure>
+                <div className="vz-card">
+                  <p className="vz-eyebrow">Case study</p>
+                  <p>
+                    See exactly how we work in our <Link className="vz-prose-link" href="/work/technical-seo-99visual">technical SEO case study</Link>: the audit-to-monitoring workflow we ran on our own Next.js site, with every fix traceable to the change that made it. It covers crawlability, canonicals and redirects, the XML sitemap, structured data and page speed, and states what it doesn’t claim.
+                  </p>
+                  <p>
+                    We’re also documenting client SEO case studies with real before-and-after data. If you’d like to be one of the first featured, <Link className="vz-prose-link" href="/contact">get in touch</Link>.
+                  </p>
+                  <p>
+                    In the meantime, our <Link className="vz-prose-link" href="/insights">Insights blog</Link> covers how we think about search and digital strategy, and our <Link className="vz-prose-link" href="/about">About page</Link> has more on who we are and how we work.
+                  </p>
+                </div>
+              </div>
+            }
+          >
+            <p className="vz-lead">
+              We won’t invent client results to fill this section. Here’s what we can genuinely show you today: direct feedback from a client we worked with on SEO, and an honest note on what’s still coming.
+            </p>
+          </ServiceIntro>
+
+          <ServiceIntro id="dm-geo-heading" eyebrow="AI Search & GEO" title={<>Preparing for how <em>AI-powered search</em> is changing</>} surface>
+            <p className="vz-lead">
+              Search is no longer just a list of ten blue links. Google’s AI Overviews and other AI-powered systems increasingly summarise answers directly, and tools like ChatGPT, Gemini and Perplexity are becoming discovery surfaces of their own. The common thread across all of them is the same fundamentals good SEO has always relied on: clear, well-structured content; accurate, first-party information about a business; consistent entities and brand mentions; and technical implementation — structured data, clean HTML, crawlable pages — that makes it easy for any system, human or AI, to understand what a business actually does.
+            </p>
+            <p>
+              We build with that in mind — clear entity information, structured data and genuinely useful content — as part of standard SEO practice, not a separate service. We won’t claim this guarantees visibility inside any specific AI system; no one can honestly promise that. What we can do is make sure a business is represented accurately and clearly wherever people, or the AI systems increasingly answering on their behalf, go looking.
+            </p>
+          </ServiceIntro>
+
+          <FeatureGrid
+            id="dm-benefits-heading"
+            eyebrow="Why Choose Us?"
+            title={<>Benefits of partnering with <em>99 Visual</em></>}
+            lead="Digital marketing here means more than running ads — it’s about building visibility and connections that compound into long-term growth."
+            items={benefits.map((b) => ({ title: b.title, description: b.description, icon: b.icon }))}
+          />
+
+          <div id="dm-faq">
+            <FaqList
+              id="dm-faq-heading"
+              title="Common questions"
+              faqs={dmFaqs.map((f) => ({ q: f.question, a: <p>{f.answer}</p> }))}
+              surface
+            />
+          </div>
+
+          <ServiceCTA
+            id="dm-cta-heading"
+            title={<>Ready to grow your business <em>online</em>?</>}
+            sub="Get in touch for a free SEO consultation or digital marketing audit. We’ll map out the right strategy for your goals in Bangalore, across India, or internationally — and how we’ll measure it."
+            ctaLabel="Get a Free SEO Consultation"
+            postTitle={T}
+            postUrl={P}
+          />
+          <RelatedInsights serviceHref="/services/digital-marketing-seo" />
+        </main>
+        <Footer />
+        <StickyCTA postTitle={T} postUrl={P} label="Get a Free SEO Consultation" />
       </div>
-
-      {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/digital-marketing-seo" />
-      <Footer />
-      <ScrollDown />
-
     </>
   );
 }

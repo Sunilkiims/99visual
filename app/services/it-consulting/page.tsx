@@ -32,13 +32,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
-import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
-import ConsultationCTA from "@/app/components/ConsultationCTA";
+import { ServiceHero, ServiceIntro, ServiceCluster, FeatureGrid, ServiceCTA, StickyCTA } from "@/app/components/premium/service/ServiceBlocks";
 
 
 import type { Metadata } from "next";
@@ -350,23 +347,27 @@ const clusters = [
 ];
 
 // Illustrative IT-ops log lines for the signature ticker band.
-const pipeline = [
-  { cmd: "patch_deploy",   out: "42 systems updated" },
-  { cmd: "vuln_scan",      out: "0 critical findings" },
-  { cmd: "cloud_sync",     out: "AWS ⇄ Azure synced" },
-  { cmd: "backup_verify",  out: "128 snapshots verified" },
-  { cmd: "uptime_check",   out: "99.98% (30d)" },
-  { cmd: "iot_heartbeat",  out: "1,204 devices online" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ITConsulting() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/it-consulting-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
+  const clusterSections = clusters.map((cluster, ci) => (
+    <ServiceCluster
+      key={cluster.id}
+      id={`itc-cluster-h-${cluster.id}`}
+      eyebrow={cluster.eyebrow}
+      title={cluster.heading}
+      intro={cluster.intro}
+      surface={ci % 2 === 0}
+      columns={cluster.cols === 3 ? 3 : 2}
+      items={cluster.ids.map((id) => {
+        const svc = serviceById(id);
+        return { id: svc.id, title: svc.title, description: svc.description, highlight: svc.highlight, bullets: svc.bullets, icon: svc.icon };
+      })}
+    />
+  ));
+
   return (
     <>
       <script
@@ -374,359 +375,56 @@ export default function ITConsulting() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(itcGraph) }}
       />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <ServiceHero
+            id="itc-hero-heading"
+            crumbs={[{ href: '/', label: 'Home' }, { href: '/services', label: 'Services' }, { href: '/services/it-consulting', label: 'IT Consulting' }]}
+            title="IT Consulting Services"
+            tagline={<>Technology strategy measured in <em>uptime</em>, not slides</>}
+            sub="Cloud migration, cybersecurity, infrastructure planning, IoT integration, and IT project management — end-to-end consulting that prepares your business for the digital future."
+            image="/images/services/it-consulting-hero-banner.jpg"
+            imageAlt="IT consulting: cloud infrastructure and network operations"
+            ctaAria="Get a free IT consulting quote from 99 Visual Solutions"
+            postTitle="IT Consulting"
+            postUrl={PAGE_CANONICAL}
+            secondary={{ href: '#services', label: 'Explore Services' }}
+            points={['Cloud & migration', 'Cybersecurity', 'Infrastructure', 'IoT integration', 'Project delivery']}
+          />
 
-      <style>{`
-
-        .itc-page{
-          --itc-ink:#12141A; --itc-muted:#5B6172; --itc-paper:#F5F6F8; --itc-surface:#FFFFFF;
-          --itc-line:#E4E6EC; --itc-blue:#2E5CFF; --itc-green:#37D67A;
-          background:var(--itc-paper);
-        }
-        .itc-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
-
-        .itc-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.04em;color:var(--itc-blue);margin-bottom:.9rem;display:block;text-align:center;}
-        .itc-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--itc-ink);margin:0 0 1rem;text-align:center;}
-        .itc-h2 em{font-style:normal;color:var(--itc-blue);}
-
-        /* ══ HERO — matched exactly to the /services hub page hero.
-           Save your banner image to:
-           /public/images/services/it-consulting-hero-banner.jpg ── */
-        .itc-hero{
-          position:relative;height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/it-consulting-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .itc-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .itc-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .itc-hero{
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/it-consulting-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-
-        .itc-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:9rem 1.5rem 1.5rem;
-          padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .itc-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .itc-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .itc-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        @media(max-height:520px){
-          .itc-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .itc-hero__eyebrow{ margin-bottom:1.1rem; }
-          .itc-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .itc-hero__rule{ margin-bottom:.8rem; }
-          .itc-hero__sub{ margin-bottom:1.2rem; }
-        }
-
-        .itc-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .itc-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .itc-corner--tl{top:28px;left:28px;border-top:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
-        .itc-corner--tr{top:28px;right:28px;border-top:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
-        .itc-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--itc-blue);border-left:1px solid var(--itc-blue);}
-        @media(max-width:480px){ .itc-corner--bl{ left:28px; } }
-        .itc-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--itc-blue);border-right:1px solid var(--itc-blue);}
-
-        .itc-hero__content{animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes itcFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.itc-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        /* Eyebrow badge — now orange (#FF8A2E), independent of --itc-blue */
-        .itc-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .itc-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:itcPulse 2s ease-in-out infinite;}
-        @keyframes itcPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .itc-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .itc-hero__h1 em{font-style:normal;color:var(--itc-blue);}
-        .itc-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--itc-blue),transparent);margin:0 0 1.4rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.itc-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--itc-blue),transparent);}}
-        .itc-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.itc-hero__sub{margin:0 auto 2.6rem;}}
-
-        .itc-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:itcFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.itc-hero__actions{justify-content:center;}}
-        .itc-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--itc-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
-        .itc-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .itc-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
-        .itc-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
-
-        .itc-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .itc-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .itc-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:itcScroll 34s linear infinite;}
-        .itc-hero__ticker-bar:hover .itc-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .itc-ticker__track{ animation-duration:22s; } }
-        @keyframes itcScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .itc-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .itc-ticker__item b{color:rgba(255,255,255,.45);}
-        .itc-ticker__pass{color:var(--itc-green);}
-        @media(max-height:520px){
-          .itc-hero__ticker-bar{ padding-top:.75rem; }
-        }
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .itc-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--itc-line);}
-        @media(max-width:760px){.itc-sticky-cta{display:flex;justify-content:center;}}
-        .itc-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        /* ══ INTRO — unchanged copy ═══════════════════════════════════════ */
-        .itc-intro{background:var(--itc-surface);border-bottom:1px solid var(--itc-line);padding:5.5rem 1.5rem;}
-        .itc-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .itc-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--itc-muted);max-width:700px;margin:0 auto .9rem;}
-        .itc-intro__p strong{color:var(--itc-ink);font-weight:500;}
-
-        /* ══ SERVICE CLUSTERS (replaces 7 alternating rows) ══════════════ */
-        .itc-cluster{padding:4.5rem 1.5rem;border-bottom:1px solid var(--itc-line);}
-        .itc-cluster:nth-child(even){background:var(--itc-surface);}
-        .itc-cluster__inner{max-width:1180px;margin:0 auto;}
-        .itc-cluster__head{max-width:640px;margin-bottom:2.5rem;}
-        .itc-cluster__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
-        .itc-cluster__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:700;line-height:1.25;color:var(--itc-ink);margin:0 0 .6rem;}
-        .itc-cluster__h2 em{font-style:normal;color:var(--itc-blue);}
-        .itc-cluster__intro{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:var(--itc-muted);margin:0;}
-        .itc-cluster__grid{display:grid;gap:1.25rem;}
-        .itc-cluster__grid--2{grid-template-columns:repeat(2,1fr);}
-        .itc-cluster__grid--3{grid-template-columns:repeat(3,1fr);}
-        @media(max-width:860px){.itc-cluster__grid--2,.itc-cluster__grid--3{grid-template-columns:1fr;}}
-
-        .itc-card{background:var(--itc-surface);border:1px solid var(--itc-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
-        .itc-cluster:nth-child(even) .itc-card{background:var(--itc-paper);}
-        .itc-card:hover{border-color:var(--itc-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
-        .itc-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--itc-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
-        .itc-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;color:var(--itc-ink);margin:0 0 .7rem;}
-        .itc-card__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--itc-muted);margin:0 0 .8rem;}
-        .itc-card__highlight{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:400;line-height:1.7;color:var(--itc-ink);border-left:2px solid var(--itc-blue);padding-left:.9rem;margin:0 0 1.2rem;}
-        .itc-card__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
-        .itc-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--itc-ink);display:flex;align-items:flex-start;gap:.55rem;}
-        .itc-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--itc-blue);margin-top:.5rem;flex-shrink:0;}
-
-        /* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */
-        .itc-benefits{background:var(--itc-paper);padding:5.5rem 1.5rem;}
-        .itc-benefits__inner{max-width:1200px;margin:0 auto;}
-        .itc-benefits__head{max-width:560px;margin:0 auto 3rem;text-align:center;}
-        .itc-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .itc-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--itc-ink);margin:0 0 .8rem;}
-        .itc-benefits__h2 em{font-style:normal;color:var(--itc-blue);}
-        .itc-benefits__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--itc-muted);max-width:520px;margin:0 auto;}
-        .itc-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:1024px){.itc-benefits__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.itc-benefits__grid{grid-template-columns:1fr;}}
-        .itc-benefit-card{background:var(--itc-surface);border:1px solid var(--itc-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
-        .itc-benefit-card:hover{border-color:var(--itc-blue);transform:translateY(-3px);}
-        .itc-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--itc-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
-        .itc-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--itc-ink);margin-bottom:.5rem;}
-        .itc-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--itc-muted);}
-
-        /* ══ CTA ═══════════════════════════════════════════════════════════ */
-        .itc-cta{background:var(--itc-surface);border-top:1px solid var(--itc-line);padding:5.5rem 1.5rem;text-align:center;}
-        .itc-cta__inner{max-width:560px;margin:0 auto;}
-        .itc-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--itc-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
-        .itc-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--itc-ink);margin:0 0 1rem;}
-        .itc-cta__h2 em{font-style:normal;color:var(--itc-blue);}
-        .itc-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--itc-muted);margin-bottom:2.2rem;}
-        .itc-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--itc-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .itc-cta__btn:hover{background:var(--itc-blue);transform:translateY(-2px);}
-
-        @media(prefers-reduced-motion:reduce){
-          .itc-page *,.itc-page *::before,.itc-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
-      <div className="itc-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section className="itc-hero" aria-labelledby="itc-hero-heading">
-          <div aria-hidden="true">
-            <div className="itc-hero__grain" />
-          </div>
-          <div className="itc-corner itc-corner--tl" aria-hidden="true" />
-          <div className="itc-corner itc-corner--tr" aria-hidden="true" />
-          <div className="itc-corner itc-corner--bl" aria-hidden="true" />
-          <div className="itc-corner itc-corner--br" aria-hidden="true" />
-
-          <nav className="itc-sr-only" aria-label="Breadcrumb">
-            <ol style={{ listStyle:"none",margin:0,padding:0 }}>
-              <li>
-                <a href="/"><span>Home</span></a>
-              </li>
-              <li>
-                <a href="/services"><span>Services</span></a>
-              </li>
-              <li>
-                <a href="/services/it-consulting" aria-current="page">
-                  <span>IT Consulting</span>
-                </a>
-              </li>
-            </ol>
-          </nav>
-
-          <div className="itc-hero__inner">
-            <div className="itc-hero__content">
-              {/* SEO: the H1 names the service; the tagline keeps its look as
-                  a <p> with the same class (previously the H1 was the tagline). */}
-              <h1 className="itc-hero__eyebrow" id="itc-hero-heading">
-                <span className="itc-hero__dot" aria-hidden="true" />
-                IT Consulting Services
-              </h1>
-              <p className="itc-hero__h1">
-                Technology strategy measured<br />in <em>uptime</em>, not slides
-              </p>
-              <div className="itc-hero__rule" aria-hidden="true" />
-              <p className="itc-hero__sub">
-                Cloud migration, cybersecurity, infrastructure planning, IoT
-                integration, and IT project management — end-to-end consulting
-                that prepares your business for the digital future.
-              </p>
-
-              <div className="itc-hero__actions">
-                <ConsultationCTA className="itc-hero__cta" ariaLabel="Get a free IT consulting quote from 99 Visual Solutions">
-                  Get a Free Quote
-                </ConsultationCTA>
-                <a href="#services" className="itc-hero__cta itc-hero__cta--ghost" aria-label="Explore IT consulting services from 99 Visual Solutions">
-                  Explore Services
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="itc-hero__ticker-bar" aria-hidden="true">
-            <div className="itc-ticker">
-              <div className="itc-ticker__track">
-                {[...pipeline, ...pipeline].map((p, i) => (
-                  <span className="itc-ticker__item" key={i}>
-                    <b>$</b> {p.cmd} <span className="itc-ticker__pass">→ {p.out} ✓</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ INTRO — unchanged copy ═══════════════════════════════════════ */}
-        <section className="itc-intro" aria-labelledby="itc-intro-heading">
-          <div className="itc-intro__inner">
-            <span className="itc-label">Our Philosophy</span>
-            <h2 className="itc-h2" id="itc-intro-heading">
-              Strategic IT consulting for smarter,<br />secure &amp; <em>scalable</em> businesses
-            </h2>
-            <p className="itc-intro__p">
-              At <strong>99 Visual Solutions</strong>, we don't just solve IT challenges — we help you harness
-              technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver
-              strategic guidance, robust security, and scalable infrastructure designed to prepare your business
-              for the digital future with confidence.
+          <ServiceIntro id="itc-intro-heading" eyebrow="Our Philosophy" title={<>Strategic IT consulting for smarter, secure &amp; <em>scalable</em> businesses</>}>
+            <p className="vz-lead">
+              At <strong>99 Visual Solutions</strong>, we don&apos;t just solve IT challenges — we help you harness technology as a powerful growth driver. Our <strong>IT consulting services</strong> deliver strategic guidance, robust security, and scalable infrastructure designed to prepare your business for the digital future with confidence.
             </p>
-            <p className="itc-intro__p">
-              Whether you're modernising legacy systems, migrating to the cloud, or strengthening cybersecurity,
-              our experts partner with you to deliver{" "}
-              <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored precisely to
-              your business goals and industry requirements.
+            <p>
+              Whether you&apos;re modernising legacy systems, migrating to the cloud, or strengthening cybersecurity, our experts partner with you to deliver <strong>sustainable, cost-effective, and future-ready IT solutions</strong> tailored precisely to your business goals and industry requirements.
             </p>
-          </div>
-        </section>
+          </ServiceIntro>
 
-        {/* ══ SERVICE CLUSTERS — 100% unchanged copy, grouped & iconified ═══ */}
-        <div id="services">
-          {clusters.map((cluster) => (
-            <section key={cluster.id} className="itc-cluster" aria-labelledby={`itc-cluster-h-${cluster.id}`}>
-              <div className="itc-cluster__inner">
-                <div className="itc-cluster__head">
-                  <span className="itc-cluster__eyebrow">{cluster.eyebrow}</span>
-                  <h2 className="itc-cluster__h2" id={`itc-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
-                  <p className="itc-cluster__intro">{cluster.intro}</p>
-                </div>
-                <div className={`itc-cluster__grid itc-cluster__grid--${cluster.cols}`}>
-                  {cluster.ids.map((id) => {
-                    const svc = serviceById(id);
-                    return (
-                      <article className="itc-card" id={svc.id} key={svc.id} aria-labelledby={`itc-svc-heading-${svc.id}`}>
-                        <div className="itc-card__icon" aria-hidden="true">{svc.icon}</div>
-                        <h3 className="itc-card__title" id={`itc-svc-heading-${svc.id}`}>{svc.title}</h3>
-                        <p className="itc-card__desc">{svc.description}</p>
-                        <p className="itc-card__highlight">{svc.highlight}</p>
-                        <ul className="itc-card__bullets">
-                          {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                        </ul>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
+          <div id="services">{clusterSections}</div>
 
-        {/* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */}
-        <section className="itc-benefits" aria-labelledby="itc-benefits-heading">
-          <div className="itc-benefits__inner">
-            <div className="itc-benefits__head">
-              <span className="itc-benefits__label">Why Choose Us?</span>
-              <h2 className="itc-benefits__h2" id="itc-benefits-heading">
-                Partnering with <em>99 Visual</em> IT Consulting
-              </h2>
-              <p className="itc-benefits__sub">
-                IT isn't just a support function — it becomes a competitive advantage. Here's how
-                we empower businesses with strategic technology.
-              </p>
-            </div>
-            <div className="itc-benefits__grid">
-              {benefits.map((b, i) => (
-                <div className="itc-benefit-card" key={i}>
-                  <div className="itc-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                  <div className="itc-benefit-card__title">{b.title}</div>
-                  <p className="itc-benefit-card__desc">{b.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          <FeatureGrid
+            id="itc-benefits-heading"
+            eyebrow="Why Choose Us?"
+            title={<>Partnering with <em>99 Visual</em> IT Consulting</>}
+            lead="IT isn't just a support function — it becomes a competitive advantage. Here's how we empower businesses with strategic technology."
+            items={benefits.map((b) => ({ title: b.title, description: b.description, icon: b.icon }))}
+          />
 
-        {/* ══ CTA STRIP ═════════════════════════════════════════════════════ */}
-        <section className="itc-cta" aria-labelledby="itc-cta-heading">
-          <div className="itc-cta__inner">
-            <span className="itc-cta__eyebrow">Start a Project</span>
-            <h2 className="itc-cta__h2" id="itc-cta-heading">
-              Ready to transform your <em>IT infrastructure</em>?
-            </h2>
-            <p className="itc-cta__sub">
-              Get in touch with our team for a free consultation. We&apos;ll help you
-              map out the right IT strategy to achieve your goals and future-proof your business.
-            </p>
-            <ConsultationCTA className="itc-cta__btn" ariaLabel="Get a free IT consulting consultation from 99 Visual Solutions">
-              Get a Free Consultation
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </ConsultationCTA>
-          </div>
-        </section>
-
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="itc-sticky-cta">
-          <ConsultationCTA className="itc-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
-        </div>
+          <ServiceCTA
+            id="itc-cta-heading"
+            title={<>Ready to transform your <em>IT infrastructure</em>?</>}
+            sub="Get in touch with our team for a free consultation. We'll help you map out the right IT strategy to achieve your goals and future-proof your business."
+            ctaAria="Get a free IT consulting consultation from 99 Visual Solutions"
+            postTitle="IT Consulting"
+            postUrl={PAGE_CANONICAL}
+          />
+          <RelatedInsights serviceHref="/services/it-consulting" />
+        </main>
+        <Footer />
+        <StickyCTA postTitle="IT Consulting" postUrl={PAGE_CANONICAL} />
       </div>
-
-      {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/it-consulting" />
-      <Footer />
-      <ScrollDown />
-
     </>
   );
 }

@@ -27,15 +27,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import { caseStudies } from '@/lib/case-studies';
 import Link from "next/link";
 import Image from "next/image";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
-import ConsultationCTA from "@/app/components/ConsultationCTA";
+import { ServiceHero, ServiceIntro, ServiceCluster, FeatureGrid, ProcessList, FaqList, ServiceCTA, StickyCTA, IconLabelGrid } from "@/app/components/premium/service/ServiceBlocks";
+import { SectionHeading } from "@/app/components/ui/primitives";
 
 
 import type { Metadata } from "next";
@@ -536,14 +535,6 @@ const wdevGraph = buildGraph(
 );
 
 // Illustrative build/QA pipeline lines for the signature ticker band.
-const pipeline = [
-  { cmd: "next build",          out: "compiled successfully" },
-  { cmd: "lighthouse ci",       out: "98/100 performance" },
-  { cmd: "vitest run",          out: "214 passed, 0 failed" },
-  { cmd: "eslint .",            out: "no problems found" },
-  { cmd: "deploy production",   out: "live in 42s" },
-  { cmd: "axe-core audit",      out: "0 critical issues" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -553,955 +544,247 @@ const pipeline = [
 const webCaseStudies = caseStudies.filter((c) => c.service.href === '/services/website-development');
 
 export default function WebsiteDevelopment() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/website-development-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
+  const T = "Website Development";
+  const P = "/services/website-development";
   return (
     <>
-      <style>{`
-
-        .wdev-page{
-          --wdev-ink:#12141A; --wdev-muted:#5B6172; --wdev-paper:#F5F6F8; --wdev-surface:#FFFFFF;
-          --wdev-line:#E4E6EC; --wdev-blue:#2E5CFF; --wdev-green:#37D67A;
-          background:var(--wdev-paper);
-        }
-        .wdev-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
-
-        /* Shared section head styles reused across sections */
-        .wdev-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.04em;color:var(--wdev-blue);margin-bottom:.9rem;display:block;text-align:center;}
-        .wdev-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--wdev-ink);margin:0 0 1rem;text-align:center;}
-        .wdev-h2 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-sub{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);max-width:580px;margin:0 auto;text-align:center;}
-
-        /* ══ HERO — matched exactly to the /services hub page hero.
-           Save your banner image to:
-           /public/images/services/website-development-hero-banner.jpg ── */
-        .wdev-hero{
-          position:relative;min-height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .wdev-hero { min-height:100svh; } }
-        @supports (height: 100dvh) { .wdev-hero { min-height:100dvh; } }
-        @media(max-width:960px){
-          .wdev-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-        .wdev-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .wdev-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .wdev-corner--tl{top:28px;left:28px;border-top:1px solid var(--wdev-blue);border-left:1px solid var(--wdev-blue);}
-        .wdev-corner--tr{top:28px;right:28px;border-top:1px solid var(--wdev-blue);border-right:1px solid var(--wdev-blue);}
-        .wdev-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--wdev-blue);border-left:1px solid var(--wdev-blue);}
-        @media(max-width:480px){ .wdev-corner--bl{ left:28px; } }
-        .wdev-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--wdev-blue);border-right:1px solid var(--wdev-blue);}
-
-        .wdev-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow-x:hidden;overflow-y:visible;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:7rem 1.5rem 1.5rem;
-          padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .wdev-hero__inner{ padding:5.5rem 1.25rem 1.25rem; padding-top:max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        @media(max-width:640px){ .wdev-hero__inner{ padding:5rem 1rem 1rem; padding-top:max(5rem, calc(env(safe-area-inset-top) + 4rem)); } }
-        @media(max-width:380px){ .wdev-hero__inner{ padding:4.5rem .85rem .85rem; padding-top:max(4.5rem, calc(env(safe-area-inset-top) + 3.5rem)); } }
-        @media(max-height:520px){
-          .wdev-hero__inner{ padding-top:3.25rem; padding-bottom:.75rem; }
-          .wdev-hero__eyebrow{ margin-bottom:1.1rem; }
-          .wdev-hero__h1{ margin-bottom:.7rem; font-size:clamp(1.4rem,4.2vh,2.3rem); }
-          .wdev-hero__rule{ margin-bottom:.8rem; }
-          .wdev-hero__sub{ margin-bottom:1.2rem; }
-        }
-
-        .wdev-hero__content{animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes wdevFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.wdev-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        /* Eyebrow badge — now orange (#FF8A2E), independent of --wdev-blue */
-        .wdev-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:#FF8A2E;border:1px solid rgba(255,138,46,.28);background:rgba(255,138,46,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .wdev-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
-        .wdev-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
-        .wdev-breadcrumb li{display:flex;align-items:center;gap:6px;}
-        .wdev-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
-        .wdev-breadcrumb a:hover{color:#FF8A2E;}
-        .wdev-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
-        .wdev-breadcrumb__sep{color:rgba(255,255,255,.25);}
-        @media(max-width:640px){.wdev-breadcrumb{padding-top:1.1rem;}}
-        .wdev-hero__dot{width:5px;height:5px;border-radius:50%;background:#FF8A2E;animation:wdevPulse 2s ease-in-out infinite;}
-        @keyframes wdevPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .wdev-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .wdev-hero__h1 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--wdev-blue),transparent);margin:0 0 1.4rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.wdev-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--wdev-blue),transparent);}}
-        .wdev-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.wdev-hero__sub{margin:0 auto 2.6rem;}}
-        .wdev-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-bottom:.5rem;animation:wdevFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.wdev-hero__actions{justify-content:center;}}
-        .wdev-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--wdev-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
-        .wdev-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .wdev-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
-        .wdev-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
-
-        .wdev-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .wdev-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .wdev-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:wdevScroll 34s linear infinite;}
-        .wdev-hero__ticker-bar:hover .wdev-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .wdev-ticker__track{ animation-duration:22s; } }
-        @keyframes wdevScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .wdev-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .wdev-ticker__item b{color:rgba(255,255,255,.45);}
-        .wdev-ticker__pass{color:var(--wdev-green);}
-        @media(max-height:520px){
-          .wdev-hero__ticker-bar{ padding-top:.75rem; }
-        }
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .wdev-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--wdev-line);}
-        @media(max-width:760px){.wdev-sticky-cta{display:flex;justify-content:center;}}
-        .wdev-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--wdev-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        /* ══ PAIN SECTION ═══════════════════════════════════════════════ */
-        .wdev-pain{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-pain__inner{max-width:1100px;margin:0 auto;}
-        .wdev-pain__head{margin-bottom:3rem;}
-        .wdev-pain__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
-        @media(max-width:960px){.wdev-pain__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:520px){.wdev-pain__grid{grid-template-columns:1fr;}}
-        .wdev-pain__card{background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:16px;padding:1.75rem 1.5rem;}
-        .wdev-pain__icon{color:var(--wdev-blue);font-size:1.2rem;margin-bottom:1rem;}
-        .wdev-pain__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
-        .wdev-pain__text{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.7;color:var(--wdev-muted);}
-        .wdev-pain__cta-row{text-align:center;margin-top:3rem;}
-        .wdev-pain__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:var(--wdev-ink);border:1px solid var(--wdev-line);padding:12px 26px;border-radius:10px;text-decoration:none;transition:border-color .2s ease,color .2s ease;background:transparent;cursor:pointer;}
-        .wdev-pain__cta:hover{border-color:var(--wdev-blue);color:var(--wdev-blue);}
-
-        /* ══ INTRO ═══════════════════════════════════════════════════════ */
-        .wdev-intro{background:var(--wdev-paper);border-bottom:1px solid var(--wdev-line);padding:5.5rem 1.5rem;}
-        .wdev-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .wdev-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--wdev-muted);max-width:700px;margin:0 auto .9rem;}
-        .wdev-intro__p strong{color:var(--wdev-ink);font-weight:500;}
-
-        /* ══ EXPERTISE — "what a website development company does" ══════ */
-        .wdev-expertise{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-expertise__inner{max-width:1080px;margin:0 auto;}
-        .wdev-expertise__head{max-width:760px;margin:0 auto 3rem;}
-        .wdev-expertise__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.25rem 2.5rem;}
-        @media(max-width:760px){.wdev-expertise__grid{grid-template-columns:1fr;}}
-        .wdev-expertise__item h3{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .55rem;}
-        .wdev-expertise__item p{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin:0;}
-        .wdev-expertise__item p a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
-        .wdev-expertise__item p a:hover{text-decoration-color:var(--wdev-blue);}
-
-        /* ══ LOCATION STRIP — Bengaluru / India / global delivery ═══════ */
-        .wdev-location{background:var(--wdev-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-location__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .wdev-location__p{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.85;color:var(--wdev-muted);max-width:720px;margin:0 auto .9rem;}
-        .wdev-location__p strong{color:var(--wdev-ink);font-weight:500;}
-        .wdev-location__p a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
-        .wdev-location__p a:hover{text-decoration-color:var(--wdev-blue);}
-
-        /* Service-card illustration image (real content image + alt text) */
-        .wdev-card__media{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;margin-bottom:1.1rem;background:var(--wdev-paper);}
-        .wdev-card__media img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;}
-
-        /* ══ SOLUTION OVERVIEW GRID ═════════════════════════════════════ */
-        .wdev-overview{background:var(--wdev-surface);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-overview__inner{max-width:1200px;margin:0 auto;}
-        .wdev-overview__head{margin-bottom:2.5rem;}
-        .wdev-overview__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
-        @media(max-width:1024px){.wdev-overview__grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:760px){.wdev-overview__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:480px){.wdev-overview__grid{grid-template-columns:1fr;}}
-        .wdev-overview__card{display:flex;align-items:center;gap:.7rem;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:12px;padding:1rem 1.1rem;text-decoration:none;transition:border-color .2s ease,transform .2s ease;}
-        .wdev-overview__card:hover{border-color:var(--wdev-blue);transform:translateY(-2px);}
-        .wdev-overview__icon{color:var(--wdev-blue);font-size:1rem;flex-shrink:0;}
-        .wdev-overview__title{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;color:var(--wdev-ink);}
-
-        /* ══ SERVICE CLUSTERS (replaces 13 alternating rows) ═════════════ */
-        .wdev-cluster{padding:4.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-cluster:nth-child(even){background:var(--wdev-surface);}
-        .wdev-cluster__inner{max-width:1180px;margin:0 auto;}
-        .wdev-cluster__head{max-width:640px;margin-bottom:2.5rem;}
-        .wdev-cluster__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--wdev-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
-        .wdev-cluster__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:700;line-height:1.25;color:var(--wdev-ink);margin:0 0 .6rem;}
-        .wdev-cluster__h2 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-cluster__intro{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:var(--wdev-muted);margin:0;}
-        .wdev-cluster__grid{display:grid;gap:1.25rem;}
-        .wdev-cluster__grid--3{grid-template-columns:repeat(3,1fr);}
-        .wdev-cluster__grid--4{grid-template-columns:repeat(4,1fr);}
-        @media(max-width:960px){.wdev-cluster__grid--4{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:860px){.wdev-cluster__grid--3{grid-template-columns:1fr;}}
-        @media(max-width:640px){.wdev-cluster__grid--4{grid-template-columns:1fr;}}
-
-        .wdev-card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
-        .wdev-cluster:nth-child(even) .wdev-card{background:var(--wdev-paper);}
-        .wdev-card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
-        .wdev-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--wdev-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
-        .wdev-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .7rem;}
-        .wdev-card__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0 0 .8rem;}
-        .wdev-card__highlight{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:400;line-height:1.7;color:var(--wdev-ink);border-left:2px solid var(--wdev-blue);padding-left:.9rem;margin:0 0 1.2rem;}
-        .wdev-card__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
-        .wdev-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--wdev-ink);display:flex;align-items:flex-start;gap:.55rem;}
-        .wdev-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--wdev-blue);margin-top:.5rem;flex-shrink:0;}
-
-        /* ══ PROCESS TIMELINE ════════════════════════════════════════════ */
-        .wdev-process{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-process__inner{max-width:900px;margin:0 auto;}
-        .wdev-process__head{margin-bottom:3rem;}
-        .wdev-process__steps{display:flex;flex-direction:column;gap:0;}
-        .wdev-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
-        .wdev-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--wdev-line);}
-        .wdev-process__num{width:56px;height:56px;border-radius:50%;border:1px solid var(--wdev-line);background:var(--wdev-paper);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:500;color:var(--wdev-blue);flex-shrink:0;}
-        .wdev-process__title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
-        .wdev-process__text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);max-width:520px;}
-
-        /* ══ DELIVERABLES ═══════════════════════════════════════════════ */
-        .wdev-deliv{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-deliv__inner{max-width:1200px;margin:0 auto;}
-        .wdev-deliv__head{margin-bottom:3rem;}
-        .wdev-deliv__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:900px){.wdev-deliv__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:560px){.wdev-deliv__grid{grid-template-columns:1fr;}}
-        .wdev-deliv__card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.75rem;}
-        .wdev-deliv__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--wdev-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
-        .wdev-deliv__title{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
-        .wdev-deliv__text{font-family:'Inter',sans-serif;font-size:.83rem;font-weight:300;line-height:1.7;color:var(--wdev-muted);}
-
-        /* ══ BEFORE / AFTER ══════════════════════════════════════════════ */
-        .wdev-ba{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-ba__inner{max-width:1000px;margin:0 auto;}
-        .wdev-ba__head{margin-bottom:3rem;}
-        .wdev-ba__grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-        @media(max-width:700px){.wdev-ba__grid{grid-template-columns:1fr;}}
-        .wdev-ba__col{border-radius:16px;padding:2rem;border:1px solid var(--wdev-line);}
-        .wdev-ba__col--before{background:var(--wdev-paper);}
-        .wdev-ba__col--after{background:#fff;border-color:rgba(55,214,122,.35);}
-        .wdev-ba__label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem;display:block;}
-        .wdev-ba__col--before .wdev-ba__label{color:var(--wdev-muted);}
-        .wdev-ba__col--after .wdev-ba__label{color:var(--wdev-green);}
-        .wdev-ba__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.85rem;}
-        .wdev-ba__list li{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.6;color:var(--wdev-ink);display:flex;gap:.6rem;align-items:flex-start;}
-        .wdev-ba__col--before .wdev-ba__list li::before{content:'✕';color:var(--wdev-muted);flex-shrink:0;}
-        .wdev-ba__col--after .wdev-ba__list li::before{content:'✓';color:var(--wdev-green);flex-shrink:0;}
-
-        /* ══ INDUSTRIES ══════════════════════════════════════════════════ */
-        .wdev-ind{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-ind__inner{max-width:1100px;margin:0 auto;}
-        .wdev-ind__head{margin-bottom:3rem;}
-        .wdev-ind__grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;}
-        @media(max-width:900px){.wdev-ind__grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:480px){.wdev-ind__grid{grid-template-columns:repeat(2,1fr);}}
-        .wdev-ind__card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.5rem 1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
-        .wdev-ind__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
-        .wdev-ind__icon{color:var(--wdev-blue);font-size:1.2rem;margin-bottom:.8rem;}
-        .wdev-ind__name{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
-
-        /* ══ TECH STACK ══════════════════════════════════════════════════ */
-        .wdev-tech{background:var(--wdev-surface);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-tech__inner{max-width:1100px;margin:0 auto;text-align:center;}
-        .wdev-tech__grid{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin-top:2.5rem;max-width:900px;margin-left:auto;margin-right:auto;}
-        .wdev-tech__badge{display:flex;align-items:center;gap:.5rem;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.6rem 1.15rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
-        .wdev-tech__badge svg{color:var(--wdev-blue);}
-        /* ── RECENT WORK — case studies from lib/case-studies.ts ── */
-        .wdev-work{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-work__inner{max-width:1100px;margin:0 auto;}
-        .wdev-work__head{margin-bottom:3rem;}
-        .wdev-work__grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
-        @media(max-width:860px){.wdev-work__grid{grid-template-columns:1fr;}}
-        .wdev-work__card{display:flex;flex-direction:column;background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:18px;overflow:hidden;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
-        .wdev-work__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);box-shadow:0 14px 40px -24px rgba(18,20,26,.35);}
-        .wdev-work__shot{position:relative;aspect-ratio:16/8;background:var(--wdev-paper);border-bottom:1px solid var(--wdev-line);}
-        .wdev-work__shot img{object-fit:cover;object-position:top center;}
-        .wdev-work__body{display:flex;flex-direction:column;gap:.85rem;padding:1.6rem 1.6rem 1.75rem;flex:1;}
-        .wdev-work__kind{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--wdev-blue);}
-        .wdev-work__title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;line-height:1.3;color:var(--wdev-ink);margin:0;}
-        .wdev-work__desc{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
-        .wdev-work__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0;}
-        .wdev-work__tags li{font-family:'Inter',sans-serif;font-size:.74rem;font-weight:500;color:var(--wdev-ink);background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.35rem .8rem;}
-        .wdev-work__links{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;margin-top:auto;padding-top:.4rem;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;}
-        .wdev-work__links a{color:var(--wdev-blue);text-decoration:none;}
-        .wdev-work__links a:hover{text-decoration:underline;}
-        .wdev-work__links a.wdev-work__live{color:var(--wdev-muted);font-weight:500;}
-        .wdev-work__all{text-align:center;margin-top:2.5rem;font-family:'Inter',sans-serif;font-size:.92rem;}
-        .wdev-work__all a{color:var(--wdev-blue);font-weight:600;text-decoration:none;}
-        .wdev-work__all a:hover{text-decoration:underline;}
-
-        /* ══ METRICS ═════════════════════════════════════════════════════ */
-        .wdev-metrics{background:var(--wdev-paper);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-metrics__inner{max-width:1000px;margin:0 auto;}
-        .wdev-metrics__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;text-align:center;}
-        @media(max-width:700px){.wdev-metrics__grid{grid-template-columns:repeat(2,1fr);}}
-        .wdev-stat{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:14px;padding:1.6rem 1rem;}
-        .wdev-stat__num{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.4vw,2.4rem);font-weight:700;color:var(--wdev-ink);line-height:1;}
-        .wdev-stat__label{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:400;color:var(--wdev-muted);margin-top:.6rem;}
-
-        /* ══ FAQ ══════════════════════════════════════════════════════════ */
-        .wdev-faq{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-faq__inner{max-width:760px;margin:0 auto;}
-        .wdev-faq__head{margin-bottom:2.5rem;}
-        /* ✅ FIX — native <details>/<summary> accordion (zero JS). The previous
-           implementation relied on a <script> tag injected via
-           dangerouslySetInnerHTML to attach click listeners. Inline scripts
-           inserted that way only execute on a hard page load — Next.js
-           client-side navigation (clicking a <Link> anywhere on the site)
-           inserts the page via React, and browsers never execute a <script>
-           tag added that way. Result: the accordion silently did nothing for
-           any visitor who arrived via normal in-site navigation. Matches the
-           same robust pattern already used on the automation-testing and
-           cad-gis-photogrammetry service pages. */
-        .wdev-faq__list{display:flex;flex-direction:column;gap:.75rem;}
-        .wdev-faq__item{background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:14px;overflow:hidden;}
-        .wdev-faq__item[open]{border-color:var(--wdev-blue);}
-        .wdev-faq__q{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);padding:1.25rem 1.5rem;cursor:pointer;user-select:none;}
-        .wdev-faq__q::-webkit-details-marker{display:none;}
-        .wdev-faq__q::marker{display:none;content:'';}
-        .wdev-faq__chevron{color:var(--wdev-blue);flex-shrink:0;transition:transform .2s ease;}
-        .wdev-faq__item[open] .wdev-faq__chevron{transform:rotate(180deg);}
-        .wdev-faq__a-wrap{padding:0 1.5rem 1.4rem;animation:wdevFaqOpen .3s cubic-bezier(.22,1,.36,1) both;}
-        @keyframes wdevFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-        .wdev-faq__a{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin:0;}
-
-        /* ══ BENEFITS ════════════════════════════════════════════════════ */
-        .wdev-benefits{background:var(--wdev-paper);padding:5.5rem 1.5rem;}
-        .wdev-benefits__inner{max-width:1200px;margin:0 auto;}
-        .wdev-benefits__head{max-width:560px;margin-bottom:3rem;}
-        .wdev-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--wdev-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .wdev-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--wdev-ink);margin:0 0 .8rem;}
-        .wdev-benefits__h2 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-benefits__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
-        .wdev-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:1024px){.wdev-benefits__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.wdev-benefits__grid{grid-template-columns:1fr;}}
-        .wdev-benefit-card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
-        .wdev-benefit-card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
-        .wdev-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--wdev-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
-        .wdev-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
-        .wdev-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);}
-
-        /* ══ CTA STRIP ═══════════════════════════════════════════════════ */
-        .wdev-cta{background:var(--wdev-surface);border-top:1px solid var(--wdev-line);padding:5.5rem 1.5rem;text-align:center;}
-        .wdev-cta__inner{max-width:560px;margin:0 auto;}
-        .wdev-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--wdev-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
-        .wdev-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--wdev-ink);margin:0 0 1rem;}
-        .wdev-cta__h2 em{font-style:normal;color:var(--wdev-blue);}
-        .wdev-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin-bottom:2.2rem;}
-        .wdev-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--wdev-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .wdev-cta__btn:hover{background:var(--wdev-blue);transform:translateY(-2px);}
-
-        @media(prefers-reduced-motion:reduce){
-          .wdev-page *,.wdev-page *::before,.wdev-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
       <script
         id="schema-webdev-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(wdevGraph) }}
       />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <ServiceHero
+            id="wdev-hero-heading"
+            crumbs={[{ href: "/", label: "Home" }, { href: "/services", label: "Services" }, { href: P, label: "Web Development" }]}
+            title="Website Development Company in India"
+            tagline={<>Speed, security &amp; <em>growth</em>, engineered in</>}
+            sub="Custom websites, business sites, and web applications — responsive, SEO-friendly, and engineered to hold up under real traffic, not just a demo."
+            image="/images/services/website-development-hero-banner.jpg"
+            imageAlt="Website development: responsive web application on multiple devices"
+            ctaAria="Get a free web development quote from 99 Visual Solutions"
+            postTitle={T}
+            postUrl={P}
+            secondary={{ href: "#services", label: "Explore Services" }}
+            points={["Business websites", "Custom web apps", "E-commerce", "React & Next.js", "Technical SEO built in"]}
+          />
 
-      <div className="wdev-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section className="wdev-hero" aria-labelledby="wdev-hero-heading">
-          <div aria-hidden="true">
-            <div className="wdev-hero__grain" />
-          </div>
-          <div className="wdev-corner wdev-corner--tl" aria-hidden="true" />
-          <div className="wdev-corner wdev-corner--tr" aria-hidden="true" />
-          <div className="wdev-corner wdev-corner--bl" aria-hidden="true" />
-          <div className="wdev-corner wdev-corner--br" aria-hidden="true" />
+          <FeatureGrid
+            id="wdev-pain-heading"
+            eyebrow="Sound Familiar?"
+            title={<>Most sites don&apos;t fail because of one big mistake — they fail from <em>a dozen small ones</em></>}
+            items={painPoints.map((p) => ({ title: p.title, description: p.text, icon: p.icon }))}
+            surface
+          />
 
-          <nav className="wdev-breadcrumb" aria-label="Breadcrumb">
-            <ol>
-              <li>
-                <Link href="/"><span>Home</span></Link>
-              </li>
-              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services"><span>Services</span></Link>
-              </li>
-              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services/website-development" aria-current="page">
-                  <span>Web Development</span>
-                </Link>
-              </li>
-            </ol>
-          </nav>
+          <ServiceIntro id="wdev-intro-heading" eyebrow="Our Philosophy" title={<>Crafting digital experiences that inspire, connect &amp; <em>convert</em></>}>
+            <p className="vz-lead">
+              At <strong>99 Visual Solutions</strong>, we treat design and engineering as one discipline, not two handoffs — because a site that looks great but loads slowly or breaks on mobile isn&apos;t actually doing its job. As a <strong>website design and development company</strong>, we build with that in mind from the first wireframe, not just at launch.
+            </p>
+            <p>
+              Your website is usually the first real interaction a customer has with your business, which is why we build <strong>modern, responsive, and SEO-optimised sites</strong> around your actual goals — whether you&apos;re a startup validating an idea, an established business scaling up, or an e-commerce brand trying to grow order volume.
+            </p>
+          </ServiceIntro>
 
-          <div className="wdev-hero__inner">
-            <div className="wdev-hero__content">
-              <div className="wdev-hero__eyebrow">
-                <span className="wdev-hero__dot" />
-                Services · Web Development
-              </div>
-              <h1 className="wdev-hero__h1" id="wdev-hero-heading">
-                Website development company in <em>India</em> — speed, security &amp; growth
-              </h1>
-              <div className="wdev-hero__rule" aria-hidden="true" />
-              <p className="wdev-hero__sub">
-                Custom websites, business sites, and web applications —
-                responsive, SEO-friendly, and engineered to hold up under
-                real traffic, not just a demo.
-              </p>
+          <FeatureGrid
+            id="wdev-expertise-heading"
+            eyebrow="How We Think About It"
+            title={<>What a <em>website development company</em> actually does</>}
+            lead="“Website development” covers a wide range of work. As a web development company in India, here’s how we break it down, and what each piece means for your project."
+            numbered
+            surface
+            items={[
+              { title: "Business websites vs. custom web applications", description: <>A business website — a marketing site, a service catalogue, a lead-generation page — is judged on clarity, speed, and conversions. A custom web application adds logins, dashboards, or internal workflows on top of that. As a <strong>custom website development company</strong>, we scope each project against which of these you actually need, then build the site so it can grow into the other without a rebuild if your business does.</> },
+              { title: "Responsive, mobile-first development", description: <>Every site we ship is built <strong>responsive website development</strong>-first — designed for a phone screen, then scaled up — and checked on real devices rather than a resized browser window. Since most traffic today arrives on mobile, this is less a nice-to-have and more a baseline requirement for usability and search ranking alike.</> },
+              { title: "Performance & high-performance engineering", description: <><strong>High-performance website development</strong> means optimised images, minimal render-blocking scripts, and server responses tuned for Core Web Vitals — done at build time, not patched in after a slow launch. A page that loads in under two seconds keeps more visitors than one that takes five, and that difference compounds across every campaign you run to the site.</> },
+              { title: "SEO-friendly by design", description: <><strong>SEO-friendly website development</strong> starts with semantic HTML, clean URL structures, and schema markup built in from the first sprint — not bolted on before launch. We also handle the technical side (sitemaps, canonical tags, structured data) in-house, and pair it with our <Link className="vz-prose-link" href="/services/digital-marketing-seo">SEO &amp; digital marketing services</Link> when a site needs ongoing content and off-page work as well.</> },
+              { title: "Modern technologies: React & Next.js website development", description: <>Most of our builds run on <strong>React website development</strong> and <strong>Next.js website development</strong> — server rendering for fast first loads, a component-based front end that&apos;s easier to extend later, and a large enough ecosystem that hiring or handing off the codebase down the line isn&apos;t a problem. See the full stack in the &quot;Technologies we build with&quot; section below.</> },
+              { title: "Security, scalability & maintenance", description: "Authentication, encrypted data handling, and dependency patching are built in from the start, not added after an incident. Architecture is sized to your actual load rather than over-built by default, and we offer ongoing maintenance and support after launch so the site keeps working as browsers, frameworks, and your business itself keep changing." },
+            ]}
+          />
 
-              <div className="wdev-hero__actions">
-                <ConsultationCTA className="wdev-hero__cta" ariaLabel="Get a free web development quote from 99 Visual Solutions">
-                  Get a Free Quote
-                </ConsultationCTA>
-                <a href="#services" className="wdev-hero__cta wdev-hero__cta--ghost" aria-label="Explore web development services by 99 Visual Solutions">
-                  Explore Services
-                </a>
-              </div>
-            </div>
-          </div>
+          <ServiceIntro id="wdev-location-heading" eyebrow="Where We're Based" title={<>A website development company in <em>Bengaluru, India</em></>}>
+            <p className="vz-lead">
+              99 Visual Solutions is a <strong>website development company in Bangalore</strong> — headquartered in Bengaluru, Karnataka, and working as a <strong>business website development company</strong> and <strong>web application development company in India</strong> for clients across the country. Being a <strong>web development company in Bangalore</strong> also means our full design and engineering team sits together in one time zone, which keeps communication and turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE, and Australia. Read more about our team and background on the <Link className="vz-prose-link" href="/about">About 99 Visual Solutions</Link> page.
+            </p>
+          </ServiceIntro>
 
-          <div className="wdev-hero__ticker-bar" aria-hidden="true">
-            <div className="wdev-ticker">
-              <div className="wdev-ticker__track">
-                {[...pipeline, ...pipeline].map((p, i) => (
-                  <span className="wdev-ticker__item" key={i}>
-                    <b>$</b> {p.cmd} <span className="wdev-ticker__pass">→ {p.out} ✓</span>
-                  </span>
+          <section className="vz-section vz-section--surface" aria-labelledby="wdev-overview-heading" id="services">
+            <div className="vz-container">
+              <SectionHeading
+                id="wdev-overview-heading"
+                eyebrow="Our Solution"
+                title={<>Everything under <em>one roof</em></>}
+                lead="Our website development services in India cover everything from a single landing page to a full custom web development services engagement — jump to the piece you need, or scroll through the full detail below."
+              />
+              <ul className="vz-jump" role="list">
+                {services.map((svc) => (
+                  <li key={svc.id}><a href={`#${svc.id}`}>{svc.icon}{svc.title}</a></li>
                 ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ CLIENT PAIN — unchanged copy ══════════════════════════════════ */}
-        <section className="wdev-pain" aria-labelledby="wdev-pain-heading">
-          <div className="wdev-pain__inner">
-            <div className="wdev-pain__head">
-              <span className="wdev-label">Sound Familiar?</span>
-              <h2 className="wdev-h2" id="wdev-pain-heading">
-                Most sites don't fail because of one big mistake —<br />
-                they fail from <em>a dozen small ones</em>
-              </h2>
-            </div>
-            <div className="wdev-pain__grid">
-              {painPoints.map((p) => (
-                <div className="wdev-pain__card" key={p.title}>
-                  <div className="wdev-pain__icon" aria-hidden="true">{p.icon}</div>
-                  <div className="wdev-pain__title">{p.title}</div>
-                  <p className="wdev-pain__text">{p.text}</p>
-                </div>
-              ))}
-            </div>
-            <div className="wdev-pain__cta-row">
-              <ConsultationCTA className="wdev-pain__cta">
-                Talk to us about your site
-              </ConsultationCTA>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ INTRO — unchanged copy ═══════════════════════════════════════ */}
-        <section className="wdev-intro" aria-labelledby="wdev-intro-heading">
-          <div className="wdev-intro__inner">
-            <span className="wdev-label">Our Philosophy</span>
-            <h2 className="wdev-h2" id="wdev-intro-heading">
-              Crafting digital experiences that<br />inspire, connect &amp; <em>convert</em>
-            </h2>
-            <p className="wdev-intro__p">
-              At <strong>99 Visual Solutions</strong>, we treat design and engineering as one discipline,
-              not two handoffs — because a site that looks great but loads slowly or breaks on mobile isn't
-              actually doing its job. As a <strong>website design and development company</strong>, we build
-              with that in mind from the first wireframe, not just at launch.
-            </p>
-            <p className="wdev-intro__p">
-              Your website is usually the first real interaction a customer has with your business, which is
-              why we build <strong>modern, responsive, and SEO-optimised sites</strong>{" "}
-              around your actual goals — whether you're a startup validating an idea, an established
-              business scaling up, or an e-commerce brand trying to grow order volume.
-            </p>
-          </div>
-        </section>
-
-        {/* ══ EXPERTISE — genuine explainer content, not marketing copy ═══ */}
-        <section className="wdev-expertise" aria-labelledby="wdev-expertise-heading">
-          <div className="wdev-expertise__inner">
-            <div className="wdev-expertise__head">
-              <span className="wdev-label">How We Think About It</span>
-              <h2 className="wdev-h2" id="wdev-expertise-heading">
-                What a <em>website development company</em> actually does
-              </h2>
-              <p className="wdev-sub">
-                "Website development" covers a wide range of work. As a web development company in
-                India, here's how we break it down, and what each piece means for your project.
-              </p>
-            </div>
-            <div className="wdev-expertise__grid">
-              <div className="wdev-expertise__item">
-                <h3>Business websites vs. custom web applications</h3>
-                <p>
-                  A business website — a marketing site, a service catalogue, a lead-generation
-                  page — is judged on clarity, speed, and conversions. A custom web application adds
-                  logins, dashboards, or internal workflows on top of that. As a <strong>custom website
-                  development company</strong>, we scope each project against which of these you actually
-                  need, then build the site so it can grow into the other without a rebuild if your
-                  business does.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Responsive, mobile-first development</h3>
-                <p>
-                  Every site we ship is built <strong>responsive website development</strong>-first — designed
-                  for a phone screen, then scaled up — and checked on real devices rather than a resized
-                  browser window. Since most traffic today arrives on mobile, this is less a nice-to-have
-                  and more a baseline requirement for usability and search ranking alike.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Performance &amp; high-performance engineering</h3>
-                <p>
-                  <strong>High-performance website development</strong> means optimised images, minimal
-                  render-blocking scripts, and server responses tuned for Core Web Vitals — done at build
-                  time, not patched in after a slow launch. A page that loads in under two seconds keeps
-                  more visitors than one that takes five, and that difference compounds across every
-                  campaign you run to the site.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>SEO-friendly by design</h3>
-                <p>
-                  <strong>SEO-friendly website development</strong> starts with semantic HTML, clean URL
-                  structures, and schema markup built in from the first sprint — not bolted on before
-                  launch. We also handle the technical side (sitemaps, canonical tags, structured data)
-                  in-house, and pair it with our{" "}
-                  <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing services</Link>{" "}
-                  when a site needs ongoing content and off-page work as well.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Modern technologies: React &amp; Next.js website development</h3>
-                <p>
-                  Most of our builds run on <strong>React website development</strong> and{" "}
-                  <strong>Next.js website development</strong> — server rendering for fast first loads,
-                  a component-based front end that's easier to extend later, and a large enough ecosystem
-                  that hiring or handing off the codebase down the line isn't a problem. See the full stack
-                  in the "Technologies we build with" section below.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Security, scalability &amp; maintenance</h3>
-                <p>
-                  Authentication, encrypted data handling, and dependency patching are built in from the
-                  start, not added after an incident. Architecture is sized to your actual load rather than
-                  over-built by default, and we offer ongoing maintenance and support after launch so the
-                  site keeps working as browsers, frameworks, and your business itself keep changing.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ LOCATION — Bengaluru / India / global delivery ══════════════ */}
-        <section className="wdev-location" aria-labelledby="wdev-location-heading">
-          <div className="wdev-location__inner">
-            <span className="wdev-label">Where We're Based</span>
-            <h2 className="wdev-h2" id="wdev-location-heading">
-              A website development company in <em>Bengaluru, India</em>
-            </h2>
-            <p className="wdev-location__p">
-              99 Visual Solutions is a <strong>website development company in Bangalore</strong> —
-              headquartered in Bengaluru, Karnataka, and working as a{" "}
-              <strong>business website development company</strong> and{" "}
-              <strong>web application development company in India</strong> for clients across the
-              country. Being a <strong>web development company in Bangalore</strong> also means our full
-              design and engineering team sits together in one time zone, which keeps communication and
-              turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE,
-              and Australia. Read more about our team and background on the{" "}
-              <Link href="/about">About 99 Visual Solutions</Link> page.
-            </p>
-          </div>
-        </section>
-
-        {/* ══ SOLUTION OVERVIEW — quick-jump index ══════════════════════════ */}
-        <section className="wdev-overview" aria-labelledby="wdev-overview-heading">
-          <div className="wdev-overview__inner">
-            <div className="wdev-overview__head">
-              <span className="wdev-label">Our Solution</span>
-              <h2 className="wdev-h2" id="wdev-overview-heading">Everything under <em>one roof</em></h2>
-              <p className="wdev-sub">
-                Our website development services in India cover everything from a single landing page
-                to a full custom web development services engagement — jump to the piece you need, or
-                scroll through the full detail below.
-              </p>
-            </div>
-            <div className="wdev-overview__grid">
-              {services.map((svc) => (
-                <a className="wdev-overview__card" href={`#${svc.id}`} key={svc.id}>
-                  <span className="wdev-overview__icon" aria-hidden="true">{svc.icon}</span>
-                  <span className="wdev-overview__title">{svc.title}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ SERVICE CLUSTERS — 100% unchanged copy, grouped & iconified ═══ */}
-        <div id="services">
-          {clusters.map((cluster) => (
-            <section key={cluster.id} className="wdev-cluster" aria-labelledby={`wdev-cluster-h-${cluster.id}`}>
-              <div className="wdev-cluster__inner">
-                <div className="wdev-cluster__head">
-                  <span className="wdev-cluster__eyebrow">{cluster.eyebrow}</span>
-                  <h2 className="wdev-cluster__h2" id={`wdev-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
-                  <p className="wdev-cluster__intro">{cluster.intro}</p>
-                </div>
-                <div className={`wdev-cluster__grid wdev-cluster__grid--${cluster.cols}`}>
-                  {cluster.ids.map((id) => {
-                    const svc = serviceById(id);
-                    const media = serviceMedia[svc.id];
-                    return (
-                      <article className="wdev-card" id={svc.id} key={svc.id} aria-labelledby={`wdev-svc-heading-${svc.id}`}>
-                        {media && (
-                          <div className="wdev-card__media">
-                            <Image src={media.src} alt={media.alt} width={640} height={400} loading="lazy" />
-                          </div>
-                        )}
-                        <div className="wdev-card__icon" aria-hidden="true">{svc.icon}</div>
-                        <h3 className="wdev-card__title" id={`wdev-svc-heading-${svc.id}`}>{svc.title}</h3>
-                        <p className="wdev-card__desc">{svc.description}</p>
-                        <p className="wdev-card__highlight">{svc.highlight}</p>
-                        <ul className="wdev-card__bullets">
-                          {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                        </ul>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
-
-        {/* ══ PROCESS — unchanged copy ═══════════════════════════════════════ */}
-        <section className="wdev-process" aria-labelledby="wdev-process-heading">
-          <div className="wdev-process__inner">
-            <div className="wdev-process__head">
-              <span className="wdev-label">How We Work</span>
-              <h2 className="wdev-h2" id="wdev-process-heading">A process built to <em>remove risk</em></h2>
-              <p className="wdev-sub">Five stages, each with a clear checkpoint, so you always know what's next.</p>
-            </div>
-            <div className="wdev-process__steps">
-              {processSteps.map((s) => (
-                <div className="wdev-process__step" key={s.step}>
-                  <div className="wdev-process__num" aria-hidden="true">{s.step}</div>
-                  <div>
-                    <div className="wdev-process__title">{s.title}</div>
-                    <p className="wdev-process__text">{s.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ DELIVERABLES — unchanged copy ═══════════════════════════════ */}
-        <section className="wdev-deliv" aria-labelledby="wdev-deliv-heading">
-          <div className="wdev-deliv__inner">
-            <div className="wdev-deliv__head">
-              <span className="wdev-label">What You Get</span>
-              <h2 className="wdev-h2" id="wdev-deliv-heading">Exactly what's <em>in the box</em></h2>
-              <p className="wdev-sub">No vague scopes — here's what leaves with you at the end of the project.</p>
-            </div>
-            <div className="wdev-deliv__grid">
-              {deliverables.map((d) => (
-                <div className="wdev-deliv__card" key={d.title}>
-                  <div className="wdev-deliv__icon" aria-hidden="true">{d.icon}</div>
-                  <div className="wdev-deliv__title">{d.title}</div>
-                  <p className="wdev-deliv__text">{d.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ BEFORE / AFTER — unchanged copy ═══════════════════════════════ */}
-        <section className="wdev-ba" aria-labelledby="wdev-ba-heading">
-          <div className="wdev-ba__inner">
-            <div className="wdev-ba__head">
-              <span className="wdev-label">The Difference</span>
-              <h2 className="wdev-h2" id="wdev-ba-heading">Before <em>99 Visual</em> — and after</h2>
-            </div>
-            <div className="wdev-ba__grid">
-              <div className="wdev-ba__col wdev-ba__col--before">
-                <span className="wdev-ba__label">Before</span>
-                <ul className="wdev-ba__list">
-                  <li>Site looks dated and loads slowly on mobile</li>
-                  <li>Every update needs a developer and a week's wait</li>
-                  <li>No clear path from visitor to inquiry</li>
-                  <li>SEO an afterthought, rankings stuck</li>
-                  <li>Security treated as someone else's problem</li>
-                </ul>
-              </div>
-              <div className="wdev-ba__col wdev-ba__col--after">
-                <span className="wdev-ba__label">After</span>
-                <ul className="wdev-ba__list">
-                  <li>Fast, mobile-first, and built on a modern stack</li>
-                  <li>A structure your team can actually maintain</li>
-                  <li>Clear calls to action at every stage of the visit</li>
-                  <li>Technical SEO foundation built in from day one</li>
-                  <li>Security and monitoring handled from launch</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ INDUSTRIES — unchanged copy ═══════════════════════════════════ */}
-        <section className="wdev-ind" aria-labelledby="wdev-ind-heading">
-          <div className="wdev-ind__inner">
-            <div className="wdev-ind__head">
-              <span className="wdev-label">Who We Work With</span>
-              <h2 className="wdev-h2" id="wdev-ind-heading">Industries we <em>serve</em></h2>
-              <p className="wdev-sub">
-                Real estate clients building a project or listings site often pair this with our{" "}
-                <Link href="/services/visualization">3D architectural visualisation</Link> service for
-                renders and walkthroughs; e-commerce brands typically add our{" "}
-                <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing</Link> work once
-                the site is live.
-              </p>
-            </div>
-            <div className="wdev-ind__grid">
-              {industries.map((ind) => (
-                <div className="wdev-ind__card" key={ind.name}>
-                  <div className="wdev-ind__icon" aria-hidden="true">{ind.icon}</div>
-                  <div className="wdev-ind__name">{ind.name}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ TECH STACK — unchanged copy ════════════════════════════════ */}
-        <section className="wdev-tech" aria-labelledby="wdev-tech-heading">
-          <div className="wdev-tech__inner">
-            <span className="wdev-label">Under the Hood</span>
-            <h2 className="wdev-h2" id="wdev-tech-heading">Technologies we <em>build with</em></h2>
-            <p className="wdev-sub">
-              From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the
-              current, production-proven tools behind every build. For more on how we approach specific
-              topics like Next.js and SEO, see our{" "}
-              <Link href="/insights/category/web-development">web development insights</Link>.
-            </p>
-            <div className="wdev-tech__grid">
-              {techStack.map((t) => (
-                <span className="wdev-tech__badge" key={t.name}>{t.icon} {t.name}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ RECENT WORK — case studies for this service, from lib/case-studies.ts.
-            Each card links to the full case study (where every claim cites
-            its evidence) and to the live site. ═══════════════════════════ */}
-        {webCaseStudies.length > 0 && (
-          <section className="wdev-work" aria-labelledby="wdev-work-heading">
-            <div className="wdev-work__inner">
-              <div className="wdev-work__head">
-                <span className="wdev-label">Recent Work</span>
-                <h2 className="wdev-h2" id="wdev-work-heading">Websites we&rsquo;ve <em>delivered</em></h2>
-                <p className="wdev-sub">
-                  Two recent builds — a full e-commerce store and a photographer&rsquo;s portfolio — with
-                  screenshots from the live sites and a breakdown of what each one does.
-                </p>
-              </div>
-              <div className="wdev-work__grid">
-                {webCaseStudies.map((c) => {
-                  const shot = c.gallery?.[0] ?? c.image;
-                  return (
-                    <article className="wdev-work__card" key={c.slug} aria-labelledby={`wdev-work-${c.slug}`}>
-                      <Link href={`/work/${c.slug}`} className="wdev-work__shot" aria-hidden="true" tabIndex={-1}>
-                        <Image src={shot.src} alt="" fill sizes="(max-width: 860px) 100vw, 540px" />
-                      </Link>
-                      <div className="wdev-work__body">
-                        <span className="wdev-work__kind">{c.client}</span>
-                        <h3 className="wdev-work__title" id={`wdev-work-${c.slug}`}>
-                          <Link href={`/work/${c.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{c.title}</Link>
-                        </h3>
-                        <p className="wdev-work__desc">{c.description}</p>
-                        <ul className="wdev-work__tags" aria-label="What we built">
-                          {c.workstreams.map((w) => <li key={w.name}>{w.name}</li>)}
-                        </ul>
-                        <div className="wdev-work__links">
-                          <Link href={`/work/${c.slug}`}>Read the case study →</Link>
-                          {c.liveUrl && (
-                            <a href={c.liveUrl} target="_blank" rel="noopener" className="wdev-work__live">
-                              Visit {c.liveUrl.replace(/^https?:\/\/(www\.)?/, '')} ↗
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-              <p className="wdev-work__all">
-                <Link href="/work">See all our work</Link>
-              </p>
+              </ul>
             </div>
           </section>
-        )}
 
-        {/* ══ METRICS — removed. The block shipped placeholder figures
-            (50+ projects, 98% on-time, 12+ industries, 6 countries; its own
-            TODO said "replace placeholder figures … before publishing") that
-            also contradicted the 500+ / 200+ project counts used elsewhere.
-            Restore it only with verified numbers; the .wdev-metrics / .wdev-stat
-            styles and the counter script are left in place for that. ═══ */}
+          {clusters.map((cluster, ci) => (
+            <ServiceCluster
+              key={cluster.id}
+              id={`wdev-cluster-h-${cluster.id}`}
+              eyebrow={cluster.eyebrow}
+              title={cluster.heading}
+              intro={cluster.intro}
+              surface={ci % 2 === 1}
+              columns={cluster.cols === 4 ? 4 : 3}
+              items={cluster.ids.map((id) => {
+                const svc = serviceById(id);
+                return { id: svc.id, title: svc.title, description: svc.description, highlight: svc.highlight, bullets: svc.bullets, icon: svc.icon, media: serviceMedia[svc.id] };
+              })}
+            />
+          ))}
 
-        {/* ══ FAQ — same copy as wdevFaqNode. Native <details>/<summary>
-            accordion: no JS needed, so it works on every navigation type
-            (see the ✅ FIX note in the <style> block above for why the old
-            button+script version silently broke). FAQPage structured data
-            is handled separately via JSON-LD (wdevFaqNode) — no microdata
-            attributes needed here. */}
-        <section className="wdev-faq" aria-labelledby="wdev-faq-heading">
-          <div className="wdev-faq__inner">
-            <div className="wdev-faq__head">
-              <span className="wdev-label">Common Questions</span>
-              <h2 className="wdev-h2" id="wdev-faq-heading">Frequently asked <em>questions</em></h2>
-            </div>
-            <div className="wdev-faq__list">
-              {faqItems.map((item, i) => (
-                <details className="wdev-faq__item" key={item.question} open={i === 0}>
-                  <summary className="wdev-faq__q">
-                    <span>{item.question}</span>
-                    <svg className="wdev-faq__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </summary>
-                  <div className="wdev-faq__a-wrap">
-                    <p className="wdev-faq__a">{item.answer}</p>
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
+          <ProcessList
+            id="wdev-process-heading"
+            title={<>A process built to <em>remove risk</em></>}
+            lead="Five stages, each with a clear checkpoint, so you always know what's next."
+            steps={processSteps.map((s) => ({ title: s.title, description: s.text }))}
+            surface
+          />
 
-        {/* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */}
-        <section className="wdev-benefits" aria-labelledby="wdev-benefits-heading">
-          <div className="wdev-benefits__inner">
-            <div className="wdev-benefits__head">
-              <span className="wdev-benefits__label">Why Choose Us?</span>
-              <h2 className="wdev-benefits__h2" id="wdev-benefits-heading">
-                Benefits of working with <em>99 Visual</em>
-              </h2>
-              <p className="wdev-benefits__sub">
-                A website is only worth what it does for your business afterward. As a professional
-                website development company, here's what that looks like in practice when you work with us.
-              </p>
-            </div>
-            <div className="wdev-benefits__grid">
-              {benefits.map((b, i) => (
-                <div className="wdev-benefit-card" key={i}>
-                  <div className="wdev-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                  <div className="wdev-benefit-card__title">{b.title}</div>
-                  <p className="wdev-benefit-card__desc">{b.description}</p>
+          <FeatureGrid
+            id="wdev-deliv-heading"
+            eyebrow="What You Get"
+            title={<>Exactly what&apos;s <em>in the box</em></>}
+            lead="No vague scopes — here's what leaves with you at the end of the project."
+            items={deliverables.map((d) => ({ title: d.title, description: d.text, icon: d.icon }))}
+          />
+
+          <section className="vz-section vz-section--surface" aria-labelledby="wdev-ba-heading">
+            <div className="vz-container">
+              <SectionHeading id="wdev-ba-heading" eyebrow="The Difference" title={<>Before <em>99 Visual</em> — and after</>} />
+              <div className="vz-compare">
+                <div>
+                  <h3 className="vz-h3">Before</h3>
+                  <ul>
+                    <li>Site looks dated and loads slowly on mobile</li>
+                    <li>Every update needs a developer and a week&apos;s wait</li>
+                    <li>No clear path from visitor to inquiry</li>
+                    <li>SEO an afterthought, rankings stuck</li>
+                    <li>Security treated as someone else&apos;s problem</li>
+                  </ul>
                 </div>
-              ))}
+                <div>
+                  <h3 className="vz-h3">After</h3>
+                  <ul>
+                    <li>Fast, mobile-first, and built on a modern stack</li>
+                    <li>A structure your team can actually maintain</li>
+                    <li>Clear calls to action at every stage of the visit</li>
+                    <li>Technical SEO foundation built in from day one</li>
+                    <li>Security and monitoring handled from launch</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ══ CTA STRIP — unchanged copy ════════════════════════════════════ */}
-        <section className="wdev-cta" aria-labelledby="wdev-cta-heading">
-          <div className="wdev-cta__inner">
-            <span className="wdev-cta__eyebrow">Start a Project</span>
-            <h2 className="wdev-cta__h2" id="wdev-cta-heading">
-              Ready to build something <em>remarkable</em>?
-            </h2>
-            <p className="wdev-cta__sub">
-              Tell us about your project and we'll map out the right approach for your goals,
-              timeline, and budget — no cost for that first conversation.
-            </p>
-            <ConsultationCTA className="wdev-cta__btn" ariaLabel="Get a free web development consultation from 99 Visual Solutions">
-              Get a Free Consultation
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </ConsultationCTA>
-          </div>
-        </section>
+          <IconLabelGrid
+            id="wdev-ind-heading"
+            eyebrow="Who We Work With"
+            title={<>Industries we <em>serve</em></>}
+            lead={<>Real estate clients building a project or listings site often pair this with our <Link className="vz-prose-link" href="/services/visualization">3D architectural visualisation</Link> service for renders and walkthroughs; e-commerce brands typically add our <Link className="vz-prose-link" href="/services/digital-marketing-seo">SEO &amp; digital marketing</Link> work once the site is live.</>}
+            items={industries.map((ind) => ({ label: ind.name, icon: ind.icon }))}
+          />
 
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="wdev-sticky-cta">
-          <ConsultationCTA className="wdev-sticky-cta__btn">Get a Free Quote</ConsultationCTA>
-        </div>
+          <section className="vz-section vz-section--surface" aria-labelledby="wdev-tech-heading">
+            <div className="vz-container">
+              <SectionHeading
+                id="wdev-tech-heading"
+                eyebrow="Under the Hood"
+                title={<>Technologies we <em>build with</em></>}
+                lead={<>From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the current, production-proven tools behind every build. For more on how we approach specific topics like Next.js and SEO, see our <Link className="vz-prose-link" href="/insights/category/web-development">web development insights</Link>.</>}
+              />
+              <ul className="vz-jump" role="list">
+                {techStack.map((t) => (
+                  <li key={t.name}><span className="vz-chip vz-chip--lg">{t.icon} {t.name}</span></li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {webCaseStudies.length > 0 && (
+            <section className="vz-section" aria-labelledby="wdev-work-heading">
+              <div className="vz-container">
+                <SectionHeading
+                  id="wdev-work-heading"
+                  eyebrow="Recent Work"
+                  title={<>Websites we&rsquo;ve <em>delivered</em></>}
+                  lead="Two recent builds — a full e-commerce store and a photographer’s portfolio — with screenshots from the live sites and a breakdown of what each one does."
+                />
+                <ul className="vz-work vz-work--2" role="list">
+                  {webCaseStudies.map((c) => {
+                    const shot = c.gallery?.[0] ?? c.image;
+                    return (
+                      <li key={c.slug}>
+                        <article className="vz-work__card">
+                          <div className="vz-work__media">
+                            <Image src={shot.src} alt={shot.alt} fill sizes="(min-width: 900px) 600px, 100vw" />
+                          </div>
+                          <div className="vz-work__meta">
+                            <span className="vz-chip">{c.client}</span>
+                            <h3 className="vz-h3" id={`wdev-work-${c.slug}`}>
+                              <Link href={`/work/${c.slug}`} className="vz-stretched">{c.title}</Link>
+                            </h3>
+                            <p className="vz-body">{c.description}</p>
+                            <ul className="vz-chips" role="list">
+                              {c.workstreams.map((w) => (
+                                <li key={w.name} className="vz-chip">{w.name}</li>
+                              ))}
+                            </ul>
+                            {c.liveUrl && (
+                              <a className="vz-prose-link vz-work__live" href={c.liveUrl} target="_blank" rel="noopener noreferrer">
+                                Visit {c.liveUrl.replace(/^https?:\/\/(www\.)?/, "")} ↗
+                              </a>
+                            )}
+                          </div>
+                        </article>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="vz-work__all"><Link href="/work" className="vz-link-arrow">See all our work →</Link></p>
+              </div>
+            </section>
+          )}
+
+          <FaqList
+            id="wdev-faq-heading"
+            eyebrow="Common Questions"
+            title="Frequently asked questions"
+            faqs={faqItems.map((item) => ({ q: item.question, a: <p>{item.answer}</p> }))}
+            surface
+          />
+
+          <FeatureGrid
+            id="wdev-benefits-heading"
+            eyebrow="Why Choose Us?"
+            title={<>Benefits of working with <em>99 Visual</em></>}
+            lead="A website is only worth what it does for your business afterward. As a professional website development company, here's what that looks like in practice when you work with us."
+            items={benefits.map((b) => ({ title: b.title, description: b.description, icon: b.icon }))}
+          />
+
+          <ServiceCTA
+            id="wdev-cta-heading"
+            title={<>Ready to build something <em>remarkable</em>?</>}
+            sub="Tell us about your project and we'll map out the right approach for your goals, timeline, and budget — no cost for that first conversation."
+            ctaAria="Get a free web development consultation from 99 Visual Solutions"
+            postTitle={T}
+            postUrl={P}
+          />
+          <RelatedInsights serviceHref="/services/website-development" />
+        </main>
+        <Footer />
+        <StickyCTA postTitle={T} postUrl={P} />
       </div>
-
-      {/*
-        Single vanilla-JS block powering every interactive piece on this
-        page (FAQ accordion, animated stat counters). UNCHANGED from the
-        previous revision — same selectors, same behaviour.
-      */}
-      <script
-        id="wdev-interactions"
-        dangerouslySetInnerHTML={{
-          __html: `
-          (function () {
-            // FAQ accordion is now native <details>/<summary> (see the
-            // ✅ FIX note near .wdev-faq__item in the <style> block) and
-            // needs no JS at all, so that logic has been removed from here.
-
-            // Animated stat counters — count up once, on first scroll into view
-            var stats = document.querySelectorAll(".wdev-stat[data-target]");
-            if ("IntersectionObserver" in window && stats.length) {
-              var observer = new IntersectionObserver(
-                function (entries) {
-                  entries.forEach(function (entry) {
-                    if (!entry.isIntersecting) return;
-                    var el = entry.target;
-                    var target = parseInt(el.getAttribute("data-target"), 10) || 0;
-                    var suffix = el.getAttribute("data-suffix") || "";
-                    var numEl = el.querySelector(".wdev-stat__num");
-                    var start = performance.now();
-                    var duration = 1400;
-                    function tick(now) {
-                      var progress = Math.min((now - start) / duration, 1);
-                      var eased = 1 - Math.pow(1 - progress, 3);
-                      if (numEl) numEl.textContent = Math.round(eased * target) + suffix;
-                      if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                    observer.unobserve(el);
-                  });
-                },
-                { threshold: 0.4 }
-              );
-              stats.forEach(function (el) { observer.observe(el); });
-            }
-          })();
-          `,
-        }}
-      />
-
-      {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/website-development" />
-      <Footer />
-      <ScrollDown />
-
     </>
   );
 }

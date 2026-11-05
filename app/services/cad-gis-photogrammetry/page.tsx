@@ -34,13 +34,11 @@
 //     to the QA page (min-height instead of fixed height, no clipping).
 //
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
-import ScrollDown     from "@/app/components/scrolldown";
-import ConsultationCTA from "@/app/components/ConsultationCTA";
+import { ServiceHero, ServiceIntro, ServiceCluster, FeatureGrid, ProcessList, FaqList, ServiceCTA, StickyCTA, RelatedLinks, IconLabelGrid } from "@/app/components/premium/service/ServiceBlocks";
 
 import {
   FaDraftingCompass, FaMapMarkedAlt, FaCubes, FaSatellite, FaLayerGroup,
@@ -470,20 +468,9 @@ const industries = [
 
 // Illustrative CLI-style log lines for the hero ticker band — process labels,
 // not quantitative claims about real project accuracy, point counts or QC results.
-const pipeline = [
-  { cmd: "lidar_classify",    out: "points classified" },
-  { cmd: "orthomosaic_build", out: "mosaic generated" },
-  { cmd: "dtm_generate",      out: "surface modeled" },
-  { cmd: "cad_export",        out: "drawing exported" },
-  { cmd: "gis_overlay",       out: "layers merged" },
-  { cmd: "survey_qc",         out: "quality checked" },
-];
 
 export default function CADGISPhotogrammetry() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/cad-gis-photogrammetry-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
+  const T = "CAD, GIS & Photogrammetry";
   return (
     <>
       <script
@@ -491,598 +478,140 @@ export default function CADGISPhotogrammetry() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(cgGraph) }}
       />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <ServiceHero
+            id="cg-hero-heading"
+            crumbs={[{ href: "/", label: "Home" }, { href: "/services", label: "Services" }, { href: PAGE_PATH, label: "CAD, GIS & Photogrammetry" }]}
+            title="CAD, GIS, LiDAR & Photogrammetry Services"
+            tagline={<>Precision mapping, measured in <em>millimeters</em></>}
+            sub="CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, and spatial analysis — precision geospatial engineering for infrastructure, engineering, and land development worldwide."
+            image="/images/services/cad-gis-photogrammetry-hero-banner.jpg"
+            imageAlt="Geospatial mapping of an urban area with GIS and LiDAR data"
+            ctaLabel="Talk to a Geospatial Specialist"
+            ctaAria="Talk to a geospatial specialist at 99 Visual Solutions"
+            postTitle={T}
+            postUrl={PAGE_PATH}
+            secondary={{ href: "#cg-services", label: "Explore Services" }}
+            points={["CAD drafting", "GIS mapping", "LiDAR point clouds", "Drone photogrammetry", "Spatial analysis"]}
+          />
 
-      <style>{`
-
-        .cg-page{
-          --cg-ink:#12141A; --cg-muted:#5B6172; --cg-paper:#F5F6F8; --cg-surface:#FFFFFF;
-          --cg-line:#E4E6EC; --cg-blue:#2E5CFF; --cg-green:#37D67A; --cg-orange:#F97316;
-          background:var(--cg-paper);
-        }
-        .cg-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
-
-        .cg-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.04em;color:var(--cg-blue);margin-bottom:.9rem;display:block;text-align:center;}
-        .cg-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--cg-ink);margin:0 0 1rem;text-align:center;}
-        .cg-h2 em{font-style:normal;color:var(--cg-blue);}
-
-        /* ══ HERO — min-height (not fixed height), no inner clipping ═════ */
-        .cg-hero{
-          position:relative;min-height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/cad-gis-photogrammetry-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
-          overflow:hidden;
-        }
-        @supports (height: 100svh) { .cg-hero { min-height: 100svh; } }
-        @supports (height: 100dvh) { .cg-hero { min-height: 100dvh; } }
-        @media(max-width:960px){
-          .cg-hero{
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/cad-gis-photogrammetry-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-
-        .cg-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:5rem 1.5rem 1.5rem;
-          padding-top:max(5rem, calc(env(safe-area-inset-top) + 4rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .cg-hero__inner{ padding:3.25rem 1.25rem 1rem; padding-top:max(3.25rem, calc(env(safe-area-inset-top) + 2.5rem)); } }
-        @media(max-width:640px){ .cg-hero__inner{ padding:2.75rem 1rem .75rem; padding-top:max(2.75rem, calc(env(safe-area-inset-top) + 2.25rem)); } }
-        @media(max-width:380px){ .cg-hero__inner{ padding:2.5rem .85rem .65rem; padding-top:max(2.5rem, calc(env(safe-area-inset-top) + 2rem)); } }
-        @media(max-width:640px){ .cg-hero__actions{ margin-bottom:.5rem; } }
-        @media(max-height:520px){
-          .cg-hero__inner{ padding-top:1.75rem; padding-bottom:.5rem; }
-          .cg-hero__eyebrow{ margin-bottom:.85rem; }
-          .cg-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.3rem,4vh,2.2rem); }
-          .cg-hero__rule{ margin-bottom:.65rem; }
-          .cg-hero__sub{ margin-bottom:.9rem; }
-          .cg-hero__actions{ margin-bottom:.25rem; }
-        }
-
-        .cg-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .cg-corner{position:absolute;width:32px;height:32px;z-index:5;opacity:.2;pointer-events:none;}
-        .cg-corner--tl{top:28px;left:28px;border-top:1px solid var(--cg-blue);border-left:1px solid var(--cg-blue);}
-        .cg-corner--tr{top:28px;right:28px;border-top:1px solid var(--cg-blue);border-right:1px solid var(--cg-blue);}
-        .cg-corner--bl{bottom:120px;left:264px;border-bottom:1px solid var(--cg-blue);border-left:1px solid var(--cg-blue);}
-        @media(max-width:480px){ .cg-corner--bl{ left:28px; } }
-        .cg-corner--br{bottom:72px;right:28px;border-bottom:1px solid var(--cg-blue);border-right:1px solid var(--cg-blue);}
-
-        .cg-hero__content{animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:680px;}
-        @keyframes cgFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.cg-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        .cg-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--cg-orange);border:1px solid rgba(249,115,22,.28);background:rgba(249,115,22,.08);padding:6px 18px;border-radius:100px;margin-bottom:2rem;backdrop-filter:blur(8px);animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .cg-breadcrumb{position:relative;z-index:2;padding:1.6rem 0 0;}
-        .cg-breadcrumb ol{display:flex;flex-wrap:wrap;align-items:center;list-style:none;margin:0;padding:0;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em;}
-        .cg-breadcrumb li{display:flex;align-items:center;gap:6px;}
-        .cg-breadcrumb a{color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s ease;}
-        .cg-breadcrumb a:hover{color:var(--cg-orange);}
-        .cg-breadcrumb a[aria-current="page"]{color:rgba(255,255,255,.85);pointer-events:none;}
-        .cg-breadcrumb__sep{color:rgba(255,255,255,.25);}
-        @media(max-width:640px){.cg-breadcrumb{padding-top:1.1rem;}}
-        .cg-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--cg-orange);animation:cgPulse 2s ease-in-out infinite;}
-        @keyframes cgPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
-        .cg-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3.4vw,2.7rem);font-weight:700;line-height:1.14;letter-spacing:-.02em;color:#fff;margin:0 0 1.1rem;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .cg-hero__h1 em{font-style:normal;color:var(--cg-blue);}
-        .cg-hero__rule{width:44px;height:1px;background:linear-gradient(90deg,var(--cg-blue),transparent);margin:0 0 1.4rem;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.cg-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--cg-blue),transparent);}}
-        .cg-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.cg-hero__sub{margin:0 auto 2.6rem;}}
-
-        .cg-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:cgFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        @media(max-width:960px){.cg-hero__actions{justify-content:center;}}
-        .cg-hero__cta{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--cg-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;cursor:pointer;border:none;}
-        .cg-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-        .cg-hero__cta--ghost{color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);padding:13px 28px;box-shadow:none;gap:8px;}
-        .cg-hero__cta--ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none;}
-
-        .cg-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.72) 30%, rgba(8,8,8,.92) 100%);
-          padding-top:1.75rem;
-          margin-top:.25rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .cg-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .cg-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:cgScroll 34s linear infinite;}
-        .cg-hero__ticker-bar:hover .cg-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .cg-ticker__track{ animation-duration:22s; } }
-        @keyframes cgScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .cg-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .cg-ticker__item b{color:rgba(255,255,255,.45);}
-        .cg-ticker__pass{color:var(--cg-green);}
-        @media(max-height:520px){
-          .cg-hero__ticker-bar{ padding-top:.75rem; }
-        }
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .cg-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--cg-line);}
-        @media(max-width:760px){.cg-sticky-cta{display:flex;justify-content:center;}}
-        .cg-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--cg-ink);padding:13px 20px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;}
-
-        /* ══ INTRO ═════════════════════════════════════════════════════ */
-        .cg-intro{background:var(--cg-surface);border-bottom:1px solid var(--cg-line);padding:5.5rem 1.5rem;}
-        .cg-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .cg-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--cg-muted);max-width:700px;margin:0 auto .9rem;}
-        .cg-intro__p strong{color:var(--cg-ink);font-weight:500;}
-
-        /* ══ WHAT WE DELIVER ═══════════════════════════════════════════ */
-        .cg-del{background:var(--cg-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
-        .cg-del__inner{max-width:1180px;margin:0 auto;}
-        .cg-del__grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-top:2.5rem;}
-        @media(max-width:960px){.cg-del__grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:600px){.cg-del__grid{grid-template-columns:repeat(2,1fr);}}
-        .cg-del__card{background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:14px;padding:1.4rem 1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
-        .cg-del__card:hover{border-color:var(--cg-blue);transform:translateY(-2px);}
-        .cg-del__icon{width:38px;height:38px;margin:0 auto .8rem;border-radius:10px;background:rgba(46,92,255,.08);color:var(--cg-blue);display:flex;align-items:center;justify-content:center;font-size:.95rem;}
-        .cg-del__label{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;color:var(--cg-ink);line-height:1.4;}
-
-        /* ══ SERVICE CLUSTERS ══════════════════════════════════════════ */
-        .cg-cluster{padding:4.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
-        .cg-cluster:nth-child(even){background:var(--cg-surface);}
-        .cg-cluster__inner{max-width:1180px;margin:0 auto;}
-        .cg-cluster__head{max-width:640px;margin-bottom:2.5rem;}
-        .cg-cluster__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--cg-blue);letter-spacing:.04em;display:block;margin-bottom:.7rem;}
-        .cg-cluster__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:700;line-height:1.25;color:var(--cg-ink);margin:0 0 .6rem;}
-        .cg-cluster__h2 em{font-style:normal;color:var(--cg-blue);}
-        .cg-cluster__intro{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.7;color:var(--cg-muted);margin:0;}
-        .cg-cluster__grid{display:grid;gap:1.25rem;}
-        .cg-cluster__grid--2{grid-template-columns:repeat(2,1fr);}
-        @media(max-width:860px){.cg-cluster__grid--2{grid-template-columns:1fr;}}
-
-        .cg-card{background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
-        .cg-cluster:nth-child(even) .cg-card{background:var(--cg-paper);}
-        .cg-card:hover{border-color:var(--cg-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
-        .cg-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--cg-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
-        .cg-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;color:var(--cg-ink);margin:0 0 .7rem;}
-        .cg-card__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--cg-muted);margin:0 0 .8rem;}
-        .cg-card__highlight{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:400;line-height:1.7;color:var(--cg-ink);border-left:2px solid var(--cg-blue);padding-left:.9rem;margin:0 0 1.2rem;}
-        .cg-card__bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;}
-        .cg-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--cg-ink);display:flex;align-items:flex-start;gap:.55rem;}
-        .cg-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cg-blue);margin-top:.5rem;flex-shrink:0;}
-
-        /* ══ TOOLING / SOFTWARE GUIDANCE ═══════════════════════════════ */
-        .cg-tech{background:var(--cg-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
-        .cg-tech__inner{max-width:1000px;margin:0 auto;}
-        .cg-tech__head{max-width:680px;margin:0 auto 1.4rem;text-align:center;}
-        .cg-tech__note{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--cg-muted);max-width:680px;margin:0 auto 2.8rem;text-align:center;}
-        .cg-tech__note strong{color:var(--cg-ink);font-weight:500;}
-        .cg-tech__list{display:flex;flex-direction:column;gap:1px;background:var(--cg-line);border:1px solid var(--cg-line);border-radius:16px;overflow:hidden;}
-        .cg-tech__row{background:var(--cg-surface);padding:1.5rem 1.75rem;display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start;}
-        @media(max-width:700px){.cg-tech__row{grid-template-columns:1fr;gap:.4rem;padding:1.25rem 1.4rem;}}
-        .cg-tech__name{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--cg-ink);}
-        .cg-tech__best{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--cg-muted);}
-
-        /* ══ PROJECT WORKFLOW ═════════════════════════════════════════ */
-        .cg-flow{background:var(--cg-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
-        .cg-flow__inner{max-width:1000px;margin:0 auto;}
-        .cg-flow__head{max-width:640px;margin:0 auto 3rem;text-align:center;}
-        .cg-flow__list{display:flex;flex-direction:column;}
-        .cg-flow__step{display:grid;grid-template-columns:64px 1fr;gap:1.4rem;padding:1.4rem 0;border-bottom:1px solid var(--cg-line);}
-        .cg-flow__step:last-child{border-bottom:none;}
-        .cg-flow__n{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--cg-blue);}
-        .cg-flow__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--cg-ink);margin:0 0 .4rem;}
-        .cg-flow__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--cg-muted);margin:0;}
-
-        /* ══ INDUSTRIES / USE CASES ════════════════════════════════════ */
-        .cg-ind{background:var(--cg-paper);padding:5.5rem 1.5rem;}
-        .cg-ind__inner{max-width:1200px;margin:0 auto;}
-        .cg-ind__head{max-width:640px;margin:0 auto 1rem;text-align:center;}
-        .cg-ind__note{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;color:var(--cg-muted);text-align:center;max-width:600px;margin:0 auto 2.8rem;}
-        .cg-ind__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:900px){.cg-ind__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:560px){.cg-ind__grid{grid-template-columns:1fr;}}
-        .cg-ind__card{background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:16px;padding:1.6rem 1.6rem;transition:border-color .2s ease,transform .2s ease;}
-        .cg-ind__card:hover{border-color:var(--cg-blue);transform:translateY(-3px);}
-        .cg-ind__icon{width:38px;height:38px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--cg-blue);display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-bottom:.9rem;}
-        .cg-ind__name{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--cg-ink);margin:0 0 .5rem;}
-        .cg-ind__desc{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:300;line-height:1.7;color:var(--cg-muted);margin:0;}
-
-        /* ══ BENEFITS ═══════════════════════════════════════════════════ */
-        .cg-benefits{background:var(--cg-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
-        .cg-benefits__inner{max-width:1200px;margin:0 auto;}
-        .cg-benefits__head{max-width:560px;margin:0 auto 3rem;text-align:center;}
-        .cg-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--cg-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
-        .cg-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--cg-ink);margin:0 0 .8rem;}
-        .cg-benefits__h2 em{font-style:normal;color:var(--cg-blue);}
-        .cg-benefits__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--cg-muted);max-width:520px;margin:0 auto;}
-        .cg-benefits__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
-        @media(max-width:1024px){.cg-benefits__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.cg-benefits__grid{grid-template-columns:1fr;}}
-        .cg-benefit-card{background:var(--cg-paper);border:1px solid var(--cg-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
-        .cg-benefit-card:hover{border-color:var(--cg-blue);transform:translateY(-3px);}
-        .cg-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--cg-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
-        .cg-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--cg-ink);margin-bottom:.5rem;}
-        .cg-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--cg-muted);}
-
-        /* ══ FAQ — native details/summary ══════════════════════════════ */
-        .cg-faq{background:var(--cg-paper);padding:5.5rem 1.5rem;border-top:1px solid var(--cg-line);}
-        .cg-faq__inner{max-width:800px;margin:0 auto;}
-        .cg-faq__header{text-align:center;margin-bottom:3rem;}
-        .cg-faq__list{display:flex;flex-direction:column;gap:0;border:1px solid var(--cg-line);border-radius:16px;overflow:hidden;}
-        .cg-faq__item{border-bottom:1px solid var(--cg-line);background:var(--cg-surface);transition:background .2s ease;}
-        .cg-faq__item:last-child{border-bottom:none;}
-        .cg-faq__item[open]{background:#fff;}
-        .cg-faq__q{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.5rem 1.75rem;cursor:pointer;user-select:none;}
-        .cg-faq__q::-webkit-details-marker{display:none;}.cg-faq__q::marker{display:none;}
-        .cg-faq__q-text{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--cg-ink);line-height:1.35;flex:1;transition:color .2s ease;}
-        .cg-faq__item[open] .cg-faq__q-text,.cg-faq__q:hover .cg-faq__q-text{color:var(--cg-blue);}
-        .cg-faq__chevron{flex-shrink:0;color:var(--cg-blue);opacity:.8;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s ease;}
-        .cg-faq__item[open] .cg-faq__chevron{transform:rotate(180deg);opacity:1;}
-        .cg-faq__a{padding:0 1.75rem 1.5rem;animation:cgFaqOpen .3s cubic-bezier(.22,1,.36,1) both;}
-        @keyframes cgFaqOpen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-        .cg-faq__a p{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:300;line-height:1.8;color:var(--cg-muted);margin:0;}
-
-        /* ══ RELATED SERVICES & READING (internal linking) ═════════════ */
-        .cg-related{background:var(--cg-surface);padding:5rem 1.5rem;border-top:1px solid var(--cg-line);}
-        .cg-related__inner{max-width:1100px;margin:0 auto;}
-        .cg-related__head{max-width:600px;margin:0 auto 2.5rem;text-align:center;}
-        .cg-related__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;}
-        @media(max-width:900px){.cg-related__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:520px){.cg-related__grid{grid-template-columns:1fr;}}
-        .cg-related__card{display:block;background:var(--cg-paper);border:1px solid var(--cg-line);border-radius:14px;padding:1.4rem 1.3rem;text-decoration:none;transition:border-color .2s ease,transform .2s ease;}
-        .cg-related__card:hover{border-color:var(--cg-blue);transform:translateY(-2px);}
-        .cg-related__title{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--cg-ink);margin:0 0 .45rem;}
-        .cg-related__desc{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:300;line-height:1.6;color:var(--cg-muted);margin:0;}
-
-        /* ══ CTA ═══════════════════════════════════════════════════════ */
-        .cg-cta{background:var(--cg-paper);border-top:1px solid var(--cg-line);padding:5.5rem 1.5rem;text-align:center;}
-        .cg-cta__inner{max-width:600px;margin:0 auto;}
-        .cg-cta__eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--cg-blue);letter-spacing:.04em;display:block;margin-bottom:1rem;}
-        .cg-cta__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--cg-ink);margin:0 0 1rem;}
-        .cg-cta__h2 em{font-style:normal;color:var(--cg-blue);}
-        .cg-cta__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.8;color:var(--cg-muted);margin-bottom:2.2rem;}
-        .cg-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--cg-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
-        .cg-cta__btn:hover{background:var(--cg-blue);transform:translateY(-2px);}
-
-        @media(max-width:600px){.cg-faq__q{padding:1.25rem;}.cg-faq__a{padding:0 1.25rem 1.25rem;}}
-        @media(prefers-reduced-motion:reduce){
-          .cg-page *,.cg-page *::before,.cg-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
-      <div className="cg-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
-        <section className="cg-hero" aria-labelledby="cg-hero-heading">
-          <div aria-hidden="true">
-            <div className="cg-hero__grain" />
-          </div>
-          <div className="cg-corner cg-corner--tl" aria-hidden="true" />
-          <div className="cg-corner cg-corner--tr" aria-hidden="true" />
-          <div className="cg-corner cg-corner--bl" aria-hidden="true" />
-          <div className="cg-corner cg-corner--br" aria-hidden="true" />
-
-          <nav className="cg-breadcrumb" aria-label="Breadcrumb">
-            <ol>
-              <li>
-                <Link href="/"><span>Home</span></Link>
-              </li>
-              <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services"><span>Services</span></Link>
-              </li>
-              <li className="cg-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href={PAGE_PATH} aria-current="page">
-                  <span>CAD, GIS &amp; Photogrammetry</span>
+          <ServiceIntro
+            id="cg-intro-heading"
+            eyebrow="Our Approach"
+            title={<>Geospatial engineering, not just <em>mapping</em> and drafting</>}
+            aside={
+              <p className="vz-small">
+                Further reading:{" "}
+                <Link className="vz-prose-link" href="/insights/gis-mapping-vs-traditional-surveying-which-is-better">
+                  GIS mapping vs traditional surveying
                 </Link>
-              </li>
-            </ol>
-          </nav>
-
-          <div className="cg-hero__inner">
-            <div className="cg-hero__content">
-              {/* SEO: the H1 names the services (incl. LiDAR, which the title
-                  and copy target but the old H1/eyebrow omitted); the tagline
-                  keeps its look as a <p> with the same class. */}
-              <h1 className="cg-hero__eyebrow" id="cg-hero-heading">
-                <span className="cg-hero__dot" aria-hidden="true" />
-                CAD, GIS, LiDAR &amp; Photogrammetry Services
-              </h1>
-              <p className="cg-hero__h1">
-                Precision mapping,<br />measured in <em>millimeters</em>
               </p>
-              <div className="cg-hero__rule" aria-hidden="true" />
-              <p className="cg-hero__sub">
-                CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud
-                processing, and spatial analysis — precision geospatial engineering
-                for infrastructure, engineering, and land development worldwide.
-              </p>
-
-              <div className="cg-hero__actions">
-                <ConsultationCTA className="cg-hero__cta" ariaLabel="Talk to a geospatial specialist at 99 Visual Solutions" postTitle="CAD, GIS & Photogrammetry" postUrl={PAGE_PATH}>
-                  Talk to a Geospatial Specialist
-                </ConsultationCTA>
-                <a href="#cg-services" className="cg-hero__cta cg-hero__cta--ghost" aria-label="Explore CAD, GIS and photogrammetry services">
-                  Explore Services
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="cg-hero__ticker-bar" aria-hidden="true">
-            <div className="cg-ticker">
-              <div className="cg-ticker__track">
-                {[...pipeline, ...pipeline].map((p, i) => (
-                  <span className="cg-ticker__item" key={i}>
-                    <b>$</b> {p.cmd} <span className="cg-ticker__pass">→ {p.out} ✓</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ INTRO ═════════════════════════════════════════════════════════ */}
-        <section className="cg-intro" aria-labelledby="cg-intro-heading">
-          <div className="cg-intro__inner">
-            <span className="cg-label">Our Approach</span>
-            <h2 className="cg-h2" id="cg-intro-heading">
-              Geospatial engineering, not just<br />
-              <em>mapping</em> and drafting
-            </h2>
-            <p className="cg-intro__p">
-              At <strong>99 Visual Solutions</strong>, CAD, GIS, LiDAR and photogrammetry aren&apos;t
-              treated as separate disciplines handed off between teams — they&apos;re one workflow.
-              Data captured from drones, LiDAR sensors, or ground survey is processed, classified,
-              and structured into the <strong>CAD drawings and GIS datasets</strong> your project
-              actually needs, in formats that load directly into your existing systems.
+            }
+          >
+            <p className="vz-lead">
+              At <strong>99 Visual Solutions</strong>, CAD, GIS, LiDAR and photogrammetry aren&apos;t treated as separate disciplines handed off between teams — they&apos;re one workflow. Data captured from drones, LiDAR sensors, or ground survey is processed, classified, and structured into the <strong>CAD drawings and GIS datasets</strong> your project actually needs, in formats that load directly into your existing systems.
             </p>
-            <p className="cg-intro__p">
-              Whether the deliverable is a design-ready CAD file, a structured GIS database, or a
-              classified LiDAR point cloud, we confirm <strong>accuracy requirements, formats, and
-              coordinate systems</strong> before work starts — so what you receive is ready to use,
-              not raw data your team has to clean up first.
+            <p>
+              Whether the deliverable is a design-ready CAD file, a structured GIS database, or a classified LiDAR point cloud, we confirm <strong>accuracy requirements, formats, and coordinate systems</strong> before work starts — so what you receive is ready to use, not raw data your team has to clean up first.
             </p>
+          </ServiceIntro>
+
+          <IconLabelGrid
+            id="cg-del-heading"
+            eyebrow="What We Deliver"
+            title={<>Real deliverables, in <em>your format</em></>}
+            items={deliverables.map((d) => ({ label: d.label, icon: d.icon }))}
+            surface
+          />
+
+          <div id="cg-services">
+            {clusters.map((cluster, ci) => (
+              <ServiceCluster
+                key={cluster.id}
+                id={`cg-cluster-h-${cluster.id}`}
+                eyebrow={cluster.eyebrow}
+                title={cluster.heading}
+                intro={cluster.intro}
+                surface={ci % 2 === 1}
+                columns={cluster.cols === 3 ? 3 : 2}
+                items={cluster.ids.map((id) => {
+                  const svc = serviceById(id);
+                  return { id: svc.id, title: svc.title, description: svc.description, highlight: svc.highlight, bullets: svc.bullets, icon: svc.icon };
+                })}
+              />
+            ))}
           </div>
-        </section>
 
-        {/* ══ WHAT WE DELIVER ══════════════════════════════════════════════ */}
-        <section className="cg-del" aria-labelledby="cg-del-heading">
-          <div className="cg-del__inner">
-            <span className="cg-label">What We Deliver</span>
-            <h2 className="cg-h2" id="cg-del-heading">
-              Real deliverables, in <em>your format</em>
-            </h2>
-            <div className="cg-del__grid">
-              {deliverables.map((d) => (
-                <div className="cg-del__card" key={d.label}>
-                  <div className="cg-del__icon" aria-hidden="true">{d.icon}</div>
-                  <div className="cg-del__label">{d.label}</div>
-                </div>
-              ))}
-            </div>
+          <FeatureGrid
+            id="cg-tech-heading"
+            eyebrow="Software & Tooling"
+            title={<>The right tool for <em>the deliverable</em></>}
+            lead="Which software matters depends on what you need out the other end — a design-ready drawing, an analyzable dataset, or a classified point cloud each call for a different part of the stack. Here's how we think about it."
+            items={toolStack.map((t) => ({ title: t.name, description: t.bestFor }))}
+            surface
+          />
+
+          <ProcessList
+            id="cg-flow-heading"
+            eyebrow="How We Work"
+            title={<>The geospatial project <em>workflow</em></>}
+            steps={workflow.map((w) => ({ title: w.title, description: w.desc }))}
+          />
+
+          <IconLabelGrid
+            id="cg-ind-heading"
+            eyebrow="Industries"
+            title={<>Mapping scenarios we can <em>support</em></>}
+            note="These reflect the kinds of mapping and modeling challenges each sector typically presents — not a claim of prior client work in every sector listed."
+            items={industries.map((ind) => ({ label: ind.name, icon: ind.icon, description: ind.note }))}
+            surface
+          />
+
+          <FeatureGrid
+            id="cg-benefits-heading"
+            eyebrow="Why Choose Us?"
+            title={<>CAD and GIS that fit <em>your workflow</em></>}
+            lead="Partnering with 99 Visual Solutions gives your team geospatial and CAD engineering expertise that plugs directly into the systems and formats you already use."
+            items={benefits.map((b) => ({ title: b.title, description: b.description, icon: b.icon }))}
+          />
+
+          <div id="cg-faq">
+            <FaqList
+              id="cg-faq-heading"
+              eyebrow="Got Questions?"
+              title="Frequently Asked Questions"
+              faqs={FAQ_ITEMS.map(({ question, answer }) => ({ q: question, a: <p>{answer}</p> }))}
+              surface
+            />
           </div>
-        </section>
 
-        {/* ══ SERVICE CLUSTERS ═════════════════════════════════════════════ */}
-        <div id="cg-services">
-          {clusters.map((cluster) => (
-            <section key={cluster.id} className="cg-cluster" aria-labelledby={`cg-cluster-h-${cluster.id}`}>
-              <div className="cg-cluster__inner">
-                <div className="cg-cluster__head">
-                  <span className="cg-cluster__eyebrow">{cluster.eyebrow}</span>
-                  <h2 className="cg-cluster__h2" id={`cg-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
-                  <p className="cg-cluster__intro">{cluster.intro}</p>
-                </div>
-                <div className={`cg-cluster__grid cg-cluster__grid--${cluster.cols}`}>
-                  {cluster.ids.map((id) => {
-                    const svc = serviceById(id);
-                    return (
-                      <article className="cg-card" id={svc.id} key={svc.id} aria-labelledby={`cg-svc-heading-${svc.id}`}>
-                        <div className="cg-card__icon" aria-hidden="true">{svc.icon}</div>
-                        <h3 className="cg-card__title" id={`cg-svc-heading-${svc.id}`}>{svc.title}</h3>
-                        <p className="cg-card__desc">{svc.description}</p>
-                        <p className="cg-card__highlight">{svc.highlight}</p>
-                        <ul className="cg-card__bullets">
-                          {svc.bullets.map((b) => <li key={b}>{b}</li>)}
-                        </ul>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
+          <RelatedLinks
+            id="cg-related-heading"
+            title={<>Related services &amp; <em>reading</em></>}
+            links={[
+              { href: "/services/visualization", label: "3D Visualization", description: "Turn processed CAD, GIS and point cloud data into 3D visualizations and digital twins." },
+              { href: "/services/it-consulting", label: "IT Consulting", description: "Infrastructure and systems guidance for teams managing large geospatial datasets." },
+              { href: "/services/website-development", label: "Web Development", description: "Web-based GIS dashboards and mapping portals built to serve your processed data." },
+              { href: "/insights", label: "Insights", description: "Engineering articles on CAD, GIS, LiDAR and photogrammetry from the 99 Visual team." },
+            ]}
+          />
 
-        {/* ══ TOOLING / SOFTWARE GUIDANCE ══════════════════════════════════ */}
-        <section className="cg-tech" aria-labelledby="cg-tech-heading">
-          <div className="cg-tech__inner">
-            <div className="cg-tech__head">
-              <span className="cg-label">Software &amp; Tooling</span>
-              <h2 className="cg-h2" id="cg-tech-heading">
-                The right tool for <em>the deliverable</em>
-              </h2>
-            </div>
-            <p className="cg-tech__note">
-              Which software matters depends on what you need out the other end — a design-ready
-              drawing, an analyzable dataset, or a classified point cloud each call for a different
-              part of the stack. <strong>Here&apos;s how we think about it.</strong>
-            </p>
-            <div className="cg-tech__list">
-              {toolStack.map((t) => (
-                <div className="cg-tech__row" key={t.name}>
-                  <div className="cg-tech__name">{t.name}</div>
-                  <div className="cg-tech__best">{t.bestFor}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ PROJECT WORKFLOW ═════════════════════════════════════════════ */}
-        <section className="cg-flow" aria-labelledby="cg-flow-heading">
-          <div className="cg-flow__inner">
-            <div className="cg-flow__head">
-              <span className="cg-label">How We Work</span>
-              <h2 className="cg-h2" id="cg-flow-heading">
-                The geospatial project <em>workflow</em>
-              </h2>
-            </div>
-            <div className="cg-flow__list">
-              {workflow.map((step) => (
-                <div className="cg-flow__step" key={step.n}>
-                  <div className="cg-flow__n">{step.n}</div>
-                  <div>
-                    <h3 className="cg-flow__title">{step.title}</h3>
-                    <p className="cg-flow__desc">{step.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ INDUSTRIES / USE CASES ══════════════════════════════════════════ */}
-        <section className="cg-ind" aria-labelledby="cg-ind-heading">
-          <div className="cg-ind__inner">
-            <div className="cg-ind__head">
-              <span className="cg-label">Industries</span>
-              <h2 className="cg-h2" id="cg-ind-heading">
-                Mapping scenarios we can <em>support</em>
-              </h2>
-            </div>
-            <p className="cg-ind__note">
-              These reflect the kinds of mapping and modeling challenges each sector typically
-              presents — not a claim of prior client work in every sector listed.
-            </p>
-            <div className="cg-ind__grid">
-              {industries.map((ind) => (
-                <div className="cg-ind__card" key={ind.name}>
-                  <div className="cg-ind__icon" aria-hidden="true">{ind.icon}</div>
-                  <h3 className="cg-ind__name">{ind.name}</h3>
-                  <p className="cg-ind__desc">{ind.note}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ══ BENEFITS ═════════════════════════════════════════════════════ */}
-        <section className="cg-benefits" aria-labelledby="cg-benefits-heading">
-          <div className="cg-benefits__inner">
-            <div className="cg-benefits__head">
-              <span className="cg-benefits__label">Why Choose Us?</span>
-              <h2 className="cg-benefits__h2" id="cg-benefits-heading">
-                CAD and GIS that fit <em>your workflow</em>
-              </h2>
-              <p className="cg-benefits__sub">
-                Partnering with 99 Visual Solutions gives your team geospatial and CAD engineering
-                expertise that plugs directly into the systems and formats you already use.
-              </p>
-            </div>
-            <div className="cg-benefits__grid">
-              {benefits.map((b, i) => (
-                <div className="cg-benefit-card" key={i}>
-                  <div className="cg-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                  <div className="cg-benefit-card__title">{b.title}</div>
-                  <p className="cg-benefit-card__desc">{b.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQPage structured data is handled exclusively via JSON-LD in the
-            <script> tag above (cgFaqNode); no microdata attributes here. */}
-        <section id="cg-faq" className="cg-faq" aria-labelledby="cg-faq-heading">
-          <div className="cg-faq__inner">
-            <div className="cg-faq__header">
-              <span className="cg-label">Got Questions?</span>
-              <h2 className="cg-h2" id="cg-faq-heading">Frequently Asked Questions</h2>
-            </div>
-            <dl className="cg-faq__list">
-              {FAQ_ITEMS.map(({ question, answer }, i) => (
-                <details key={i} className="cg-faq__item">
-                  <summary className="cg-faq__q">
-                    <span className="cg-faq__q-text">{question}</span>
-                    <span className="cg-faq__chevron" aria-hidden="true">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <path d="M4.5 6.75L9 11.25L13.5 6.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
-                  </summary>
-                  <div className="cg-faq__a">
-                    <p>{answer}</p>
-                  </div>
-                </details>
-              ))}
-            </dl>
-          </div>
-        </section>
-
-        {/* ══ RELATED SERVICES & READING — internal linking ═══════════════════ */}
-        <section className="cg-related" aria-labelledby="cg-related-heading">
-          <div className="cg-related__inner">
-            <div className="cg-related__head">
-              <span className="cg-label">Keep Exploring</span>
-              <h2 className="cg-h2" id="cg-related-heading">Related services &amp; reading</h2>
-            </div>
-            <div className="cg-related__grid">
-              <Link href="/services/visualization" className="cg-related__card">
-                <div className="cg-related__title">3D Visualization</div>
-                <p className="cg-related__desc">Turn processed CAD, GIS and point cloud data into 3D visualizations and digital twins.</p>
-              </Link>
-              <Link href="/services/it-consulting" className="cg-related__card">
-                <div className="cg-related__title">IT Consulting</div>
-                <p className="cg-related__desc">Infrastructure and systems guidance for teams managing large geospatial datasets.</p>
-              </Link>
-              <Link href="/services/website-development" className="cg-related__card">
-                <div className="cg-related__title">Web Development</div>
-                <p className="cg-related__desc">Web-based GIS dashboards and mapping portals built to serve your processed data.</p>
-              </Link>
-              <Link href="/insights" className="cg-related__card">
-                <div className="cg-related__title">Insights</div>
-                <p className="cg-related__desc">Engineering articles on CAD, GIS, LiDAR and photogrammetry from the 99 Visual team.</p>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ══ CTA ═══════════════════════════════════════════════════════════ */}
-        <section className="cg-cta" aria-labelledby="cg-cta-heading">
-          <div className="cg-cta__inner">
-            <span className="cg-cta__eyebrow">Start a Project</span>
-            <h2 className="cg-cta__h2" id="cg-cta-heading">
-              Ready to start your <em>mapping project</em>?
-            </h2>
-            <p className="cg-cta__sub">
-              Book a short call with a geospatial specialist. We&apos;ll review your project area,
-              required accuracy, and deliverable formats, and outline a practical data capture and
-              processing plan for your team — no obligation.
-            </p>
-            <ConsultationCTA className="cg-cta__btn" ariaLabel="Request a CAD, GIS and photogrammetry consultation from 99 Visual Solutions" postTitle="CAD, GIS & Photogrammetry" postUrl={PAGE_PATH}>
-              Request a Project Consultation
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </ConsultationCTA>
-          </div>
-        </section>
-
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="cg-sticky-cta">
-          <ConsultationCTA className="cg-sticky-cta__btn" postTitle="CAD, GIS & Photogrammetry" postUrl={PAGE_PATH}>Talk to a Specialist</ConsultationCTA>
-        </div>
+          <ServiceCTA
+            id="cg-cta-heading"
+            title={<>Ready to start your <em>mapping project</em>?</>}
+            sub="Book a short call with a geospatial specialist. We'll review your project area, required accuracy, and deliverable formats, and outline a practical data capture and processing plan for your team — no obligation."
+            ctaLabel="Request a Project Consultation"
+            ctaAria="Request a CAD, GIS and photogrammetry consultation from 99 Visual Solutions"
+            postTitle={T}
+            postUrl={PAGE_PATH}
+          />
+          <RelatedInsights serviceHref="/services/cad-gis-photogrammetry" />
+        </main>
+        <Footer />
+        <StickyCTA postTitle={T} postUrl={PAGE_PATH} label="Talk to a Specialist" />
       </div>
-
-      {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/cad-gis-photogrammetry" />
-      <Footer />
-      <ScrollDown />
-
     </>
   );
 }

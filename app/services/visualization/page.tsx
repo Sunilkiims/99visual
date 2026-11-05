@@ -32,17 +32,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
-import Image          from "next/image";
-import Link           from "next/link";
 import Header         from "@/app/components/header";
-import Seriously      from "@/app/components/seriously";
 import Footer         from "@/app/components/footer";
 import Services       from "@/app/components/services";
-import ContactCTA     from "@/app/components/Contactcta";
-import ScrollDown     from "@/app/components/scrolldown";
+import { ServiceHero, ServiceIntro, ServiceCluster, FeatureGrid, ProcessList, FaqList, ServiceCTA, StickyCTA } from "@/app/components/premium/service/ServiceBlocks";
 
 import {
   BASE,
@@ -394,578 +389,103 @@ const benefits = [
   },
 ];
 
-// Illustrative production-log lines for the signature ticker band — this
-// page's rendering/production counterpart to the tickers used on the other
-// five redesigned service pages. Docked to the bottom edge of the hero
-// itself, same mechanism as those pages.
-const pipeline = [
-  { cmd: "render_export",   out: "4K H.264 ready" },
-  { cmd: "lidar_import",    out: "18.2M points aligned" },
-  { cmd: "bim_clash_check", out: "0 conflicts flagged" },
-  { cmd: "material_pass",   out: "V-Ray final render" },
-  { cmd: "revision_round",  out: "2 of 2 included" },
-  { cmd: "delivery_package",out: "DWG + RVT + MP4" },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HERO SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function HeroSection() {
-  return (
-    <section
-      className="viz-hero"
-      aria-labelledby="viz-hero-heading"
-      id="viz-hero"
-    >
-      <div aria-hidden="true">
-        <div className="viz-hero__grain" />
-      </div>
-
-      <div className="viz-corner viz-corner--tl" aria-hidden="true" />
-      <div className="viz-corner viz-corner--tr" aria-hidden="true" />
-      <div className="viz-corner viz-corner--bl" aria-hidden="true" />
-      <div className="viz-corner viz-corner--br" aria-hidden="true" />
-
-      <nav className="viz-sr-only" aria-label="Breadcrumb">
-        <ol
-          style={{ listStyle: "none", margin: 0, padding: 0 }}
-        >
-          <li>
-            <a href="/"><span>Home</span></a>
-          </li>
-          <li>
-            <a href="/services"><span>Services</span></a>
-          </li>
-          <li>
-            <a href="/services/visualization" aria-current="page">
-              <span>3D Visualization</span>
-            </a>
-          </li>
-        </ol>
-      </nav>
-
-      {/*
-        Hero content sits on top of the full-bleed photo banner (set as the
-        section's CSS background — see .viz-hero in <style> below). The
-        dark gradient overlay + white text is unchanged from before — a
-        dark hero on top of a light page is exactly how every other
-        redesigned service page works too. Only the accent color moved
-        from orange to blue (except the eyebrow badge, which is now
-        orange again — see .viz-hero__eyebrow / .viz-hero__dot below).
-      */}
-      <div className="viz-hero__inner">
-        <div className="viz-hero__content">
-          {/* SEO: the H1 is the service name (what the page is about); the
-              large tagline below keeps its exact look as a <p> with the same
-              class. Previously the service name was an aria-hidden <p> and
-              the H1 was the tagline, which names no service. */}
-          <h1 className="viz-hero__eyebrow" id="viz-hero-heading">
-            <span className="viz-hero__dot" aria-hidden="true" />
-            Architectural Rendering & 3D Visualization
-          </h1>
-
-          <p className="viz-hero__h1">
-            See it before<br />
-            it's <em>built</em>
-          </p>
-
-          <div className="viz-hero__rule" aria-hidden="true" />
-
-          <p className="viz-hero__sub">
-            Photorealistic architectural rendering, walkthrough animation, and
-            product visualization for teams who need buyers, planners, and
-            stakeholders to say yes before construction starts — not after.
-          </p>
-
-          <a
-            href="/contact"
-            className="viz-hero__cta"
-            aria-label="Request a project quote for 3D visualization services from 99 Visual Solutions"
-          >
-            Request a Project Quote
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path
-                d="M2 7h10M8 3l4 4-4 4"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      {/*
-        Ticker docks to the bottom edge of the hero itself (not a separate
-        section below it), so the scrolling production-log line and the
-        photo banner render together as a single full-screen unit on every
-        screen size — the same mechanism used on the other redesigned
-        service pages. A soft gradient behind it keeps the text legible
-        over the photo without a hard color break.
-      */}
-      <div className="viz-hero__ticker-bar" aria-hidden="true">
-        <div className="viz-ticker">
-          <div className="viz-ticker__track">
-            {[...pipeline, ...pipeline].map((p, i) => (
-              <span className="viz-ticker__item" key={i}>
-                <b>$</b> {p.cmd} <span className="viz-ticker__pass">→ {p.out} ✓</span>
-              </span>
-            ))}
-          </div>
-        </div>
-        <p className="viz-ticker__caption">Illustrative production-log output</p>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// INTRO SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function IntroSection() {
-  return (
-    <section className="viz-intro" aria-labelledby="viz-intro-heading">
-      <div className="viz-intro__inner">
-        <span className="viz-intro__label">The Problem We Solve</span>
-        <h2 className="viz-intro__h2" id="viz-intro-heading">
-          Decisions get delayed when<br />people can't <em>picture the outcome</em>
-        </h2>
-        <div className="viz-intro__rule" aria-hidden="true" />
-        <p className="viz-intro__p">
-          A floor plan communicates dimensions. It doesn't communicate what a
-          lobby feels like at golden hour, whether a facade material reads as
-          premium from the street, or whether a proposed tower actually fits
-          its skyline context. That gap is where projects stall — buyers hesitate,
-          planning committees ask for clarification, and stakeholders delay
-          sign-off because the drawings alone don't answer their real question:
-          <em> what will this actually look like?</em>
-        </p>
-        <p className="viz-intro__p">
-          <strong>99 Visual Solutions</strong> closes that gap with photorealistic
-          rendering, walkthrough animation, and precision 3D modeling built
-          in-house — from CAD files, drawing sets, hand sketches, or LiDAR scans
-          — so architects, developers, and product designers can put a decision
-          in front of the people who need to approve it, months before ground is
-          broken or a physical prototype exists.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// WHO SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function WhoSection() {
-  return (
-    <section className="viz-who" aria-labelledby="viz-who-heading" id="viz-who">
-      <div className="viz-who__inner">
-        <div className="viz-who__head">
-          <span className="viz-who__label">Who This Is Built For</span>
-          <h2 className="viz-who__h2" id="viz-who-heading">
-            Built for teams who need<br />a decision made <em>on time</em>
-          </h2>
-          <div className="viz-who__rule" aria-hidden="true" />
-        </div>
-        <div className="viz-who__grid">
-          {audiences.map((a) => (
-            <div className="viz-who-card" key={a.id}>
-              <h3 className="viz-who-card__title">{a.title}</h3>
-              <p className="viz-who-card__desc">{a.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// OFFERINGS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function OfferingsSection() {
-  return (
-    <section className="viz-offerings" aria-labelledby="viz-offerings-heading" id="viz-offerings">
-      <div className="viz-offerings__inner">
-        <div className="viz-offerings__head">
-          <span className="viz-offerings__label">What We Deliver</span>
-          <h2 className="viz-offerings__h2" id="viz-offerings-heading">
-            Seven disciplines,<br />one <em>production team</em>
-          </h2>
-          <div className="viz-offerings__rule" aria-hidden="true" />
-        </div>
-        <div className="viz-offerings__grid">
-          {offerings.map((o) => (
-            <div className="viz-offering-card" key={o.id} id={o.id}>
-              <h3 className="viz-offering-card__title">{o.title}</h3>
-              <p className="viz-offering-card__desc">{o.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PROCESS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function ProcessSection() {
-  return (
-    <section className="viz-process" aria-labelledby="viz-process-heading" id="viz-process">
-      <div className="viz-process__inner">
-        <div className="viz-process__head">
-          <span className="viz-process__label">How A Project Runs</span>
-          <h2 className="viz-process__h2" id="viz-process-heading">
-            From CAD file to<br />final delivery — <em>six stages</em>
-          </h2>
-          <div className="viz-process__rule" aria-hidden="true" />
-        </div>
-        <div className="viz-process__list">
-          {processSteps.map((s) => (
-            <div className="viz-process-item" key={s.step}>
-              <span className="viz-process-item__num">{s.step}</span>
-              <div>
-                <h3 className="viz-process-item__title">{s.title}</h3>
-                <p className="viz-process-item__desc">{s.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BENEFITS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function BenefitsSection() {
-  return (
-    <section className="viz-benefits" aria-labelledby="viz-benefits-heading" id="viz-benefits">
-      <div className="viz-benefits__inner">
-        <div className="viz-benefits__head">
-          <span className="viz-benefits__label">Business Impact</span>
-          <h2 className="viz-benefits__h2" id="viz-benefits-heading">
-            What accurate visualization<br />actually <em>changes</em>
-          </h2>
-          <div className="viz-benefits__rule" aria-hidden="true" />
-        </div>
-        <div className="viz-benefits__grid">
-          {benefits.map((b) => (
-            <div className="viz-benefit-card" key={b.title}>
-              <h3 className="viz-benefit-card__title">{b.title}</h3>
-              <p className="viz-benefit-card__desc">{b.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FAQ SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-function FaqSection() {
-  return (
-    <section className="viz-faq" aria-labelledby="viz-faq-heading" id="viz-faq">
-      <div className="viz-faq__inner">
-        <div className="viz-faq__head">
-          <span className="viz-faq__label">FAQ</span>
-          <h2 className="viz-faq__h2" id="viz-faq-heading">
-            Common <em>questions</em>
-          </h2>
-          <div className="viz-faq__rule" aria-hidden="true" />
-        </div>
-        <div className="viz-faq__list">
-          {vizFaqs.map((f) => (
-            <div className="viz-faq-item" key={f.question}>
-              <h3 className="viz-faq-item__q">{f.question}</h3>
-              <p className="viz-faq-item__a">{f.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE COMPONENT
+// PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 export default function VisualizationPage() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/visualization-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
-      <style>{`
-
-        .viz-page{
-          --viz-ink:#12141A; --viz-muted:#5B6172; --viz-paper:#F5F6F8; --viz-surface:#FFFFFF;
-          --viz-line:#E4E6EC; --viz-blue:#2E5CFF; --viz-green:#37D67A; --viz-orange:#FF7A29;
-          background:var(--viz-paper);
-        }
-
-        .viz-sr-only {
-          position:absolute!important;width:1px!important;height:1px!important;
-          padding:0!important;margin:-1px!important;overflow:hidden!important;
-          clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
-        }
-
-        /* ══ HERO ════════════════════════════════════════════════════════
-           Full-bleed photo banner as the background, with a dark
-           left-to-right + top-to-bottom gradient overlay so the text
-           column stays legible over the photo — same dark-on-light-page
-           hero treatment used on every other redesigned service page.
-           Swap the url() below for your saved banner file path.
-           Fixed (not min-) height + flex column, so the section can never
-           grow taller than one screen and push the ticker bar (docked at
-           the bottom, see .viz-hero__ticker-bar) below the fold. */
-        .viz-hero {
-          position:relative;height:100vh;width:100%;
-          display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/visualization-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;
-          overflow:hidden;
-        }
-        /* dvh/svh account for mobile browser chrome so the banner never
-           shows a gap or clips; falls back to 100vh. */
-        @supports (height: 100svh) { .viz-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .viz-hero { height: 100dvh; } }
-        @media(max-width:960px){
-          .viz-hero {
-            background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/visualization-hero-banner.jpg') center center / cover no-repeat;
-          }
-        }
-        .viz-hero__grain{position:absolute;inset:0;opacity:.025;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
-        .viz-corner{position:absolute;width:28px;height:28px;z-index:5;opacity:.2;pointer-events:none;}
-        .viz-corner--tl{top:24px;left:24px;border-top:1px solid var(--viz-blue);border-left:1px solid var(--viz-blue);}
-        .viz-corner--tr{top:24px;right:24px;border-top:1px solid var(--viz-blue);border-right:1px solid var(--viz-blue);}
-        /* nudged up from the standard bottom offset to clear a bottom-left chatbot launcher icon */
-        .viz-corner--bl{bottom:112px;left:260px;border-bottom:1px solid var(--viz-blue);border-left:1px solid var(--viz-blue);}
-        @media(max-width:480px){ .viz-corner--bl{ left:24px; } }
-        .viz-corner--br{bottom:64px;right:24px;border-bottom:1px solid var(--viz-blue);border-right:1px solid var(--viz-blue);}
-
-        /* Hero content column — sits on top of the photo banner background.
-           Single column, left-aligned, capped to a comfortable reading
-           width. Flex child that fills the space above the docked ticker
-           and centers vertically within it, so header clearance and
-           gutters live here rather than on the fixed-height section — the
-           ticker's own height is never squeezed out. */
-        .viz-hero__inner{
-          position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
-          max-width:1280px;margin:0 auto;width:100%;
-          padding:8rem 1.5rem 1.5rem;
-          padding-top:max(8rem, calc(env(safe-area-inset-top) + 6rem));
-          box-sizing:border-box;
-        }
-        @media(max-width:960px){ .viz-hero__inner{ padding:7rem 1.25rem 1.25rem; padding-top:max(7rem, calc(env(safe-area-inset-top) + 5.5rem)); } }
-        @media(max-width:640px){ .viz-hero__inner{ padding:6.5rem 1rem 1rem; padding-top:max(6.5rem, calc(env(safe-area-inset-top) + 5rem)); } }
-        @media(max-width:380px){ .viz-hero__inner{ padding:5.75rem .85rem .85rem; padding-top:max(5.75rem, calc(env(safe-area-inset-top) + 4.5rem)); } }
-        /* Short screens (landscape phones, small laptop windows with
-           browser chrome): trim vertical rhythm so everything still fits
-           above the ticker without scrolling. */
-        @media(max-height:520px){
-          .viz-hero__inner{ padding-top:4.25rem; padding-bottom:.75rem; }
-          .viz-hero__eyebrow{ margin-bottom:1rem; }
-          .viz-hero__h1{ margin-bottom:.6rem; font-size:clamp(1.3rem,4.2vh,2.2rem); }
-          .viz-hero__rule{ margin-bottom:.7rem; }
-          .viz-hero__sub{ margin-bottom:1rem; }
-        }
-
-        .viz-hero__content{animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) both;text-align:left;padding-left:1.5rem;padding-top:.4rem;max-width:620px;}
-        @keyframes vizFadeUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
-        @media(max-width:960px){.viz-hero__content{text-align:center;padding-left:0;margin:0 auto;}}
-
-        /* Eyebrow badge — switched to the dedicated orange accent
-           (--viz-orange) instead of the shared blue, per latest request.
-           Everything else in the hero (rule, headline em, CTA, ticker)
-           stays on the blue accent. */
-        .viz-hero__eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--viz-orange);border:1px solid rgba(255,122,41,.32);background:rgba(255,122,41,.1);padding:6px 16px;border-radius:100px;margin-bottom:1.8rem;backdrop-filter:blur(8px);animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .1s both;}
-        .viz-hero__dot{width:5px;height:5px;border-radius:50%;background:var(--viz-orange);animation:vizPulse 2s ease-in-out infinite;}
-        @keyframes vizPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .viz-hero__h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,3.6vw,3.1rem);font-weight:700;line-height:1.16;letter-spacing:-.01em;color:#fff;margin:0 0 .9rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .18s both;text-shadow:0 2px 24px rgba(0,0,0,.45);}
-        .viz-hero__h1 em{font-style:normal;color:var(--viz-blue);}
-        .viz-hero__rule{width:40px;height:1px;background:linear-gradient(90deg,var(--viz-blue),transparent);margin:0 0 1.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .26s both;}
-        @media(max-width:960px){.viz-hero__rule{margin:0 auto 1.2rem;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);}}
-        .viz-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.86rem,1.2vw,.98rem);font-weight:300;line-height:1.75;color:rgba(255,255,255,0.75);max-width:520px;margin:0 0 2.2rem;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
-        @media(max-width:960px){.viz-hero__sub{margin:0 auto 2.2rem;}}
-        .viz-hero__cta{display:inline-flex;align-items:center;gap:9px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--viz-blue));padding:12px 28px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;animation:vizFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
-        .viz-hero__cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(46,92,255,.5);}
-
-        /* ══ TICKER — docked as a normal flex child at the bottom of the
-           fixed-height hero (not position:absolute), so it can never end
-           up below the fold regardless of how tall the content above it
-           is — it always renders inside the first screen. Same mechanism
-           as the tickers on the other redesigned service pages, restyled
-           to the shared blue accent. ═══════════════════════════════════ */
-        .viz-hero__ticker-bar{
-          position:relative;z-index:12;flex:0 0 auto;
-          background:linear-gradient(180deg, rgba(8,8,8,0) 0%, rgba(8,8,8,.55) 45%, rgba(8,8,8,.9) 100%);
-          padding-top:1.5rem;
-          padding-bottom:max(.75rem, env(safe-area-inset-bottom));
-        }
-        .viz-ticker{overflow:hidden;width:100%;padding:clamp(.6rem,1.6vw,.85rem) 0 .25rem;}
-        .viz-ticker__track{display:flex;gap:clamp(1.25rem,3.5vw,2.5rem);width:max-content;animation:vizScroll 34s linear infinite;}
-        .viz-hero__ticker-bar:hover .viz-ticker__track{animation-play-state:paused;}
-        @media(max-width:640px){ .viz-ticker__track{ animation-duration:22s; } }
-        @keyframes vizScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-        .viz-ticker__item{display:flex;align-items:center;gap:.4rem;font-family:'IBM Plex Mono',monospace;font-size:clamp(.68rem,1.8vw,.8rem);color:rgba(255,255,255,.65);white-space:nowrap;}
-        .viz-ticker__item b{color:rgba(255,255,255,.45);}
-        .viz-ticker__pass{color:var(--viz-green);}
-        .viz-ticker__caption{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:clamp(.6rem,1.5vw,.66rem);color:rgba(255,255,255,.4);margin:0;padding:.3rem 1rem 0;}
-        @media(max-height:520px){
-          .viz-hero__ticker-bar{ padding-top:.75rem; }
-          .viz-ticker__caption{ display:none; }
-        }
-
-        /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
-        .viz-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--viz-line);}
-        @media(max-width:760px){.viz-sticky-cta{display:flex;justify-content:center;}}
-        .viz-sticky-cta__btn{width:100%;max-width:420px;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;color:#fff;background:var(--viz-ink);padding:13px 20px;border-radius:10px;text-decoration:none;}
-
-        /* ══ INTRO ═══════════════════════════════════════════════════════ */
-        .viz-intro{background:var(--viz-surface);border-bottom:1px solid var(--viz-line);padding:5.5rem 1.5rem;}
-        .viz-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
-        .viz-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1.2rem;display:block;}
-        .viz-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1.5rem;}
-        .viz-intro__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-intro__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto 1.8rem;}
-        .viz-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--viz-muted);max-width:680px;margin:0 auto .9rem;}
-        .viz-intro__p strong{color:var(--viz-ink);font-weight:500;}
-        .viz-intro__p em{color:var(--viz-blue);font-style:normal;}
-
-        /* ══ WHO ═════════════════════════════════════════════════════════ */
-        .viz-who{background:var(--viz-paper);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
-        .viz-who__inner{max-width:1200px;margin:0 auto;}
-        .viz-who__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-who__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
-        .viz-who__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
-        .viz-who__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-who__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
-        .viz-who__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
-        @media(max-width:1024px){.viz-who__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.viz-who__grid{grid-template-columns:1fr;}}
-        .viz-who-card{background:var(--viz-surface);border:1px solid var(--viz-line);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease;}
-        .viz-who-card:hover{border-color:rgba(46,92,255,.3);transform:translateY(-4px);}
-        .viz-who-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
-        .viz-who-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
-
-        /* ══ OFFERINGS ═══════════════════════════════════════════════════ */
-        .viz-offerings{background:var(--viz-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
-        .viz-offerings__inner{max-width:1200px;margin:0 auto;}
-        .viz-offerings__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-offerings__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
-        .viz-offerings__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
-        .viz-offerings__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-offerings__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
-        .viz-offerings__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
-        @media(max-width:1024px){.viz-offerings__grid{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:640px){.viz-offerings__grid{grid-template-columns:1fr;}}
-        .viz-offering-card{background:var(--viz-paper);border:1px solid var(--viz-line);border-radius:16px;padding:2rem 1.75rem;transition:border-color .25s ease,transform .25s ease,box-shadow .25s ease;position:relative;overflow:hidden;}
-        .viz-offering-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(46,92,255,.5),transparent);opacity:0;transition:opacity .25s ease;}
-        .viz-offering-card:hover{border-color:rgba(46,92,255,.3);transform:translateY(-4px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
-        .viz-offering-card:hover::before{opacity:1;}
-        .viz-offering-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
-        .viz-offering-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
-
-        /* ══ PROCESS ═════════════════════════════════════════════════════ */
-        .viz-process{background:var(--viz-paper);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
-        .viz-process__inner{max-width:820px;margin:0 auto;}
-        .viz-process__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-process__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
-        .viz-process__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
-        .viz-process__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-process__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
-        .viz-process__list{display:flex;flex-direction:column;gap:0;}
-        .viz-process-item{display:flex;gap:1.75rem;padding:1.75rem 0;border-bottom:1px solid var(--viz-line);}
-        .viz-process-item:last-child{border-bottom:none;}
-        .viz-process-item__num{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:var(--viz-blue);opacity:.55;min-width:44px;flex-shrink:0;}
-        .viz-process-item__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin:0 0 .5rem;}
-        .viz-process-item__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);margin:0;}
-
-        /* ══ BENEFITS ════════════════════════════════════════════════════ */
-        .viz-benefits{background:var(--viz-surface);padding:6rem 1.5rem;border-bottom:1px solid var(--viz-line);}
-        .viz-benefits__inner{max-width:1100px;margin:0 auto;}
-        .viz-benefits__head{text-align:center;margin-bottom:3.5rem;}
-        .viz-benefits__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
-        .viz-benefits__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--viz-ink);margin:0 0 1rem;}
-        .viz-benefits__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-benefits__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
-        .viz-benefits__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
-        @media(max-width:768px){.viz-benefits__grid{grid-template-columns:1fr;}}
-        .viz-benefit-card{background:var(--viz-paper);border:1px solid var(--viz-line);border-left:2px solid var(--viz-blue);border-radius:12px;padding:1.75rem;}
-        .viz-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--viz-ink);margin-bottom:.6rem;}
-        .viz-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--viz-muted);}
-
-        /* ══ FAQ ═════════════════════════════════════════════════════════ */
-        .viz-faq{background:var(--viz-paper);border-bottom:1px solid var(--viz-line);padding:6rem 1.5rem;}
-        .viz-faq__inner{max-width:820px;margin:0 auto;}
-        .viz-faq__head{text-align:center;margin-bottom:3rem;}
-        .viz-faq__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--viz-blue);margin-bottom:1rem;display:block;}
-        .viz-faq__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;line-height:1.2;color:var(--viz-ink);margin:0 0 1rem;}
-        .viz-faq__h2 em{font-style:normal;color:var(--viz-blue);}
-        .viz-faq__rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--viz-blue),transparent);margin:0 auto;}
-        .viz-faq__list{display:flex;flex-direction:column;gap:1.25rem;}
-        .viz-faq-item{background:var(--viz-surface);border:1px solid var(--viz-line);border-radius:14px;padding:1.6rem 1.8rem;}
-        .viz-faq-item__q{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--viz-ink);margin:0 0 .7rem;}
-        .viz-faq-item__a{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:300;line-height:1.8;color:var(--viz-muted);margin:0;}
-
-        @media(prefers-reduced-motion:reduce){
-          .viz-page *,.viz-page *::before,.viz-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
-        }
-      `}</style>
-
-      <Header />
-
       <script
         id="schema-visualization-graph"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(vizGraph) }}
       />
+      <div className="vz">
+        <Header />
+        <main id="main">
+          <ServiceHero
+            id="viz-hero-heading"
+            crumbs={[{ href: "/", label: "Home" }, { href: "/services", label: "Services" }, { href: "/services/visualization", label: "3D Visualization" }]}
+            title="Architectural Rendering & 3D Visualization"
+            tagline={<>See it before it&apos;s <em>built</em></>}
+            sub="Photorealistic architectural rendering, walkthrough animation, and product visualization for teams who need buyers, planners, and stakeholders to say yes before construction starts — not after."
+            image="/images/services/visualization-hero-banner.jpg"
+            imageAlt="Photorealistic architectural visualization of a modern building"
+            ctaLabel="Request a Project Quote"
+            ctaAria="Request a project quote for 3D visualization services from 99 Visual Solutions"
+            postTitle="3D Visualization"
+            postUrl={PAGE_CANONICAL}
+            secondary={{ href: "#viz-offerings", label: "What we deliver" }}
+            points={["Exterior & interior renders", "Walkthrough animation", "Product visualization", "CAD, BIM & LiDAR"]}
+          />
 
-      <div className="viz-page">
-        <HeroSection />
+          <ServiceIntro id="viz-intro-heading" eyebrow="The Problem We Solve" title={<>Decisions get delayed when people can&apos;t <em>picture the outcome</em></>}>
+            <p className="vz-lead">
+              A floor plan communicates dimensions. It doesn&apos;t communicate what a lobby feels like at golden hour, whether a facade material reads as premium from the street, or whether a proposed tower actually fits its skyline context. That gap is where projects stall — buyers hesitate, planning committees ask for clarification, and stakeholders delay sign-off because the drawings alone don&apos;t answer their real question: <em>what will this actually look like?</em>
+            </p>
+            <p>
+              <strong>99 Visual Solutions</strong> closes that gap with photorealistic rendering, walkthrough animation, and precision 3D modeling built in-house — from CAD files, drawing sets, hand sketches, or LiDAR scans — so architects, developers, and product designers can put a decision in front of the people who need to approve it, months before ground is broken or a physical prototype exists.
+            </p>
+          </ServiceIntro>
 
-        <IntroSection />
+          <FeatureGrid
+            id="viz-who-heading"
+            eyebrow="Who This Is Built For"
+            title={<>Built for teams who need a decision made <em>on time</em></>}
+            items={audiences.map((a) => ({ title: a.title, description: a.desc }))}
+            surface
+          />
 
-        <WhoSection />
+          <div id="viz-offerings">
+            <ServiceCluster
+              id="viz-offerings-heading"
+              eyebrow="What We Deliver"
+              title={<>Seven disciplines, one <em>production team</em></>}
+              items={offerings.map((o) => ({ id: o.id, title: o.title, description: o.description }))}
+              columns={3}
+            />
+          </div>
 
-        <OfferingsSection />
+          <div id="services" className="vz-legacy-portfolio">
+            <Services />
+          </div>
 
-        <div id="services">
-          <Services />
-        </div>
+          <ProcessList
+            id="viz-process-heading"
+            eyebrow="How A Project Runs"
+            title={<>From CAD file to final delivery — <em>six stages</em></>}
+            steps={processSteps.map((s) => ({ title: s.title, description: s.desc }))}
+          />
 
-        <ProcessSection />
+          <FeatureGrid
+            id="viz-benefits-heading"
+            eyebrow="Business Impact"
+            title={<>What accurate visualization actually <em>changes</em></>}
+            items={benefits.map((b) => ({ title: b.title, description: b.desc }))}
+            numbered
+            surface
+          />
 
-        <BenefitsSection />
+          <FaqList
+            id="viz-faq-heading"
+            title="Common questions"
+            faqs={vizFaqs.map((f) => ({ q: f.question, a: <p>{f.answer}</p> }))}
+          />
 
-        <FaqSection />
-
-        {/* ══ STICKY MOBILE CTA ═════════════════════════════════════════════ */}
-        <div className="viz-sticky-cta">
-          <Link href="/contact" className="viz-sticky-cta__btn">Request a Quote</Link>
-        </div>
+          <ServiceCTA
+            id="viz-cta-heading"
+            title={<>Have drawings ready? Let&apos;s <em>visualize</em> them.</>}
+            sub="Share your CAD files, drawing sets or sketches and the deliverables you need. We reply with a scope, camera list and a dated production schedule."
+            ctaLabel="Request a Project Quote"
+            postTitle="3D Visualization"
+            postUrl={PAGE_CANONICAL}
+          />
+          <RelatedInsights serviceHref="/services/visualization" />
+        </main>
+        <Footer />
+        <StickyCTA postTitle="3D Visualization" postUrl={PAGE_CANONICAL} label="Request a Quote" />
       </div>
-
-      <Seriously />
-      <ContactCTA />
-      {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/visualization" />
-      <Footer />
-      <ScrollDown />
     </>
   );
 }
