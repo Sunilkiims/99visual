@@ -19,11 +19,6 @@ export default function Footer() {
             <Link href="/" aria-label="99 Visual Solutions — home" className="vz-footer__logo">
               <Image src="/logo.png" alt="99 Visual Solutions" width={686} height={369} sizes="96px" />
             </Link>
-            <p className="vz-footer__tagline">Immersive Experience · Intelligent Solutions</p>
-            <p className="vz-body">
-              3D visualization, web development, digital marketing, geospatial and QA engineering from one
-              Bengaluru team, for clients in India, the USA, UK, UAE, Australia (Sydney), South Korea and Japan.
-            </p>
             <div className="vz-footer__nl">
               <p className="vz-footer__label">Newsletter</p>
               <NewsletterForm />
