@@ -783,13 +783,16 @@ export default function CADGISPhotogrammetry() {
 
           <div className="cg-hero__inner">
             <div className="cg-hero__content">
-              <div className="cg-hero__eyebrow">
-                <span className="cg-hero__dot" />
-                Services · CAD, GIS &amp; Photogrammetry
-              </div>
-              <h1 className="cg-hero__h1" id="cg-hero-heading">
-                Precision mapping,<br />measured in <em>millimeters</em>
+              {/* SEO: the H1 names the services (incl. LiDAR, which the title
+                  and copy target but the old H1/eyebrow omitted); the tagline
+                  keeps its look as a <p> with the same class. */}
+              <h1 className="cg-hero__eyebrow" id="cg-hero-heading">
+                <span className="cg-hero__dot" aria-hidden="true" />
+                CAD, GIS, LiDAR &amp; Photogrammetry Services
               </h1>
+              <p className="cg-hero__h1">
+                Precision mapping,<br />measured in <em>millimeters</em>
+              </p>
               <div className="cg-hero__rule" aria-hidden="true" />
               <p className="cg-hero__sub">
                 CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud

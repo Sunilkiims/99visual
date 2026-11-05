@@ -578,13 +578,15 @@ export default function ITConsulting() {
 
           <div className="itc-hero__inner">
             <div className="itc-hero__content">
-              <div className="itc-hero__eyebrow">
-                <span className="itc-hero__dot" />
-                Services · IT Consulting
-              </div>
-              <h1 className="itc-hero__h1" id="itc-hero-heading">
-                Technology strategy measured<br />in <em>uptime</em>, not slides
+              {/* SEO: the H1 names the service; the tagline keeps its look as
+                  a <p> with the same class (previously the H1 was the tagline). */}
+              <h1 className="itc-hero__eyebrow" id="itc-hero-heading">
+                <span className="itc-hero__dot" aria-hidden="true" />
+                IT Consulting Services
               </h1>
+              <p className="itc-hero__h1">
+                Technology strategy measured<br />in <em>uptime</em>, not slides
+              </p>
               <div className="itc-hero__rule" aria-hidden="true" />
               <p className="itc-hero__sub">
                 Cloud migration, cybersecurity, infrastructure planning, IoT

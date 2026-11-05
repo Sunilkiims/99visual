@@ -455,15 +455,19 @@ function HeroSection() {
       */}
       <div className="viz-hero__inner">
         <div className="viz-hero__content">
-          <p className="viz-hero__eyebrow" aria-hidden="true">
-            <span className="viz-hero__dot" />
+          {/* SEO: the H1 is the service name (what the page is about); the
+              large tagline below keeps its exact look as a <p> with the same
+              class. Previously the service name was an aria-hidden <p> and
+              the H1 was the tagline, which names no service. */}
+          <h1 className="viz-hero__eyebrow" id="viz-hero-heading">
+            <span className="viz-hero__dot" aria-hidden="true" />
             Architectural Rendering & 3D Visualization
-          </p>
+          </h1>
 
-          <h1 className="viz-hero__h1" id="viz-hero-heading">
+          <p className="viz-hero__h1">
             See it before<br />
             it's <em>built</em>
-          </h1>
+          </p>
 
           <div className="viz-hero__rule" aria-hidden="true" />
 
