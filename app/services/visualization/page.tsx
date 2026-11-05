@@ -54,6 +54,7 @@ import {
   breadcrumbFromItems,
   faqSchema,
   serviceSchema,
+  jsonLdString,
 } from "@/lib/schema";
 
 const BASE_SAFE = BASE.replace(/\/$/, "");
@@ -123,7 +124,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -928,7 +928,7 @@ export default function VisualizationPage() {
       <script
         id="schema-visualization-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(vizGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(vizGraph) }}
       />
 
       <div className="viz-page">

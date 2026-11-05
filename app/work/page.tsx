@@ -11,6 +11,7 @@ import {
   websiteSchema,
   breadcrumbFromPath,
   webPage,
+  jsonLdString,
 } from '@/lib/schema'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -74,7 +75,7 @@ export default function WorkIndexPage() {
   return (
     <>
       <Header />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }} />
       <main className="min-h-screen bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-[1.1] tracking-tight">

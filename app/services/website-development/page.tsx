@@ -64,6 +64,7 @@ import {
   breadcrumbFromItems,
   faqSchema,
   serviceSchema,
+  jsonLdString,
 } from "@/lib/schema";
 
 const BASE_SAFE = BASE.replace(/\/$/, "");
@@ -132,7 +133,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "" },
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -914,7 +914,7 @@ export default function WebsiteDevelopment() {
       <script
         id="schema-webdev-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(wdevGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(wdevGraph) }}
       />
 
       <div className="wdev-page">

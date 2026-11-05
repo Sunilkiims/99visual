@@ -12,6 +12,7 @@ import {
   websiteSchema,
   breadcrumbFromPath,
   webPage,
+  jsonLdString,
 } from '@/lib/schema'
 
 // Must match the '/videos' entry's lastModified in app/sitemap.ts. Without
@@ -97,7 +98,7 @@ export default function VideosIndexPage() {
       <Header />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }}
       />
       <main className="min-h-screen bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 pb-24">

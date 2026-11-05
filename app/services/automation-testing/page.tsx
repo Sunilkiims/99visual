@@ -49,6 +49,7 @@ import {
   websiteSchema,
   breadcrumbFromItems,
   faqSchema,
+  jsonLdString,
 } from "@/lib/schema";
 
 const CLEAN_BASE = BASE.replace(/\/+$/, "");
@@ -119,9 +120,6 @@ export const metadata: Metadata = {
     ],
   },
 
-  verification: {
-    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION ?? "",
-  },
   authors:         [{ name: "99 Visual Solutions", url: CLEAN_BASE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -484,7 +482,7 @@ export default function AutomationTestingPage() {
       <script
         id="schema-qa-graph"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(qaGraph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(qaGraph) }}
       />
 
       <style>{`

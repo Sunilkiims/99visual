@@ -14,6 +14,7 @@ import {
   breadcrumbFromPath,
   webPage,
   videoObjectSchema,
+  jsonLdString,
 } from '@/lib/schema'
 
 interface Props {
@@ -101,7 +102,7 @@ export default async function VideoWatchPage({ params }: Props) {
       <Header />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(graph) }}
       />
       <main className="min-h-screen bg-gray-950">
         <div className="max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-24">
