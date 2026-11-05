@@ -69,7 +69,12 @@ export default function TagsClient({ tags: initial }: { tags: Tag[] }) {
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this tag?')) return
-    await fetch(`/api/admin/tags/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/admin/tags/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error || 'Delete failed')
+      return
+    }
     router.refresh()
     window.location.reload()
   }

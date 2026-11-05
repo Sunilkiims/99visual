@@ -26,6 +26,7 @@ import { createPortal } from 'react-dom'
 // Pure data-collection utility — no UI impact. See lib/leadTracking.ts
 // (shared with components/ContactForm.tsx, so both forms stay consistent).
 import { getTrackingData, type TrackingData } from '@/lib/leadTracking'
+import { trackLead } from '@/lib/analytics'
 
 interface Props {
   isOpen: boolean
@@ -192,6 +193,7 @@ export default function ContactPopup({ isOpen, onClose, postTitle, postUrl }: Pr
         }
         throw new Error(data.message ?? data.error ?? 'Something went wrong')
       }
+      trackLead('contact_popup')
       setStage('success')
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to send. Please try again.')

@@ -8,9 +8,14 @@ export default function DeletePostButton({ postId }: { postId: string }) {
   async function handleDelete() {
     if (!confirm('Delete this post?')) return
 
-    await fetch(`/api/admin/posts/${postId}`, {
+    const res = await fetch(`/api/admin/posts/${postId}`, {
       method: 'DELETE',
     })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error || 'Delete failed')
+      return
+    }
 
     router.refresh()
   }
