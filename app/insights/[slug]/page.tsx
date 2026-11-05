@@ -12,6 +12,7 @@ import TableOfContents from '@/app/components/insights/TableOfContents'
 import { getCategoryIcon, getRelatedService } from '@/app/components/insights/categoryIcon'
 import { extractHeadings } from '@/app/components/insights/extractHeadings'
 import { stripForeignImages } from '@/app/components/insights/stripForeignImages'
+import { sanitizeArticleHtml } from '@/lib/sanitize-html'
 import { BASE, buildGraph, orgSchema, websiteSchema, breadcrumbFromItems, jsonLdString } from '@/lib/schema'
 import { insightUrl, metaDescription, parseRobots, stripBrandSuffix } from '@/lib/seo'
 import { topicPath } from '@/lib/insights'
@@ -252,7 +253,7 @@ export default async function InsightPostPage({ params }: Props) {
   // (and any #anchor deep link) has something real to target — the editor's
   // raw HTML has no ids of its own. Images pasted in from ChatGPT
   // (images.openai.com) are dropped first; see stripForeignImages.ts.
-  const { html: contentHtml, headings } = extractHeadings(stripForeignImages(post.content))
+  const { html: contentHtml, headings } = extractHeadings(stripForeignImages(sanitizeArticleHtml(post.content)))
 
   // ── Structured data ──────────────────────────────────────────────────────
   // One @graph: the shared Organization/WebSite entities (same @ids used on
