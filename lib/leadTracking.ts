@@ -19,6 +19,8 @@
 
 'use client';
 
+import { getConsent, hasConsent } from '@/lib/cookies/consent-manager';
+
 // ── Types ───────────────────────────────────────────────────────────────
 export interface TrackingData {
     landingPage: string;
@@ -58,6 +60,13 @@ function getOrCaptureLandingData(): { landingPage: string; referrer: string } {
     // keeps the function safe to call from anywhere.
     if (typeof window === 'undefined') {
         return { landingPage: '', referrer: '' };
+    }
+
+    // Persisting first-touch attribution in the browser is optional
+    // (Analytics category), so it only happens with the visitor's consent.
+    // Without it the current page and referrer are used and nothing is stored.
+    if (!hasConsent(getConsent(), 'analytics')) {
+        return { landingPage: window.location.href, referrer: document.referrer || '' };
     }
 
     let landingPage = window.localStorage.getItem(LS_LANDING_PAGE_KEY);

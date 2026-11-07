@@ -11,6 +11,7 @@
 import React, { FormEvent, useState, useEffect, useRef, KeyboardEvent, ClipboardEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import CookieSettingsButton from '@/app/components/cookies/CookieSettingsButton';
 import {
   FaFacebookF,
   FaXTwitter,
@@ -555,7 +556,8 @@ const Footer: React.FC = () => {
         }
         .ft__copy { font-family: var(--sans); font-size: .7rem; font-weight: 300; color: var(--text-muted); }
         .ft__copy strong { color: var(--text-secondary); font-weight: 500; }
-        .ft__legal { display: flex; gap: 1.4rem; align-items: center; }
+        .ft__legal { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; align-items: center; }
+        .ft__legal-btn { background: none; border: 0; padding: 0; cursor: pointer; }
         .ft__legal-link {
           font-family: var(--sans); font-size: .7rem; font-weight: 400;
           color: var(--text-muted); text-decoration: none; transition: color .2s;
@@ -800,6 +802,10 @@ const Footer: React.FC = () => {
             <Link href="/privacy-policy" className="ft__legal-link">Privacy Policy</Link>
             <span className="ft__legal-sep" aria-hidden="true" />
             <Link href="/terms" className="ft__legal-link">Terms of Use</Link>
+            <span className="ft__legal-sep" aria-hidden="true" />
+            <Link href="/cookie-policy" className="ft__legal-link">Cookie Policy</Link>
+            <span className="ft__legal-sep" aria-hidden="true" />
+            <CookieSettingsButton className="ft__legal-link ft__legal-btn" />
           </nav>
         </div>
 

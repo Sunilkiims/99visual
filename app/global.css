@@ -146,3 +146,36 @@ SCROLL ARROW ANIMATION
   bottom: 24px;
   animation: arrowSwing 1.4s ease-in-out infinite;
 }
+/* =====================================================
+COOKIE CONSENT BUTTONS
+Shared by app/components/cookies/*. Uppercase red pills; the
+"solid" style is used for both Accept and Decline so neither
+choice is visually favoured.
+===================================================== */
+
+.cc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.65rem 1.35rem;
+  border-radius: 9999px;
+  border: 1.5px solid #B91C1C;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.cc-btn:focus { outline: none; }
+.cc-btn:focus-visible { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #B91C1C; }
+.cc-btn--solid { background: #B91C1C; color: #fff; }
+.cc-btn--solid:hover { background: #991B1B; border-color: #991B1B; }
+.cc-btn--outline { background: #fff; color: #B91C1C; }
+.cc-btn--outline:hover { background: #FEF2F2; }
+@media (max-width: 639px) {
+  .cc-btn { width: 100%; white-space: normal; }
+}

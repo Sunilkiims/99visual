@@ -3,11 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./global.css";
 import { BASE } from "@/lib/schema";
 import RouteProgressBar from "@/app/components/RouteProgressBar";
-import GoogleAnalytics from "@/app/components/GoogleAnalytics";
+import CookieConsent from "@/app/components/cookies/CookieConsent";
 import { isValidGaId } from "@/lib/analytics";
 
-// GA4 runs only on the production deployment (never previews or local dev)
-// and only once a valid measurement ID is configured in Vercel.
+// GA4 runs only on the production deployment (never previews or local dev),
+// only once a valid measurement ID is configured in Vercel, and only after
+// the visitor allows Analytics cookies (enforced inside <CookieConsent />).
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const ANALYTICS_ENABLED =
   process.env.VERCEL_ENV === "production" && isValidGaId(GA_ID);
@@ -181,7 +182,12 @@ export default function RootLayout({
         */}
         <RouteProgressBar />
         {children}
-        {ANALYTICS_ENABLED && <GoogleAnalytics gaId={GA_ID as string} />}
+        {/*
+          Cookie consent: banner, preferences dialog and consent-gated
+          loading of optional scripts (GA4). Rendered once here so it covers
+          every route; see app/components/cookies/CookieConsent.tsx.
+        */}
+        <CookieConsent gaId={ANALYTICS_ENABLED ? GA_ID : undefined} />
       </body>
     </html>
   );

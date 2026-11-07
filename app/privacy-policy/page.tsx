@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
+import CookieSettingsButton from "@/app/components/cookies/CookieSettingsButton";
 
 export const metadata: Metadata = {
   // `absolute` — already contains the brand; prevents a duplicated suffix.
@@ -93,7 +95,7 @@ export default function PrivacyPolicyPage() {
         <div className="max-w-5xl mx-auto space-y-10 text-gray-700 dark:text-gray-300">
 
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Effective date: 23 October 2026
+            Effective date: 23 October 2026 · Last updated: 7 November 2026
           </p>
 
           <PolicySection
@@ -111,14 +113,11 @@ export default function PrivacyPolicyPage() {
             desc="We implement industry-standard security measures to protect your data from unauthorized access, misuse, or disclosure."
           />
 
-          <PolicySection
-            title="4. Cookies & Tracking Technologies"
-            desc="We use cookies and similar technologies to enhance your browsing experience, analyze website traffic, and improve our services."
-          />
+          <CookiesSection />
 
           <PolicySection
             title="5. Third-Party Services"
-            desc="We may use third-party tools and services (such as analytics and marketing platforms) that may collect, monitor, and analyze user data."
+            desc="We use third-party services to run this website and respond to you, such as hosting, email delivery and, only with your consent, Google Analytics 4 for website statistics. These providers process data on our behalf and may do so on servers outside India. We do not use advertising or remarketing platforms on this website."
           />
 
           <PolicySection
@@ -257,6 +256,44 @@ function WhatsAppSection() {
           <a href="mailto:info@99visual.com" className="text-orange-600 dark:text-orange-400 underline">
             info@99visual.com
           </a>
+          .
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ========================= */
+/* 🍪 COOKIES & TRACKING */
+/* ========================= */
+
+function CookiesSection() {
+  const link = "text-orange-600 dark:text-orange-400 underline";
+  return (
+    <div id="cookies">
+      <h2 className="text-xl md:text-2xl font-semibold mb-3 text-gray-900 dark:text-white">
+        4. Cookies & Tracking Technologies
+      </h2>
+      <div className="space-y-4 text-sm md:text-base leading-relaxed">
+        <p>
+          We use a few strictly necessary cookies to run the website and keep it secure, such as the cookie that
+          remembers your cookie choices. With your consent only, we also use Google Analytics 4 to understand how
+          visitors use the site, and we store the page you first landed on and the site that referred you in your
+          browser, so that an enquiry you send can be attributed to the right page.
+        </p>
+        <p>
+          Optional cookies stay off until you allow them, and you can accept, decline or choose by category. We
+          keep a record of your choice (which categories, when, and which policy version) in a cookie on your
+          device; it contains no name, email or other contact details. You can change or withdraw your consent at
+          any time from{" "}
+          <CookieSettingsButton className={`${link} cursor-pointer`}>Cookie Settings</CookieSettingsButton>
+          , and withdrawing stops analytics collection from that point on.
+        </p>
+        <p>
+          The full list of cookies, what each one does and how long it lasts is in our{" "}
+          <Link href="/cookie-policy" className={link}>
+            Cookie Policy
+          </Link>
           .
         </p>
       </div>

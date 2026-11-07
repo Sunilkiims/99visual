@@ -59,6 +59,7 @@ const staticRoutes: {
   // Legal pages
   { path: '/privacy-policy',                   priority: 0.2, changeFrequency: 'yearly'  },
   { path: '/terms',                            priority: 0.2, changeFrequency: 'yearly'  },
+  { path: '/cookie-policy',                    priority: 0.2, changeFrequency: 'yearly'  },
 ]
 
 type PostRow = {
