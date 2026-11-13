@@ -5,13 +5,13 @@
 #
 # Run as root on the server:
 #   sudo -i
-#   EMAIL=you@example.com bash setup-server.sh
+#   EMAIL=you@example.com bash setup-server.sh        (EMAIL may be left out until DNS points here)
 #
 # Safe to run again: it never overwrites an existing database, password or .env file.
 set -euo pipefail
 
 DOMAIN="${DOMAIN:-99visual.com}"            # the site answers on DOMAIN and www.DOMAIN
-: "${EMAIL:?Set EMAIL, the address for HTTPS certificate notices, e.g. EMAIL=you@example.com}"
+EMAIL="${EMAIL:-}"                          # for HTTPS certificate notices; only needed once DNS points here
 REPO_URL="${REPO_URL:-https://github.com/Sunilkiims/99visual.git}"
 BRANCH="${BRANCH:-main}"
 [ "$(id -u)" -eq 0 ] || { echo "Run as root: sudo -i, then run this script again."; exit 1; }
@@ -134,13 +134,13 @@ chmod 644 /etc/cron.d/99visual
 echo "==> HTTPS certificate"
 SERVER_IP="$(curl -fsS https://api.ipify.org || true)"
 DNS_IP="$(dig +short "www.$DOMAIN" A | tail -n1 || true)"
-if [ -n "$SERVER_IP" ] && [ "$SERVER_IP" = "$DNS_IP" ]; then
+if [ -n "$SERVER_IP" ] && [ "$SERVER_IP" = "$DNS_IP" ] && [ -n "$EMAIL" ]; then
   certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos -m "$EMAIL" --redirect \
     || echo "    certbot failed: check that both $DOMAIN and www.$DOMAIN point here, then run the command in the guide."
 else
   echo "    www.$DOMAIN still points to '${DNS_IP:-nothing}', this server is '${SERVER_IP:-unknown}'."
   echo "    That's expected before the switch-over. After changing DNS (guide step 9), run:"
-  echo "    certbot --nginx -d $DOMAIN -d www.$DOMAIN -m $EMAIL --agree-tos --redirect"
+  echo "    certbot --nginx -d $DOMAIN -d www.$DOMAIN -m ${EMAIL:-you@example.com} --agree-tos --redirect"
 fi
 
 cat <<DONE
