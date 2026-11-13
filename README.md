@@ -29,10 +29,14 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Hosting on Oracle Cloud
+## Hosting on your own server
 
-The site can run on a free Oracle Cloud Arm server instead of Vercel, with its PostgreSQL database on the
-same server. Step-by-step move from Vercel + Neon: [deploy/oracle/DEPLOY-ORACLE.md](deploy/oracle/DEPLOY-ORACLE.md).
+The site can run on its own Ubuntu server instead of Vercel, with its PostgreSQL database on the same
+machine. Step-by-step move from Vercel + Neon:
+
+- Hostinger VPS: [deploy/server/DEPLOY-HOSTINGER.md](deploy/server/DEPLOY-HOSTINGER.md)
+- Oracle Cloud Always Free: [deploy/server/DEPLOY-ORACLE.md](deploy/server/DEPLOY-ORACLE.md)
+
 On your own server set `APP_ENV=production` (Vercel's `VERCEL_ENV` is used otherwise) so Google Analytics
 and IndexNow run only on the live site.
 

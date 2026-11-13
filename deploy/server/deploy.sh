@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Update, build and (re)start www.99visual.com. Run as the app user:
-#   sudo -iu visual99 bash /var/www/99visual/deploy/oracle/deploy.sh
+#   sudo -iu visual99 bash /var/www/99visual/deploy/server/deploy.sh
 # Takes about 3 to 6 minutes. Visitors keep seeing the running version until the new build is ready.
 #
 #   PULL=0  skip "git pull" (deploy exactly what is in the folder)
@@ -52,9 +52,9 @@ npm run build
 
 echo "==> Starting"
 if pm2 describe "$APP_NAME" >/dev/null 2>&1; then
-  pm2 reload deploy/oracle/ecosystem.config.cjs --update-env
+  pm2 reload deploy/server/ecosystem.config.cjs --update-env
 else
-  pm2 start deploy/oracle/ecosystem.config.cjs
+  pm2 start deploy/server/ecosystem.config.cjs
 fi
 pm2 save >/dev/null
 

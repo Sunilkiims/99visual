@@ -90,7 +90,7 @@ Now on the server:
 ```bash
 sudo -i
 git clone https://github.com/Sunilkiims/99visual.git /root/99visual-setup
-EMAIL=you@example.com bash /root/99visual-setup/deploy/oracle/setup-server.sh
+EMAIL=you@example.com bash /root/99visual-setup/deploy/server/setup-server.sh
 ```
 
 Use your real email (Let's Encrypt sends certificate notices there). The script takes about 10 minutes
@@ -121,7 +121,7 @@ Save with **Ctrl+O, Enter**, exit with **Ctrl+X**.
 ## 7. Copy the data from Neon
 
 ```bash
-NEON_URL='postgresql://…paste the direct Neon string from step 1.3…' bash /var/www/99visual/deploy/oracle/copy-from-neon.sh
+NEON_URL='postgresql://…paste the direct Neon string from step 1.3…' bash /var/www/99visual/deploy/server/copy-from-neon.sh
 ```
 
 Neon is only read, so the live site is unaffected. At the end it prints a table of row counts for Neon
@@ -130,7 +130,7 @@ and for the server, which should match. You'll run this once more right before t
 ## 8. Build and start
 
 ```bash
-sudo -iu visual99 bash /var/www/99visual/deploy/oracle/deploy.sh
+sudo -iu visual99 bash /var/www/99visual/deploy/server/deploy.sh
 ```
 
 About 5 minutes. It installs packages, applies database migrations, builds, and starts the site with
@@ -148,7 +148,7 @@ To test everything over HTTPS (forms, admin login, image upload) on the new serv
 
 1. **Copy the latest data once more** (anything submitted since step 7):
    ```bash
-   NEON_URL='postgresql://…' bash /var/www/99visual/deploy/oracle/copy-from-neon.sh
+   NEON_URL='postgresql://…' bash /var/www/99visual/deploy/server/copy-from-neon.sh
    ```
 2. **Change DNS.** Find where DNS is managed: it's wherever you lowered the TTL in step 1. If unsure, look
    up *99visual.com* on <https://lookup.icann.org>; the "Name servers" show it (`*.ns.cloudflare.com` =
@@ -221,7 +221,7 @@ Vercel deployed automatically on every push; on the server you deploy with one c
 1. Push your changes to GitHub (`main`) as usual.
 2. Connect (step 5) and run:
    ```bash
-   sudo -iu visual99 bash /var/www/99visual/deploy/oracle/deploy.sh
+   sudo -iu visual99 bash /var/www/99visual/deploy/server/deploy.sh
    ```
 
 It pulls the latest code, applies any new Prisma migrations, rebuilds and restarts without downtime. If
@@ -248,7 +248,7 @@ you change `.env` (for example a new API key), run it too.
 
 | Problem | What to do |
 |---|---|
-| Browser can't reach `http://SERVER_IP` | Check the ingress rules (step 3). On the server: `sudo bash /var/www/99visual/deploy/oracle/open-ports.sh` |
+| Browser can't reach `http://SERVER_IP` | Check the ingress rules (step 3). On the server: `sudo bash /var/www/99visual/deploy/server/open-ports.sh` |
 | `502 Bad Gateway` | The app isn't running: `sudo -iu visual99 pm2 logs 99visual --lines 50` |
 | Build stopped / out of memory | Run `deploy.sh` again; check `free -h` (the setup adds 2 GB swap) |
 | `copy-from-neon.sh` says Neon is newer | Install that version: `apt-get install -y postgresql-client-18` (use the number shown), run again |

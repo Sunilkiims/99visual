@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# One-time setup of a fresh Oracle Cloud "Always Free" Ampere A1 server (Ubuntu 24.04 or 22.04, Arm)
-# for www.99visual.com: Node.js 22, PostgreSQL 17, nginx, HTTPS (Let's Encrypt), pm2, firewall,
-# automatic security updates and a nightly database backup.
+# One-time setup of a fresh Ubuntu 24.04 (or 22.04) server for www.99visual.com: a Hostinger VPS, an
+# Oracle Cloud Ampere A1 server, or any other Ubuntu VPS, Intel/AMD or Arm.
+# Installs Node.js 22, PostgreSQL 17, nginx, HTTPS (Let's Encrypt), pm2, a firewall, automatic security
+# updates and a nightly database backup.
 #
 # Run as root on the server:
 #   sudo -i
@@ -33,7 +34,16 @@ echo "==> System packages"
 apt-get update -y
 apt-get upgrade -y
 apt-get install -y curl git ca-certificates gnupg lsb-release fail2ban nginx certbot python3-certbot-nginx \
-  gettext-base dnsutils cron unattended-upgrades iptables-persistent netfilter-persistent
+  gettext-base dnsutils cron unattended-upgrades
+
+# Oracle's images firewall with iptables rules (ending in REJECT); everyone else gets ufw.
+if grep -qi oracle /sys/class/dmi/id/chassis_asset_tag 2>/dev/null || grep -q REJECT /etc/iptables/rules.v4 2>/dev/null; then
+  FIREWALL=iptables
+  apt-get install -y iptables-persistent netfilter-persistent
+else
+  FIREWALL=ufw
+  apt-get install -y ufw
+fi
 
 echo "==> Automatic security updates"
 cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
@@ -66,8 +76,16 @@ if ! swapon --show | grep -q .; then
   grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
 fi
 
-echo "==> Firewall on the server: allow HTTP and HTTPS"
-bash "$HERE/open-ports.sh"
+echo "==> Firewall on the server ($FIREWALL): SSH, HTTP and HTTPS only"
+if [ "$FIREWALL" = "ufw" ]; then
+  ufw allow OpenSSH >/dev/null
+  ufw allow 80/tcp >/dev/null
+  ufw allow 443/tcp >/dev/null
+  ufw --force enable >/dev/null
+  ufw status | sed 's/^/    /'
+else
+  bash "$HERE/open-ports.sh"
+fi
 systemctl enable --now fail2ban >/dev/null 2>&1 || true
 
 echo "==> App user and folders"
@@ -149,6 +167,6 @@ Server is ready.
   Server address: ${SERVER_IP:-unknown}
 Next (guide step 6 onwards):
   1. Fill in the empty values in $APP_DIR/.env   (nano $APP_DIR/.env)
-  2. Copy the data from Neon:  NEON_URL='postgresql://...' bash $APP_DIR/deploy/oracle/copy-from-neon.sh
-  3. Build and start:          sudo -iu $APP_USER bash $APP_DIR/deploy/oracle/deploy.sh
+  2. Copy the data from Neon:  NEON_URL='postgresql://...' bash $APP_DIR/deploy/server/copy-from-neon.sh
+  3. Build and start:          sudo -iu $APP_USER bash $APP_DIR/deploy/server/deploy.sh
 DONE

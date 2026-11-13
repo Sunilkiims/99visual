@@ -3,9 +3,9 @@
 # Installed as /usr/local/bin/99visual-backup and run by cron at 03:30 (as root).
 # Images live on Cloudinary, so the database is all that needs backing up here.
 #
-# COPY BACKUPS OFF THE SERVER too: a backup on the same disk is lost with the server. The newest one is
-# also copied to /home/ubuntu so you can download it from Windows (PowerShell):
-#   scp -i your-key.key ubuntu@SERVER_IP:99visual-latest.dump .
+# COPY BACKUPS OFF THE SERVER too: a backup on the same disk is lost with the server. From Windows (PowerShell):
+#   Hostinger (root login):   scp root@SERVER_IP:/var/backups/99visual/latest.dump .
+#   Oracle (ubuntu login):    scp -i your-key.key ubuntu@SERVER_IP:99visual-latest.dump .   (copied there below)
 set -euo pipefail
 DB_NAME="${DB_NAME:-visual99}"
 DIR="${BACKUP_DIR:-/var/backups/99visual}"
