@@ -59,24 +59,35 @@ if [ -z "$INSTANCE" ] || [ "$INSTANCE" = "null" ]; then
   IMAGE="$(oci compute image list -c "$C" --operating-system "Canonical Ubuntu" --operating-system-version "24.04" \
     --shape "$SHAPE" --sort-by TIMECREATED --sort-order DESC --query 'data[0].id' --raw-output)"
   echo "    image: $(oci compute image get --image-id "$IMAGE" --query 'data."display-name"' --raw-output)"
-  for AD in $(oci iam availability-domain list -c "$C" --query 'data[].name' --raw-output | tr -d '[]",'); do
-    echo "    trying $AD ..."
-    if OUT="$(oci compute instance launch -c "$C" --availability-domain "$AD" --display-name "$NAME" \
-         --shape "$SHAPE" --shape-config "{\"ocpus\":$OCPUS,\"memoryInGBs\":$MEMORY_GB}" \
-         --image-id "$IMAGE" --subnet-id "$SUBNET" --assign-public-ip true --boot-volume-size-in-gbs "$BOOT_GB" \
-         --ssh-authorized-keys-file "$KEY.pub" --wait-for-state RUNNING --query 'data.id' --raw-output 2>&1)"; then
-      INSTANCE="$(echo "$OUT" | grep -o 'ocid1.instance[^" ]*' | head -1)"
-      break
-    fi
-    if echo "$OUT" | grep -qi "capacity"; then
-      echo "    no free Arm capacity in $AD right now"
-    else
-      echo "$OUT" | tail -5
-      exit 1
-    fi
+  ADS="$(oci iam availability-domain list -c "$C" --query 'data[].name' --raw-output | tr -d '[]",')"
+  ATTEMPTS="${ATTEMPTS:-30}"        # free Arm capacity comes and goes: keep trying for a while
+  SIZES="${OCPUS}:${MEMORY_GB}"
+  [ "${FALLBACK:-1}" = "1" ] && [ "$OCPUS" != "1" ] && SIZES="$SIZES 1:6"   # a smaller size is often available sooner
+  for attempt in $(seq 1 "$ATTEMPTS"); do
+    for size in $SIZES; do
+      for AD in $ADS; do
+        o="${size%%:*}"; m="${size##*:}"
+        echo "    [$attempt/$ATTEMPTS] $(date +%H:%M:%S) trying $o OCPU / $m GB in ${AD##*:} ..."
+        if OUT="$(oci compute instance launch -c "$C" --availability-domain "$AD" --display-name "$NAME" \
+             --shape "$SHAPE" --shape-config "{\"ocpus\":$o,\"memoryInGBs\":$m}" \
+             --image-id "$IMAGE" --subnet-id "$SUBNET" --assign-public-ip true --boot-volume-size-in-gbs "$BOOT_GB" \
+             --ssh-authorized-keys-file "$KEY.pub" --wait-for-state RUNNING --query 'data.id' --raw-output 2>&1)"; then
+          INSTANCE="$(echo "$OUT" | grep -o 'ocid1.instance[^" ]*' | head -1)"
+          break 3
+        fi
+        if echo "$OUT" | grep -qiE 'capacity|TooManyRequests|"status": (429|500|503)|InternalError'; then
+          echo "      not available right now"
+          sleep 20
+        else
+          echo "$OUT" | tail -8
+          exit 1
+        fi
+      done
+    done
+    [ "$attempt" -lt "$ATTEMPTS" ] && sleep "${WAIT_SECONDS:-60}"
   done
   if [ -z "$INSTANCE" ]; then
-    echo "Oracle has no free Arm capacity in this region at the moment. Run this script again in a while."
+    echo "Oracle has had no free Arm capacity in this region during these attempts. Run this script again later."
     exit 2
   fi
 fi
