@@ -9,6 +9,7 @@
 // change the key, rename that file to match.
 
 import { BASE } from '@/lib/schema'
+import { isProductionDeployment } from '@/lib/deployment'
 
 export const INDEXNOW_KEY = 'd05f66a70518d17975748117598809bb'
 
@@ -20,7 +21,7 @@ const ENDPOINT = 'https://api.indexnow.org/indexnow'
  * a failed ping must not fail the save that triggered it.
  */
 export async function submitToIndexNow(urls: string[]): Promise<void> {
-  if (process.env.VERCEL_ENV !== 'production') return
+  if (!isProductionDeployment()) return
   const urlList = [...new Set(urls)].filter((u) => u.startsWith(`${BASE}/`) || u === BASE)
   if (urlList.length === 0) return
 

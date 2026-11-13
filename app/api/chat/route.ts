@@ -283,7 +283,7 @@ async function sendLeadEmail(lead: Lead, state: ConversationState, location: Loc
   const toAddress = process.env.LEAD_EMAIL || process.env.EMAIL_USER;
 
   if (!toAddress) {
-    console.error("[99Visual] Skipping lead email — no destination address. Set LEAD_EMAIL in Vercel.");
+    console.error("[99Visual] Skipping lead email — no destination address. Set LEAD_EMAIL in the environment (.env on the server).");
     return;
   }
 

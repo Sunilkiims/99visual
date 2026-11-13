@@ -1,0 +1,36 @@
+# nginx site for www.99visual.com. setup-server.sh fills in ${DOMAIN} and ${APP_PORT};
+# certbot then adds the HTTPS parts. The app itself redirects 99visual.com → www.99visual.com.
+# test.${DOMAIN} is an optional address for trying the server before the real domain is switched
+# (the app marks it noindex, so search engines ignore it).
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN} www.${DOMAIN} test.${DOMAIN};
+
+    # Careers CVs and admin image uploads pass through the app.
+    client_max_body_size 25m;
+
+    gzip on;
+    gzip_proxied any;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+
+    location / {
+        proxy_pass http://127.0.0.1:${APP_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        # OVERWRITE the visitor address (never append), so it can't be faked to dodge rate limits.
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;    # the chat assistant waits for OpenAI
+    }
+
+    # Built JS/CSS never changes for a given file name.
+    location /_next/static/ {
+        proxy_pass http://127.0.0.1:${APP_PORT};
+        proxy_set_header Host $host;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}

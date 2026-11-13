@@ -5,13 +5,14 @@ import { BASE } from "@/lib/schema";
 import RouteProgressBar from "@/app/components/RouteProgressBar";
 import CookieConsent from "@/app/components/cookies/CookieConsent";
 import { isValidGaId } from "@/lib/analytics";
+import { isProductionDeployment } from "@/lib/deployment";
 
-// GA4 runs only on the production deployment (never previews or local dev),
-// only once a valid measurement ID is configured in Vercel, and only after
-// the visitor allows Analytics cookies (enforced inside <CookieConsent />).
+// GA4 runs only on the production deployment (never previews or local dev;
+// see lib/deployment.ts — VERCEL_ENV on Vercel, APP_ENV on our own server),
+// only once a valid measurement ID is configured, and only after the visitor
+// allows Analytics cookies (enforced inside <CookieConsent />).
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-const ANALYTICS_ENABLED =
-  process.env.VERCEL_ENV === "production" && isValidGaId(GA_ID);
+const ANALYTICS_ENABLED = isProductionDeployment() && isValidGaId(GA_ID);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

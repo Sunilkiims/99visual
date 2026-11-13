@@ -22,7 +22,7 @@ async function sendConfirmationEmail(email: string) {
 
   const fromAddress = process.env.RESEND_FROM;
   if (!fromAddress) {
-    console.error('[Newsletter] Skipping confirmation email — set RESEND_FROM in Vercel.');
+    console.error('[Newsletter] Skipping confirmation email — set RESEND_FROM in the environment (.env on the server).');
     return;
   }
 

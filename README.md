@@ -29,6 +29,13 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Hosting on Oracle Cloud
+
+The site can run on a free Oracle Cloud Arm server instead of Vercel, with its PostgreSQL database on the
+same server. Step-by-step move from Vercel + Neon: [deploy/oracle/DEPLOY-ORACLE.md](deploy/oracle/DEPLOY-ORACLE.md).
+On your own server set `APP_ENV=production` (Vercel's `VERCEL_ENV` is used otherwise) so Google Analytics
+and IndexNow run only on the live site.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
