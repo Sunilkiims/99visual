@@ -112,7 +112,7 @@ export const metadata: Metadata = {
         width:  1200,
         height: 630,
         type:   "image/jpeg",
-        alt:    "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
+        alt:    "Website and web app development by 99 Visual Solutions",
       },
     ],
     locale: "en_US",
@@ -122,13 +122,13 @@ export const metadata: Metadata = {
   twitter: {
     card:        "summary_large_image",
     title:       "Website Development Company in India | 99 Visual Solutions",
-    description: "Custom web apps, responsive business websites, e-commerce builds, and SEO-friendly development in React & Next.js — from a website development company based in Bengaluru, India.",
+    description: "Custom web apps, responsive business websites, e-commerce builds, and SEO-friendly development in React & Next.js — from a team based in Bengaluru, India.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
     images: [
       {
         url: `${BASE_SAFE}/images/og/web-development-og.jpg`,
-        alt: "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
+        alt: "Website and web app development by 99 Visual Solutions",
       },
     ],
   },
@@ -161,7 +161,7 @@ const wdevBreadcrumbNode = breadcrumbFromItems([
 const wdevServiceNode = {
   ...serviceSchema({
     name:        "Website Development",
-    description: "Website development company services from 99 Visual Solutions: custom website development, business websites, and web application builds, UX/UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations — delivered from Bengaluru, India for clients in India and abroad.",
+    description: "Website development services from 99 Visual Solutions: custom websites, business websites, and web application builds, UX/UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations — delivered from Bengaluru, India for clients in India and abroad.",
     pathname:    "/services/website-development",
     image:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
   }),
@@ -213,7 +213,7 @@ const wdevPageNode = {
   "@id":         `${BASE_SAFE}/services/website-development#webpage`,
   url:           `${BASE_SAFE}/services/website-development`,
   name:          "Website Development Company in India | 99 Visual Solutions",
-  description:   "99 Visual Solutions is a website development company in India, covering custom website development, business websites, and web application builds — UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations, delivered from Bengaluru for clients in India and abroad.",
+  description:   "99 Visual Solutions builds custom websites, business websites, and web application builds — UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations, delivered from Bengaluru for clients in India and abroad.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -225,7 +225,7 @@ const wdevPageNode = {
     url:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
     width:     1200,
     height:    630,
-    caption:   "Website Development Company in India — Web & Web App Development Services by 99 Visual Solutions",
+    caption:   "Website and web app development by 99 Visual Solutions",
   },
   speakable: {
     "@type":     "SpeakableSpecification",
@@ -502,9 +502,9 @@ const faqItems = [
       `Yes — this is one of the more common requests we get. We start with a technical audit to separate what's genuinely broken from what's just old, then migrate incrementally where that's safer than a full rebuild. Email ${CONTACT_EMAIL} with some background on your current system and we'll give you a straight read on what it would take.`,
   },
   {
-    question: "Are you a website development company based in India?",
+    question: "Where is your team based, and do you work with clients outside India?",
     answer:
-      "Yes. 99 Visual Solutions is a website development company headquartered in Bengaluru (Bangalore), Karnataka, India. Being based here doesn't limit who we work with — our team also builds and supports websites and web applications for clients in the US, UK, UAE, and Australia, all from the same India-based delivery team.",
+      "Our team is based in Bengaluru (Bangalore), Karnataka, India. We also build and support websites and web applications for clients in the US, UK, UAE and Australia, with the same team handling the work.",
   },
   {
     question: "What's the difference between a business website and a custom web application?",
@@ -514,7 +514,7 @@ const faqItems = [
   {
     question: "Do you build custom websites, or work from templates?",
     answer:
-      "We build custom website development projects rather than reskinning a theme. That doesn't mean starting from a blank file for everything — reusable components and a documented design system keep the build efficient — but the structure, layout, and functionality are scoped to how your business actually sells and operates, not to a template's assumptions.",
+      "We build custom sites rather than reskinning a theme. That doesn't mean starting from a blank file for everything — reusable components and a documented design system keep the build efficient — but the structure, layout, and functionality are scoped to how your business actually sells and operates, not to a template's assumptions.",
   },
   {
     question: "How much does professional website development cost in India?",
@@ -1041,11 +1041,11 @@ export default function WebsiteDevelopment() {
             <div className="wdev-expertise__head">
               <span className="wdev-label">How We Think About It</span>
               <h2 className="wdev-h2" id="wdev-expertise-heading">
-                What a <em>website development company</em> actually does
+                What <em>website development</em> actually covers
               </h2>
               <p className="wdev-sub">
-                "Website development" covers a wide range of work. As a web development company in
-                India, here's how we break it down, and what each piece means for your project.
+                "Website development" covers a wide range of work. Here's how we break it down, and
+                what each piece means for your project.
               </p>
             </div>
             <div className="wdev-expertise__grid">
@@ -1054,9 +1054,8 @@ export default function WebsiteDevelopment() {
                 <p>
                   A business website — a marketing site, a service catalogue, a lead-generation
                   page — is judged on clarity, speed, and conversions. A custom web application adds
-                  logins, dashboards, or internal workflows on top of that. As a <strong>custom website
-                  development company</strong>, we scope each project against which of these you actually
-                  need, then build the site so it can grow into the other without a rebuild if your
+                  logins, dashboards, or internal workflows on top of that. We scope each project
+                  against which of these you actually need, then build the site so it can grow into the other without a rebuild if your
                   business does.
                 </p>
               </div>
@@ -1118,17 +1117,13 @@ export default function WebsiteDevelopment() {
           <div className="wdev-location__inner">
             <span className="wdev-label">Where We're Based</span>
             <h2 className="wdev-h2" id="wdev-location-heading">
-              A website development company in <em>Bengaluru, India</em>
+              Based in <em>Bengaluru</em>, working across India
             </h2>
             <p className="wdev-location__p">
-              99 Visual Solutions is a <strong>website development company in Bangalore</strong> —
-              headquartered in Bengaluru, Karnataka, and working as a{" "}
-              <strong>business website development company</strong> and{" "}
-              <strong>web application development company in India</strong> for clients across the
-              country. Being a <strong>web development company in Bangalore</strong> also means our full
-              design and engineering team sits together in one time zone, which keeps communication and
-              turnaround fast on projects for clients elsewhere in India as well as in the US, UK, UAE,
-              and Australia. Read more about our team and background on the{" "}
+              Our design and engineering team works together from Bengaluru (Bangalore), Karnataka,
+              in one time zone. That keeps questions, reviews and fixes moving quickly, whether the
+              project is a business website or a custom web application, and whether the client is
+              elsewhere in India or in the US, UK, UAE or Australia. Read more about our team and background on the{" "}
               <Link href="/about">About 99 Visual Solutions</Link> page.
             </p>
           </div>
@@ -1409,8 +1404,8 @@ export default function WebsiteDevelopment() {
                 Benefits of working with <em>99 Visual</em>
               </h2>
               <p className="wdev-benefits__sub">
-                A website is only worth what it does for your business afterward. As a professional
-                website development company, here's what that looks like in practice when you work with us.
+                A website is only worth what it does for your business afterward. Here's what that
+                looks like in practice when you work with us.
               </p>
             </div>
             <div className="wdev-benefits__grid">
