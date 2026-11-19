@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   title: "3D Visualization & Architectural Rendering",
 
   description:
-    "Photorealistic architectural rendering, 3D walkthrough animation, BIM modeling and LiDAR processing for architects, developers and product designers.",
+    "Photorealistic architectural rendering, 3D walkthrough animation, product visualization and scan-to-BIM modeling for architects, developers and product designers.",
 
   metadataBase: new URL(BASE_SAFE),
 
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     siteName:    "99 Visual Solutions",
     locale:      "en_US",
     title:       "3D Visualization & Architectural Rendering Services | 99 Visual Solutions",
-    description: "Photorealistic architectural renders, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR processing — built in-house, delivered on a fixed production timeline.",
+    description: "Photorealistic architectural renders, 3D walkthrough animation, product visualization and scan-to-BIM modeling — built in-house, delivered on a fixed production timeline.",
     images: [
       {
         url:    `${BASE_SAFE}/images/services/visualization-og.jpg`,
@@ -223,7 +223,7 @@ const vizPageNode = {
   "@id":         `${PAGE_CANONICAL}#webpage`,
   url:           PAGE_CANONICAL,
   name:          "3D Visualization & Architectural Rendering | 99 Visual Solutions",
-  description:   "Photorealistic architectural rendering, 3D walkthrough animation, CAD drafting, BIM modeling, and LiDAR processing for architects, developers & product designers worldwide.",
+  description:   "Photorealistic architectural rendering, 3D walkthrough animation, product visualization and scan-to-BIM modeling for architects, developers & product designers worldwide.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -400,8 +400,8 @@ const benefits = [
 // itself, same mechanism as those pages.
 const pipeline = [
   { cmd: "render_export",   out: "4K H.264 ready" },
-  { cmd: "lidar_import",    out: "18.2M points aligned" },
-  { cmd: "bim_clash_check", out: "0 conflicts flagged" },
+  { cmd: "lidar_import",    out: "points aligned" },
+  { cmd: "bim_clash_check", out: "clashes reviewed" },
   { cmd: "material_pass",   out: "V-Ray final render" },
   { cmd: "revision_round",  out: "2 of 2 included" },
   { cmd: "delivery_package",out: "DWG + RVT + MP4" },

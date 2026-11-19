@@ -908,23 +908,22 @@ export default function DigitalMarketing() {
               them for budget and attention.
             </p>
             <p className="dm-intro__p">
-              Whether you are a startup launching your first product in Bangalore
-              or an enterprise modernising a legacy stack across India, we scale
-              with your ambition and operate as a{" "}
-              <strong>true extension of your team</strong>.
+              Engagements range from a one-off technical SEO audit to ongoing
+              management of search and paid campaigns, with{" "}
+              <strong>one monthly report</strong> covering every channel we run.
             </p>
             <div className="dm-stats">
               <div className="dm-stat">
-                <div className="dm-stat__num">3</div>
-                <div className="dm-stat__label">Disciplines working as one: SEO, digital marketing &amp; web development</div>
+                <div className="dm-stat__num">5</div>
+                <div className="dm-stat__label">Channels under one plan: SEO, paid search, social, content &amp; email</div>
               </div>
               <div className="dm-stat">
                 <div className="dm-stat__num">1</div>
-                <div className="dm-stat__label">Reporting cadence, full visibility across every channel</div>
+                <div className="dm-stat__label">Monthly report covering every channel we manage</div>
               </div>
               <div className="dm-stat">
-                <div className="dm-stat__num">100%</div>
-                <div className="dm-stat__label">Decisions backed by data, not guesses</div>
+                <div className="dm-stat__num">GSC + GA4</div>
+                <div className="dm-stat__label">The data every recommendation is checked against</div>
               </div>
             </div>
           </div>
@@ -936,7 +935,7 @@ export default function DigitalMarketing() {
             <div className="dm-why__head">
               <span className="dm-why__label">Why 99 Visual</span>
               <h2 className="dm-why__h2" id="dm-why-heading">
-                SEO, website development and digital marketing — <em>engineered together</em>
+                Search, paid and content, planned as <em>one programme</em>
               </h2>
             </div>
             <p className="dm-why__p">
@@ -1038,31 +1037,32 @@ export default function DigitalMarketing() {
             <div>
               <span className="dm-webdev__label">The Differentiator</span>
               <h2 className="dm-webdev__h2" id="dm-webdev-heading">
-                Where <em>website development</em> meets SEO
+                When the <em>website itself</em> is the ranking problem
               </h2>
               <p className="dm-webdev__p">
-                An SEO strategy is only as strong as the website it’s built on. A
-                site that’s slow, hard to crawl, or badly structured will always
-                fight against the strategy layered on top of it. That’s why we
-                pair SEO and digital marketing with our own{" "}
+                Content and links can&apos;t rank pages that search engines struggle
+                to crawl, render or trust. So every engagement starts by checking
+                the site itself, and the findings are written as specific tickets
+                your developers can act on. When the honest answer is that the
+                platform needs replacing, the build is handled by our{" "}
                 <Link href="/services/website-development">website development</Link>{" "}
-                team, building in Next.js and React — rather than handing you off
-                to optimise a site neither of us built.
+                team, so the SEO requirements are part of the brief rather than a
+                retrofit.
               </p>
               <Link href="/services/website-development" className="dm-webdev__link">
-                See how we build SEO-ready websites
+                How we build SEO-ready websites
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </Link>
             </div>
             <ul className="dm-webdev__list">
-              <li><b>Modern architecture —</b> Next.js/React builds that are fast, crawlable and easy to extend as content and campaigns grow.</li>
-              <li><b>Core Web Vitals —</b> page speed and stability engineered in, not patched on after launch.</li>
-              <li><b>Structured data &amp; accessibility —</b> semantic HTML and schema markup that help both search engines and assistive technology understand the page.</li>
-              <li><b>Conversion-focused UX —</b> pages designed around the action you actually want a visitor to take.</li>
-              <li><b>Analytics from day one —</b> Google Analytics 4 and conversion tracking set up at launch, not months later.</li>
-              <li><b>QA before it ships —</b> supported by our <Link href="/services/automation-testing">automation &amp; QA testing</Link> team, so changes don’t break what’s already working.</li>
+              <li><b>Indexing status —</b> Search Console&apos;s page indexing report read reason by reason, for example &ldquo;Crawled – currently not indexed&rdquo; versus &ldquo;Duplicate, Google chose different canonical&rdquo;, because each has a different fix.</li>
+              <li><b>Rendering —</b> whether the main content and links are in the server-rendered HTML or only appear after JavaScript runs.</li>
+              <li><b>Canonicals, redirects &amp; sitemaps —</b> one indexable URL per page, single-hop redirects, and a sitemap that lists only those URLs.</li>
+              <li><b>Core Web Vitals —</b> field data (LCP, INP, CLS) from real visitors, not just a lab score, with the specific elements that cause each problem.</li>
+              <li><b>Internal links —</b> whether important pages are linked from the body of related pages, not only from menus and footers.</li>
+              <li><b>Tracking —</b> GA4 events and conversions checked before any campaign spend, so results can be measured from the first day.</li>
             </ul>
           </div>
         </section>

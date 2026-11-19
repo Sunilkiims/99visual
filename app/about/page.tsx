@@ -28,6 +28,7 @@
 
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import type { Metadata } from "next";
+import Link from "next/link";
 import Header           from "../components/header";
 import Footer           from "../components/footer";
 import ScrollDown       from "../components/scrolldown";
@@ -276,6 +277,8 @@ export default function AboutPage() {
         @media(max-width:960px){.ab-hero__rule{margin:0 auto 1.4rem;background:linear-gradient(90deg,transparent,var(--ab-blue),transparent);}}
         .ab-hero__sub{font-family:'Inter',sans-serif;font-size:clamp(.92rem,1.6vw,1.05rem);font-weight:300;line-height:1.8;color:rgba(255,255,255,0.78);max-width:560px;margin:0 0 2.6rem;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .34s both;text-shadow:0 1px 12px rgba(0,0,0,.4);}
         @media(max-width:960px){.ab-hero__sub{margin:0 auto 2.6rem;}}
+        .ab-hero__sub a{color:#fff;text-decoration:underline;text-decoration-color:rgba(249,115,22,.7);text-underline-offset:3px;}
+        .ab-hero__sub a:hover{color:#f97316;}
         .ab-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;animation:abFadeUp .9s cubic-bezier(.22,1,.36,1) .44s both;}
         @media(max-width:960px){.ab-hero__actions{justify-content:center;}}
         .ab-hero__btn--primary{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#080808;background:linear-gradient(135deg,#6a8bff,var(--ab-blue));padding:14px 32px;border-radius:10px;text-decoration:none;box-shadow:0 8px 32px rgba(46,92,255,.35);transition:transform .2s ease,box-shadow .2s ease;border:none;cursor:pointer;}
@@ -372,9 +375,11 @@ export default function AboutPage() {
               </h1>
               <div className="ab-hero__rule" aria-hidden="true" />
               <p className="ab-hero__sub">
-                From bold web experiences to precise spatial data — 99 Visual
-                Solutions turns complex ideas into digital realities that
-                drive real, measurable growth.
+                From <Link href="/services/website-development">websites and web apps</Link> to{" "}
+                <Link href="/services/cad-gis-photogrammetry">CAD, GIS and LiDAR mapping</Link>,{" "}
+                <Link href="/services/automation-testing">software testing</Link> and{" "}
+                <Link href="/services/digital-marketing-seo">search marketing</Link>, 99 Visual
+                Solutions turns complex ideas into digital work that drives measurable growth.
               </p>
               <div className="ab-hero__actions">
                 <ConsultationCTA className="ab-hero__btn--primary" ariaLabel="Get a free project quote from 99 Visual Solutions">

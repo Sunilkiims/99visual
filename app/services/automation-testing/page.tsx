@@ -34,9 +34,9 @@ import ScrollDown     from "@/app/components/scrolldown";
 import ConsultationCTA from "@/app/components/ConsultationCTA";
 
 import {
-  FaBug, FaCogs, FaChartLine, FaRocket, FaShieldAlt, FaTools,
+  FaBug, FaCogs, FaChartLine, FaShieldAlt, FaTools,
   FaMobileAlt, FaUniversalAccess, FaPlug, FaRobot, FaCloud,
-  FaSitemap, FaBuilding, FaCode, FaCheckCircle,
+  FaSitemap, FaDatabase, FaBuilding, FaCode, FaCheckCircle,
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
@@ -191,7 +191,12 @@ const FAQ_ITEMS = [
   {
     question: "Can you work with our existing QA team?",
     answer:
-      `Yes. We regularly work alongside in-house QA teams — extending existing automation frameworks, building out coverage in areas your team hasn't had bandwidth for, or handling a specific testing discipline (performance, security, mobile) that complements what your team already does. Tell us your current setup at ${CONTACT_EMAIL} and we'll scope how we fit in rather than duplicate effort.`,
+      `Yes. We can extend an existing automation framework, add coverage in areas your team hasn't had time for, or take on one discipline (performance, security, mobile) alongside your testers. Tell us about your current setup at ${CONTACT_EMAIL} and we'll scope where we fit without duplicating work.`,
+  },
+  {
+    question: "How do you deal with flaky tests?",
+    answer:
+      "A test that passes and fails on the same code is quarantined and logged, not hidden behind automatic retries. We then fix the cause, which is usually timing (waiting on a fixed delay instead of a condition), shared test data, or an unstable third-party dependency. The flaky rate is reported with every run so it stays visible.",
   },
 ];
 
@@ -275,13 +280,16 @@ const qaGraph = buildGraph(
   qaFaqNode,
 );
 
-const benefits = [
-  { icon: <FaBug />,          title: "Earlier Defect Detection",     description: "Shift-left testing embeds QA into requirements review and development, not just the days before release — so defects surface while they're still cheap to fix." },
-  { icon: <FaCogs />,         title: "Lower Regression Risk",        description: "Automated regression suites re-verify existing functionality on every build, catching breakage introduced by new code before it reaches staging or production." },
-  { icon: <FaChartLine />,    title: "Performance You Can Plan Around", description: "Load, stress and endurance testing under realistic traffic patterns gives your team concrete bottleneck data instead of guesswork about where the system will strain." },
-  { icon: <FaShieldAlt />,    title: "A Stronger Security Baseline", description: "OWASP-oriented testing and authentication/authorization checks catch common vulnerability classes as part of the regular test cycle, not a one-off audit." },
-  { icon: <FaRocket />,       title: "Calmer, More Predictable Releases", description: "CI/CD-integrated quality gates give engineering and product teams an objective basis for release confidence, instead of relying on \"it seemed fine.\"" },
-  { icon: <FaTools />,        title: "Less Manual Regression Toil",  description: "Automating the repetitive checks frees your QA engineers to spend their time on exploratory testing, edge cases and new feature coverage — the work automation can't do." },
+// "What a useful test strategy defines" — concrete decisions a team can
+// check any QA engagement against. Replaces six generic "why choose us"
+// cards. Standard practice only; no claims about past projects.
+const strategy = [
+  { icon: <FaSitemap />,      title: "Where each check lives", description: "Most checks belong at unit and API level, where they run in seconds and fail for one clear reason. End-to-end browser tests are kept to the critical user journeys (sign-up, checkout, the core workflow), because a suite that is mostly UI tests is slow and breaks for reasons unrelated to the product." },
+  { icon: <FaShieldAlt />,    title: "What blocks a release",  description: "Gates written down in advance: a smoke suite on every pull request, full regression before release, a response-time budget such as p95 under a stated limit, and no serious or critical axe-core violations against WCAG 2.2 AA. If a gate can be overridden, the strategy says who can override it." },
+  { icon: <FaBug />,          title: "A flaky-test policy",    description: "A test that passes and fails on the same code is quarantined and tracked, not silently retried until green. Retries are reported, and the flaky rate is a number someone owns. Without this, teams learn to ignore red builds." },
+  { icon: <FaDatabase />,     title: "Test data & environments", description: "Seeded, resettable data that tests create and clean up themselves, rather than a shared staging database. Third-party APIs are stubbed or covered by contract tests (Pact, for example), so a partner's sandbox outage doesn't fail your pipeline." },
+  { icon: <FaCode />,         title: "Maintainable test code", description: "Locators based on accessible roles or dedicated test IDs instead of CSS paths, shared page or screen objects, and test code that lives in the product repository and is reviewed like product code." },
+  { icon: <FaTools />,        title: "Reporting & handover",   description: "Results visible in the CI run itself (Playwright HTML, Allure or JUnit reports) with traces, screenshots and video on failure, plus a short runbook so your own engineers can add, fix and retire tests without us." },
 ];
 
 const services = [
@@ -607,6 +615,7 @@ export default function AutomationTestingPage() {
         .qa-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
         .qa-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--qa-muted);max-width:700px;margin:0 auto .9rem;}
         .qa-intro__p strong{color:var(--qa-ink);font-weight:500;}
+        .qa-intro__p a{color:var(--qa-blue);text-decoration:underline;text-underline-offset:3px;}
 
         /* ══ WHAT WE TEST ══════════════════════════════════════════════ */
         .qa-wwt{background:var(--qa-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--qa-line);}
@@ -829,10 +838,10 @@ export default function AutomationTestingPage() {
               on every commit, and <strong>CI/CD quality gates</strong> that catch regressions before they reach production.
             </p>
             <p className="qa-intro__p">
-              We combine <strong>risk-based test prioritisation</strong>, automated regression coverage, and
-              application observability to give engineering teams an accurate, continuously updated picture of
-              release readiness — so &quot;ready to ship&quot; is a measured statement, backed by test results,
-              not a guess.
+              Coverage is prioritised by risk: the flows that cost the most when they break get tested
+              first and deepest. For products we build ourselves, this sits alongside{" "}
+              <Link href="/services/website-development">website and web app development</Link>; for
+              existing products, we start from your current pipeline and test suite.
             </p>
           </div>
         </section>
@@ -940,12 +949,12 @@ export default function AutomationTestingPage() {
             <div className="qa-ind__head">
               <span className="qa-label">Industries</span>
               <h2 className="qa-h2" id="qa-ind-heading">
-                Testing scenarios we can <em>support</em>
+                What each product type <em>puts at risk</em>
               </h2>
             </div>
             <p className="qa-ind__note">
-              These reflect the kinds of testing challenges each industry typically presents —
-              not a claim of prior client work in every sector listed.
+              Test effort should follow the cost of failure. These are the areas that usually
+              deserve the deepest coverage in each kind of product.
             </p>
             <div className="qa-ind__grid">
               {industries.map((ind) => (
@@ -963,17 +972,17 @@ export default function AutomationTestingPage() {
         <section className="qa-benefits" aria-labelledby="qa-benefits-heading">
           <div className="qa-benefits__inner">
             <div className="qa-benefits__head">
-              <span className="qa-benefits__label">Why Choose Us?</span>
+              <span className="qa-benefits__label">Judge Any QA Engagement</span>
               <h2 className="qa-benefits__h2" id="qa-benefits-heading">
-                The business case for <em>continuous</em> quality engineering
+                What a useful <em>test strategy</em> defines
               </h2>
               <p className="qa-benefits__sub">
-                Partnering with 99 Visual Solutions gives your engineering team a dedicated quality
-                engineering layer — human expertise plus automation, working together.
+                Test automation earns its cost only when these six decisions are made explicitly.
+                Use them as a checklist, whether we build your suite or someone else does.
               </p>
             </div>
             <div className="qa-benefits__grid">
-              {benefits.map((b, i) => (
+              {strategy.map((b, i) => (
                 <div className="qa-benefit-card" key={i}>
                   <div className="qa-benefit-card__icon" aria-hidden="true">{b.icon}</div>
                   <div className="qa-benefit-card__title">{b.title}</div>

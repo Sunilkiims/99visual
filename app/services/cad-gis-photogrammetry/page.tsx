@@ -96,7 +96,7 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title:       "CAD, GIS & Photogrammetry Services | LiDAR, 3D Mapping & Geospatial Solutions",
+    title:       "CAD, GIS, LiDAR & Photogrammetry Services | 99 Visual Solutions",
     description: "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modeling, and spatial analysis — precision geospatial engineering by 99 Visual Solutions.",
     url: PAGE_URL,
     siteName: "99 Visual Solutions",
@@ -115,7 +115,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card:        "summary_large_image",
-    title:       "CAD, GIS & Photogrammetry | LiDAR, 3D Mapping — 99 Visual Solutions",
+    title:       "CAD, GIS, LiDAR & Photogrammetry Services | 99 Visual Solutions",
     description: "CAD drafting, GIS mapping, drone photogrammetry, LiDAR processing, terrain modeling & spatial analysis by 99 Visual Solutions.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
@@ -173,12 +173,17 @@ const FAQ_ITEMS = [
   {
     question: "What formats do you deliver data in?",
     answer:
-      "Whatever your workflow needs: DWG/DXF for CAD, Shapefile/File Geodatabase/GeoJSON for GIS, LAS/LAZ for point clouds, GeoTIFF for orthomosaics and raster elevation models, and OBJ/FBX for 3D mesh models, among others. We confirm required formats, coordinate reference systems, and datum during project scoping so deliverables load directly into your existing systems.",
+      "DWG/DXF for CAD, Shapefile, File Geodatabase, GeoPackage or GeoJSON for GIS, LAS/LAZ for point clouds, GeoTIFF (including Cloud Optimized GeoTIFF) for orthomosaics and elevation rasters, and OBJ/FBX for 3D meshes. The format, coordinate reference system and vertical datum are fixed in writing during scoping.",
+  },
+  {
+    question: "What do you need from us to quote a mapping or LiDAR project?",
+    answer:
+      "The area of interest as a KML, Shapefile or marked-up drawing; what the data will be used for; the deliverables and formats you expect; the coordinate system and vertical datum; your accuracy target; and any existing data (drone imagery, point clouds, survey control, base drawings). If some of these are still open, we can recommend values based on the intended use.",
   },
   {
     question: "Do you provide survey-grade accuracy?",
     answer:
-      "Achievable accuracy depends on ground control points (GCPs), sensor quality, and flight/survey parameters — we'll tell you plainly what accuracy is realistic for your project's constraints before you commit, rather than promising a number that depends on decisions not yet made. Where survey-grade accuracy is required, we plan GCP placement and GNSS post-processing (PPK/RTK) accordingly.",
+      "Achievable accuracy depends on ground control, sensor, flying height and terrain, so we agree a realistic target before work starts instead of quoting a figure up front. Where survey-grade results are needed, we plan GCP placement and GNSS correction (RTK or PPK), and report accuracy against independent checkpoints that were not used in processing.",
   },
   {
     question: "Can you work with drone or LiDAR data we've already captured?",
@@ -193,7 +198,7 @@ const FAQ_ITEMS = [
   {
     question: "What industries do you work with?",
     answer:
-      "Infrastructure, civil engineering, construction, urban planning, utilities, transportation, mining, environmental and land management, agriculture, and government/public works projects most commonly need this combination of CAD, GIS, LiDAR and photogrammetry services — see the industries section below for specifics on the kinds of mapping challenges each typically presents.",
+      "Civil engineering and infrastructure, construction, urban planning, utilities, transportation, mining, environmental and land management, agriculture, telecom and public works are the sectors that most often need CAD, GIS, LiDAR and photogrammetry together. The industries section on this page lists the deliverables each one typically asks for.",
   },
   {
     question: "Do you sign NDAs and handle geospatial data securely?",
@@ -249,7 +254,7 @@ const cgPageNode = {
   "@type":       "WebPage",
   "@id":         `${PAGE_URL}#webpage`,
   url:           PAGE_URL,
-  name:          "CAD, GIS & Photogrammetry Services | LiDAR — 99 Visual Solutions",
+  name:          "CAD, GIS, LiDAR & Photogrammetry Services",
   description:   "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modeling, and spatial analysis for infrastructure, engineering, construction, and government projects.",
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
@@ -282,13 +287,17 @@ const cgGraph = buildGraph(
   cgFaqNode,
 );
 
-const benefits = [
-  { icon: <FaDraftingCompass />, title: "Accurate CAD Drafting",       description: "Precise CAD drawings and drafting for engineering, architecture, and infrastructure projects, delivered to the standards your downstream design and construction teams need." },
-  { icon: <FaMapMarkedAlt />,    title: "GIS Data You Can Act On",     description: "Raw geospatial data transformed into structured, analysis-ready GIS datasets for urban planning, resource management, and infrastructure decisions." },
-  { icon: <FaSatellite />,       title: "Reliable Photogrammetry",     description: "Drone-captured orthomosaics and 3D models processed with attention to ground control and georeferencing, not just raw image stitching." },
-  { icon: <FaCubes />,           title: "Clean LiDAR Outputs",         description: "Classified LiDAR point clouds and terrain models that arrive ready to use — not raw data your team has to clean up first." },
-  { icon: <FaLayerGroup />,      title: "CAD & GIS That Talk to Each Other", description: "Seamless conversion between CAD and GIS formats so data moves between your engineering and mapping workflows without manual rebuilding." },
-  { icon: <FaProjectDiagram />,  title: "Deliverables in Your Format", description: "Data handed over in the format and coordinate system your systems already use, confirmed during scoping so nothing needs reworking on delivery." },
+// "What to specify" — the decisions that determine whether a geospatial
+// deliverable is usable on arrival. Replaces six generic "why choose us"
+// cards that restated the service list. Standard industry practice only; no
+// claims about past projects.
+const specs = [
+  { icon: <FaMapMarkedAlt />,    title: "Coordinate system & datum",   description: "Name the horizontal CRS by its EPSG code (for example EPSG:32643, WGS 84 / UTM zone 43N, which covers Bengaluru) and the vertical datum heights should refer to. A missing or assumed datum is the most common reason two correct datasets don't line up." },
+  { icon: <FaRulerCombined />,   title: "Accuracy target, and how it's checked", description: "State horizontal and vertical accuracy as RMSE, or as a class under the ASPRS Positional Accuracy Standards. Ask for it to be verified against independent checkpoints, not the ground control points used to build the model." },
+  { icon: <FaCubes />,           title: "Point cloud specification",   description: "LAS 1.4 (or compressed LAZ), the minimum point density in points per m², and the ASPRS classes you need: 2 ground, 3–5 vegetation, 6 building, 9 water, 7 and 18 for noise. Classes you won't use don't need to be paid for." },
+  { icon: <FaMountain />,        title: "Elevation products",          description: "DTM, DSM or both, the raster cell size, and the contour interval. The interval should be justified by the vertical accuracy of the source data. A 0.25 m contour drawn from data accurate to 0.5 m only looks precise." },
+  { icon: <FaDraftingCompass />, title: "CAD standards",               description: "Your layer naming convention or template (a client standard or the US National CAD Standard), drawing units, the DWG version your team runs, title block, and whether references should be bound or kept as xrefs." },
+  { icon: <FaDatabase />,        title: "GIS schema & delivery",       description: "Feature classes, attribute fields and coded domains, File Geodatabase versus GeoPackage or Shapefile, metadata, and the tiling and file-naming scheme for large rasters and point clouds." },
 ];
 
 const services = [
@@ -614,6 +623,7 @@ export default function CADGISPhotogrammetry() {
         .cg-intro__inner{max-width:860px;margin:0 auto;text-align:center;}
         .cg-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--cg-muted);max-width:700px;margin:0 auto .9rem;}
         .cg-intro__p strong{color:var(--cg-ink);font-weight:500;}
+        .cg-intro__p a{color:var(--cg-blue);text-decoration:underline;text-underline-offset:3px;}
 
         /* ══ WHAT WE DELIVER ═══════════════════════════════════════════ */
         .cg-del{background:var(--cg-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--cg-line);}
@@ -841,9 +851,12 @@ export default function CADGISPhotogrammetry() {
             </p>
             <p className="cg-intro__p">
               Whether the deliverable is a design-ready CAD file, a structured GIS database, or a
-              classified LiDAR point cloud, we confirm <strong>accuracy requirements, formats, and
-              coordinate systems</strong> before work starts — so what you receive is ready to use,
-              not raw data your team has to clean up first.
+              classified LiDAR point cloud, we agree <strong>accuracy, formats and coordinate
+              systems</strong> in writing before work starts (the checklist further down this page
+              lists what that covers). Processed data can also feed{" "}
+              <Link href="/services/visualization">3D visualisation and walkthroughs</Link> or a{" "}
+              <Link href="/services/website-development">web-based map portal</Link> for people
+              who don&apos;t run GIS software.
             </p>
           </div>
         </section>
@@ -951,12 +964,12 @@ export default function CADGISPhotogrammetry() {
             <div className="cg-ind__head">
               <span className="cg-label">Industries</span>
               <h2 className="cg-h2" id="cg-ind-heading">
-                Mapping scenarios we can <em>support</em>
+                What each sector <em>usually needs</em>
               </h2>
             </div>
             <p className="cg-ind__note">
-              These reflect the kinds of mapping and modeling challenges each sector typically
-              presents — not a claim of prior client work in every sector listed.
+              Every sector draws on the same building blocks in a different mix. These are the
+              deliverables each one most often asks for.
             </p>
             <div className="cg-ind__grid">
               {industries.map((ind) => (
@@ -974,17 +987,18 @@ export default function CADGISPhotogrammetry() {
         <section className="cg-benefits" aria-labelledby="cg-benefits-heading">
           <div className="cg-benefits__inner">
             <div className="cg-benefits__head">
-              <span className="cg-benefits__label">Why Choose Us?</span>
+              <span className="cg-benefits__label">Before You Commission</span>
               <h2 className="cg-benefits__h2" id="cg-benefits-heading">
-                CAD and GIS that fit <em>your workflow</em>
+                What to specify for a <em>usable deliverable</em>
               </h2>
               <p className="cg-benefits__sub">
-                Partnering with 99 Visual Solutions gives your team geospatial and CAD engineering
-                expertise that plugs directly into the systems and formats you already use.
+                Most rework on mapping projects traces back to a decision nobody wrote down. Settle
+                these six at the start, with us or with any provider, and the data should load into
+                your systems without being rebuilt.
               </p>
             </div>
             <div className="cg-benefits__grid">
-              {benefits.map((b, i) => (
+              {specs.map((b, i) => (
                 <div className="cg-benefit-card" key={i}>
                   <div className="cg-benefit-card__icon" aria-hidden="true">{b.icon}</div>
                   <div className="cg-benefit-card__title">{b.title}</div>

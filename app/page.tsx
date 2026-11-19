@@ -2,11 +2,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Production-grade home page for 99 Visual Solutions
 //
-// LOADER FIX APPLIED:
-//   ✅ Page content now actually gated behind PageLoader instead of being
-//      rendered as an unrelated sibling underneath it. See HomeContent.tsx
-//      for the client-side reveal logic — PageLoader reports completion via
-//      onComplete, and only then does the page body mount/reveal.
+// RENDERING:
+//   ✅ The page body is NOT gated behind a loader: <HomeContent /> renders
+//      every section in the server HTML, so crawlers see the full content
+//      and internal links without running JavaScript. (An earlier version
+//      hid it behind PageLoader; that loader is no longer used here.)
 //   ✅ This file stays a server component (no 'use client') so all metadata
 //      and JSON-LD structured data continue to be present in the initial
 //      server-rendered HTML for crawlers/SEO, completely independent of the
@@ -184,7 +184,7 @@ const homeGraph = buildGraph(
 // Stays a server component so metadata + JSON-LD are present in the initial
 // HTML regardless of client-side loading state. All visual page content
 // (header, slider, sections, etc.) is delegated to <HomeContent />, a client
-// component that gates that content behind <PageLoader />'s completion.
+// component that is still server-rendered in full on the first request.
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (

@@ -47,23 +47,33 @@ export function getCategoryIcon(...labels: (string | null | undefined)[]): Lucid
 // ─────────────────────────────────────────────────────────────────────────────
 // Related service for an article — used for a contextual "related service"
 // link on Insights articles, so each article links to the service page it
-// is actually about (and that page gains a relevant internal link). Uses the
-// same matching order as getCategoryIcon above; returns null when an
-// article doesn't clearly map to one service, rather than forcing a link.
+// is actually about (and that page gains a relevant internal link). Returns
+// null when an article doesn't clearly map to one service, rather than
+// forcing a link.
+//
+// Rules run from MOST to LEAST specific. The previous order checked the
+// broad patterns (3d, web, website, next.js) first, so "Testing a Next.js
+// app with Playwright" mapped to Website Development and "LiDAR point cloud
+// to 3D model" to Visualization; QA was checked last and almost never won,
+// leaving /services/automation-testing with no article links at all.
+// "automat" was also dropped from the QA rule because it matched
+// "marketing automation". Covered by tests/insights/related-service.test.ts.
 // ─────────────────────────────────────────────────────────────────────────────
+const RELATED_SERVICE_RULES: { test: RegExp; href: string; label: string }[] = [
+  { test: /\bqa\b|\btest(s|ing)?\b|test automation|playwright|cypress|selenium|regression suite/, href: '/services/automation-testing', label: 'QA & Automation Testing' },
+  { test: /\bgis\b|\bcad\b|photogram|lidar|geospatial|point[\s-]?cloud|topograph|surveying|land survey|orthomosaic/, href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry' },
+  { test: /\bseo\b|search engine|digital marketing|\bmarketing\b|\bppc\b|google ads|algorithm/, href: '/services/digital-marketing-seo', label: 'Digital Marketing & SEO' },
+  { test: /\b3d\b|visuali[sz]|render|immers|walkthrough|\bbim\b/, href: '/services/visualization', label: '3D Visualization & Rendering' },
+  { test: /\bweb(site|sites| app| apps)?\b|frontend|front-end|full[\s-]?stack|next\.?js|react|e-?commerce/, href: '/services/website-development', label: 'Website & Web App Development' },
+  { test: /\bit[\s-]?consult|cloud|cyber|digital transformation/, href: '/services/it-consulting', label: 'IT Consulting' },
+]
+
 export function getRelatedService(
   ...labels: (string | null | undefined)[]
 ): { href: string; label: string } | null {
   const s = labels.filter(Boolean).join(' ').toLowerCase()
-
-  if (/3d|visuali[sz]|render|immers/.test(s)) return { href: '/services/visualization', label: '3D Visualization & Rendering' }
-  if (/\bweb(site)?\b|frontend|full[\s-]?stack|next\.?js/.test(s)) return { href: '/services/website-development', label: 'Website & Web App Development' }
-  if (/\bit[\s-]?consult|cloud|cyber/.test(s)) return { href: '/services/it-consulting', label: 'IT Consulting' }
-  if (/market|\bseo\b|search engine|algorithm/.test(s)) return { href: '/services/digital-marketing-seo', label: 'Digital Marketing & SEO' }
-  if (/\bgis\b|\bcad\b|photogram|lidar|spatial|mapping|survey/.test(s)) return { href: '/services/cad-gis-photogrammetry', label: 'CAD, GIS & Photogrammetry' }
-  if (/automat|testing|\bqa\b/.test(s)) return { href: '/services/automation-testing', label: 'QA & Automation Testing' }
-
-  return null
+  const rule = RELATED_SERVICE_RULES.find((r) => r.test.test(s))
+  return rule ? { href: rule.href, label: rule.label } : null
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
