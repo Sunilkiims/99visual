@@ -1,6 +1,19 @@
 // components/ourservices.tsx
 
 import Link from 'next/link';
+import { FaCompass, FaClipboardList, FaPencilRuler, FaCogs, FaFlask, FaRocket } from 'react-icons/fa';
+import { RequestFlow, type FlowHop } from '@/app/components/infographics';
+
+// Animated "how every project runs" flow — the same delivery rhythm across
+// every service line (shown under the service cards).
+const DELIVERY: FlowHop[] = [
+  { title: 'Discover', note: 'Goals, users & scope',      icon: <FaCompass />,       tone: 'orange' },
+  { title: 'Plan',     note: 'Approach & milestones',     icon: <FaClipboardList />, tone: 'blue' },
+  { title: 'Design',   note: 'Concepts you review',       icon: <FaPencilRuler />,   tone: 'blue' },
+  { title: 'Build',    note: 'In regular checkpoints',    icon: <FaCogs />,          tone: 'blue' },
+  { title: 'Test',     note: 'Checked before launch',     icon: <FaFlask />,         tone: 'blue' },
+  { title: 'Launch',   note: 'Then ongoing support',      icon: <FaRocket />,        tone: 'green' },
+];
 
 const SERVICES = [
   {
@@ -402,6 +415,16 @@ export default function OurServices() {
             </article>
           ))}
         </div>
+
+        {/* Animated delivery flow */}
+        <RequestFlow
+          id="ig-delivery"
+          className="warm vs-flow"
+          hops={DELIVERY}
+          badge="How every project runs"
+          legend={{ out: 'Work moves forward', back: 'Your feedback' }}
+          caption="The same delivery rhythm across every service, with a checkpoint at each stage so your feedback shapes the next one."
+        />
 
         {/* Closing CTA */}
         <footer className="vs-footer">

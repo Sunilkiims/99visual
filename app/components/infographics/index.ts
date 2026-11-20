@@ -17,3 +17,5 @@ export { default as AnimatedMedia } from "./AnimatedMedia";
 export { default as WebsitePlaybooks } from "./WebsitePlaybooks";
 export { default as TestPyramid } from "./TestPyramid";
 export { default as TestRunReport } from "./TestRunReport";
+export { default as FactStrip } from "./FactStrip";
+export type { Fact } from "./FactStrip";

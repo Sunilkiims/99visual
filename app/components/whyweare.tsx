@@ -1,6 +1,20 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { FaDraftingCompass, FaCube, FaCode, FaFlask, FaBullhorn, FaServer } from 'react-icons/fa';
+import { EcosystemDiagram, type EcoNode } from '@/app/components/infographics';
+
+// Animated "One partner" diagram: the service lines, ordered so each one
+// hands something real to the next (labels on the ring).
+const SERVICE_LINES: EcoNode[] = [
+  { label: 'CAD & GIS',        sub: 'CAD drawings, GIS maps and LiDAR point clouds', icon: <FaDraftingCompass />, tone: 'green' },
+  { label: '3D Visualisation', sub: 'renders and walkthroughs',        icon: <FaCube />,            tone: 'orange' },
+  { label: 'Web & App',        sub: 'websites and web applications',   icon: <FaCode />,            tone: 'blue' },
+  { label: 'QA & Testing',     sub: 'automation and quality gates',    icon: <FaFlask />,           tone: 'green' },
+  { label: 'Marketing',        sub: 'SEO, paid media and content',        icon: <FaBullhorn />,        tone: 'orange' },
+  { label: 'IT Consulting',    sub: 'cloud and infrastructure',        icon: <FaServer />,          tone: 'blue' },
+];
+const SERVICE_LINKS = ['Survey data', 'Renders & tours', 'Test suites', 'Stable pages', 'Analytics', 'Platforms'];
 
 export default function WhoWeAre() {
   const [isVisible, setIsVisible] = useState(false);
@@ -134,6 +148,7 @@ export default function WhoWeAre() {
           display: inline-block;
         }
         .wwa-tagline span { color: #f97316; }
+        .wwa-visual { max-width: 520px; margin: 3rem auto 3.5rem; }
 
         @media (prefers-reduced-motion: reduce) {
           .wwa-animate { transition: none !important; opacity: 1 !important; transform: none !important; }
@@ -188,6 +203,16 @@ export default function WhoWeAre() {
               One Partner. <span>Endless Possibilities.</span>
             </p>
           </div>
+
+          <EcosystemDiagram
+            id="ig-partner"
+            className="wwa-visual warm"
+            nodes={SERVICE_LINES}
+            links={SERVICE_LINKS}
+            core={{ kicker: '99 Visual', title: 'One partner', sub: 'one team' }}
+            caption="Six disciplines under one roof — each one feeds the next, with no hand-offs between vendors."
+            description="CAD, GIS and LiDAR survey data feeds 3D visualisation; renders and walkthroughs go into websites and apps; web builds are covered by QA test suites; tested, fast and stable pages support marketing and SEO; marketing relies on hosting and analytics from IT consulting; and IT consulting provides the data platforms that GIS and LiDAR work runs on."
+          />
 
         </div>
       </section>

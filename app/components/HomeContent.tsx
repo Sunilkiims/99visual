@@ -13,6 +13,15 @@ import Footer           from './footer';
 import ScrollDown       from './scrolldown';
 import Chatbot          from './chatbot';
 import Whatsappbutton   from './wahtsappbutton';
+import { InViewObserver, FactStrip } from './infographics';
+
+// Facts already stated in the About copy on this page — animated, not added.
+const ABOUT_FACTS = [
+  { value: '500+', label: 'Projects delivered' },
+  { value: '2020', label: 'Founded in Bengaluru' },
+  { value: '5',    label: 'Countries served' },
+  { value: '6',    label: 'Specialised disciplines' },
+];
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -120,6 +129,8 @@ export default function HomeContent({ insights }: HomeContentProps) {
               Founded in 2020 and headquartered in Bengaluru, India, our cross-functional team of engineers, designers, and strategists brings deep domain expertise to every project — ensuring faster delivery, competitive pricing, and uncompromising quality across 500+ delivered projects.
             </p>
 
+            <FactStrip facts={ABOUT_FACTS} tone="dark" className="warm home-facts" label="99 Visual Solutions at a glance" />
+
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href="/contact" aria-label="Get a free project quote from 99 Visual Solutions" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 30px', borderRadius: 100, background: '#f97316', color: '#fff', fontFamily: 'var(--font-dm-sans), sans-serif', fontSize: '.9rem', fontWeight: 600, letterSpacing: '.04em', textDecoration: 'none', transition: 'opacity 0.2s ease, transform 0.2s ease' }}>
                 Get a Free Quote <span aria-hidden="true">→</span>
@@ -131,6 +142,7 @@ export default function HomeContent({ insights }: HomeContentProps) {
             @keyframes homePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.6); } }
             @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
             a[href="/contact"]:hover  { opacity: 0.85; transform: translateY(-1px); }
+            .home-facts { margin: 0 auto 2.2rem !important; }
             a[href="/services"]:hover { background: rgba(249,115,22,0.08) !important; border-color: #f97316 !important; }
           `}</style>
         </section>
@@ -152,6 +164,8 @@ export default function HomeContent({ insights }: HomeContentProps) {
         Fixed-position elements OUTSIDE the wrapper, preserving true
         fixed positioning relative to the viewport.
       */}
+      {/* Drives scroll-in animations for the home page infographics. */}
+      <InViewObserver />
       <ScrollDown />
       <Chatbot />
       <Whatsappbutton />

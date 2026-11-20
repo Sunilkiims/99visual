@@ -766,3 +766,56 @@
   .runTrend { grid-template-columns: 1fr auto; }
   .runTrend .dashPanelMeta { grid-column: 1 / -1; }
 }
+
+/* ═══ 14. FACT STRIP ═════════════════════════════════════════════════════ */
+.facts { margin: 2.75rem auto 0; max-width: 820px; }
+.factList { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.fact {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: .45rem;
+  padding: 1.25rem .75rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line);
+}
+.factValue { font-family: var(--f-head); font-size: clamp(1.6rem, 3.4vw, 2.2rem); font-weight: 700; line-height: 1; color: var(--ink); letter-spacing: -.02em; }
+.factBar { display: block; width: 36px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--green)); }
+.factLabel { font-size: .8rem; line-height: 1.45; color: var(--muted); }
+.facts[data-tone="dark"] { --ink: #fff; --muted: rgba(255, 255, 255, .6); --surface: rgba(255, 255, 255, .04); --line: rgba(255, 255, 255, .1); }
+@container (max-width: 620px) {
+  .factList { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ═══ 15. WARM THEME (home page: brand orange, DM Sans) ══════════════════
+   Add the global class `warm` alongside a component's className to re-tint it. */
+.ig:global(.warm) {
+  --blue: #f97316; --blue-deep: #c2410c; --blue-soft: #fdba74; --green: #fbbf24;
+  --f-head: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --f-body: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+}
+.ig:global(.warm) .badge { color: #c2410c; background: rgba(249, 115, 22, .08); border-color: rgba(249, 115, 22, .22); }
+.ig:global(.warm) .caption::before { background: linear-gradient(135deg, #f97316, #fbbf24); }
+.ig:global(.warm) .ecoCore {
+  background: radial-gradient(circle at 30% 25%, #fdba74 0%, #f97316 40%, #7c2d12 100%);
+  box-shadow: 0 0 0 6px rgba(249, 115, 22, .12), 0 24px 48px -18px rgba(249, 115, 22, .6);
+}
+.ig:global(.warm) .ecoSpoke { stroke: rgba(249, 115, 22, .28); }
+.ig:global(.warm) .ecoPulse { stroke: #f97316; }
+.ig:global(.warm) .ecoOuter { stroke: rgba(249, 115, 22, .18); }
+.ig:global(.warm) .ecoNode[data-tone="blue"] { --tone: #ea580c; }
+.ig:global(.warm) .ecoNode[data-tone="green"] { --tone: #0f766e; }
+.ig:global(.warm) .ecoNode[data-tone="orange"] { --tone: #b45309; }
+.ig:global(.warm) .flowHop[data-tone="blue"] { --tone: #ea580c; }
+.ig:global(.warm) .flowHop[data-tone="green"] { --tone: #0f766e; }
+.ig:global(.warm) .flowHop[data-tone="orange"] { --tone: #b45309; }
+.ig:global(.warm) .flowLink::before { border-top-color: rgba(249, 115, 22, .4); }
+.ig:global(.warm) .flowLink::after { border-top-color: rgba(15, 118, 110, .45); }
+.ig:global(.warm) .flowPacket { background: #f97316; box-shadow: 0 0 0 4px rgba(249, 115, 22, .2); }
+.ig:global(.warm) .flowPacketBack { background: #0f766e; box-shadow: 0 0 0 4px rgba(15, 118, 110, .2); }
+.ig:global(.warm) .flowLegend i { border-top-color: #f97316; }
+.ig:global(.warm) .flowLegend i[data-dir="back"] { border-top-color: #0f766e; }
+@container (max-width: 820px) {
+  .ig:global(.warm) .flowLink::before { border-left-color: rgba(249, 115, 22, .4); }
+  .ig:global(.warm) .flowLink::after { border-left-color: rgba(15, 118, 110, .45); }
+}
+.ig:global(.warm).facts[data-tone="dark"] .factBar { background: linear-gradient(90deg, #f97316, #fbbf24); }
+.ig:global(.warm) .ecoSvg radialGradient stop { stop-color: #f97316; }
+.ig:global(.warm) .ecoSvg linearGradient stop:nth-child(1) { stop-color: #f97316; }
+.ig:global(.warm) .ecoSvg linearGradient stop:nth-child(2) { stop-color: #fbbf24; }
+.ig:global(.warm) .ecoSvg linearGradient stop:nth-child(3) { stop-color: #0f766e; }
