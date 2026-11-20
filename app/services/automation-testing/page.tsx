@@ -24,10 +24,27 @@
 //     the existing 99 Visual design system — only content, structure and
 //     claims changed.
 //
+// INFOGRAPHICS (follow-up edit): same visual system as the website-development
+// and digital-marketing pages — generated navy hero (next/image, was a stock
+// JPG background), an infographic on each service card, the lifecycle diagram
+// (wide/tall), strategy banners, plus animated infographics: a quality
+// ecosystem, a CI/CD quality-gate pipeline, the test pyramid and a sample-data
+// test-run report. Copy, metadata, schema, FAQ and CTAs are unchanged.
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import Link from "next/link";
+import Image from "next/image";
+import ArtDirectedVisual from "@/app/components/ArtDirectedVisual";
+import {
+  InViewObserver,
+  EcosystemDiagram,
+  RequestFlow,
+  TestPyramid,
+  TestRunReport,
+  AnimatedMedia,
+  type EcoNode,
+  type FlowHop,
+} from "@/app/components/infographics";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
@@ -37,6 +54,7 @@ import {
   FaBug, FaCogs, FaChartLine, FaShieldAlt, FaTools,
   FaMobileAlt, FaUniversalAccess, FaPlug, FaRobot, FaCloud,
   FaSitemap, FaDatabase, FaBuilding, FaCode, FaCheckCircle,
+  FaCodeBranch, FaFlask, FaDesktop, FaTachometerAlt, FaRocket,
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
@@ -280,16 +298,18 @@ const qaGraph = buildGraph(
   qaFaqNode,
 );
 
+const QA_IMG = "/images/services/automation-testing";
+
 // "What a useful test strategy defines" — concrete decisions a team can
 // check any QA engagement against. Replaces six generic "why choose us"
 // cards. Standard practice only; no claims about past projects.
 const strategy = [
-  { icon: <FaSitemap />,      title: "Where each check lives", description: "Most checks belong at unit and API level, where they run in seconds and fail for one clear reason. End-to-end browser tests are kept to the critical user journeys (sign-up, checkout, the core workflow), because a suite that is mostly UI tests is slow and breaks for reasons unrelated to the product." },
-  { icon: <FaShieldAlt />,    title: "What blocks a release",  description: "Gates written down in advance: a smoke suite on every pull request, full regression before release, a response-time budget such as p95 under a stated limit, and no serious or critical axe-core violations against WCAG 2.2 AA. If a gate can be overridden, the strategy says who can override it." },
-  { icon: <FaBug />,          title: "A flaky-test policy",    description: "A test that passes and fails on the same code is quarantined and tracked, not silently retried until green. Retries are reported, and the flaky rate is a number someone owns. Without this, teams learn to ignore red builds." },
-  { icon: <FaDatabase />,     title: "Test data & environments", description: "Seeded, resettable data that tests create and clean up themselves, rather than a shared staging database. Third-party APIs are stubbed or covered by contract tests (Pact, for example), so a partner's sandbox outage doesn't fail your pipeline." },
-  { icon: <FaCode />,         title: "Maintainable test code", description: "Locators based on accessible roles or dedicated test IDs instead of CSS paths, shared page or screen objects, and test code that lives in the product repository and is reviewed like product code." },
-  { icon: <FaTools />,        title: "Reporting & handover",   description: "Results visible in the CI run itself (Playwright HTML, Allure or JUnit reports) with traces, screenshots and video on failure, plus a short runbook so your own engineers can add, fix and retire tests without us." },
+  { icon: <FaSitemap />,      title: "Where each check lives", img: `${QA_IMG}/strategy-test-pyramid.webp`, alt: "A test pyramid: many fast unit checks at the base, fewer API checks in the middle and a few browser tests at the top", description: "Most checks belong at unit and API level, where they run in seconds and fail for one clear reason. End-to-end browser tests are kept to the critical user journeys (sign-up, checkout, the core workflow), because a suite that is mostly UI tests is slow and breaks for reasons unrelated to the product." },
+  { icon: <FaShieldAlt />,    title: "What blocks a release", img: `${QA_IMG}/strategy-release-gates.webp`, alt: "Release gates in a row: tests, performance and accessibility passed, with the last gate locked until it passes",  description: "Gates written down in advance: a smoke suite on every pull request, full regression before release, a response-time budget such as p95 under a stated limit, and no serious or critical axe-core violations against WCAG 2.2 AA. If a gate can be overridden, the strategy says who can override it." },
+  { icon: <FaBug />,          title: "A flaky-test policy", img: `${QA_IMG}/strategy-flaky-tests.webp`, alt: "Passing tests on the left and an unreliable test moved into a quarantine box on the right",    description: "A test that passes and fails on the same code is quarantined and tracked, not silently retried until green. Retries are reported, and the flaky rate is a number someone owns. Without this, teams learn to ignore red builds." },
+  { icon: <FaDatabase />,     title: "Test data & environments", img: `${QA_IMG}/strategy-test-data.webp`, alt: "A database being seeded, reset and verified in a loop, next to a stubbed third-party API", description: "Seeded, resettable data that tests create and clean up themselves, rather than a shared staging database. Third-party APIs are stubbed or covered by contract tests (Pact, for example), so a partner's sandbox outage doesn't fail your pipeline." },
+  { icon: <FaCode />,         title: "Maintainable test code", img: `${QA_IMG}/strategy-maintainable-code.webp`, alt: "Test code using role and label locators, organised into shared page objects", description: "Locators based on accessible roles or dedicated test IDs instead of CSS paths, shared page or screen objects, and test code that lives in the product repository and is reviewed like product code." },
+  { icon: <FaTools />,        title: "Reporting & handover", img: `${QA_IMG}/strategy-reporting.webp`, alt: "A CI test report with pass and fail totals, a run-time trend, traces, screenshots and a runbook",   description: "Results visible in the CI run itself (Playwright HTML, Allure or JUnit reports) with traces, screenshots and video on failure, plus a short runbook so your own engineers can add, fix and retire tests without us." },
 ];
 
 const services = [
@@ -359,6 +379,39 @@ const services = [
   },
 ];
 
+// Service-card infographics (scripts/visuals/automation-testing/generate.mjs)
+const serviceMedia: Record<string, { src: string; alt: string }> = {
+  "functional-testing":     { src: `${QA_IMG}/functional-testing.webp`,     alt: "Functional and regression testing: test cases traced to requirements with pass and fail results, a regression run and user acceptance sign-off" },
+  "test-automation":        { src: `${QA_IMG}/test-automation.webp`,        alt: "Test automation: a checkout test script driving the real checkout page, passing in Chromium, Firefox and WebKit" },
+  "api-testing":            { src: `${QA_IMG}/api-testing.webp`,            alt: "API testing: an order request with its JSON response, edge cases such as invalid input, missing token and rate limits, and a contract between consumer and provider" },
+  "performance-testing":    { src: `${QA_IMG}/performance-testing.webp`,    alt: "Performance testing: a load profile ramping up to peak and holding, response time measured against a p95 budget, and the bottleneck it found" },
+  "mobile-testing":         { src: `${QA_IMG}/mobile-testing.webp`,         alt: "Mobile testing: Android, iOS and tablet devices checked on real hardware across wifi, 4G and 3G network conditions" },
+  "accessibility-testing":  { src: `${QA_IMG}/accessibility-testing.webp`,  alt: "Accessibility testing: a sign-up form with a visible keyboard focus ring, colour-contrast checks, screen-reader output and WCAG 2.2 AA review" },
+  "security-testing":       { src: `${QA_IMG}/security-testing.webp`,       alt: "Application security testing: authentication and roles around a shield, with OWASP checks for access control, injection, sessions and misconfiguration" },
+  "ai-application-testing": { src: `${QA_IMG}/ai-application-testing.webp`, alt: "AI and LLM testing: prompts and responses being evaluated for accuracy, grounding, tone and safety, with a prompt-injection attempt blocked" },
+};
+
+// Animated "quality engineering" ecosystem (Our Approach)
+const qualityNodes: EcoNode[] = [
+  { label: "Unit tests",    sub: "functions and components", icon: <FaFlask />,           tone: "green" },
+  { label: "API & contract", sub: "services and integrations", icon: <FaPlug />,          tone: "blue" },
+  { label: "UI & E2E",      sub: "critical user journeys",   icon: <FaDesktop />,         tone: "blue" },
+  { label: "Performance",   sub: "load and response times",  icon: <FaTachometerAlt />,   tone: "orange" },
+  { label: "Security",      sub: "OWASP-oriented checks",    icon: <FaShieldAlt />,       tone: "orange" },
+  { label: "Accessibility", sub: "WCAG 2.2 AA",              icon: <FaUniversalAccess />, tone: "green" },
+];
+const qualityLinks = ["Fast feedback", "Contracts", "Real journeys", "Load limits", "Safe auth flows", "Semantic markup"];
+
+// Animated CI/CD quality-gate pipeline (first service cluster)
+const gateHops: FlowHop[] = [
+  { title: "Commit",          note: "Pull request opened",      icon: <FaCodeBranch />,    tone: "orange" },
+  { title: "Lint & unit",     note: "Seconds, on every push",   icon: <FaFlask />,         tone: "blue" },
+  { title: "API & contract",  note: "Services agree",           icon: <FaPlug />,          tone: "blue" },
+  { title: "E2E smoke",       note: "Critical journeys",        icon: <FaDesktop />,       tone: "blue" },
+  { title: "Perf & a11y",     note: "Budgets & WCAG gates",     icon: <FaTachometerAlt />, tone: "blue" },
+  { title: "Deploy",          note: "Only when every gate passes", icon: <FaRocket />,     tone: "green" },
+];
+
 function serviceById(id: string) {
   return services.find((s) => s.id === id)!;
 }
@@ -371,6 +424,16 @@ const clusters = [
     intro: "Structured functional testing paired with automation engineering that's designed to be maintained, not rewritten every sprint.",
     cols: 2,
     ids: ["functional-testing", "test-automation"],
+    visual: (
+      <RequestFlow
+        id="ig-gates"
+        className="qa-cluster__visual"
+        hops={gateHops}
+        badge="CI/CD quality gates"
+        legend={{ out: "Change moves forward", back: "Feedback to the PR" }}
+        caption="Each stage is a gate: a failing check stops the change and reports straight back to the pull request, so problems are fixed in minutes instead of being found after release."
+      />
+    ),
   },
   {
     id: "apis-performance",
@@ -481,10 +544,6 @@ const pipeline = [
 ];
 
 export default function AutomationTestingPage() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/automation-testing-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <script
@@ -506,25 +565,31 @@ export default function AutomationTestingPage() {
         .qa-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--qa-ink);margin:0 0 1rem;text-align:center;}
         .qa-h2 em{font-style:normal;color:var(--qa-blue);}
 
-        /* ══ HERO ══════════════════════════════════════════════════════ */
+        /* ══ HERO — same treatment as /services/website-development. The visual
+           is public/images/services/automation-testing/automation-testing-hero.webp,
+           rendered by next/image in .qa-hero__media (regenerate with
+           scripts/visuals/automation-testing/generate.mjs). ── */
         .qa-hero{
           position:relative;min-height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/automation-testing-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
+          background-color:#060B17;
           overflow:hidden;
+        }
+        .qa-hero__media{position:absolute;inset:0;z-index:0;}
+        .qa-hero__media img{object-fit:cover;object-position:right center;}
+        .qa-hero__media::after{
+          content:'';position:absolute;inset:0;pointer-events:none;
+          background:
+            linear-gradient(90deg, rgba(6,11,23,.92) 0%, rgba(6,11,23,.7) 34%, rgba(6,11,23,.18) 60%, rgba(6,11,23,0) 100%),
+            linear-gradient(180deg, rgba(6,11,23,.15) 0%, rgba(6,11,23,0) 40%, rgba(6,11,23,.5) 100%);
         }
         @supports (height: 100svh) { .qa-hero { min-height: 100svh; } }
         @supports (height: 100dvh) { .qa-hero { min-height: 100dvh; } }
         @media(max-width:960px){
-          .qa-hero{
+          .qa-hero__media img{ object-position:72% center; }
+          .qa-hero__media::after{
             background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/automation-testing-hero-banner.jpg') center center / cover no-repeat;
+              linear-gradient(180deg, rgba(6,11,23,.72) 0%, rgba(6,11,23,.55) 40%, rgba(6,11,23,.9) 100%);
           }
         }
 
@@ -644,6 +709,10 @@ export default function AutomationTestingPage() {
         .qa-card{background:var(--qa-surface);border:1px solid var(--qa-line);border-radius:16px;padding:1.9rem 1.9rem 2rem;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;scroll-margin-top:6rem;}
         .qa-cluster:nth-child(even) .qa-card{background:var(--qa-paper);}
         .qa-card:hover{border-color:var(--qa-blue);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(18,20,26,.25);}
+        /* Service-card illustration (content image + alt text), as on web-dev */
+        .qa-card__media{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;margin-bottom:1.1rem;background:#0A1224;}
+        .qa-card__media img{width:100%;height:100%;object-fit:cover;display:block;}
+        .qa-cluster__visual{margin:0 0 2.25rem;}
         .qa-card__icon{width:42px;height:42px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--qa-blue);display:flex;align-items:center;justify-content:center;font-size:1.05rem;margin-bottom:1.1rem;}
         .qa-card__title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;color:var(--qa-ink);margin:0 0 .7rem;}
         .qa-card__desc{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--qa-muted);margin:0 0 .8rem;}
@@ -668,6 +737,10 @@ export default function AutomationTestingPage() {
         .qa-life{background:var(--qa-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--qa-line);}
         .qa-life__inner{max-width:1000px;margin:0 auto;}
         .qa-life__head{max-width:640px;margin:0 auto 3rem;text-align:center;}
+        .qa-life__visual{border-radius:20px;margin:0 auto 3rem;}
+        .qa-visual{display:block;}
+        .qa-visual img{display:block;width:100%;height:auto;border-radius:20px;}
+        .qa-intro__visual{max-width:520px;margin:2.75rem auto 0;}
         .qa-life__list{display:flex;flex-direction:column;}
         .qa-life__step{display:grid;grid-template-columns:64px 1fr;gap:1.4rem;padding:1.4rem 0;border-bottom:1px solid var(--qa-line);}
         .qa-life__step:last-child{border-bottom:none;}
@@ -702,7 +775,8 @@ export default function AutomationTestingPage() {
         @media(max-width:640px){.qa-benefits__grid{grid-template-columns:1fr;}}
         .qa-benefit-card{background:var(--qa-paper);border:1px solid var(--qa-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
         .qa-benefit-card:hover{border-color:var(--qa-blue);transform:translateY(-3px);}
-        .qa-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--qa-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
+        .qa-benefit-card__media{border-radius:12px;margin-bottom:1.2rem;}
+        .qa-benefit-card__img{display:block;width:100%;height:auto;aspect-ratio:16/9;}
         .qa-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--qa-ink);margin-bottom:.5rem;}
         .qa-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--qa-muted);}
 
@@ -757,6 +831,16 @@ export default function AutomationTestingPage() {
       <div className="qa-page">
         {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section className="qa-hero" aria-labelledby="qa-hero-heading">
+          <div className="qa-hero__media">
+            <Image
+              src={`${QA_IMG}/automation-testing-hero.webp`}
+              alt="A CI pipeline from commit through unit, API and end-to-end tests to deploy, beside a test-results list and the app under test"
+              fill
+              preload
+              fetchPriority="high"
+              sizes="100vw"
+            />
+          </div>
           <div aria-hidden="true">
             <div className="qa-hero__grain" />
           </div>
@@ -843,6 +927,15 @@ export default function AutomationTestingPage() {
               <Link href="/services/website-development">website and web app development</Link>; for
               existing products, we start from your current pipeline and test suite.
             </p>
+            <EcosystemDiagram
+              id="ig-quality"
+              className="qa-intro__visual"
+              nodes={qualityNodes}
+              links={qualityLinks}
+              core={{ kicker: "Every commit", title: "Quality gates", sub: "one pipeline" }}
+              caption="Six kinds of testing, one pipeline — each catches what the others can't."
+              description="Unit tests give the fastest feedback to API and contract tests; contracts keep the UI and end-to-end tests stable; real journeys define performance load profiles; load limits inform security hardening; safe authentication flows must stay accessible; and semantic markup helps unit-level component tests stay robust."
+            />
           </div>
         </section>
 
@@ -874,11 +967,18 @@ export default function AutomationTestingPage() {
                   <h2 className="qa-cluster__h2" id={`qa-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
                   <p className="qa-cluster__intro">{cluster.intro}</p>
                 </div>
+                {cluster.visual}
                 <div className={`qa-cluster__grid qa-cluster__grid--${cluster.cols}`}>
-                  {cluster.ids.map((id) => {
+                  {cluster.ids.map((id, idx) => {
                     const svc = serviceById(id);
+                    const media = serviceMedia[svc.id];
                     return (
                       <article className="qa-card" id={svc.id} key={svc.id} aria-labelledby={`qa-svc-heading-${svc.id}`}>
+                        {media && (
+                          <AnimatedMedia className="qa-card__media" delay={idx}>
+                            <Image src={media.src} alt={media.alt} width={960} height={600} sizes="(max-width: 860px) 100vw, 560px" />
+                          </AnimatedMedia>
+                        )}
                         <div className="qa-card__icon" aria-hidden="true">{svc.icon}</div>
                         <h3 className="qa-card__title" id={`qa-svc-heading-${svc.id}`}>{svc.title}</h3>
                         <p className="qa-card__desc">{svc.description}</p>
@@ -909,6 +1009,7 @@ export default function AutomationTestingPage() {
               coverage, team expertise, CI/CD requirements, and long-term maintenance strategy —{" "}
               <strong>not on which tool is trending</strong>. Here&apos;s how we think about each one.
             </p>
+            <TestPyramid />
             <div className="qa-tech__list">
               {frameworks.map((f) => (
                 <div className="qa-tech__row" key={f.name}>
@@ -929,6 +1030,15 @@ export default function AutomationTestingPage() {
                 The QA &amp; automation <em>delivery lifecycle</em>
               </h2>
             </div>
+            <AnimatedMedia className="qa-life__visual">
+              <ArtDirectedVisual
+                className="qa-visual"
+                wide={{ src: `${QA_IMG}/lifecycle-wide.webp`, width: 1800, height: 760 }}
+                tall={{ src: `${QA_IMG}/lifecycle-tall.webp`, width: 720, height: 2000 }}
+                alt="Ten-step QA and automation lifecycle: discovery, strategy, architecture, framework, development, CI/CD, execution, defects, maintenance and continuous improvement, each with its output"
+                sizes="(max-width: 640px) 100vw, 1000px"
+              />
+            </AnimatedMedia>
             <div className="qa-life__list">
               {lifecycle.map((step) => (
                 <div className="qa-life__step" key={step.n}>
@@ -984,12 +1094,16 @@ export default function AutomationTestingPage() {
             <div className="qa-benefits__grid">
               {strategy.map((b, i) => (
                 <div className="qa-benefit-card" key={i}>
-                  <div className="qa-benefit-card__icon" aria-hidden="true">{b.icon}</div>
+                  <AnimatedMedia className="qa-benefit-card__media" delay={i % 3}>
+                    <Image className="qa-benefit-card__img" src={b.img} alt={b.alt} width={960} height={540}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px" />
+                  </AnimatedMedia>
                   <div className="qa-benefit-card__title">{b.title}</div>
                   <p className="qa-benefit-card__desc">{b.description}</p>
                 </div>
               ))}
             </div>
+            <TestRunReport />
           </div>
         </section>
 
@@ -1078,6 +1192,8 @@ export default function AutomationTestingPage() {
 
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
       <RelatedInsights serviceHref="/services/automation-testing" />
+      {/* Drives scroll-in animations for every infographic on this page. */}
+      <InViewObserver />
       <Footer />
       <ScrollDown />
 

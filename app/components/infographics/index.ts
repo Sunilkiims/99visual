@@ -12,5 +12,8 @@ export { default as LocalSearchMap } from "./LocalSearchMap";
 export { default as AnalyticsDashboard } from "./AnalyticsDashboard";
 export { default as PerformanceTargets } from "./PerformanceTargets";
 export { default as RequestFlow } from "./RequestFlow";
+export type { FlowHop } from "./RequestFlow";
 export { default as AnimatedMedia } from "./AnimatedMedia";
 export { default as WebsitePlaybooks } from "./WebsitePlaybooks";
+export { default as TestPyramid } from "./TestPyramid";
+export { default as TestRunReport } from "./TestRunReport";
