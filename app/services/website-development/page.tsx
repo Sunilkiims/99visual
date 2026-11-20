@@ -27,11 +27,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
-import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import { caseStudies } from '@/lib/case-studies';
 import Link from "next/link";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
@@ -41,10 +40,10 @@ import ConsultationCTA from "@/app/components/ConsultationCTA";
 import type { Metadata } from "next";
 import {
   FaCogs, FaRocket, FaMobileAlt,
-  FaClock, FaUsers, FaTools,
+  FaUsers, FaTools,
   FaExclamationCircle, FaHourglassHalf, FaChartLine, FaLock,
   FaSearchengin, FaLayerGroup, FaFileCode, FaLifeRing, FaClipboardCheck,
-  FaHospital, FaShoppingBag, FaGraduationCap, FaHome, FaUtensils, FaPlane,
+  FaShoppingBag,
   FaReact, FaNodeJs, FaAws, FaMicrosoft,
 } from "react-icons/fa";
 import {
@@ -243,12 +242,12 @@ const wdevPageNode = {
 // PAGE DATA — unchanged
 // ─────────────────────────────────────────────────────────────────────────────
 const benefits = [
-  { icon: <FaCogs />,      title: "Customised Solutions",          description: "No two businesses run the same way, so we don't start from a template. Every site or application is scoped around your specific workflow, customers, and goals from the first conversation." },
-  { icon: <FaRocket />,    title: "SEO Optimisation",              description: "SEO isn't something we bolt on before launch — it's part of how the site is structured from day one, from semantic HTML to Core Web Vitals, so you're not paying to fix it six months later." },
-  { icon: <FaMobileAlt />, title: "Mobile Responsiveness",         description: "With most traffic now arriving on phones, a site that only works well on desktop is quietly losing customers. We design mobile-first and test on real devices, not just browser emulators." },
-  { icon: <FaClock />,     title: "Faster Load Times",             description: "Every extra second of load time increases bounce rate and works against your Google ranking. We optimise images, scripts, and server response times so pages load quickly, even on slower connections." },
-  { icon: <FaUsers />,     title: "Improved User Experience",      description: "Good UX isn't about how a screenshot looks — it's about whether someone can find what they need in a few clicks. We design for that outcome, then test it with real usage patterns." },
-  { icon: <FaTools />,     title: "Ongoing Maintenance & Support", description: "Launch day isn't the finish line. We handle updates, security patches, and performance checks afterward, so the site keeps working as your business — and the web itself — keeps changing." },
+  { img: "/images/services/website-development/benefit-custom-solutions.webp", alt: "Interface components being assembled into a layout built for one specific business", title: "Customised Solutions",          description: "No two businesses run the same way, so we don't start from a template. Every site or application is scoped around your specific workflow, customers, and goals from the first conversation." },
+  { img: "/images/services/website-development/benefit-seo.webp", alt: "Search results page with one listing highlighted and an upward ranking trend", title: "SEO Optimisation",              description: "SEO isn't something we bolt on before launch — it's part of how the site is structured from day one, from semantic HTML to Core Web Vitals, so you're not paying to fix it six months later." },
+  { img: "/images/services/website-development/benefit-mobile-responsive.webp", alt: "The same page layout adapting from desktop to tablet to phone screens", title: "Mobile Responsiveness",         description: "With most traffic now arriving on phones, a site that only works well on desktop is quietly losing customers. We design mobile-first and test on real devices, not just browser emulators." },
+  { img: "/images/services/website-development/benefit-performance.webp", alt: "Page speed gauge with the needle in the fast, green zone", title: "Faster Load Times",             description: "Every extra second of load time increases bounce rate and works against your Google ranking. We optimise images, scripts, and server response times so pages load quickly, even on slower connections." },
+  { img: "/images/services/website-development/benefit-user-experience.webp", alt: "Three-screen user journey with a cursor moving from first click to a completed step", title: "Improved User Experience",      description: "Good UX isn't about how a screenshot looks — it's about whether someone can find what they need in a few clicks. We design for that outcome, then test it with real usage patterns." },
+  { img: "/images/services/website-development/benefit-ongoing-support.webp", alt: "Ongoing maintenance cycle linking security, fixes, performance checks and alerts", title: "Ongoing Maintenance & Support", description: "Launch day isn't the finish line. We handle updates, security patches, and performance checks afterward, so the site keeps working as your business — and the web itself — keeps changing." },
 ];
 
 const services = [
@@ -401,19 +400,19 @@ function serviceById(id: string) {
 // in /public/images — this swaps the icon-only cards for real content images
 // with meaningful alt text (previously the page had no <img> elements at all).
 const serviceMedia: Record<string, { src: string; alt: string }> = {
-  "web-application":       { src: "/images/web-application.png",                 alt: "Custom web application development for a business dashboard and internal tool" },
-  "ux-design":             { src: "/images/ux-design.png",                        alt: "UX and UI design process for a responsive business website" },
-  "website-customization": { src: "/images/website-customization.png",            alt: "Custom website development layout tailored to a specific business workflow" },
-  "frontend":              { src: "/images/frontend-development.png",             alt: "Front-end development in React and Next.js for a responsive website" },
-  "backend":               { src: "/images/backend-development.png",              alt: "Back-end development with APIs, databases, and server architecture" },
-  "ecommerce":             { src: "/images/e-commerce-cms-development.png",       alt: "E-commerce and CMS development for an online storefront" },
-  "modernization":         { src: "/images/webapp-modernization.png",             alt: "Legacy web application modernisation and cloud migration" },
-  "seo":                   { src: "/images/seo-and-performance-optimization.png", alt: "SEO-friendly, high-performance website development and Core Web Vitals optimisation" },
-  "security":              { src: "/images/web-security-services.png",            alt: "Web security services including SSL, monitoring, and vulnerability testing" },
-  "hosting":               { src: "/images/website-hosting-deployement.png",      alt: "Website hosting, deployment, and CI/CD pipeline setup" },
-  "api":                   { src: "/images/api-and-third-party-intigration.png",  alt: "API and third-party integration for payment gateways and CRM systems" },
-  "landing-page":          { src: "/images/landing-page-design.png",              alt: "Landing page design and development built for campaign conversions" },
-  "dashboard":             { src: "/images/custom-dashboard-admin-panel.png",     alt: "Custom dashboard and admin panel development with role-based access" },
+  "web-application":      { src: "/images/services/website-development/web-application-development.webp", alt: "Web application architecture: a business dashboard connected to login, API, database and workflow components" },
+  "ux-design":            { src: "/images/services/website-development/ux-ui-design.webp", alt: "A dashed wireframe turning into a polished interface, with the design system colours and type below" },
+  "website-customization":{ src: "/images/services/website-development/website-customisation.webp", alt: "Reusable interface components and brand tokens assembled into a tailored website layout" },
+  "frontend":             { src: "/images/services/website-development/frontend-development.webp", alt: "React component tree rendering a responsive page in the browser, with React, Next.js, TypeScript and Tailwind" },
+  "backend":              { src: "/images/services/website-development/backend-development.webp", alt: "Back-end architecture: client requests passing through an API gateway to auth, orders and search services, a database and a cache" },
+  "ecommerce":            { src: "/images/services/website-development/ecommerce-cms.webp", alt: "Online storefront with a product grid and cart beside a CMS publishing panel, above the catalogue-to-payment flow" },
+  "modernization":        { src: "/images/services/website-development/web-app-modernisation.webp", alt: "Legacy server application being migrated in stages to cloud-native containers" },
+  "seo":                  { src: "/images/services/website-development/seo-performance.webp", alt: "Highlighted search result beside passing Core Web Vitals scores for LCP, INP and CLS, with a rising analytics chart" },
+  "security":             { src: "/images/services/website-development/web-security.webp", alt: "Web security layers around a protected site: SSL/TLS, login and MFA, firewall, encryption, monitoring and vulnerability scanning" },
+  "hosting":              { src: "/images/services/website-development/hosting-deployment.webp", alt: "Deployment pipeline from commit to build, test and deploy, feeding cloud servers with monitoring and backups" },
+  "api":                  { src: "/images/services/website-development/api-integrations.webp", alt: "A website connected to payments, CRM, analytics, email, maps and external APIs" },
+  "landing-page":         { src: "/images/services/website-development/landing-page-development.webp", alt: "Conversion-focused landing page with one highlighted call to action, a fast-load marker and a visit-to-lead funnel" },
+  "dashboard":            { src: "/images/services/website-development/dashboard-admin-panel.webp", alt: "Admin dashboard with KPI cards and charts beside a users-and-roles permissions panel and a report export button" },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -445,12 +444,12 @@ const deliverables = [
 ];
 
 const industries = [
-  { icon: <FaHospital />,       name: "Healthcare" },
-  { icon: <FaShoppingBag />,    name: "E-Commerce & Retail" },
-  { icon: <FaGraduationCap />,  name: "Education" },
-  { icon: <FaHome />,           name: "Real Estate" },
-  { icon: <FaUtensils />,       name: "Hospitality & Food" },
-  { icon: <FaPlane />,          name: "Travel & Logistics" },
+  { img: "/images/services/website-development/industry-healthcare.webp",        alt: "Healthcare website illustration: patient vitals and a confirmed appointment",        name: "Healthcare" },
+  { img: "/images/services/website-development/industry-ecommerce.webp",         alt: "E-commerce illustration: product card, shopping bag and cart",                       name: "E-Commerce & Retail" },
+  { img: "/images/services/website-development/industry-education.webp",         alt: "Education illustration: online course video with a progress bar",                  name: "Education" },
+  { img: "/images/services/website-development/industry-real-estate.webp",       alt: "Real estate illustration: property listing next to a map location pin",             name: "Real Estate" },
+  { img: "/images/services/website-development/industry-hospitality.webp",       alt: "Hospitality illustration: restaurant booking with a star rating",                   name: "Hospitality & Food" },
+  { img: "/images/services/website-development/industry-travel-logistics.webp",  alt: "Travel and logistics illustration: delivery truck on a tracked route between two points", name: "Travel & Logistics" },
 ];
 
 const techStack = [
@@ -552,11 +551,25 @@ const pipeline = [
 // "Recent Work" section.
 const webCaseStudies = caseStudies.filter((c) => c.service.href === '/services/website-development');
 
+// One <img> (one alt text) with a wide variant for larger screens and a tall
+// variant for phones, both served through the Next.js image optimiser. Only
+// the variant that matches the viewport is downloaded.
+type VisualSource = { src: string; width: number; height: number };
+function ArtDirectedVisual({ wide, tall, alt, sizes, className }: {
+  wide: VisualSource; tall: VisualSource; alt: string; sizes: string; className?: string;
+}) {
+  const { props: { srcSet: tallSrcSet } } = getImageProps({ ...tall, alt, sizes: "100vw" });
+  const { props: wideProps } = getImageProps({ ...wide, alt, sizes, loading: "lazy" });
+  return (
+    <picture className={className}>
+      <source media="(max-width: 640px)" srcSet={tallSrcSet} width={tall.width} height={tall.height} />
+      {/* eslint-disable-next-line jsx-a11y/alt-text -- alt is passed through wideProps */}
+      <img {...wideProps} />
+    </picture>
+  );
+}
+
 export default function WebsiteDevelopment() {
-  // The hero image is a CSS background, which the browser only discovers
-  // after downloading and parsing the stylesheet. Preloading it lets the
-  // largest above-the-fold image (the LCP element) start downloading at once.
-  preload('/images/services/website-development-hero-banner.jpg', { as: 'image', fetchPriority: 'high' });
   return (
     <>
       <style>{`
@@ -574,27 +587,31 @@ export default function WebsiteDevelopment() {
         .wdev-h2 em{font-style:normal;color:var(--wdev-blue);}
         .wdev-sub{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);max-width:580px;margin:0 auto;text-align:center;}
 
-        /* ══ HERO — matched exactly to the /services hub page hero.
-           Save your banner image to:
-           /public/images/services/website-development-hero-banner.jpg ── */
+        /* ══ HERO — layout matched to the /services hub page hero. The visual
+           is public/images/services/website-development/website-development-hero.webp,
+           rendered by next/image in .wdev-hero__media (regenerate with
+           scripts/visuals/website-development/generate.mjs). ── */
         .wdev-hero{
           position:relative;min-height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background:
-            linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
-            linear-gradient(180deg, rgba(8,8,8,.20) 0%, rgba(8,8,8,.10) 40%, rgba(8,8,8,.55) 100%),
-            url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
-          background-attachment:scroll;background-color:#080808;background-size:cover;
+          background-color:#060B17;
           overflow:hidden;
+        }
+        .wdev-hero__media{position:absolute;inset:0;z-index:0;}
+        .wdev-hero__media img{object-fit:cover;object-position:right center;}
+        .wdev-hero__media::after{
+          content:'';position:absolute;inset:0;pointer-events:none;
+          background:
+            linear-gradient(90deg, rgba(6,11,23,.92) 0%, rgba(6,11,23,.7) 34%, rgba(6,11,23,.18) 60%, rgba(6,11,23,0) 100%),
+            linear-gradient(180deg, rgba(6,11,23,.15) 0%, rgba(6,11,23,0) 40%, rgba(6,11,23,.5) 100%);
         }
         @supports (height: 100svh) { .wdev-hero { min-height:100svh; } }
         @supports (height: 100dvh) { .wdev-hero { min-height:100dvh; } }
         @media(max-width:960px){
-          .wdev-hero {
+          .wdev-hero__media img{ object-position:72% center; }
+          .wdev-hero__media::after{
             background:
-              linear-gradient(180deg, rgba(8,8,8,.60) 0%, rgba(8,8,8,.38) 38%, rgba(8,8,8,.82) 100%),
-              linear-gradient(0deg, rgba(8,8,8,.30), rgba(8,8,8,.30)),
-              url('/images/services/website-development-hero-banner.jpg') center center / cover no-repeat;
+              linear-gradient(180deg, rgba(6,11,23,.72) 0%, rgba(6,11,23,.55) 40%, rgba(6,11,23,.9) 100%);
           }
         }
         .wdev-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
@@ -717,8 +734,8 @@ export default function WebsiteDevelopment() {
         .wdev-location__p a:hover{text-decoration-color:var(--wdev-blue);}
 
         /* Service-card illustration image (real content image + alt text) */
-        .wdev-card__media{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;margin-bottom:1.1rem;background:var(--wdev-paper);}
-        .wdev-card__media img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;}
+        .wdev-card__media{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;margin-bottom:1.1rem;background:#0A1224;}
+        .wdev-card__media img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
 
         /* ══ SOLUTION OVERVIEW GRID ═════════════════════════════════════ */
         .wdev-overview{background:var(--wdev-surface);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
@@ -764,6 +781,9 @@ export default function WebsiteDevelopment() {
         .wdev-process{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
         .wdev-process__inner{max-width:900px;margin:0 auto;}
         .wdev-process__head{margin-bottom:3rem;}
+        .wdev-visual{display:block;margin:0 auto 3rem;}
+        .wdev-visual img{display:block;width:100%;height:auto;border-radius:20px;}
+        .wdev-visual--tech{max-width:1000px;margin:2.5rem auto 0;}
         .wdev-process__steps{display:flex;flex-direction:column;gap:0;}
         .wdev-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
         .wdev-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--wdev-line);}
@@ -807,9 +827,9 @@ export default function WebsiteDevelopment() {
         .wdev-ind__grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;}
         @media(max-width:900px){.wdev-ind__grid{grid-template-columns:repeat(3,1fr);}}
         @media(max-width:480px){.wdev-ind__grid{grid-template-columns:repeat(2,1fr);}}
-        .wdev-ind__card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.5rem 1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
+        .wdev-ind__card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:.75rem .75rem 1.1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
         .wdev-ind__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
-        .wdev-ind__icon{color:var(--wdev-blue);font-size:1.2rem;margin-bottom:.8rem;}
+        .wdev-ind__img{display:block;width:100%;height:auto;aspect-ratio:4/3;border-radius:12px;margin-bottom:.9rem;}
         .wdev-ind__name{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
 
         /* ══ TECH STACK ══════════════════════════════════════════════════ */
@@ -890,7 +910,7 @@ export default function WebsiteDevelopment() {
         @media(max-width:640px){.wdev-benefits__grid{grid-template-columns:1fr;}}
         .wdev-benefit-card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:1.8rem 1.7rem;transition:border-color .2s ease,transform .2s ease;}
         .wdev-benefit-card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
-        .wdev-benefit-card__icon{width:40px;height:40px;border-radius:10px;background:rgba(46,92,255,.08);color:var(--wdev-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1.1rem;}
+        .wdev-benefit-card__img{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:12px;margin-bottom:1.2rem;}
         .wdev-benefit-card__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
         .wdev-benefit-card__desc{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);}
 
@@ -920,6 +940,20 @@ export default function WebsiteDevelopment() {
       <div className="wdev-page">
         {/* ══ HERO ══════════════════════════════════════════════════════════ */}
         <section className="wdev-hero" aria-labelledby="wdev-hero-heading">
+          {/* Hero visual: a real <img> via next/image (preload + fetchpriority=high,
+              responsive srcset) instead of a CSS
+              background the browser only finds after parsing the stylesheet.
+              The readability gradients sit on top in .wdev-hero__media::after. */}
+          <div className="wdev-hero__media">
+            <Image
+              src="/images/services/website-development/website-development-hero.webp"
+              alt="Responsive website shown on desktop, tablet and phone, connected to front-end, API, database and cloud layers"
+              fill
+              preload
+              fetchPriority="high"
+              sizes="100vw"
+            />
+          </div>
           <div aria-hidden="true">
             <div className="wdev-hero__grain" />
           </div>
@@ -1170,7 +1204,13 @@ export default function WebsiteDevelopment() {
                       <article className="wdev-card" id={svc.id} key={svc.id} aria-labelledby={`wdev-svc-heading-${svc.id}`}>
                         {media && (
                           <div className="wdev-card__media">
-                            <Image src={media.src} alt={media.alt} width={640} height={400} loading="lazy" />
+                            <Image
+                              src={media.src}
+                              alt={media.alt}
+                              width={960}
+                              height={600}
+                              sizes={cluster.cols === 4 ? "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 300px" : "(max-width: 860px) 100vw, 360px"}
+                            />
                           </div>
                         )}
                         <div className="wdev-card__icon" aria-hidden="true">{svc.icon}</div>
@@ -1197,6 +1237,13 @@ export default function WebsiteDevelopment() {
               <h2 className="wdev-h2" id="wdev-process-heading">A process built to <em>remove risk</em></h2>
               <p className="wdev-sub">Five stages, each with a clear checkpoint, so you always know what's next.</p>
             </div>
+            <ArtDirectedVisual
+              className="wdev-visual wdev-visual--process"
+              wide={{ src: "/images/services/website-development/development-process-wide.webp", width: 1800, height: 560 }}
+              tall={{ src: "/images/services/website-development/development-process-tall.webp", width: 720, height: 1260 }}
+              alt="Five-stage website development process: discovery and scoping, strategy and UX, design and build, testing and launch, then support and growth, each with its checkpoint"
+              sizes="(max-width: 640px) 100vw, 900px"
+            />
             <div className="wdev-process__steps">
               {processSteps.map((s) => (
                 <div className="wdev-process__step" key={s.step}>
@@ -1280,7 +1327,14 @@ export default function WebsiteDevelopment() {
             <div className="wdev-ind__grid">
               {industries.map((ind) => (
                 <div className="wdev-ind__card" key={ind.name}>
-                  <div className="wdev-ind__icon" aria-hidden="true">{ind.icon}</div>
+                  <Image
+                    className="wdev-ind__img"
+                    src={ind.img}
+                    alt={ind.alt}
+                    width={480}
+                    height={360}
+                    sizes="(max-width: 480px) 45vw, (max-width: 900px) 30vw, 170px"
+                  />
                   <div className="wdev-ind__name">{ind.name}</div>
                 </div>
               ))}
@@ -1299,6 +1353,13 @@ export default function WebsiteDevelopment() {
               topics like Next.js and SEO, see our{" "}
               <Link href="/insights/category/web-development">web development insights</Link>.
             </p>
+            <ArtDirectedVisual
+              className="wdev-visual wdev-visual--tech"
+              wide={{ src: "/images/services/website-development/technology-stack-wide.webp", width: 2000, height: 820 }}
+              tall={{ src: "/images/services/website-development/technology-stack-tall.webp", width: 720, height: 1560 }}
+              alt="How the stack fits together: users reach the front end, which talks to back-end APIs and databases, with a CMS for content, all running on cloud hosting deployed through DevOps pipelines"
+              sizes="(max-width: 640px) 100vw, 1000px"
+            />
             <div className="wdev-tech__grid">
               {techStack.map((t) => (
                 <span className="wdev-tech__badge" key={t.name}>{t.icon} {t.name}</span>
@@ -1411,7 +1472,14 @@ export default function WebsiteDevelopment() {
             <div className="wdev-benefits__grid">
               {benefits.map((b, i) => (
                 <div className="wdev-benefit-card" key={i}>
-                  <div className="wdev-benefit-card__icon" aria-hidden="true">{b.icon}</div>
+                  <Image
+                    className="wdev-benefit-card__img"
+                    src={b.img}
+                    alt={b.alt}
+                    width={960}
+                    height={540}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                  />
                   <div className="wdev-benefit-card__title">{b.title}</div>
                   <p className="wdev-benefit-card__desc">{b.description}</p>
                 </div>
