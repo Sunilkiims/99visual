@@ -19,3 +19,4 @@ export { default as TestPyramid } from "./TestPyramid";
 export { default as TestRunReport } from "./TestRunReport";
 export { default as FactStrip } from "./FactStrip";
 export type { Fact } from "./FactStrip";
+export { default as GlobalHours } from "./GlobalHours";

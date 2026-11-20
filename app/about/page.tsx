@@ -38,6 +38,20 @@ import TabAbout         from "../components/tabstory";
 import WhyChooseUs      from "../components/Story";
 import DataPrivacy      from "../components/dataprivacy";
 import ConsultationCTA  from "@/app/components/ConsultationCTA";
+import Image            from "next/image";
+import {
+  InViewObserver,
+  EcosystemDiagram,
+  FactStrip,
+  GlobalHours,
+  RequestFlow,
+  type EcoNode,
+  type FlowHop,
+} from "@/app/components/infographics";
+import {
+  FaCode, FaCube, FaDraftingCompass, FaBullhorn, FaFlask, FaServer,
+  FaComments, FaFileAlt, FaFlag, FaCogs, FaRocket, FaLifeRing,
+} from "react-icons/fa";
 
 import {
   BASE,
@@ -198,6 +212,29 @@ const stats = [
   { value: "5",    label: "Countries Served" },
 ];
 
+// ── Animated infographics ────────────────────────────────────────────────────
+// Six specialisations around one team (same diagram as the home page, in the
+// blue used on this page).
+const disciplines: EcoNode[] = [
+  { label: "Web & App",     sub: "websites and web applications",        icon: <FaCode />,            tone: "blue" },
+  { label: "3D Visuals",    sub: "architectural renders and walkthroughs", icon: <FaCube />,          tone: "orange" },
+  { label: "CAD & GIS",     sub: "CAD, GIS mapping and LiDAR",           icon: <FaDraftingCompass />, tone: "green" },
+  { label: "IT Consulting", sub: "cloud and infrastructure",             icon: <FaServer />,          tone: "blue" },
+  { label: "QA & Testing",  sub: "automation and quality gates",         icon: <FaFlask />,           tone: "green" },
+  { label: "SEO & Marketing", sub: "search, paid media and content",     icon: <FaBullhorn />,        tone: "orange" },
+];
+const disciplineLinks = ["Renders", "Survey data", "Platforms", "Pipelines", "Stable pages", "Fast builds"];
+
+// How an engagement starts and runs.
+const engagement: FlowHop[] = [
+  { title: "Consultation", note: "A short call about your goals",   icon: <FaComments />, tone: "orange" },
+  { title: "Proposal",     note: "Scope, timeline & cost",          icon: <FaFileAlt />,  tone: "blue" },
+  { title: "Kick-off",     note: "Team, tools & milestones",        icon: <FaFlag />,     tone: "blue" },
+  { title: "Build",        note: "You review at each checkpoint",   icon: <FaCogs />,     tone: "blue" },
+  { title: "Launch",       note: "Tested before go-live",           icon: <FaRocket />,   tone: "blue" },
+  { title: "Support",      note: "Ongoing improvements",            icon: <FaLifeRing />, tone: "green" },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
@@ -228,14 +265,28 @@ export default function AboutPage() {
         .ab-hero {
           position:relative;height:100vh;width:100%;
           display:flex;flex-direction:column;
-          background-color:#000;
+          background-color:#060B17;
           overflow:hidden;
+        }
+        /* Hero visual (scripts/visuals/about/generate.mjs) via next/image, with
+           the same readability gradients as the service-page heroes. */
+        .ab-hero__media{position:absolute;inset:0;z-index:0;}
+        .ab-hero__media img{object-fit:cover;object-position:right center;}
+        .ab-hero__media::after{
+          content:'';position:absolute;inset:0;pointer-events:none;
+          background:
+            linear-gradient(90deg, rgba(6,11,23,.92) 0%, rgba(6,11,23,.7) 34%, rgba(6,11,23,.18) 60%, rgba(6,11,23,0) 100%),
+            linear-gradient(180deg, rgba(6,11,23,.15) 0%, rgba(6,11,23,0) 40%, rgba(6,11,23,.5) 100%);
+        }
+        @media(max-width:960px){
+          .ab-hero__media img{ object-position:72% center; }
+          .ab-hero__media::after{ background: linear-gradient(180deg, rgba(6,11,23,.72) 0%, rgba(6,11,23,.55) 40%, rgba(6,11,23,.9) 100%); }
         }
         @supports (height: 100svh) { .ab-hero { height: 100svh; } }
         @supports (height: 100dvh) { .ab-hero { height: 100dvh; } }
         @media(max-width:960px){
           .ab-hero {
-            background-color:#000;
+            background-color:#060B17;
           }
         }
         .ab-hero__grain{position:absolute;inset:0;opacity:.028;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;}
@@ -314,6 +365,21 @@ export default function AboutPage() {
         .ab-stat__val span{color:var(--ab-blue);}
         .ab-stat__lbl{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:400;color:var(--ab-muted);}
 
+        .ab-facts{margin:0 auto!important;}
+
+        /* ══ INFOGRAPHIC SECTIONS ════════════════════════════════════════ */
+        .ab-sec{padding:5.5rem 1.5rem;border-bottom:1px solid var(--ab-line);}
+        .ab-sec--paper{background:var(--ab-paper);}
+        .ab-sec--white{background:var(--ab-surface);}
+        .ab-sec__inner{max-width:1100px;margin:0 auto;text-align:center;}
+        .ab-sec__inner--narrow{max-width:760px;}
+        .ab-sec__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.04em;color:var(--ab-blue);display:block;margin-bottom:.9rem;}
+        .ab-sec__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700;line-height:1.2;letter-spacing:-.015em;color:var(--ab-ink);margin:0 0 1rem;}
+        .ab-sec__h2 em{font-style:normal;color:var(--ab-blue);}
+        .ab-sec__p{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:300;line-height:1.8;color:var(--ab-muted);max-width:620px;margin:0 auto 2.5rem;}
+        .ab-sec__visual{text-align:left;}
+        .ab-sec__inner--narrow .ab-sec__visual{max-width:520px;margin:0 auto;}
+
         /* ══ STICKY MOBILE CTA ══════════════════════════════════════════ */
         .ab-sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:60;display:none;padding:.85rem 1rem;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-top:1px solid var(--ab-line);}
         @media(max-width:760px){.ab-sticky-cta{display:flex;justify-content:center;}}
@@ -345,6 +411,16 @@ export default function AboutPage() {
           aria-labelledby="ab-hero-heading"
           id="about-hero"
         >
+          <div className="ab-hero__media">
+            <Image
+              src="/images/about/about-hero.webp"
+              alt="A globe with the Bengaluru head office linked to clients in the USA, UK, UAE and Australia, above a strip of the six disciplines"
+              fill
+              preload
+              fetchPriority="high"
+              sizes="100vw"
+            />
+          </div>
           <div aria-hidden="true">
             <div className="ab-hero__grain" />
           </div>
@@ -409,20 +485,30 @@ export default function AboutPage() {
         </section>
 
         {/* ══ STATS STRIP ═════════════════════════════════════════════════ */}
-        <div className="ab-stats" aria-label="Company statistics">
-          <div className="ab-stats__inner">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <div className="ab-stat__val">
-                  {s.value.includes("+")
-                    ? <>{s.value.replace("+", "")}<span>+</span></>
-                    : s.value}
-                </div>
-                <div className="ab-stat__lbl">{s.label}</div>
-              </div>
-            ))}
-          </div>
+        <div className="ab-stats">
+          <FactStrip facts={stats} className="ab-facts" label="Company statistics" />
         </div>
+
+        {/* ══ ONE TEAM — animated disciplines diagram ═════════════════════ */}
+        <section className="ab-sec ab-sec--paper" aria-labelledby="ab-team-heading">
+          <div className="ab-sec__inner ab-sec__inner--narrow">
+            <span className="ab-sec__label">What We Do</span>
+            <h2 className="ab-sec__h2" id="ab-team-heading">Six specialisations, <em>one team</em></h2>
+            <p className="ab-sec__p">
+              Every discipline sits in the same Bengaluru team, so a project that spans several of
+              them runs on one plan, with one point of contact.
+            </p>
+            <EcosystemDiagram
+              id="ig-about-team"
+              className="ab-sec__visual"
+              nodes={disciplines}
+              links={disciplineLinks}
+              core={{ kicker: "99 Visual", title: "One team", sub: "one plan" }}
+              caption="Six disciplines under one roof — each hands something useful to the next."
+              description="Web and app builds use 3D renders; 3D visualisation draws on CAD, GIS and LiDAR survey data; mapping work runs on data platforms set up by IT consulting; infrastructure carries QA test pipelines; tested, stable pages support SEO and marketing; and marketing needs fast, SEO-ready web builds."
+            />
+          </div>
+        </section>
 
         {/* ══ MAIN CONTENT — unchanged ══════════════════════════════════════ */}
         <main id="about-content" aria-label="About page content">
@@ -430,6 +516,38 @@ export default function AboutPage() {
           <WhyChooseUs />
           <DataPrivacy />
         </main>
+
+        {/* ══ GLOBAL HOURS — time-zone overlap infographic ═════════════════ */}
+        <section className="ab-sec ab-sec--white" aria-labelledby="ab-global-heading">
+          <div className="ab-sec__inner">
+            <span className="ab-sec__label">Global Delivery</span>
+            <h2 className="ab-sec__h2" id="ab-global-heading">Working across <em>time zones</em></h2>
+            <p className="ab-sec__p">
+              We work from Bengaluru with clients in India, the USA, the UK, the UAE and Australia.
+              Here&apos;s how a typical business day in each country lines up with ours.
+            </p>
+            <GlobalHours className="ab-sec__visual" />
+          </div>
+        </section>
+
+        {/* ══ ENGAGEMENT FLOW ═════════════════════════════════════════════ */}
+        <section className="ab-sec ab-sec--paper" aria-labelledby="ab-engage-heading">
+          <div className="ab-sec__inner">
+            <span className="ab-sec__label">Working With Us</span>
+            <h2 className="ab-sec__h2" id="ab-engage-heading">How a project <em>gets started</em></h2>
+            <p className="ab-sec__p">
+              Six steps from the first conversation to ongoing support, with a checkpoint at each one.
+            </p>
+            <RequestFlow
+              id="ig-engage"
+              className="ab-sec__visual"
+              hops={engagement}
+              badge="Engagement"
+              legend={{ out: "Project moves forward", back: "Your feedback" }}
+              caption="Each stage ends with something you can review — a proposal, a plan, a working build — before the next one starts."
+            />
+          </div>
+        </section>
 
         {/* ══ CTA STRIP ════════════════════════════════════════════════════ */}
         <section className="ab-cta" aria-labelledby="ab-cta-heading">
@@ -459,6 +577,8 @@ export default function AboutPage() {
       </div>
 
       <Footer />
+      {/* Drives scroll-in animations for the infographics on this page. */}
+      <InViewObserver />
       <ScrollDown />
      
     </>
