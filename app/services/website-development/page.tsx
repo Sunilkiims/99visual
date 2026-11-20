@@ -35,6 +35,15 @@ import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import ConsultationCTA from "@/app/components/ConsultationCTA";
+import {
+  InViewObserver,
+  EcosystemDiagram,
+  PerformanceTargets,
+  RequestFlow,
+  AnimatedMedia,
+  WebsitePlaybooks,
+  type EcoNode,
+} from "@/app/components/infographics";
 
 
 import type { Metadata } from "next";
@@ -45,6 +54,7 @@ import {
   FaSearchengin, FaLayerGroup, FaFileCode, FaLifeRing, FaClipboardCheck,
   FaShoppingBag,
   FaReact, FaNodeJs, FaAws, FaMicrosoft,
+  FaPaintBrush, FaCode, FaServer, FaDatabase, FaCloud, FaShieldAlt,
 } from "react-icons/fa";
 import {
   SiNextdotjs, SiMongodb, SiPostgresql, SiGraphql, SiVercel,
@@ -67,6 +77,17 @@ import {
 } from "@/lib/schema";
 
 const BASE_SAFE = BASE.replace(/\/$/, "");
+
+// ── Animated "how a website fits together" diagram (Our Philosophy) ───────
+const siteLayers: EcoNode[] = [
+  { label: "Design & UX",    sub: "wireframes and UI",       icon: <FaPaintBrush />, tone: "orange" },
+  { label: "Frontend",       sub: "React and Next.js",       icon: <FaCode />,       tone: "blue" },
+  { label: "APIs",           sub: "business logic",          icon: <FaServer />,     tone: "blue" },
+  { label: "Database",       sub: "content and records",     icon: <FaDatabase />,   tone: "green" },
+  { label: "Hosting",        sub: "cloud and CDN",           icon: <FaCloud />,      tone: "green" },
+  { label: "Security",       sub: "HTTPS, auth and patching", icon: <FaShieldAlt />,  tone: "orange" },
+];
+const siteLinks = ["Components", "Data fetching", "Queries", "Backups", "HTTPS", "Safe forms"];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // METADATA — unchanged
@@ -784,6 +805,16 @@ export default function WebsiteDevelopment() {
         .wdev-visual{display:block;margin:0 auto 3rem;}
         .wdev-visual img{display:block;width:100%;height:auto;border-radius:20px;}
         .wdev-visual--tech{max-width:1000px;margin:2.5rem auto 0;}
+        /* Animated wrappers (AnimatedMedia) take over the outer spacing + radius */
+        .wdev-media-visual{border-radius:20px;margin:0 auto 3rem;}
+        .wdev-media-visual .wdev-visual{margin:0;}
+        .wdev-media-visual--tech{max-width:1000px;margin:2.5rem auto 0;}
+        .wdev-intro__visual{max-width:520px;margin:2.75rem auto 0;}
+        .wdev-overview__playbooks{margin:3rem 0 0;}
+        .wdev-ind__media{border-radius:12px;margin-bottom:.9rem;}
+        .wdev-ind__media .wdev-ind__img{margin-bottom:0;}
+        .wdev-benefit-card__media{border-radius:12px;margin-bottom:1.2rem;}
+        .wdev-benefit-card__media .wdev-benefit-card__img{margin-bottom:0;}
         .wdev-process__steps{display:flex;flex-direction:column;gap:0;}
         .wdev-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
         .wdev-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--wdev-line);}
@@ -1066,6 +1097,15 @@ export default function WebsiteDevelopment() {
               around your actual goals — whether you're a startup validating an idea, an established
               business scaling up, or an e-commerce brand trying to grow order volume.
             </p>
+            <EcosystemDiagram
+              id="ig-site"
+              className="wdev-intro__visual"
+              nodes={siteLayers}
+              links={siteLinks}
+              core={{ kicker: "99 Visual", title: "Your website", sub: "one team" }}
+              caption="Six layers, one team — each part is built with the next one in mind."
+              description="Design and UX hands components to the front end; the front end fetches data from the APIs; the APIs query the database; the database is backed up by the hosting platform; hosting serves everything over HTTPS; and security keeps forms and logins safe for the design to rely on."
+            />
           </div>
         </section>
 
@@ -1143,6 +1183,7 @@ export default function WebsiteDevelopment() {
                 </p>
               </div>
             </div>
+            <PerformanceTargets />
           </div>
         </section>
 
@@ -1183,6 +1224,7 @@ export default function WebsiteDevelopment() {
                 </a>
               ))}
             </div>
+            <WebsitePlaybooks className="wdev-overview__playbooks" />
           </div>
         </section>
 
@@ -1197,13 +1239,13 @@ export default function WebsiteDevelopment() {
                   <p className="wdev-cluster__intro">{cluster.intro}</p>
                 </div>
                 <div className={`wdev-cluster__grid wdev-cluster__grid--${cluster.cols}`}>
-                  {cluster.ids.map((id) => {
+                  {cluster.ids.map((id, idx) => {
                     const svc = serviceById(id);
                     const media = serviceMedia[svc.id];
                     return (
                       <article className="wdev-card" id={svc.id} key={svc.id} aria-labelledby={`wdev-svc-heading-${svc.id}`}>
                         {media && (
-                          <div className="wdev-card__media">
+                          <AnimatedMedia className="wdev-card__media" delay={idx}>
                             <Image
                               src={media.src}
                               alt={media.alt}
@@ -1211,7 +1253,7 @@ export default function WebsiteDevelopment() {
                               height={600}
                               sizes={cluster.cols === 4 ? "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 300px" : "(max-width: 860px) 100vw, 360px"}
                             />
-                          </div>
+                          </AnimatedMedia>
                         )}
                         <div className="wdev-card__icon" aria-hidden="true">{svc.icon}</div>
                         <h3 className="wdev-card__title" id={`wdev-svc-heading-${svc.id}`}>{svc.title}</h3>
@@ -1237,13 +1279,15 @@ export default function WebsiteDevelopment() {
               <h2 className="wdev-h2" id="wdev-process-heading">A process built to <em>remove risk</em></h2>
               <p className="wdev-sub">Five stages, each with a clear checkpoint, so you always know what's next.</p>
             </div>
-            <ArtDirectedVisual
-              className="wdev-visual wdev-visual--process"
-              wide={{ src: "/images/services/website-development/development-process-wide.webp", width: 1800, height: 560 }}
-              tall={{ src: "/images/services/website-development/development-process-tall.webp", width: 720, height: 1260 }}
-              alt="Five-stage website development process: discovery and scoping, strategy and UX, design and build, testing and launch, then support and growth, each with its checkpoint"
-              sizes="(max-width: 640px) 100vw, 900px"
-            />
+            <AnimatedMedia className="wdev-media-visual wdev-media-visual--process">
+              <ArtDirectedVisual
+                className="wdev-visual wdev-visual--process"
+                wide={{ src: "/images/services/website-development/development-process-wide.webp", width: 1800, height: 560 }}
+                tall={{ src: "/images/services/website-development/development-process-tall.webp", width: 720, height: 1260 }}
+                alt="Five-stage website development process: discovery and scoping, strategy and UX, design and build, testing and launch, then support and growth, each with its checkpoint"
+                sizes="(max-width: 640px) 100vw, 900px"
+              />
+            </AnimatedMedia>
             <div className="wdev-process__steps">
               {processSteps.map((s) => (
                 <div className="wdev-process__step" key={s.step}>
@@ -1325,8 +1369,9 @@ export default function WebsiteDevelopment() {
               </p>
             </div>
             <div className="wdev-ind__grid">
-              {industries.map((ind) => (
+              {industries.map((ind, i) => (
                 <div className="wdev-ind__card" key={ind.name}>
+                  <AnimatedMedia className="wdev-ind__media" delay={i}>
                   <Image
                     className="wdev-ind__img"
                     src={ind.img}
@@ -1335,6 +1380,7 @@ export default function WebsiteDevelopment() {
                     height={360}
                     sizes="(max-width: 480px) 45vw, (max-width: 900px) 30vw, 170px"
                   />
+                  </AnimatedMedia>
                   <div className="wdev-ind__name">{ind.name}</div>
                 </div>
               ))}
@@ -1353,18 +1399,21 @@ export default function WebsiteDevelopment() {
               topics like Next.js and SEO, see our{" "}
               <Link href="/insights/category/web-development">web development insights</Link>.
             </p>
-            <ArtDirectedVisual
-              className="wdev-visual wdev-visual--tech"
-              wide={{ src: "/images/services/website-development/technology-stack-wide.webp", width: 2000, height: 820 }}
-              tall={{ src: "/images/services/website-development/technology-stack-tall.webp", width: 720, height: 1560 }}
-              alt="How the stack fits together: users reach the front end, which talks to back-end APIs and databases, with a CMS for content, all running on cloud hosting deployed through DevOps pipelines"
-              sizes="(max-width: 640px) 100vw, 1000px"
-            />
+            <AnimatedMedia className="wdev-media-visual wdev-media-visual--tech">
+              <ArtDirectedVisual
+                className="wdev-visual wdev-visual--tech"
+                wide={{ src: "/images/services/website-development/technology-stack-wide.webp", width: 2000, height: 820 }}
+                tall={{ src: "/images/services/website-development/technology-stack-tall.webp", width: 720, height: 1560 }}
+                alt="How the stack fits together: users reach the front end, which talks to back-end APIs and databases, with a CMS for content, all running on cloud hosting deployed through DevOps pipelines"
+                sizes="(max-width: 640px) 100vw, 1000px"
+              />
+            </AnimatedMedia>
             <div className="wdev-tech__grid">
               {techStack.map((t) => (
                 <span className="wdev-tech__badge" key={t.name}>{t.icon} {t.name}</span>
               ))}
             </div>
+            <RequestFlow />
           </div>
         </section>
 
@@ -1472,6 +1521,7 @@ export default function WebsiteDevelopment() {
             <div className="wdev-benefits__grid">
               {benefits.map((b, i) => (
                 <div className="wdev-benefit-card" key={i}>
+                  <AnimatedMedia className="wdev-benefit-card__media" delay={i % 3}>
                   <Image
                     className="wdev-benefit-card__img"
                     src={b.img}
@@ -1480,6 +1530,7 @@ export default function WebsiteDevelopment() {
                     height={540}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
                   />
+                  </AnimatedMedia>
                   <div className="wdev-benefit-card__title">{b.title}</div>
                   <p className="wdev-benefit-card__desc">{b.description}</p>
                 </div>
@@ -1562,6 +1613,8 @@ export default function WebsiteDevelopment() {
 
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
       <RelatedInsights serviceHref="/services/website-development" />
+      {/* Drives scroll-in animations for every infographic on this page. */}
+      <InViewObserver />
       <Footer />
       <ScrollDown />
 

@@ -2,6 +2,7 @@
 // to enable scroll-in animations; every graphic is fully visible without it.
 export { default as InViewObserver } from "./InViewObserver";
 export { default as EcosystemDiagram } from "./EcosystemDiagram";
+export type { EcoNode } from "./EcosystemDiagram";
 export { default as SeoGrowthPath } from "./SeoGrowthPath";
 export { default as SearchPipeline } from "./SearchPipeline";
 export { default as ChannelPlaybooks } from "./ChannelPlaybooks";
@@ -9,3 +10,7 @@ export { default as ProcessCycle } from "./ProcessCycle";
 export type { CycleStep } from "./ProcessCycle";
 export { default as LocalSearchMap } from "./LocalSearchMap";
 export { default as AnalyticsDashboard } from "./AnalyticsDashboard";
+export { default as PerformanceTargets } from "./PerformanceTargets";
+export { default as RequestFlow } from "./RequestFlow";
+export { default as AnimatedMedia } from "./AnimatedMedia";
+export { default as WebsitePlaybooks } from "./WebsitePlaybooks";
