@@ -1,66 +1,68 @@
 // app/services/website-development/page.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Website & Web App Development — 99 Visual Solutions
+// Website Development — 99 Visual Solutions
 //
-// THIS REVISION: Hero fully aligned to the /services (hub) page hero, which
-//   is now the shared master template across all service pages — same
-//   layout, spacing, typography (Space Grotesk / Inter / IBM Plex Mono
-//   scales and clamp() values), corner bracket positions, eyebrow/rule/sub
-//   treatment, button styling, ticker mechanics, and responsive breakpoints
-//   (desktop/tablet/mobile/small-mobile/short-screen). Only the hero
-//   heading, description, artwork (banner image), and ticker content stay
-//   page-specific — everything else (CSS values, structure, animations)
-//   now matches the hub page exactly.
+// Full page upgrade (Nov 2026): every section rewritten in plain language,
+// with animated infographics from app/components/infographics:
+//   LaunchTimeline  (idea → launch)          — Philosophy
+//   SiteTypeMatrix  (website vs store vs app) — Which build do you need?
+//   FrontBackSplit  (frontend vs backend)     — Engineering cluster
+//   RequestFlow     (shopping workflow)       — E-commerce & CMS cluster
+//   SeoImpactMap    (performance → SEO)       — SEO & Performance cluster
+//   SecurityLayers  (layered protection)      — Security & Infrastructure
+//   ProcessCycle    (7-stage lifecycle)       — Process
+//   TechStackMap    (stack by layer)          — Technologies
+// All are Server Components; one client InViewObserver drives the entrance
+// animations. Case studies come from lib/case-studies.ts and only show what
+// those records document: no invented results, figures or testimonials.
 //
-//   All hero-area "contact us" CTAs (hero primary, pain-section CTA, CTA
-//   strip, sticky mobile CTA) now open the ContactPopup modal via the
-//   shared ConsultationCTA client wrapper instead of navigating to
-//   /contact, matching the hub page's CTA implementation.
-//
-//   Nothing below the hero, no metadata/schema/SEO, and no business copy
-//   has changed.
-//
-// THIS EDIT: "Services · Web Development" eyebrow pill in the hero is now
-//   orange (#FF8A2E) instead of blue. Only the pill (text, border,
-//   background tint, pulsing dot) changed — the shared --wdev-blue
-//   variable used everywhere else on the page is untouched.
+// Hero layout, URLs, ConsultationCTA popups, analytics and schema wiring
+// are unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
 import { caseStudies } from '@/lib/case-studies';
 import Link from "next/link";
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import ConsultationCTA from "@/app/components/ConsultationCTA";
 import {
   InViewObserver,
-  EcosystemDiagram,
   PerformanceTargets,
   RequestFlow,
   AnimatedMedia,
   WebsitePlaybooks,
-  type EcoNode,
+  ProcessCycle,
+  SiteTypeMatrix,
+  FrontBackSplit,
+  TechStackMap,
+  SeoImpactMap,
+  SecurityLayers,
+  LaunchTimeline,
+  type CycleStep,
+  type FlowHop,
+  type StackLayer,
+  type LaunchStop,
 } from "@/app/components/infographics";
 
-
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import {
-  FaCogs, FaRocket, FaMobileAlt,
-  FaUsers, FaTools,
+  FaCogs, FaRocket, FaMobileAlt, FaUsers,
   FaExclamationCircle, FaHourglassHalf, FaChartLine, FaLock,
   FaSearchengin, FaLayerGroup, FaFileCode, FaLifeRing, FaClipboardCheck,
-  FaShoppingBag,
-  FaReact, FaNodeJs, FaAws, FaMicrosoft,
-  FaPaintBrush, FaCode, FaServer, FaDatabase, FaCloud, FaShieldAlt,
+  FaShoppingBag, FaReact, FaNodeJs, FaAws, FaPlug,
+  FaSearch, FaSitemap, FaPencilRuler, FaCode, FaVial, FaCloudUploadAlt, FaWrench,
+  FaBoxOpen, FaShoppingCart, FaEdit, FaCreditCard, FaTruck, FaTachometerAlt,
+  FaArrowRight,
 } from "react-icons/fa";
 import {
   SiNextdotjs, SiMongodb, SiPostgresql, SiGraphql, SiVercel,
-  SiVuedotjs, SiTypescript, SiTailwindcss, SiExpress, SiMysql, SiRedis,
-  SiSanity, SiContentful, SiStrapi, SiGooglecloud,
-  SiDocker, SiKubernetes, SiFigma, SiGithub, SiStripe,
+  SiTypescript, SiTailwindcss, SiExpress, SiMysql, SiRedis,
+  SiSanity, SiStrapi, SiWordpress, SiDocker, SiGithub,
 } from "react-icons/si";
 
 import {
@@ -77,38 +79,26 @@ import {
 } from "@/lib/schema";
 
 const BASE_SAFE = BASE.replace(/\/$/, "");
-
-// ── Animated "how a website fits together" diagram (Our Philosophy) ───────
-const siteLayers: EcoNode[] = [
-  { label: "Design & UX",    sub: "wireframes and UI",       icon: <FaPaintBrush />, tone: "orange" },
-  { label: "Frontend",       sub: "React and Next.js",       icon: <FaCode />,       tone: "blue" },
-  { label: "APIs",           sub: "business logic",          icon: <FaServer />,     tone: "blue" },
-  { label: "Database",       sub: "content and records",     icon: <FaDatabase />,   tone: "green" },
-  { label: "Hosting",        sub: "cloud and CDN",           icon: <FaCloud />,      tone: "green" },
-  { label: "Security",       sub: "HTTPS, auth and patching", icon: <FaShieldAlt />,  tone: "orange" },
-];
-const siteLinks = ["Components", "Data fetching", "Queries", "Backups", "HTTPS", "Safe forms"];
+const PAGE_PATH = "/services/website-development";
+const PAGE_URL  = `${BASE_SAFE}${PAGE_PATH}`;
+const OG_IMAGE  = `${BASE_SAFE}/images/og/web-development-og.jpg`;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// METADATA — unchanged
+// METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 // Re-render at most hourly so newly published related articles appear
 // without a redeploy (see RelatedInsights).
 export const revalidate = 3600;
 
+const META_DESCRIPTION =
+  "Website development company in Bengaluru, India. We design and build business websites, online stores and web apps in React and Next.js. Get a free quote.";
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
   title: "Website Development Company in India",
-
-  description:
-    "Website development company in Bengaluru, India, building custom, responsive, SEO-friendly websites and web apps in React and Next.js. Get a free quote.",
-
+  description: META_DESCRIPTION,
   metadataBase: new URL(BASE_SAFE),
-
-  alternates: {
-    canonical: "/services/website-development",
-  },
-
+  alternates: { canonical: PAGE_PATH },
   robots: {
     index:  true,
     follow: true,
@@ -120,39 +110,23 @@ export const metadata: Metadata = {
       "max-video-preview":  -1,
     },
   },
-
   openGraph: {
     title:       "Website Development Company in India | 99 Visual Solutions",
-    description: "Custom website development, business websites, and web applications built in React and Next.js — responsive, SEO-friendly, and engineered for speed, security, and conversions. Based in Bengaluru, serving clients across India and worldwide.",
-    url:         `${BASE_SAFE}/services/website-development`,
+    description: "Business websites, online stores and web applications designed and built in React and Next.js by one team in Bengaluru, with hosting, SEO set-up and support included.",
+    url:         PAGE_URL,
     siteName:    "99 Visual Solutions",
-    images: [
-      {
-        url:    `${BASE_SAFE}/images/og/web-development-og.jpg`,
-        width:  1200,
-        height: 630,
-        type:   "image/jpeg",
-        alt:    "Website and web app development by 99 Visual Solutions",
-      },
-    ],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, type: "image/jpeg", alt: "Website and web app development by 99 Visual Solutions" }],
     locale: "en_US",
     type:   "website",
   },
-
   twitter: {
     card:        "summary_large_image",
     title:       "Website Development Company in India | 99 Visual Solutions",
-    description: "Custom web apps, responsive business websites, e-commerce builds, and SEO-friendly development in React & Next.js — from a team based in Bengaluru, India.",
+    description: "Business websites, online stores and web apps built in React and Next.js by a design and engineering team in Bengaluru, India.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
-    images: [
-      {
-        url: `${BASE_SAFE}/images/og/web-development-og.jpg`,
-        alt: "Website and web app development by 99 Visual Solutions",
-      },
-    ],
+    images: [{ url: OG_IMAGE, alt: "Website and web app development by 99 Visual Solutions" }],
   },
-
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -163,27 +137,367 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DATES — unchanged
+// DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/website-development']; // shared with app/sitemap.ts — edit lib/page-dates.ts
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED[PAGE_PATH]; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA — unchanged
+// PAGE DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+type Service = { id: string; title: string; description: string; highlight: string; bullets: string[]; icon: ReactNode };
+
+const services: Service[] = [
+  {
+    id: "web-application",
+    title: "Web Application Development",
+    description: "When a spreadsheet, a shared inbox and a lot of copying and pasting are holding a process together, a web application can take over. We build portals, booking systems and internal tools that your staff or customers log in to and use every day.",
+    highlight: "We talk to the people who will use the tool, map how the work moves today and design around that. If the new system is slower than the old workaround, nobody will use it.",
+    bullets: ["Customer portals, booking systems and internal tools", "Logins, roles and permissions", "Room to add users and features later"],
+    icon: <FaLayerGroup />,
+  },
+  {
+    id: "dashboard",
+    title: "Custom Dashboard & Admin Panel Development",
+    description: "Orders, enquiries, stock and users are often tracked in several places, and someone spends hours reconciling them. An admin panel brings that data onto one screen, with the actions your team takes most often a click away.",
+    highlight: "Role-based access means a sales rep, a warehouse lead and an owner each see what they need. The screen stays simple and the data stays safer.",
+    bullets: ["Role-based access and user management", "Reports, charts and CSV exports", "Admin screens for orders, content and users"],
+    icon: <FaClipboardCheck />,
+  },
+  {
+    id: "ux-design",
+    title: "User Experience (UX) Design",
+    description: "Visitors rarely tell you a site is confusing. They just leave. Our UX work looks for the small things behind that: navigation that hides key pages, buttons with vague labels, forms that ask for too much.",
+    highlight: "We agree the page structure in wireframes before any visual design, so decisions are made on how a page works rather than on colours and fonts.",
+    bullets: ["User flows and information architecture", "Wireframes and clickable prototypes", "Design systems in Figma for consistent pages"],
+    icon: <FaUsers />,
+  },
+  {
+    id: "landing-page",
+    title: "Landing Page Design & Development",
+    description: "A landing page has one job, such as a demo request or a signup. Everything on it should serve that job: a clear headline, the few details people need to decide, and one obvious next step.",
+    highlight: "Campaign traffic is often paid for, so speed matters here more than anywhere. We keep these pages light so your budget isn't spent on visitors who leave while the page loads.",
+    bullets: ["One goal and one call to action per page", "Fast, mobile-first layouts", "Ready for A/B tests and campaign tracking"],
+    icon: <FaRocket />,
+  },
+  {
+    id: "frontend",
+    title: "Front-End Development",
+    description: "The front end is everything a visitor sees and touches. We build it in React and Next.js with TypeScript, so pages render quickly, layouts stay steady while they load, and the interface behaves the same on phones, tablets and desktops.",
+    highlight: "We build from reusable components. That keeps the design consistent and makes the next change cheaper, because nobody has to untangle one-off code first.",
+    bullets: ["Responsive, mobile-first layouts", "React, Next.js, TypeScript and Tailwind CSS", "Accessibility and Core Web Vitals checked during the build"],
+    icon: <FaReact />,
+  },
+  {
+    id: "backend",
+    title: "Back-End Development",
+    description: "Behind every form, login and order there is server code and a database doing the work. We build APIs and data models that keep records accurate, apply your business rules and stay quick as traffic grows.",
+    highlight: "We size the back end to the job. A small booking tool doesn't need a complex microservice set-up, and we won't build one just because it sounds impressive.",
+    bullets: ["REST and GraphQL APIs in Node.js", "Database design in PostgreSQL or MongoDB", "Authentication, permissions and input validation"],
+    icon: <FaNodeJs />,
+  },
+  {
+    id: "api",
+    title: "API & Third-Party Integrations",
+    description: "Your site usually needs to talk to other systems: a payment gateway, a CRM, email marketing, shipping or accounting software. We connect them so data moves on its own instead of being exported and typed in again.",
+    highlight: "When there's no ready-made plugin, we write the integration against the service's API, with error handling and logging so a failed sync doesn't go unnoticed.",
+    bullets: ["Payment, CRM, email and shipping integrations", "Custom REST and GraphQL connections", "Webhooks, retries and error logging"],
+    icon: <SiGraphql />,
+  },
+  {
+    id: "modernization",
+    title: "Web App Modernisation",
+    description: "Older sites and apps tend to get slower, harder to update and riskier to touch. We review what you have, decide with you what is worth keeping, and move the rest to a current stack in planned stages.",
+    highlight: "A full rebuild isn't always the answer. Sometimes upgrading the front end and keeping a stable back end gets most of the benefit for much less effort.",
+    bullets: ["Code and architecture review", "Staged migration that keeps URLs and redirects", "Moves to modern frameworks and cloud hosting"],
+    icon: <FaChartLine />,
+  },
+  {
+    id: "ecommerce",
+    title: "E-Commerce & CMS Development",
+    description: "Each extra step between the product page and payment is a chance for a buyer to give up. We build stores where browsing, the cart and checkout are quick on a phone, and where totals, discounts and shipping are worked out correctly before the customer pays.",
+    highlight: "The ShilpiKala store in our recent projects is one example: categories, search, customer accounts, a cart with live totals, checkout and guest order tracking.",
+    bullets: ["Catalogue, product pages, cart and checkout", "Payment gateway and order management", "Customer accounts, wishlists and order tracking"],
+    icon: <FaShoppingBag />,
+  },
+  {
+    id: "website-customization",
+    title: "Website Customisation",
+    description: "Most businesses want their own team to change prices, pages and banners without calling a developer. We set up a CMS (Sanity, Strapi or WordPress, depending on the project) and shape it around the content you publish.",
+    highlight: "Editors get fields that match their content, like a product, a project or a team member, instead of one large text box that is easy to break.",
+    bullets: ["Headless CMS or WordPress set-up", "Content models and editor roles", "Custom features that themes and plugins can't handle"],
+    icon: <FaCogs />,
+  },
+  {
+    id: "seo",
+    title: "SEO & Performance Optimisation",
+    description: "Search engines have to crawl, render and understand a page before it can appear in results. We build for that: clean HTML structure, metadata, structured data, sitemaps, readable URLs and fast pages that meet Core Web Vitals targets.",
+    highlight: "We can't promise rankings, and nobody honestly can. What we make sure of is that nothing in the build holds your pages back, and we show you how to track progress in Search Console and analytics.",
+    bullets: ["Technical SEO set up before launch", "Page speed and Core Web Vitals work", "Structured data, sitemaps and redirects"],
+    icon: <FaSearchengin />,
+  },
+  {
+    id: "security",
+    title: "Web Security Services",
+    description: "A leaked password or an outdated plugin can do more damage than any design flaw. We handle the basics properly from the start: HTTPS everywhere, secure logins, validated input, secrets kept on the server and dependencies kept up to date.",
+    highlight: "If your site takes payments or stores personal data, we explain what that means for how the data is stored and who can reach it, and build accordingly.",
+    bullets: ["SSL, security headers and firewall rules", "Secure authentication and access control", "Dependency updates and vulnerability checks"],
+    icon: <FaLock />,
+  },
+  {
+    id: "hosting",
+    title: "Website Hosting & Deployment",
+    description: "Hosting usually gets attention only when something breaks. We set up hosting, backups and automated deployments so releases are routine and a bad update can be rolled back quickly.",
+    highlight: "Staging and production are kept separate, so you can review changes on a preview link before your customers see them.",
+    bullets: ["Cloud hosting on AWS, Vercel or similar", "CI/CD pipelines with preview builds", "Backups, uptime alerts and rollbacks"],
+    icon: <FaAws />,
+  },
+];
+
+const serviceMedia: Record<string, { src: string; alt: string }> = {
+  "web-application":      { src: "/images/services/website-development/web-application-development.webp", alt: "Web application architecture: a business dashboard connected to login, API, database and workflow components" },
+  "ux-design":            { src: "/images/services/website-development/ux-ui-design.webp", alt: "A dashed wireframe turning into a finished interface, with the design system colours and type below" },
+  "website-customization":{ src: "/images/services/website-development/website-customisation.webp", alt: "Reusable interface components and brand tokens assembled into a tailored website layout" },
+  "frontend":             { src: "/images/services/website-development/frontend-development.webp", alt: "React component tree rendering a responsive page in the browser, with React, Next.js, TypeScript and Tailwind" },
+  "backend":              { src: "/images/services/website-development/backend-development.webp", alt: "Back-end architecture: client requests passing through an API gateway to auth, orders and search services, a database and a cache" },
+  "ecommerce":            { src: "/images/services/website-development/ecommerce-cms.webp", alt: "Online storefront with a product grid and cart beside a CMS publishing panel, above the catalogue-to-payment flow" },
+  "modernization":        { src: "/images/services/website-development/web-app-modernisation.webp", alt: "Legacy server application being migrated in stages to cloud-native containers" },
+  "seo":                  { src: "/images/services/website-development/seo-performance.webp", alt: "Highlighted search result beside Core Web Vitals scores for LCP, INP and CLS, with an analytics chart" },
+  "security":             { src: "/images/services/website-development/web-security.webp", alt: "Web security layers around a protected site: SSL/TLS, login and MFA, firewall, encryption, monitoring and vulnerability scanning" },
+  "hosting":              { src: "/images/services/website-development/hosting-deployment.webp", alt: "Deployment pipeline from commit to build, test and deploy, feeding cloud servers with monitoring and backups" },
+  "api":                  { src: "/images/services/website-development/api-integrations.webp", alt: "A website connected to payments, CRM, analytics, email, maps and external APIs" },
+  "landing-page":         { src: "/images/services/website-development/landing-page-development.webp", alt: "Landing page with one highlighted call to action, a fast-load marker and a visit-to-lead funnel" },
+  "dashboard":            { src: "/images/services/website-development/dashboard-admin-panel.webp", alt: "Admin dashboard with KPI cards and charts beside a users-and-roles permissions panel and a report export button" },
+};
+
+// ── Shopping workflow (E-commerce & CMS cluster) ──
+const shopFlow: FlowHop[] = [
+  { title: "Browse",       note: "Categories, search and curated shelves", icon: <FaSearch />,       tone: "orange" },
+  { title: "Product page", note: "Price, stock, photos and reviews",       icon: <FaBoxOpen />,      tone: "blue" },
+  { title: "Cart",         note: "Totals, discounts and shipping update live", icon: <FaShoppingCart />, tone: "blue" },
+  { title: "Checkout",     note: "Contact and delivery details",           icon: <FaEdit />,         tone: "blue" },
+  { title: "Payment",      note: "Handed to the payment gateway",          icon: <FaCreditCard />,   tone: "green" },
+  { title: "Track order",  note: "Account history or guest lookup",        icon: <FaTruck />,        tone: "green" },
+];
+
+type Cluster = {
+  id: string; eyebrow: string; heading: ReactNode; intro: string;
+  cols: 1 | 2 | 4; ids: string[]; visual?: ReactNode; after?: ReactNode;
+};
+
+const clusters: Cluster[] = [
+  {
+    id: "product-ux",
+    eyebrow: "Product & UX",
+    heading: <>Plan the right product <em>before</em> building it</>,
+    intro: "Web applications, dashboards, UX design and landing pages, planned around the people who will use them.",
+    cols: 4,
+    ids: ["web-application", "dashboard", "ux-design", "landing-page"],
+  },
+  {
+    id: "engineering",
+    eyebrow: "Frontend & Backend Engineering",
+    heading: <>The front end, the back end and <em>what connects them</em></>,
+    intro: "The interface people see, the server code and data behind it, and the links to the other tools your business runs on.",
+    cols: 4,
+    ids: ["frontend", "backend", "api", "modernization"],
+    visual: <FrontBackSplit />,
+  },
+  {
+    id: "commerce",
+    eyebrow: "E-commerce & CMS",
+    heading: <>Online stores that make buying <em>straightforward</em></>,
+    intro: "From the first product page to order tracking, plus a content system your team can update without help.",
+    cols: 2,
+    ids: ["ecommerce", "website-customization"],
+    visual: (
+      <RequestFlow
+        id="ig-shop"
+        className="wdev-cluster__visual"
+        hops={shopFlow}
+        badge="The shopping journey"
+        legend={{ out: "Customer steps", back: "Order updates" }}
+        caption="The path a buyer takes through a store we build. Each step loads quickly on a phone, and the totals they see in the cart are the totals they pay."
+      />
+    ),
+  },
+  {
+    id: "seo-performance",
+    eyebrow: "SEO & Performance",
+    heading: <>Fast pages that search engines <em>can read</em></>,
+    intro: "Speed and technical SEO are part of the build, not an add-on after launch.",
+    cols: 1,
+    ids: ["seo"],
+    visual: <SeoImpactMap />,
+    after: <PerformanceTargets />,
+  },
+  {
+    id: "security-infrastructure",
+    eyebrow: "Security & Infrastructure",
+    heading: <>Secure, backed up and <em>easy to update</em></>,
+    intro: "Protection for your data and your customers, and hosting that makes releases routine.",
+    cols: 2,
+    ids: ["security", "hosting"],
+    visual: <SecurityLayers />,
+  },
+];
+
+function serviceById(id: string) {
+  return services.find((s) => s.id === id)!;
+}
+
+const painPoints = [
+  { icon: <FaExclamationCircle />, title: "Visitors arrive but don't get in touch", text: "Analytics show traffic, but the forms stay empty. Usually the page doesn't make the next step clear, or it asks for too much too soon." },
+  { icon: <FaHourglassHalf />,     title: "Small changes take weeks",               text: "If updating a price or a banner needs a developer, the site falls behind the business. A proper CMS and clean code fix that." },
+  { icon: <FaMobileAlt />,         title: "It works on desktop, not on a phone",    text: "Most visits now come from phones. Menus that won't open, tiny text and heavy images cost you those visitors." },
+  { icon: <FaTachometerAlt />,     title: "Pages are slow to load",                 text: "Large images and piles of scripts frustrate visitors and make it harder for search engines to show your pages." },
+  { icon: <FaPlug />,              title: "Your tools don't talk to each other",    text: "Orders, leads and stock sit in separate systems, so someone spends hours copying data from one to another." },
+  { icon: <FaLock />,              title: "Nobody is sure how secure it is",        text: "Old plugins, shared passwords and missing backups are common, and they tend to go unnoticed until something goes wrong." },
+];
+
+const launchStops: LaunchStop[] = [
+  { title: "Idea",       note: "You tell us what the site needs to do" },
+  { title: "Brief",      note: "Pages, features and budget agreed in writing" },
+  { title: "Wireframes", note: "Page structure approved before design" },
+  { title: "Design",     note: "Visual design on your real content" },
+  { title: "Build",      note: "Progress on a staging link every week" },
+  { title: "Launch",     note: "Tested, checked, then live" },
+];
+
+const buildTypes = [
+  { title: "Business website", text: "A company site, a service catalogue or a portfolio. Its job is to explain what you do and turn visits into enquiries, so clear content, speed and search visibility matter most." },
+  { title: "Online store",     text: "Everything a business website does, plus a catalogue, cart, checkout, payments and order tracking. Accuracy matters as much as looks: prices, stock and shipping have to be right." },
+  { title: "Web application",  text: "Software that customers or staff log in to and use, such as a portal, a booking system or a dashboard. The work is mostly in user roles, data and business rules." },
+];
+
+const processSteps: CycleStep[] = [
+  { step: "01", title: "Discovery",     icon: <FaSearch />,         text: "We learn about your business, customers and goals, review any current site, and agree what success looks like." },
+  { step: "02", title: "Planning",      icon: <FaSitemap />,        text: "Sitemap, features, content and technology are written down with a timeline and estimate for you to sign off." },
+  { step: "03", title: "UI/UX Design",  icon: <FaPencilRuler />,    text: "Wireframes first, then visual design on real content, with a clickable prototype for the key pages." },
+  { step: "04", title: "Development",   icon: <FaCode />,           text: "We build in short cycles and share a staging link, so you can see progress every week." },
+  { step: "05", title: "Testing",       icon: <FaVial />,           text: "Checks on phones, tablets, desktops and major browsers, plus forms, speed, accessibility and SEO basics." },
+  { step: "06", title: "Deployment",    icon: <FaCloudUploadAlt />, text: "Launch with redirects, analytics and Search Console in place, and a rollback plan ready." },
+  { step: "07", title: "Maintenance",   icon: <FaWrench />,         text: "Updates, backups, security patches and improvements based on how people use the site." },
+];
+
+const deliverables = [
+  { icon: <FaFileCode />,       title: "Source code in your repository", text: "Clean, commented code in a Git repository you own. You are never locked in to us." },
+  { icon: <FaLayerGroup />,     title: "Design files & style guide",     text: "Figma files and a style guide covering colours, type and components." },
+  { icon: <FaSearchengin />,    title: "Technical SEO set-up",           text: "Metadata, structured data, sitemap, robots rules and redirects in place at launch." },
+  { icon: <FaClipboardCheck />, title: "Test report",                    text: "A record of what we tested, and on which devices and browsers." },
+  { icon: <FaLifeRing />,       title: "Handover guide",                 text: "Plain-language notes on editing content, deploying changes and where everything lives." },
+  { icon: <FaWrench />,         title: "30 days of post-launch support", text: "Fixes for anything real-world use turns up in the first month after launch." },
+];
+
+const beforeAfter = [
+  { topic: "Speed",     before: "Large images and plugins slow every page",  after: "Optimised images and lean code, checked against Core Web Vitals" },
+  { topic: "Mobile",    before: "A desktop layout squeezed onto a phone",    after: "Designed for phones first and tested on real devices" },
+  { topic: "Updates",   before: "Every text change needs a developer",       after: "A CMS your team can use on its own" },
+  { topic: "Enquiries", before: "No clear next step on most pages",          after: "One clear call to action on every key page" },
+  { topic: "Search",    before: "Missing metadata and broken links",         after: "Technical SEO in place from launch day" },
+  { topic: "Security",  before: "Old plugins and no backups",                after: "Regular updates, HTTPS and automated backups" },
+];
+
+const industries = [
+  { img: "/images/services/website-development/industry-healthcare.webp",       alt: "Healthcare website illustration: patient vitals and a confirmed appointment",       name: "Healthcare",          note: "Appointment booking, doctor profiles and clear contact details." },
+  { img: "/images/services/website-development/industry-ecommerce.webp",        alt: "E-commerce illustration: product card, shopping bag and cart",                      name: "E-Commerce & Retail", note: "Catalogues, checkout, payments and order tracking." },
+  { img: "/images/services/website-development/industry-education.webp",        alt: "Education illustration: online course video with a progress bar",                 name: "Education",           note: "Course pages, enquiry forms and student portals." },
+  { img: "/images/services/website-development/industry-real-estate.webp",      alt: "Real estate illustration: property listing next to a map location pin",            name: "Real Estate",         note: "Property listings, search filters and project microsites." },
+  { img: "/images/services/website-development/industry-hospitality.webp",      alt: "Hospitality illustration: restaurant booking with a star rating",                  name: "Hospitality & Food",  note: "Menus, table bookings and location pages." },
+  { img: "/images/services/website-development/industry-travel-logistics.webp", alt: "Travel and logistics illustration: delivery truck on a tracked route between two points", name: "Travel & Logistics", note: "Booking requests, shipment tracking and partner dashboards." },
+];
+
+const stackLayers: StackLayer[] = [
+  { name: "Frontend",         note: "What visitors see and use",       tone: "blue",   tools: [ { name: "React", icon: <FaReact /> }, { name: "Next.js", icon: <SiNextdotjs /> }, { name: "TypeScript", icon: <SiTypescript /> }, { name: "Tailwind CSS", icon: <SiTailwindcss /> } ] },
+  { name: "Backend & APIs",   note: "Business logic and integrations", tone: "orange", tools: [ { name: "Node.js", icon: <FaNodeJs /> }, { name: "Express", icon: <SiExpress /> }, { name: "REST APIs", icon: <FaPlug /> }, { name: "GraphQL", icon: <SiGraphql /> } ] },
+  { name: "Data",             note: "Records, content and caching",    tone: "green",  tools: [ { name: "PostgreSQL", icon: <SiPostgresql /> }, { name: "MongoDB", icon: <SiMongodb /> }, { name: "MySQL", icon: <SiMysql /> }, { name: "Redis", icon: <SiRedis /> } ] },
+  { name: "Content (CMS)",    note: "Where your team edits pages",     tone: "blue",   tools: [ { name: "Sanity", icon: <SiSanity /> }, { name: "Strapi", icon: <SiStrapi /> }, { name: "WordPress", icon: <SiWordpress /> } ] },
+  { name: "Cloud & delivery", note: "Hosting, deployment and code",    tone: "green",  tools: [ { name: "AWS", icon: <FaAws /> }, { name: "Vercel", icon: <SiVercel /> }, { name: "Docker", icon: <SiDocker /> }, { name: "GitHub", icon: <SiGithub /> } ] },
+];
+
+const benefits = [
+  { img: "/images/services/website-development/benefit-custom-solutions.webp",  alt: "Interface components being assembled into a layout built for one specific business", title: "Built around your business", description: "We don't start from a theme. Pages and features are planned around how you sell and how your customers make decisions." },
+  { img: "/images/services/website-development/benefit-seo.webp",               alt: "Search results page with one listing highlighted",                                     title: "SEO from the start",         description: "Search basics such as page structure, metadata, speed and structured data are part of the build, so you don't pay to fix them later." },
+  { img: "/images/services/website-development/benefit-mobile-responsive.webp", alt: "The same page layout adapting from desktop to tablet to phone screens",               title: "Designed for phones first",  description: "We design the phone layout first and test on real devices, because that is where most of your visitors will be." },
+  { img: "/images/services/website-development/benefit-performance.webp",       alt: "Page speed gauge with the needle in the fast, green zone",                             title: "Fast pages",                 description: "Images, scripts and hosting are tuned so pages load quickly, including on slower mobile connections." },
+  { img: "/images/services/website-development/benefit-user-experience.webp",   alt: "Three-screen user journey with a cursor moving from first click to a completed step", title: "Easy to use",                description: "We check whether people can find what they came for in a few clicks, not just whether the page looks good in a screenshot." },
+  { img: "/images/services/website-development/benefit-ongoing-support.webp",   alt: "Maintenance cycle linking security, fixes, performance checks and alerts",             title: "Support after launch",       description: "We stay on for updates, security patches and improvements, so the site keeps working as your business changes." },
+];
+
+const faqItems = [
+  {
+    question: "What does your website development service include?",
+    answer: `Everything needed to plan, build and run a website or web application: discovery and planning, UX and UI design, front-end and back-end development, e-commerce and CMS set-up, technical SEO, security, hosting and support after launch. You can hire us for the whole project or for one part of it. If you're not sure where to start, email ${CONTACT_EMAIL}.`,
+  },
+  {
+    question: "How long does it take to build a website?",
+    answer: "It depends on the scope. A small business website is a matter of weeks, while an online store or a custom web application takes longer because there is more to design, build and test. After the discovery call we give you a written timeline with each stage and its review point, so you know what to expect before work starts.",
+  },
+  {
+    question: "How much does website development cost in India?",
+    answer: `Cost depends mainly on scope. A business website with a handful of pages is priced very differently from a web application with logins, a database and integrations. Rather than quote a generic range that won't match your project, we scope it properly: email ${CONTACT_EMAIL} with a short description of what you need and we'll come back with an itemised estimate.`,
+  },
+  {
+    question: "What's the difference between a business website and a web application?",
+    answer: "A business website, such as a company site, a service catalogue or a portfolio, mainly needs to inform visitors and turn them into enquiries, so speed, SEO and clear content matter most. A web application adds logins, dashboards or workflows that customers or staff use inside the site. Many projects start as a website and add an application layer later, and we plan the structure so that is possible without a rebuild.",
+  },
+  {
+    question: "Do you build custom websites or use templates?",
+    answer: "We build custom sites rather than reskinning a theme. We do reuse our own components and a documented design system to keep the build efficient, but the structure, layout and features are planned around how your business works.",
+  },
+  {
+    question: "Which technologies do you use?",
+    answer: "Most of our builds use React and Next.js with TypeScript and Tailwind CSS. On the server side we use Node.js with PostgreSQL or MongoDB, and a CMS such as Sanity, Strapi or WordPress when your team needs to publish content. We host on AWS, Vercel or similar cloud platforms, depending on the project's needs and budget.",
+  },
+  {
+    question: "Can you redesign or modernise our existing website?",
+    answer: `Yes. We start with a review of the current site to separate what is broken from what is simply old, then plan the migration. Where possible we keep existing URLs or add redirects so the search traffic you already have isn't lost. Email ${CONTACT_EMAIL} with some background and we'll tell you honestly what it would take.`,
+  },
+  {
+    question: "Will my new website rank on Google?",
+    answer: "No one can honestly guarantee rankings or indexing, and you should be wary of anyone who does. What we can do is make sure the build doesn't hold you back: crawlable pages, clean structure, metadata, structured data, a sitemap and fast load times. Rankings then depend on your content, competition and ongoing work, which our SEO and digital marketing team can help with.",
+  },
+  {
+    question: "Can our team update the website without a developer?",
+    answer: "Yes. We set up a CMS with fields that match your content, so your team can edit pages, products, blog posts and banners themselves. We include a short handover guide, and we're available if something needs a developer later.",
+  },
+  {
+    question: "Do you provide support after the website is live?",
+    answer: "Every project includes 30 days of post-launch support to fix anything real-world use turns up. After that, we offer ongoing maintenance covering updates, security patches, backups and improvements, so the site doesn't fall behind.",
+  },
+  {
+    question: "Where is your team based, and do you work with clients outside India?",
+    answer: "Our team is based in Bengaluru (Bangalore), Karnataka, India. We also build and support websites and web applications for clients in the US, UK, UAE and Australia, with the same team handling the work.",
+  },
+];
+
+// Honest, process-only labels for the hero ticker (no invented metrics).
+const pipeline = [
+  { cmd: "discovery",  out: "goals and scope written down" },
+  { cmd: "wireframes", out: "structure approved before design" },
+  { cmd: "build",      out: "weekly previews on staging" },
+  { cmd: "test",       out: "phones, tablets, desktops, browsers" },
+  { cmd: "launch",     out: "redirects, analytics, Search Console" },
+  { cmd: "support",    out: "updates, backups, fixes" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEMA
 // ─────────────────────────────────────────────────────────────────────────────
 
 const wdevBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",            url: "/" },
   { name: "Services",        url: "/services" },
-  { name: "Web Development", url: "/services/website-development" },
+  { name: "Web Development", url: PAGE_PATH },
 ]);
 
 const wdevServiceNode = {
   ...serviceSchema({
     name:        "Website Development",
-    description: "Website development services from 99 Visual Solutions: custom websites, business websites, and web application builds, UX/UI design, front-end and back-end engineering, e-commerce and CMS development, SEO and performance optimisation, security hardening, hosting and deployment, and API integrations — delivered from Bengaluru, India for clients in India and abroad.",
-    pathname:    "/services/website-development",
-    image:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
+    description: "Website development from 99 Visual Solutions: business websites, online stores and web applications, with UX and UI design, front-end and back-end development, e-commerce and CMS set-up, technical SEO, security, hosting and API integrations. Delivered from Bengaluru, India for clients in India and abroad.",
+    pathname:    PAGE_PATH,
+    image:       OG_IMAGE,
   }),
   areaServed: [
     { "@type": "Country", name: "India" },
@@ -194,46 +508,27 @@ const wdevServiceNode = {
     { "@type": "Country", name: "Australia" },
   ],
   provider: { "@id": `${BASE_SAFE}/#organization` },
-  "@id": `${BASE_SAFE}/services/website-development#service`,
+  "@id": `${PAGE_URL}#service`,
   serviceType: "Web Development",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name:    "Web Development Services",
-    itemListElement: [
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web Application Development" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "User Experience (UX) Design" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Website Customization" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Front-End Development" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Back-End Development" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "E-Commerce & CMS Development" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web App Modernization" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "SEO & Performance Optimization" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web Security Services" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Website Hosting & Deployment" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "API & Third-Party Integrations" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Landing Page Design & Development" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Dashboard & Admin Panel Development" } },
-    ],
+    itemListElement: services.map((s) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: s.title } })),
   },
 };
 
-// FAQ copy lives in one place (faqItems, defined below with the rest of the
-// page data) and is reused for both the on-page accordion and this JSON-LD
-// node, so the two can no longer drift out of sync.
-function buildWdevFaqNode(items: { question: string; answer: string }[]) {
-  return {
-    ...faqSchema(items),
-    "@id":            `${BASE_SAFE}/services/website-development#faq`,
-    mainEntityOfPage: { "@id": `${BASE_SAFE}/services/website-development#webpage` },
-  };
-}
+const wdevFaqNode = {
+  ...faqSchema(faqItems),
+  "@id":            `${PAGE_URL}#faq`,
+  mainEntityOfPage: { "@id": `${PAGE_URL}#webpage` },
+};
 
 const wdevPageNode = {
   "@type":       "WebPage",
-  "@id":         `${BASE_SAFE}/services/website-development#webpage`,
-  url:           `${BASE_SAFE}/services/website-development`,
+  "@id":         `${PAGE_URL}#webpage`,
+  url:           PAGE_URL,
   name:          "Website Development Company in India | 99 Visual Solutions",
-  description:   "99 Visual Solutions builds custom websites, business websites, and web application builds — UX design, e-commerce and CMS builds, SEO, security, hosting, and API integrations, delivered from Bengaluru for clients in India and abroad.",
+  description:   META_DESCRIPTION,
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -242,7 +537,7 @@ const wdevPageNode = {
   publisher:     { "@id": `${BASE_SAFE}/#organization` },
   primaryImageOfPage: {
     "@type":   "ImageObject",
-    url:       `${BASE_SAFE}/images/og/web-development-og.jpg`,
+    url:       OG_IMAGE,
     width:     1200,
     height:    630,
     caption:   "Website and web app development by 99 Visual Solutions",
@@ -251,299 +546,9 @@ const wdevPageNode = {
     "@type":     "SpeakableSpecification",
     cssSelector: [".wdev-hero__h1", ".wdev-hero__sub"],
   },
-  breadcrumb:      { "@id": `${BASE_SAFE}/services/website-development#breadcrumb` },
-  potentialAction: { "@type": "ReadAction", target: [`${BASE_SAFE}/services/website-development`] },
+  breadcrumb:      { "@id": `${PAGE_URL}#breadcrumb` },
+  potentialAction: { "@type": "ReadAction", target: [PAGE_URL] },
 };
-
-// NOTE: wdevGraph is assembled further below (after `faqItems` is defined in
-// the PAGE DATA section), via buildWdevFaqNode(faqItems), so the FAQ schema
-// and the on-page FAQ accordion always share one copy of the same content.
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA — unchanged
-// ─────────────────────────────────────────────────────────────────────────────
-const benefits = [
-  { img: "/images/services/website-development/benefit-custom-solutions.webp", alt: "Interface components being assembled into a layout built for one specific business", title: "Customised Solutions",          description: "No two businesses run the same way, so we don't start from a template. Every site or application is scoped around your specific workflow, customers, and goals from the first conversation." },
-  { img: "/images/services/website-development/benefit-seo.webp", alt: "Search results page with one listing highlighted and an upward ranking trend", title: "SEO Optimisation",              description: "SEO isn't something we bolt on before launch — it's part of how the site is structured from day one, from semantic HTML to Core Web Vitals, so you're not paying to fix it six months later." },
-  { img: "/images/services/website-development/benefit-mobile-responsive.webp", alt: "The same page layout adapting from desktop to tablet to phone screens", title: "Mobile Responsiveness",         description: "With most traffic now arriving on phones, a site that only works well on desktop is quietly losing customers. We design mobile-first and test on real devices, not just browser emulators." },
-  { img: "/images/services/website-development/benefit-performance.webp", alt: "Page speed gauge with the needle in the fast, green zone", title: "Faster Load Times",             description: "Every extra second of load time increases bounce rate and works against your Google ranking. We optimise images, scripts, and server response times so pages load quickly, even on slower connections." },
-  { img: "/images/services/website-development/benefit-user-experience.webp", alt: "Three-screen user journey with a cursor moving from first click to a completed step", title: "Improved User Experience",      description: "Good UX isn't about how a screenshot looks — it's about whether someone can find what they need in a few clicks. We design for that outcome, then test it with real usage patterns." },
-  { img: "/images/services/website-development/benefit-ongoing-support.webp", alt: "Ongoing maintenance cycle linking security, fixes, performance checks and alerts", title: "Ongoing Maintenance & Support", description: "Launch day isn't the finish line. We handle updates, security patches, and performance checks afterward, so the site keeps working as your business — and the web itself — keeps changing." },
-];
-
-const services = [
-  {
-    id: "web-application",
-    title: "Web Application Development",
-    description: "A standard website works fine until your business needs a login system, an internal tool, or a way to move data between teams without spreadsheets and email chains. That's the point where we start building web applications — software built around how your team actually works, not a page that just describes it.",
-    highlight: "We map the workflow first and design the tool around it, so the result is something your team uses because it's faster, not something they route around because it isn't.",
-    bullets: ["Custom dashboards & business tools", "Workflow automation & process optimisation", "Secure, scalable, and high-performance architecture"],
-    icon: <FaLayerGroup />,
-  },
-  {
-    id: "ux-design",
-    title: "User Experience (UX) Design",
-    description: "People rarely complain about confusing design — they just leave. Our UX process is built around finding the small frictions that quietly cost you conversions: unclear navigation, vague calls to action, forms that ask for too much too soon.",
-    highlight: "Every layout decision is backed by a reason — user research, behavioural data, or testing — rather than personal preference, because what looks good and what actually converts aren't always the same thing.",
-    bullets: ["Human-centred design approach", "Wireframes, prototypes & usability testing", "Conversion-focused design strategy"],
-    icon: <FaUsers />,
-  },
-  {
-    id: "website-customization",
-    title: "Website Customisation",
-    description: "Off-the-shelf templates rarely fit a real business perfectly. We start with how you actually sell and how customers actually browse, then build the site around that — rather than bending your business model to fit a theme's limitations.",
-    highlight: "Whether that means a custom checkout flow or a landing page built for a single campaign, the goal stays the same: a site that behaves the way your business actually operates, not the way a template assumes it should.",
-    bullets: ["Custom e-commerce functionality", "Landing pages built for campaigns", "Personalisation for brand consistency"],
-    icon: <FaCogs />,
-  },
-  {
-    id: "frontend",
-    title: "Front-End Development",
-    description: "The front end is the only part of your site users ever actually see, so small delays and layout shifts have an outsized effect on whether someone stays or bounces. We build interfaces in React and Next.js designed to load quickly and hold together across screen sizes and browsers.",
-    highlight: "Clean component structure also pays off later — future updates are faster and cheaper because you're not paying someone to untangle tangled code two years from now.",
-    bullets: ["Responsive, mobile-first & cross-browser compatible design", "Modern frameworks (React, Next.js, Vue) & clean code architecture", "Optimised performance, accessibility & Core Web Vitals compliance"],
-    icon: <FaReact />,
-  },
-  {
-    id: "backend",
-    title: "Back-End Development",
-    description: "Front-end polish doesn't matter much if the system behind it can't handle real traffic or keep data secure. We build the APIs, databases, and server architecture that hold up under actual load, not just a demo environment.",
-    highlight: "Every back end is scoped to what you actually need — a small inventory tool doesn't require microservices, but a multi-location booking platform usually does, and we size the architecture accordingly rather than over-building by default.",
-    bullets: ["Custom APIs & microservices architecture", "Database design, optimisation & management", "Authentication, authorisation & data security"],
-    icon: <FaNodeJs />,
-  },
-  {
-    id: "ecommerce",
-    title: "E-Commerce & CMS Development",
-    description: "Every step between adding an item to a cart and completing checkout is a chance to lose the sale. We build storefronts and content systems that keep that path short and fast, whether you're running a five-product shop or a growing multi-category catalogue.",
-    highlight: "We also configure the CMS so your own team can update products, pages, and promotions without filing a support ticket every time something needs to change.",
-    bullets: ["Custom storefront design & shopping cart development", "Headless CMS & content workflow management", "Secure payment gateway & order management integrations"],
-    icon: <FaShoppingBag />,
-  },
-  {
-    id: "modernization",
-    title: "Web App Modernisation",
-    description: "If your current system was built more than a few years ago, it's likely slower than it should be, harder to update safely, and more expensive to maintain than it needs to be. We audit what you have, work out what's genuinely worth keeping, and rebuild the rest on a modern stack.",
-    highlight: "Modernisation doesn't always mean a full rebuild — sometimes the fastest win is migrating the database and upgrading the front end while leaving stable back-end logic alone.",
-    bullets: ["Legacy system upgrade & re-engineering", "Cloud migration & performance optimisation", "Scalable, secure & future-ready architecture"],
-    icon: <FaChartLine />,
-  },
-  {
-    id: "seo",
-    title: "SEO & Performance Optimisation",
-    description: "Ranking well and loading fast aren't separate goals — Google's own ranking systems weigh page speed and Core Web Vitals directly. We handle both together: technical SEO, structured data, image and script optimisation, and monitoring that continues as your content grows.",
-    highlight: "We report on what actually moved — organic traffic, ranking positions, and conversion rate — rather than vanity metrics that don't affect revenue.",
-    bullets: ["On-page, technical & keyword optimisation", "Website speed & Core Web Vitals improvement", "Analytics-driven insights & continuous optimisation"],
-    icon: <FaSearchengin />,
-  },
-  {
-    id: "security",
-    title: "Web Security Services",
-    description: "A single unpatched vulnerability or an exposed API key can undo years of customer trust in a day. We build security in from the start — proper authentication, encrypted data handling, and regular vulnerability checks — rather than adding it after the fact.",
-    highlight: "For sites handling payments or personal data, we also help you meet the compliance standards your industry expects, from PCI DSS to GDPR-aligned data handling.",
-    bullets: ["Vulnerability assessment & penetration testing", "SSL implementation, firewalls & malware protection", "Continuous monitoring & threat prevention strategies"],
-    icon: <FaLock />,
-  },
-  {
-    id: "hosting",
-    title: "Website Hosting & Deployment",
-    description: "Hosting decisions rarely get attention until something breaks — a traffic spike, a failed deploy, a server going down at the worst possible time. We set up infrastructure and CI/CD pipelines designed to prevent those moments, with monitoring and backups running quietly in the background.",
-    highlight: "Whether you need one production environment or staging, testing, and production kept in sync, releases are automated so shipping an update isn't a manual, error-prone process.",
-    bullets: ["Secure, scalable & high-performance hosting solutions", "CI/CD pipelines & seamless deployment processes", "Server management, backups & uptime monitoring"],
-    icon: <FaAws />,
-  },
-  {
-    id: "api",
-    title: "API & Third-Party Integrations",
-    description: "Your website rarely operates alone — payment processors, CRMs, analytics tools, and internal systems all need to exchange data reliably. We build and connect REST and GraphQL APIs so information moves between them without manual exports or broken syncs.",
-    highlight: "Where a ready-made integration doesn't exist, we build a custom one, matched to how your specific tools and data actually need to interact rather than forced through a generic connector.",
-    bullets: ["Secure REST & GraphQL API integrations", "Payment gateways, CRM & third-party service connections", "Real-time data sync & workflow automation"],
-    icon: <SiGraphql />,
-  },
-  {
-    id: "landing-page",
-    title: "Landing Page Design & Development",
-    description: "A landing page has one job, and everything on it should serve that job — the headline, the layout, the single call to action. We design pages around one goal at a time, then test variations to see which layout actually converts better with your audience.",
-    highlight: "Load time matters more here than almost anywhere else on your site: campaign traffic is often paid, so every extra second of load time is money leaking out of your ad budget.",
-    bullets: ["Conversion-focused design & persuasive content", "Fast-loading, responsive & mobile-first layouts", "A/B testing & performance-driven optimisation"],
-    icon: <FaRocket />,
-  },
-  {
-    id: "dashboard",
-    title: "Custom Dashboard & Admin Panel Development",
-    description: "Spreadsheets and shared documents work fine until three people are editing the same file at once. We build dashboards and admin panels that give your team one shared, accurate view of the data that matters — orders, users, inventory, whatever your operation actually runs on.",
-    highlight: "Role-based permissions mean each person sees exactly what they need and nothing more, which matters as much for security as it does for day-to-day usability.",
-    bullets: ["Role-based access & secure user management", "Real-time analytics, reports & data visualisation", "Scalable, intuitive & fully customisable interfaces"],
-    icon: <FaClipboardCheck />,
-  },
-];
-
-const clusters = [
-  {
-    id: "product-ux",
-    eyebrow: "Product & UX",
-    heading: <>Design the <em>right thing</em>, before building it</>,
-    intro: "Web applications, UX strategy, and site customisation — scoped to how your business actually operates, not a template.",
-    cols: 3,
-    ids: ["web-application", "ux-design", "website-customization"],
-  },
-  {
-    id: "engineering",
-    eyebrow: "Engineering",
-    heading: <>Front to back, built to <em>hold up</em></>,
-    intro: "Interfaces, APIs, and storefronts built on a modern stack, sized to your actual load — not over-built by default.",
-    cols: 3,
-    ids: ["frontend", "backend", "ecommerce"],
-  },
-  {
-    id: "optimize-protect",
-    eyebrow: "Optimize & Protect",
-    heading: <>Modernise, rank, and <em>stay secure</em></>,
-    intro: "Legacy upgrades, technical SEO, and security hardening — the unglamorous work that prevents expensive problems later.",
-    cols: 3,
-    ids: ["modernization", "seo", "security"],
-  },
-  {
-    id: "operate-extend",
-    eyebrow: "Operate & Extend",
-    heading: <>Keep it running, <em>keep it connected</em></>,
-    intro: "Hosting, integrations, campaign pages, and internal tools that extend what the core site can do.",
-    cols: 4,
-    ids: ["hosting", "api", "landing-page", "dashboard"],
-  },
-];
-
-function serviceById(id: string) {
-  return services.find((s) => s.id === id)!;
-}
-
-// Illustration + descriptive alt text per service card. Assets already exist
-// in /public/images — this swaps the icon-only cards for real content images
-// with meaningful alt text (previously the page had no <img> elements at all).
-const serviceMedia: Record<string, { src: string; alt: string }> = {
-  "web-application":      { src: "/images/services/website-development/web-application-development.webp", alt: "Web application architecture: a business dashboard connected to login, API, database and workflow components" },
-  "ux-design":            { src: "/images/services/website-development/ux-ui-design.webp", alt: "A dashed wireframe turning into a polished interface, with the design system colours and type below" },
-  "website-customization":{ src: "/images/services/website-development/website-customisation.webp", alt: "Reusable interface components and brand tokens assembled into a tailored website layout" },
-  "frontend":             { src: "/images/services/website-development/frontend-development.webp", alt: "React component tree rendering a responsive page in the browser, with React, Next.js, TypeScript and Tailwind" },
-  "backend":              { src: "/images/services/website-development/backend-development.webp", alt: "Back-end architecture: client requests passing through an API gateway to auth, orders and search services, a database and a cache" },
-  "ecommerce":            { src: "/images/services/website-development/ecommerce-cms.webp", alt: "Online storefront with a product grid and cart beside a CMS publishing panel, above the catalogue-to-payment flow" },
-  "modernization":        { src: "/images/services/website-development/web-app-modernisation.webp", alt: "Legacy server application being migrated in stages to cloud-native containers" },
-  "seo":                  { src: "/images/services/website-development/seo-performance.webp", alt: "Highlighted search result beside passing Core Web Vitals scores for LCP, INP and CLS, with a rising analytics chart" },
-  "security":             { src: "/images/services/website-development/web-security.webp", alt: "Web security layers around a protected site: SSL/TLS, login and MFA, firewall, encryption, monitoring and vulnerability scanning" },
-  "hosting":              { src: "/images/services/website-development/hosting-deployment.webp", alt: "Deployment pipeline from commit to build, test and deploy, feeding cloud servers with monitoring and backups" },
-  "api":                  { src: "/images/services/website-development/api-integrations.webp", alt: "A website connected to payments, CRM, analytics, email, maps and external APIs" },
-  "landing-page":         { src: "/images/services/website-development/landing-page-development.webp", alt: "Conversion-focused landing page with one highlighted call to action, a fast-load marker and a visit-to-lead funnel" },
-  "dashboard":            { src: "/images/services/website-development/dashboard-admin-panel.webp", alt: "Admin dashboard with KPI cards and charts beside a users-and-roles permissions panel and a report export button" },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUPPORTING CONTENT — unchanged
-// ─────────────────────────────────────────────────────────────────────────────
-
-const painPoints = [
-  { icon: <FaExclamationCircle />, title: "The site looks fine, but nothing converts", text: "Traffic shows up in analytics and leaves without filling out a form — usually a sign the design isn't guiding people toward a decision." },
-  { icon: <FaHourglassHalf />,     title: "Every small change takes weeks",          text: "A codebase that's hard to touch turns simple updates into a back-and-forth with a developer who's slow to respond." },
-  { icon: <FaMobileAlt />,         title: "It works on desktop, breaks on mobile",   text: "Most visitors are on a phone. If the mobile experience is an afterthought, so is most of your traffic." },
-  { icon: <FaLock />,              title: "Nobody's sure how secure it actually is", text: "No one wants to find out the hard way — after a breach — that basic security hygiene was skipped at launch." },
-];
-
-const processSteps = [
-  { step: "01", title: "Discovery & Scoping",  text: "We start by understanding your business, your users, and what the current site or process is actually costing you — not just what page to build." },
-  { step: "02", title: "Strategy & UX",        text: "Wireframes and information architecture come before any visual design, so the structure is decided by what works, not what looks nice first." },
-  { step: "03", title: "Design & Build",       text: "UI design and development run in parallel with regular checkpoints, so you see progress continuously instead of one big reveal at the end." },
-  { step: "04", title: "Testing & Launch",     text: "Cross-device QA, performance checks, and a staged rollout catch problems before your customers do." },
-  { step: "05", title: "Support & Growth",     text: "Post-launch, we monitor performance and security, and keep iterating based on how people actually use the site." },
-];
-
-const deliverables = [
-  { icon: <FaFileCode />,        title: "Production-ready source code",     text: "Clean, documented code in your own repository — nothing locked to us." },
-  { icon: <FaLayerGroup />,      title: "Design files & style guide",        text: "Figma files and a documented design system so future work stays consistent." },
-  { icon: <FaSearchengin />,     title: "Technical SEO foundation",          text: "Metadata, schema, sitemap, and Core Web Vitals handled at launch, not after." },
-  { icon: <FaClipboardCheck />,  title: "QA & cross-device test report",     text: "A record of what was tested and on which devices and browsers." },
-  { icon: <FaLifeRing />,        title: "Handover documentation",            text: "Plain-language docs so your team — or the next developer — isn't guessing." },
-  { icon: <FaTools />,           title: "30-day post-launch support window", text: "A buffer to catch anything real usage surfaces that testing didn't." },
-];
-
-const industries = [
-  { img: "/images/services/website-development/industry-healthcare.webp",        alt: "Healthcare website illustration: patient vitals and a confirmed appointment",        name: "Healthcare" },
-  { img: "/images/services/website-development/industry-ecommerce.webp",         alt: "E-commerce illustration: product card, shopping bag and cart",                       name: "E-Commerce & Retail" },
-  { img: "/images/services/website-development/industry-education.webp",         alt: "Education illustration: online course video with a progress bar",                  name: "Education" },
-  { img: "/images/services/website-development/industry-real-estate.webp",       alt: "Real estate illustration: property listing next to a map location pin",             name: "Real Estate" },
-  { img: "/images/services/website-development/industry-hospitality.webp",       alt: "Hospitality illustration: restaurant booking with a star rating",                   name: "Hospitality & Food" },
-  { img: "/images/services/website-development/industry-travel-logistics.webp",  alt: "Travel and logistics illustration: delivery truck on a tracked route between two points", name: "Travel & Logistics" },
-];
-
-const techStack = [
-  { icon: <FaReact />,        name: "React" },
-  { icon: <SiNextdotjs />,    name: "Next.js" },
-  { icon: <SiVuedotjs />,     name: "Vue.js" },
-  { icon: <SiTypescript />,   name: "TypeScript" },
-  { icon: <SiTailwindcss />,  name: "Tailwind CSS" },
-  { icon: <FaNodeJs />,       name: "Node.js" },
-  { icon: <SiExpress />,      name: "Express" },
-  { icon: <SiGraphql />,      name: "GraphQL" },
-  { icon: <SiPostgresql />,   name: "PostgreSQL" },
-  { icon: <SiMongodb />,      name: "MongoDB" },
-  { icon: <SiMysql />,        name: "MySQL" },
-  { icon: <SiRedis />,        name: "Redis" },
-  { icon: <SiSanity />,       name: "Sanity" },
-  { icon: <SiContentful />,   name: "Contentful" },
-  { icon: <SiStrapi />,       name: "Strapi" },
-  { icon: <FaAws />,          name: "AWS" },
-  { icon: <SiGooglecloud />,  name: "Google Cloud" },
-  { icon: <FaMicrosoft />,    name: "Microsoft Azure" },
-  { icon: <SiVercel />,       name: "Vercel" },
-  { icon: <SiDocker />,       name: "Docker" },
-  { icon: <SiKubernetes />,   name: "Kubernetes" },
-  { icon: <SiGithub />,       name: "GitHub" },
-  { icon: <SiFigma />,        name: "Figma" },
-  { icon: <SiStripe />,       name: "Stripe" },
-];
-
-const faqItems = [
-  {
-    question: "What web development services does 99 Visual Solutions offer?",
-    answer:
-      `We handle the full lifecycle: custom web applications, UX and UI design, front-end and back-end development, e-commerce and CMS builds, SEO and performance work, security, hosting, and API integrations. If you're not sure where to start, email us at ${CONTACT_EMAIL} — there's no cost or obligation for that first conversation.`,
-  },
-  {
-    question: "Do you build mobile-responsive websites?",
-    answer:
-      "Yes. Every site we build is mobile-first and tested on real devices, not just resized in a browser. This matters for more than usability — Google's Core Web Vitals are part of how pages rank, so a slow or broken mobile layout costs you both users and search visibility.",
-  },
-  {
-    question: "Which technologies do you use for web development?",
-    answer:
-      "Our front-end stack is mainly React and Next.js, paired with headless CMS platforms like Sanity, Contentful, or Strapi when a content team needs to publish independently. On the back end we build REST and GraphQL APIs on PostgreSQL, MongoDB, or MySQL, deployed to AWS, GCP, or Azure depending on your scale and budget.",
-  },
-  {
-    question: "Can you modernize or upgrade our existing web application?",
-    answer:
-      `Yes — this is one of the more common requests we get. We start with a technical audit to separate what's genuinely broken from what's just old, then migrate incrementally where that's safer than a full rebuild. Email ${CONTACT_EMAIL} with some background on your current system and we'll give you a straight read on what it would take.`,
-  },
-  {
-    question: "Where is your team based, and do you work with clients outside India?",
-    answer:
-      "Our team is based in Bengaluru (Bangalore), Karnataka, India. We also build and support websites and web applications for clients in the US, UK, UAE and Australia, with the same team handling the work.",
-  },
-  {
-    question: "What's the difference between a business website and a custom web application?",
-    answer:
-      "A business website — a marketing site, a service page, a catalogue — mainly needs to inform and convert visitors, so speed, SEO, and clear content structure matter most. A web application adds logins, dashboards, or workflows that your team or customers actually operate inside. Many projects start as a business website and grow a web application layer later; we design the site so that path stays open instead of requiring a rebuild.",
-  },
-  {
-    question: "Do you build custom websites, or work from templates?",
-    answer:
-      "We build custom sites rather than reskinning a theme. That doesn't mean starting from a blank file for everything — reusable components and a documented design system keep the build efficient — but the structure, layout, and functionality are scoped to how your business actually sells and operates, not to a template's assumptions.",
-  },
-  {
-    question: "How much does professional website development cost in India?",
-    answer:
-      `Cost depends mainly on scope — a business website with a handful of pages is priced very differently from a custom web application with logins, a database, and ongoing integrations. Rather than quote a generic range that won't match your project, we scope it properly: email ${CONTACT_EMAIL} with a short description of what you need and we'll come back with a clear, itemised estimate.`,
-  },
-];
-
-const wdevFaqNode = buildWdevFaqNode(faqItems);
 
 const wdevGraph = buildGraph(
   orgSchema,
@@ -555,46 +560,16 @@ const wdevGraph = buildGraph(
   wdevFaqNode,
 );
 
-// Illustrative build/QA pipeline lines for the signature ticker band.
-const pipeline = [
-  { cmd: "next build",          out: "compiled successfully" },
-  { cmd: "lighthouse ci",       out: "98/100 performance" },
-  { cmd: "vitest run",          out: "214 passed, 0 failed" },
-  { cmd: "eslint .",            out: "no problems found" },
-  { cmd: "deploy production",   out: "live in 42s" },
-  { cmd: "axe-core audit",      out: "0 critical issues" },
-];
+// Case studies filed under this service (lib/case-studies.ts).
+const webCaseStudies = caseStudies.filter((c) => c.service.href === PAGE_PATH);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-// Case studies filed under this service (lib/case-studies.ts), shown in the
-// "Recent Work" section.
-const webCaseStudies = caseStudies.filter((c) => c.service.href === '/services/website-development');
-
-// One <img> (one alt text) with a wide variant for larger screens and a tall
-// variant for phones, both served through the Next.js image optimiser. Only
-// the variant that matches the viewport is downloaded.
-type VisualSource = { src: string; width: number; height: number };
-function ArtDirectedVisual({ wide, tall, alt, sizes, className }: {
-  wide: VisualSource; tall: VisualSource; alt: string; sizes: string; className?: string;
-}) {
-  const { props: { srcSet: tallSrcSet } } = getImageProps({ ...tall, alt, sizes: "100vw" });
-  const { props: wideProps } = getImageProps({ ...wide, alt, sizes, loading: "lazy" });
-  return (
-    <picture className={className}>
-      <source media="(max-width: 640px)" srcSet={tallSrcSet} width={tall.width} height={tall.height} />
-      {/* eslint-disable-next-line jsx-a11y/alt-text -- alt is passed through wideProps */}
-      <img {...wideProps} />
-    </picture>
-  );
-}
-
 export default function WebsiteDevelopment() {
   return (
     <>
       <style>{`
-
         .wdev-page{
           --wdev-ink:#12141A; --wdev-muted:#5B6172; --wdev-paper:#F5F6F8; --wdev-surface:#FFFFFF;
           --wdev-line:#E4E6EC; --wdev-blue:#2E5CFF; --wdev-green:#37D67A;
@@ -735,17 +710,6 @@ export default function WebsiteDevelopment() {
         .wdev-intro__p{font-family:'Inter',sans-serif;font-size:1rem;font-weight:300;line-height:1.85;color:var(--wdev-muted);max-width:700px;margin:0 auto .9rem;}
         .wdev-intro__p strong{color:var(--wdev-ink);font-weight:500;}
 
-        /* ══ EXPERTISE — "what a website development company does" ══════ */
-        .wdev-expertise{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-expertise__inner{max-width:1080px;margin:0 auto;}
-        .wdev-expertise__head{max-width:760px;margin:0 auto 3rem;}
-        .wdev-expertise__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.25rem 2.5rem;}
-        @media(max-width:760px){.wdev-expertise__grid{grid-template-columns:1fr;}}
-        .wdev-expertise__item h3{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .55rem;}
-        .wdev-expertise__item p{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.8;color:var(--wdev-muted);margin:0;}
-        .wdev-expertise__item p a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
-        .wdev-expertise__item p a:hover{text-decoration-color:var(--wdev-blue);}
-
         /* ══ LOCATION STRIP — Bengaluru / India / global delivery ═══════ */
         .wdev-location{background:var(--wdev-paper);padding:4.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
         .wdev-location__inner{max-width:860px;margin:0 auto;text-align:center;}
@@ -798,30 +762,6 @@ export default function WebsiteDevelopment() {
         .wdev-card__bullets li{font-family:'Inter',sans-serif;font-size:.81rem;color:var(--wdev-ink);display:flex;align-items:flex-start;gap:.55rem;}
         .wdev-card__bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--wdev-blue);margin-top:.5rem;flex-shrink:0;}
 
-        /* ══ PROCESS TIMELINE ════════════════════════════════════════════ */
-        .wdev-process{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-process__inner{max-width:900px;margin:0 auto;}
-        .wdev-process__head{margin-bottom:3rem;}
-        .wdev-visual{display:block;margin:0 auto 3rem;}
-        .wdev-visual img{display:block;width:100%;height:auto;border-radius:20px;}
-        .wdev-visual--tech{max-width:1000px;margin:2.5rem auto 0;}
-        /* Animated wrappers (AnimatedMedia) take over the outer spacing + radius */
-        .wdev-media-visual{border-radius:20px;margin:0 auto 3rem;}
-        .wdev-media-visual .wdev-visual{margin:0;}
-        .wdev-media-visual--tech{max-width:1000px;margin:2.5rem auto 0;}
-        .wdev-intro__visual{max-width:520px;margin:2.75rem auto 0;}
-        .wdev-overview__playbooks{margin:3rem 0 0;}
-        .wdev-ind__media{border-radius:12px;margin-bottom:.9rem;}
-        .wdev-ind__media .wdev-ind__img{margin-bottom:0;}
-        .wdev-benefit-card__media{border-radius:12px;margin-bottom:1.2rem;}
-        .wdev-benefit-card__media .wdev-benefit-card__img{margin-bottom:0;}
-        .wdev-process__steps{display:flex;flex-direction:column;gap:0;}
-        .wdev-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
-        .wdev-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--wdev-line);}
-        .wdev-process__num{width:56px;height:56px;border-radius:50%;border:1px solid var(--wdev-line);background:var(--wdev-paper);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:500;color:var(--wdev-blue);flex-shrink:0;}
-        .wdev-process__title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
-        .wdev-process__text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);max-width:520px;}
-
         /* ══ DELIVERABLES ═══════════════════════════════════════════════ */
         .wdev-deliv{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
         .wdev-deliv__inner{max-width:1200px;margin:0 auto;}
@@ -834,88 +774,10 @@ export default function WebsiteDevelopment() {
         .wdev-deliv__title{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.5rem;}
         .wdev-deliv__text{font-family:'Inter',sans-serif;font-size:.83rem;font-weight:300;line-height:1.7;color:var(--wdev-muted);}
 
-        /* ══ BEFORE / AFTER ══════════════════════════════════════════════ */
-        .wdev-ba{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-ba__inner{max-width:1000px;margin:0 auto;}
-        .wdev-ba__head{margin-bottom:3rem;}
-        .wdev-ba__grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
-        @media(max-width:700px){.wdev-ba__grid{grid-template-columns:1fr;}}
-        .wdev-ba__col{border-radius:16px;padding:2rem;border:1px solid var(--wdev-line);}
-        .wdev-ba__col--before{background:var(--wdev-paper);}
-        .wdev-ba__col--after{background:#fff;border-color:rgba(55,214,122,.35);}
-        .wdev-ba__label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.2rem;display:block;}
-        .wdev-ba__col--before .wdev-ba__label{color:var(--wdev-muted);}
-        .wdev-ba__col--after .wdev-ba__label{color:var(--wdev-green);}
-        .wdev-ba__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.85rem;}
-        .wdev-ba__list li{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.6;color:var(--wdev-ink);display:flex;gap:.6rem;align-items:flex-start;}
-        .wdev-ba__col--before .wdev-ba__list li::before{content:'✕';color:var(--wdev-muted);flex-shrink:0;}
-        .wdev-ba__col--after .wdev-ba__list li::before{content:'✓';color:var(--wdev-green);flex-shrink:0;}
-
-        /* ══ INDUSTRIES ══════════════════════════════════════════════════ */
-        .wdev-ind{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-ind__inner{max-width:1100px;margin:0 auto;}
-        .wdev-ind__head{margin-bottom:3rem;}
-        .wdev-ind__grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;}
-        @media(max-width:900px){.wdev-ind__grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:480px){.wdev-ind__grid{grid-template-columns:repeat(2,1fr);}}
-        .wdev-ind__card{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:.75rem .75rem 1.1rem;text-align:center;transition:border-color .2s ease,transform .2s ease;}
-        .wdev-ind__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
-        .wdev-ind__img{display:block;width:100%;height:auto;aspect-ratio:4/3;border-radius:12px;margin-bottom:.9rem;}
-        .wdev-ind__name{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
-
-        /* ══ TECH STACK ══════════════════════════════════════════════════ */
-        .wdev-tech{background:var(--wdev-surface);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-tech__inner{max-width:1100px;margin:0 auto;text-align:center;}
-        .wdev-tech__grid{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin-top:2.5rem;max-width:900px;margin-left:auto;margin-right:auto;}
-        .wdev-tech__badge{display:flex;align-items:center;gap:.5rem;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.6rem 1.15rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;color:var(--wdev-ink);}
-        .wdev-tech__badge svg{color:var(--wdev-blue);}
-        /* ── RECENT WORK — case studies from lib/case-studies.ts ── */
-        .wdev-work{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-work__inner{max-width:1100px;margin:0 auto;}
-        .wdev-work__head{margin-bottom:3rem;}
-        .wdev-work__grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
-        @media(max-width:860px){.wdev-work__grid{grid-template-columns:1fr;}}
-        .wdev-work__card{display:flex;flex-direction:column;background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:18px;overflow:hidden;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;}
-        .wdev-work__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);box-shadow:0 14px 40px -24px rgba(18,20,26,.35);}
-        .wdev-work__shot{position:relative;aspect-ratio:16/8;background:var(--wdev-paper);border-bottom:1px solid var(--wdev-line);}
-        .wdev-work__shot img{object-fit:cover;object-position:top center;}
-        .wdev-work__body{display:flex;flex-direction:column;gap:.85rem;padding:1.6rem 1.6rem 1.75rem;flex:1;}
-        .wdev-work__kind{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--wdev-blue);}
-        .wdev-work__title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;line-height:1.3;color:var(--wdev-ink);margin:0;}
-        .wdev-work__desc{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
-        .wdev-work__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0;}
-        .wdev-work__tags li{font-family:'Inter',sans-serif;font-size:.74rem;font-weight:500;color:var(--wdev-ink);background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.35rem .8rem;}
-        .wdev-work__links{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;margin-top:auto;padding-top:.4rem;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;}
-        .wdev-work__links a{color:var(--wdev-blue);text-decoration:none;}
-        .wdev-work__links a:hover{text-decoration:underline;}
-        .wdev-work__links a.wdev-work__live{color:var(--wdev-muted);font-weight:500;}
-        .wdev-work__all{text-align:center;margin-top:2.5rem;font-family:'Inter',sans-serif;font-size:.92rem;}
-        .wdev-work__all a{color:var(--wdev-blue);font-weight:600;text-decoration:none;}
-        .wdev-work__all a:hover{text-decoration:underline;}
-
-        /* ══ METRICS ═════════════════════════════════════════════════════ */
-        .wdev-metrics{background:var(--wdev-paper);padding:5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
-        .wdev-metrics__inner{max-width:1000px;margin:0 auto;}
-        .wdev-metrics__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;text-align:center;}
-        @media(max-width:700px){.wdev-metrics__grid{grid-template-columns:repeat(2,1fr);}}
-        .wdev-stat{background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:14px;padding:1.6rem 1rem;}
-        .wdev-stat__num{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,3.4vw,2.4rem);font-weight:700;color:var(--wdev-ink);line-height:1;}
-        .wdev-stat__label{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:400;color:var(--wdev-muted);margin-top:.6rem;}
-
         /* ══ FAQ ══════════════════════════════════════════════════════════ */
         .wdev-faq{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
         .wdev-faq__inner{max-width:760px;margin:0 auto;}
         .wdev-faq__head{margin-bottom:2.5rem;}
-        /* ✅ FIX — native <details>/<summary> accordion (zero JS). The previous
-           implementation relied on a <script> tag injected via
-           dangerouslySetInnerHTML to attach click listeners. Inline scripts
-           inserted that way only execute on a hard page load — Next.js
-           client-side navigation (clicking a <Link> anywhere on the site)
-           inserts the page via React, and browsers never execute a <script>
-           tag added that way. Result: the accordion silently did nothing for
-           any visitor who arrived via normal in-site navigation. Matches the
-           same robust pattern already used on the automation-testing and
-           cad-gis-photogrammetry service pages. */
         .wdev-faq__list{display:flex;flex-direction:column;gap:.75rem;}
         .wdev-faq__item{background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:14px;overflow:hidden;}
         .wdev-faq__item[open]{border-color:var(--wdev-blue);}
@@ -955,6 +817,164 @@ export default function WebsiteDevelopment() {
         .wdev-cta__btn{display:inline-flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;color:#fff;background:var(--wdev-ink);padding:14px 30px;border-radius:10px;text-decoration:none;transition:transform .2s ease,background .2s ease;border:none;cursor:pointer;}
         .wdev-cta__btn:hover{background:var(--wdev-blue);transform:translateY(-2px);}
 
+        /* ══ UPGRADE (Nov 2026) — new and reworked sections ═════════════ */
+        .wdev-pain__grid{grid-template-columns:repeat(3,1fr);}
+        @media(max-width:960px){.wdev-pain__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:520px){.wdev-pain__grid{grid-template-columns:1fr;}}
+        .wdev-intro__launch{margin-top:2.75rem;}
+        .wdev-intro__wide{max-width:1100px;margin:0 auto;}
+        .wdev-pain__title,.wdev-deliv__title,.wdev-benefit-card__title{margin-top:0;}
+
+        /* Which build do you need? (website vs store vs app) */
+        .wdev-compare{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-compare__inner{max-width:1100px;margin:0 auto;}
+        .wdev-compare__head{max-width:720px;margin:0 auto 2.75rem;}
+        .wdev-compare__types{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2.25rem;}
+        @media(max-width:860px){.wdev-compare__types{grid-template-columns:1fr;}}
+        .wdev-compare__type{border-top:2px solid var(--wdev-line);padding-top:1.1rem;}
+        .wdev-compare__type:nth-child(1){border-top-color:var(--wdev-blue);}
+        .wdev-compare__type:nth-child(2){border-top-color:#1FB862;}
+        .wdev-compare__type:nth-child(3){border-top-color:#E8710F;}
+        .wdev-compare__type h3{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .5rem;}
+        .wdev-compare__type p{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
+        .wdev-compare__note{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);max-width:720px;margin:2rem auto 0;text-align:center;}
+        .wdev-compare__note a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
+        .wdev-compare__playbooks{margin-top:2.5rem;}
+
+        /* Cluster extras: visual slot, 2-up grid, single wide card */
+        .wdev-cluster__visual{margin:0 0 2.5rem;}
+        .wdev-cluster__after{margin-top:2.5rem;}
+        .wdev-cluster__grid--2{grid-template-columns:repeat(2,1fr);}
+        @media(max-width:760px){.wdev-cluster__grid--2{grid-template-columns:1fr;}}
+        .wdev-cluster__grid--1{grid-template-columns:1fr;}
+        @media(min-width:861px){
+          .wdev-card--wide{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);column-gap:2.25rem;align-items:start;}
+          .wdev-card--wide .wdev-card__media{grid-row:1 / span 5;margin-bottom:0;}
+        }
+        @media(min-width:961px) and (max-width:1180px){
+          .wdev-cluster__grid--4{grid-template-columns:repeat(2,1fr);}
+        }
+        .wdev-card{display:flex;flex-direction:column;}
+        .wdev-card--wide{display:block;}
+        @media(min-width:861px){.wdev-card--wide{display:grid;}}
+        .wdev-card__icon{flex:0 0 auto;}
+
+        /* Process (lifecycle) */
+        .wdev-process{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-process__inner{max-width:1120px;margin:0 auto;}
+        .wdev-process__head{margin-bottom:3rem;}
+
+        /* Media wrappers (AnimatedMedia owns radius + spacing) */
+        .wdev-ind__media{border-radius:12px;margin-bottom:.9rem;}
+        .wdev-benefit-card__media{border-radius:12px;margin-bottom:1.2rem;}
+        .wdev-benefit-card__media .wdev-benefit-card__img{margin-bottom:0;}
+
+        /* Before / after — paired rows */
+        .wdev-ba{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-ba__inner{max-width:1000px;margin:0 auto;}
+        .wdev-ba__head{margin-bottom:2.75rem;}
+        .wdev-ba__cols{display:grid;grid-template-columns:120px minmax(0,1fr) 36px minmax(0,1fr);gap:0 1rem;padding:0 1.25rem .7rem;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;}
+        .wdev-ba__cols span:nth-child(2){color:var(--wdev-muted);}
+        .wdev-ba__cols span:nth-child(4){color:#1A9E53;}
+        .wdev-ba__rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem;}
+        .wdev-ba__row{display:grid;grid-template-columns:120px minmax(0,1fr) 36px minmax(0,1fr);gap:1rem;align-items:center;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:14px;padding:1rem 1.25rem;}
+        .wdev-ba__topic{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);}
+        .wdev-ba__before,.wdev-ba__after{font-family:'Inter',sans-serif;font-size:.86rem;line-height:1.55;display:flex;gap:.55rem;align-items:baseline;}
+        .wdev-ba__before{color:var(--wdev-muted);}
+        .wdev-ba__before::before{content:'✕';color:#B4BACB;flex-shrink:0;}
+        .wdev-ba__after{color:var(--wdev-ink);}
+        .wdev-ba__after::before{content:'✓';color:#1A9E53;font-weight:700;flex-shrink:0;}
+        .wdev-ba__arrow{color:var(--wdev-blue);display:flex;justify-content:center;font-size:.85rem;}
+        .wdev-ba__label{display:none;}
+        @media(max-width:720px){
+          .wdev-ba__cols{display:none;}
+          .wdev-ba__row{grid-template-columns:1fr;gap:.45rem;padding:1rem 1.1rem;}
+          .wdev-ba__arrow{display:none;}
+          .wdev-ba__label{display:inline;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;margin-right:.35rem;}
+        }
+
+        /* Industries */
+        .wdev-ind{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-ind__inner{max-width:1100px;margin:0 auto;}
+        .wdev-ind__head{margin-bottom:3rem;}
+        .wdev-ind__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+        @media(max-width:860px){.wdev-ind__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:520px){.wdev-ind__grid{grid-template-columns:1fr;}}
+        .wdev-ind__card{display:grid;grid-template-columns:120px minmax(0,1fr);gap:1rem;align-items:center;background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:16px;padding:.8rem;transition:border-color .2s ease,transform .2s ease;}
+        .wdev-ind__card:hover{border-color:var(--wdev-blue);transform:translateY(-3px);}
+        .wdev-ind__card .wdev-ind__media{margin:0;}
+        .wdev-ind__img{display:block;width:100%;height:auto;aspect-ratio:4/3;border-radius:12px;}
+        .wdev-ind__name{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:var(--wdev-ink);margin:0 0 .3rem;}
+        .wdev-ind__note{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:300;line-height:1.6;color:var(--wdev-muted);margin:0;}
+
+        /* Technologies */
+        .wdev-tech{background:var(--wdev-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-tech__inner{max-width:1000px;margin:0 auto;}
+        .wdev-sub a{color:var(--wdev-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
+
+        /* Recent projects — case studies */
+        .wdev-work{background:var(--wdev-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--wdev-line);}
+        .wdev-work__inner{max-width:1180px;margin:0 auto;}
+        .wdev-work__head{margin-bottom:3rem;}
+        .wdev-work__list{display:flex;flex-direction:column;gap:2rem;}
+        .wdev-case{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:2.5rem;align-items:start;background:var(--wdev-surface);border:1px solid var(--wdev-line);border-radius:22px;padding:2rem;}
+        .wdev-case:nth-child(even) .wdev-case__media{order:2;}
+        @media(max-width:920px){.wdev-case{grid-template-columns:1fr;gap:1.75rem;padding:1.4rem;}.wdev-case:nth-child(even) .wdev-case__media{order:0;}}
+        .wdev-case__media{display:flex;flex-direction:column;gap:.9rem;min-width:0;}
+        @media(min-width:921px){.wdev-case__media{position:sticky;top:6.5rem;}}
+        .wdev-browser{border:1px solid var(--wdev-line);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 24px 50px -30px rgba(18,20,26,.35);}
+        .wdev-browser__bar{display:flex;align-items:center;gap:.4rem;padding:.55rem .8rem;background:#EEF0F5;border-bottom:1px solid var(--wdev-line);}
+        .wdev-browser__bar i{width:9px;height:9px;border-radius:50%;background:#D3D7E2;display:block;}
+        .wdev-browser__bar i:nth-child(1){background:#FF6B5F;}
+        .wdev-browser__bar i:nth-child(2){background:#FFBD2E;}
+        .wdev-browser__bar i:nth-child(3){background:#28C840;}
+        .wdev-browser__url{margin-left:.6rem;flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--wdev-muted);background:#fff;border-radius:6px;padding:.2rem .6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .wdev-browser__shot{display:block;width:100%;height:auto;}
+        .wdev-case__caption{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--wdev-muted);margin:0;}
+        .wdev-case__thumbs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;}
+        .wdev-case__thumbs li{margin:0;}
+        .wdev-case__thumbs img{display:block;width:100%;height:auto;border-radius:9px;border:1px solid var(--wdev-line);}
+        .wdev-case__thumbs figcaption{font-family:'Inter',sans-serif;font-size:.68rem;line-height:1.45;color:var(--wdev-muted);margin-top:.35rem;}
+        .wdev-case__body{display:flex;flex-direction:column;gap:1.05rem;min-width:0;}
+        .wdev-case__kind{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--wdev-blue);}
+        .wdev-case__title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.15rem,2vw,1.4rem);font-weight:700;line-height:1.3;color:var(--wdev-ink);margin:0;}
+        .wdev-case__title a{color:inherit;text-decoration:none;}
+        .wdev-case__title a:hover{color:var(--wdev-blue);}
+        .wdev-case__desc{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:300;line-height:1.75;color:var(--wdev-muted);margin:0;}
+        .wdev-case__h{font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--wdev-ink);margin:0 0 .5rem;}
+        .wdev-case__brief{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.7;color:var(--wdev-muted);margin:0;}
+        .wdev-case__journey{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;}
+        .wdev-case__journey li{display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:500;color:var(--wdev-ink);}
+        .wdev-case__journey li span{background:rgba(46,92,255,.07);border:1px solid rgba(46,92,255,.2);border-radius:100px;padding:.28rem .75rem;}
+        .wdev-case__journey li:not(:last-child)::after{content:'→';color:var(--wdev-blue);}
+        .wdev-case__built{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;}
+        @media(max-width:520px){.wdev-case__built{grid-template-columns:1fr;}}
+        .wdev-case__built li{background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:12px;padding:.7rem .85rem;}
+        .wdev-case__built b{display:block;font-family:'Space Grotesk',sans-serif;font-size:.84rem;font-weight:600;color:var(--wdev-ink);margin-bottom:.15rem;}
+        .wdev-case__built span{font-family:'Inter',sans-serif;font-size:.76rem;font-weight:300;line-height:1.5;color:var(--wdev-muted);}
+        .wdev-case__stack{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.45rem;}
+        .wdev-case__stack li{font-family:'Inter',sans-serif;font-size:.74rem;font-weight:500;color:var(--wdev-ink);background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:100px;padding:.32rem .8rem;}
+        .wdev-case__honest{font-family:'Inter',sans-serif;font-size:.76rem;line-height:1.6;color:var(--wdev-muted);border-left:2px solid var(--wdev-line);padding-left:.8rem;margin:0;}
+        .wdev-case__links{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;padding-top:.2rem;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;}
+        .wdev-case__links a{color:var(--wdev-blue);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;}
+        .wdev-case__links a:hover{text-decoration:underline;}
+        .wdev-case__links a.wdev-case__live{color:var(--wdev-muted);font-weight:500;}
+        .wdev-work__all{text-align:center;margin-top:2.5rem;font-family:'Inter',sans-serif;font-size:.92rem;}
+        .wdev-work__all a{color:var(--wdev-blue);font-weight:600;text-decoration:none;}
+        .wdev-work__all a:hover{text-decoration:underline;}
+
+        /* FAQ links + CTA steps */
+        .wdev-faq__more{text-align:center;margin-top:2rem;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--wdev-muted);}
+        .wdev-faq__more a{color:var(--wdev-blue);font-weight:600;text-decoration:none;}
+        .wdev-cta__inner{max-width:880px;}
+        .wdev-cta__sub{max-width:580px;margin-left:auto;margin-right:auto;}
+        .wdev-cta__steps{list-style:none;margin:0 0 2.4rem;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;counter-reset:wdevstep;text-align:left;}
+        @media(max-width:700px){.wdev-cta__steps{grid-template-columns:1fr;}}
+        .wdev-cta__steps li{counter-increment:wdevstep;background:var(--wdev-paper);border:1px solid var(--wdev-line);border-radius:14px;padding:1.1rem 1.2rem;display:grid;grid-template-columns:auto 1fr;column-gap:.8rem;}
+        .wdev-cta__steps li::before{content:counter(wdevstep);grid-row:1 / span 2;width:30px;height:30px;border-radius:50%;background:var(--wdev-blue);color:#fff;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;}
+        .wdev-cta__steps b{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--wdev-ink);}
+        .wdev-cta__steps span{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:300;line-height:1.55;color:var(--wdev-muted);}
+
         @media(prefers-reduced-motion:reduce){
           .wdev-page *,.wdev-page *::before,.wdev-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
         }
@@ -969,12 +989,8 @@ export default function WebsiteDevelopment() {
       />
 
       <div className="wdev-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+        {/* ══ 1. HERO ═══════════════════════════════════════════════════════ */}
         <section className="wdev-hero" aria-labelledby="wdev-hero-heading">
-          {/* Hero visual: a real <img> via next/image (preload + fetchpriority=high,
-              responsive srcset) instead of a CSS
-              background the browser only finds after parsing the stylesheet.
-              The readability gradients sit on top in .wdev-hero__media::after. */}
           <div className="wdev-hero__media">
             <Image
               src="/images/services/website-development/website-development-hero.webp"
@@ -995,18 +1011,12 @@ export default function WebsiteDevelopment() {
 
           <nav className="wdev-breadcrumb" aria-label="Breadcrumb">
             <ol>
-              <li>
-                <Link href="/"><span>Home</span></Link>
-              </li>
+              <li><Link href="/"><span>Home</span></Link></li>
+              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
+              <li><Link href="/services"><span>Services</span></Link></li>
               <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
               <li>
-                <Link href="/services"><span>Services</span></Link>
-              </li>
-              <li className="wdev-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services/website-development" aria-current="page">
-                  <span>Web Development</span>
-                </Link>
+                <Link href={PAGE_PATH} aria-current="page"><span>Web Development</span></Link>
               </li>
             </ol>
           </nav>
@@ -1018,13 +1028,13 @@ export default function WebsiteDevelopment() {
                 Services · Web Development
               </div>
               <h1 className="wdev-hero__h1" id="wdev-hero-heading">
-                Website development company in <em>India</em> — speed, security &amp; growth
+                Website development company in <em>India</em> for business sites, online stores and web apps
               </h1>
               <div className="wdev-hero__rule" aria-hidden="true" />
               <p className="wdev-hero__sub">
-                Custom websites, business sites, and web applications —
-                responsive, SEO-friendly, and engineered to hold up under
-                real traffic, not just a demo.
+                We design and build websites and web applications in React and Next.js. One team in
+                Bengaluru handles design, development, hosting and support, so nothing gets lost
+                between handoffs.
               </p>
 
               <div className="wdev-hero__actions">
@@ -1051,21 +1061,22 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
-        {/* ══ CLIENT PAIN — unchanged copy ══════════════════════════════════ */}
+        {/* ══ 2. CHALLENGES ═════════════════════════════════════════════════ */}
         <section className="wdev-pain" aria-labelledby="wdev-pain-heading">
           <div className="wdev-pain__inner">
             <div className="wdev-pain__head">
               <span className="wdev-label">Sound Familiar?</span>
               <h2 className="wdev-h2" id="wdev-pain-heading">
-                Most sites don't fail because of one big mistake —<br />
-                they fail from <em>a dozen small ones</em>
+                Most websites don&rsquo;t fail from one big mistake.<br />
+                They fail from <em>a lot of small ones.</em>
               </h2>
+              <p className="wdev-sub">These are the problems we hear about most often when a business asks us to look at its site.</p>
             </div>
             <div className="wdev-pain__grid">
               {painPoints.map((p) => (
                 <div className="wdev-pain__card" key={p.title}>
                   <div className="wdev-pain__icon" aria-hidden="true">{p.icon}</div>
-                  <div className="wdev-pain__title">{p.title}</div>
+                  <h3 className="wdev-pain__title">{p.title}</h3>
                   <p className="wdev-pain__text">{p.text}</p>
                 </div>
               ))}
@@ -1078,142 +1089,74 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
-        {/* ══ INTRO — unchanged copy ═══════════════════════════════════════ */}
+        {/* ══ 3. PHILOSOPHY + idea-to-launch workflow (G) ═══════════════════ */}
         <section className="wdev-intro" aria-labelledby="wdev-intro-heading">
           <div className="wdev-intro__inner">
             <span className="wdev-label">Our Philosophy</span>
             <h2 className="wdev-h2" id="wdev-intro-heading">
-              Crafting digital experiences that<br />inspire, connect &amp; <em>convert</em>
+              Design and engineering, <em>one team</em>
             </h2>
             <p className="wdev-intro__p">
-              At <strong>99 Visual Solutions</strong>, we treat design and engineering as one discipline,
-              not two handoffs — because a site that looks great but loads slowly or breaks on mobile isn't
-              actually doing its job. As a <strong>website design and development company</strong>, we build
-              with that in mind from the first wireframe, not just at launch.
+              At <strong>99 Visual Solutions</strong>, the people who design your site and the people who
+              build it work together from the first meeting. That avoids a common problem: a design that
+              looks good in a mockup but turns out slow, hard to build or awkward on a phone.
             </p>
             <p className="wdev-intro__p">
-              Your website is usually the first real interaction a customer has with your business, which is
-              why we build <strong>modern, responsive, and SEO-optimised sites</strong>{" "}
-              around your actual goals — whether you're a startup validating an idea, an established
-              business scaling up, or an e-commerce brand trying to grow order volume.
+              We start with what the site has to do for your business, whether that&rsquo;s bringing in
+              enquiries, selling products or running part of your operations. Every decision about layout,
+              technology and content is then made against that goal.
             </p>
-            <EcosystemDiagram
-              id="ig-site"
-              className="wdev-intro__visual"
-              nodes={siteLayers}
-              links={siteLinks}
-              core={{ kicker: "99 Visual", title: "Your website", sub: "one team" }}
-              caption="Six layers, one team — each part is built with the next one in mind."
-              description="Design and UX hands components to the front end; the front end fetches data from the APIs; the APIs query the database; the database is backed up by the hosting platform; hosting serves everything over HTTPS; and security keeps forms and logins safe for the design to rely on."
+          </div>
+          <div className="wdev-intro__wide">
+            <LaunchTimeline
+              className="wdev-intro__launch"
+              stops={launchStops}
+              caption="Every project follows the same path, and nothing moves to the next stop until you have approved the last one."
             />
           </div>
         </section>
 
-        {/* ══ EXPERTISE — genuine explainer content, not marketing copy ═══ */}
-        <section className="wdev-expertise" aria-labelledby="wdev-expertise-heading">
-          <div className="wdev-expertise__inner">
-            <div className="wdev-expertise__head">
-              <span className="wdev-label">How We Think About It</span>
-              <h2 className="wdev-h2" id="wdev-expertise-heading">
-                What <em>website development</em> actually covers
+        {/* ══ 4. WHICH BUILD DO YOU NEED? (C) ═══════════════════════════════ */}
+        <section className="wdev-compare" aria-labelledby="wdev-compare-heading">
+          <div className="wdev-compare__inner">
+            <div className="wdev-compare__head">
+              <span className="wdev-label">Website or Web App?</span>
+              <h2 className="wdev-h2" id="wdev-compare-heading">
+                Which kind of build <em>do you need?</em>
               </h2>
               <p className="wdev-sub">
-                "Website development" covers a wide range of work. Here's how we break it down, and
-                what each piece means for your project.
+                Most projects fall into one of three types. The type shapes the features, the budget and
+                the technology, so it helps to agree on it early.
               </p>
             </div>
-            <div className="wdev-expertise__grid">
-              <div className="wdev-expertise__item">
-                <h3>Business websites vs. custom web applications</h3>
-                <p>
-                  A business website — a marketing site, a service catalogue, a lead-generation
-                  page — is judged on clarity, speed, and conversions. A custom web application adds
-                  logins, dashboards, or internal workflows on top of that. We scope each project
-                  against which of these you actually need, then build the site so it can grow into the other without a rebuild if your
-                  business does.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Responsive, mobile-first development</h3>
-                <p>
-                  Every site we ship is built <strong>responsive website development</strong>-first — designed
-                  for a phone screen, then scaled up — and checked on real devices rather than a resized
-                  browser window. Since most traffic today arrives on mobile, this is less a nice-to-have
-                  and more a baseline requirement for usability and search ranking alike.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Performance &amp; high-performance engineering</h3>
-                <p>
-                  <strong>High-performance website development</strong> means optimised images, minimal
-                  render-blocking scripts, and server responses tuned for Core Web Vitals — done at build
-                  time, not patched in after a slow launch. A page that loads in under two seconds keeps
-                  more visitors than one that takes five, and that difference compounds across every
-                  campaign you run to the site.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>SEO-friendly by design</h3>
-                <p>
-                  <strong>SEO-friendly website development</strong> starts with semantic HTML, clean URL
-                  structures, and schema markup built in from the first sprint — not bolted on before
-                  launch. We also handle the technical side (sitemaps, canonical tags, structured data)
-                  in-house, and pair it with our{" "}
-                  <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing services</Link>{" "}
-                  when a site needs ongoing content and off-page work as well.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Modern technologies: React &amp; Next.js website development</h3>
-                <p>
-                  Most of our builds run on <strong>React website development</strong> and{" "}
-                  <strong>Next.js website development</strong> — server rendering for fast first loads,
-                  a component-based front end that's easier to extend later, and a large enough ecosystem
-                  that hiring or handing off the codebase down the line isn't a problem. See the full stack
-                  in the "Technologies we build with" section below.
-                </p>
-              </div>
-              <div className="wdev-expertise__item">
-                <h3>Security, scalability &amp; maintenance</h3>
-                <p>
-                  Authentication, encrypted data handling, and dependency patching are built in from the
-                  start, not added after an incident. Architecture is sized to your actual load rather than
-                  over-built by default, and we offer ongoing maintenance and support after launch so the
-                  site keeps working as browsers, frameworks, and your business itself keep changing.
-                </p>
-              </div>
+            <div className="wdev-compare__types">
+              {buildTypes.map((t) => (
+                <div className="wdev-compare__type" key={t.title}>
+                  <h3>{t.title}</h3>
+                  <p>{t.text}</p>
+                </div>
+              ))}
             </div>
-            <PerformanceTargets />
-          </div>
-        </section>
-
-        {/* ══ LOCATION — Bengaluru / India / global delivery ══════════════ */}
-        <section className="wdev-location" aria-labelledby="wdev-location-heading">
-          <div className="wdev-location__inner">
-            <span className="wdev-label">Where We're Based</span>
-            <h2 className="wdev-h2" id="wdev-location-heading">
-              Based in <em>Bengaluru</em>, working across India
-            </h2>
-            <p className="wdev-location__p">
-              Our design and engineering team works together from Bengaluru (Bangalore), Karnataka,
-              in one time zone. That keeps questions, reviews and fixes moving quickly, whether the
-              project is a business website or a custom web application, and whether the client is
-              elsewhere in India or in the US, UK, UAE or Australia. Read more about our team and background on the{" "}
-              <Link href="/about">About 99 Visual Solutions</Link> page.
+            <SiteTypeMatrix />
+            <p className="wdev-compare__note">
+              Not sure which one fits? That is what the discovery call is for. Many projects also start as
+              a business website and add a store or an app later, so we plan the structure to allow for
+              that. Search visibility for any of the three can be extended with our{" "}
+              <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing services</Link>.
             </p>
+            <WebsitePlaybooks className="wdev-compare__playbooks" />
           </div>
         </section>
 
-        {/* ══ SOLUTION OVERVIEW — quick-jump index ══════════════════════════ */}
+        {/* ══ 5. SERVICES — quick-jump index ════════════════════════════════ */}
         <section className="wdev-overview" aria-labelledby="wdev-overview-heading">
           <div className="wdev-overview__inner">
             <div className="wdev-overview__head">
-              <span className="wdev-label">Our Solution</span>
-              <h2 className="wdev-h2" id="wdev-overview-heading">Everything under <em>one roof</em></h2>
+              <span className="wdev-label">Our Services</span>
+              <h2 className="wdev-h2" id="wdev-overview-heading">Website development <em>services</em></h2>
               <p className="wdev-sub">
-                Our website development services in India cover everything from a single landing page
-                to a full custom web development services engagement — jump to the piece you need, or
-                scroll through the full detail below.
+                Thirteen services, grouped below by what they help with. Hire us for a complete project or
+                for one piece of it. Jump straight to the one you need.
               </p>
             </div>
             <div className="wdev-overview__grid">
@@ -1224,35 +1167,39 @@ export default function WebsiteDevelopment() {
                 </a>
               ))}
             </div>
-            <WebsitePlaybooks className="wdev-overview__playbooks" />
           </div>
         </section>
 
-        {/* ══ SERVICE CLUSTERS — 100% unchanged copy, grouped & iconified ═══ */}
+        {/* ══ 6–10. SERVICE GROUPS: Product & UX, Engineering (B), E-commerce
+            & CMS (shopping flow), SEO & Performance (E), Security (F) ═════ */}
         <div id="services">
           {clusters.map((cluster) => (
-            <section key={cluster.id} className="wdev-cluster" aria-labelledby={`wdev-cluster-h-${cluster.id}`}>
+            <section key={cluster.id} id={cluster.id} className="wdev-cluster" aria-labelledby={`wdev-cluster-h-${cluster.id}`}>
               <div className="wdev-cluster__inner">
                 <div className="wdev-cluster__head">
                   <span className="wdev-cluster__eyebrow">{cluster.eyebrow}</span>
                   <h2 className="wdev-cluster__h2" id={`wdev-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
                   <p className="wdev-cluster__intro">{cluster.intro}</p>
                 </div>
+                {cluster.visual && <div className="wdev-cluster__visual">{cluster.visual}</div>}
                 <div className={`wdev-cluster__grid wdev-cluster__grid--${cluster.cols}`}>
                   {cluster.ids.map((id, idx) => {
                     const svc = serviceById(id);
                     const media = serviceMedia[svc.id];
+                    const sizes =
+                      cluster.cols === 4 ? "(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 300px"
+                      : cluster.cols === 2 ? "(max-width: 760px) 100vw, 560px"
+                      : "(max-width: 860px) 100vw, 520px";
                     return (
-                      <article className="wdev-card" id={svc.id} key={svc.id} aria-labelledby={`wdev-svc-heading-${svc.id}`}>
+                      <article
+                        className={`wdev-card${cluster.cols === 1 ? " wdev-card--wide" : ""}`}
+                        id={svc.id}
+                        key={svc.id}
+                        aria-labelledby={`wdev-svc-heading-${svc.id}`}
+                      >
                         {media && (
                           <AnimatedMedia className="wdev-card__media" delay={idx}>
-                            <Image
-                              src={media.src}
-                              alt={media.alt}
-                              width={960}
-                              height={600}
-                              sizes={cluster.cols === 4 ? "(max-width: 640px) 100vw, (max-width: 960px) 50vw, 300px" : "(max-width: 860px) 100vw, 360px"}
-                            />
+                            <Image src={media.src} alt={media.alt} width={960} height={600} sizes={sizes} />
                           </AnimatedMedia>
                         )}
                         <div className="wdev-card__icon" aria-hidden="true">{svc.icon}</div>
@@ -1266,55 +1213,42 @@ export default function WebsiteDevelopment() {
                     );
                   })}
                 </div>
+                {cluster.after && <div className="wdev-cluster__after">{cluster.after}</div>}
               </div>
             </section>
           ))}
         </div>
 
-        {/* ══ PROCESS — unchanged copy ═══════════════════════════════════════ */}
-        <section className="wdev-process" aria-labelledby="wdev-process-heading">
+        {/* ══ 11. PROCESS — 7-stage lifecycle (A) ═══════════════════════════ */}
+        <section className="wdev-process" id="process" aria-labelledby="wdev-process-heading">
           <div className="wdev-process__inner">
             <div className="wdev-process__head">
               <span className="wdev-label">How We Work</span>
-              <h2 className="wdev-h2" id="wdev-process-heading">A process built to <em>remove risk</em></h2>
-              <p className="wdev-sub">Five stages, each with a clear checkpoint, so you always know what's next.</p>
+              <h2 className="wdev-h2" id="wdev-process-heading">
+                Seven stages, from <em>first call</em> to long-term care
+              </h2>
+              <p className="wdev-sub">
+                Each stage ends with something you can review, so there are no surprises on launch day.
+                After launch, maintenance feeds new ideas back into the next round of work.
+              </p>
             </div>
-            <AnimatedMedia className="wdev-media-visual wdev-media-visual--process">
-              <ArtDirectedVisual
-                className="wdev-visual wdev-visual--process"
-                wide={{ src: "/images/services/website-development/development-process-wide.webp", width: 1800, height: 560 }}
-                tall={{ src: "/images/services/website-development/development-process-tall.webp", width: 720, height: 1260 }}
-                alt="Five-stage website development process: discovery and scoping, strategy and UX, design and build, testing and launch, then support and growth, each with its checkpoint"
-                sizes="(max-width: 640px) 100vw, 900px"
-              />
-            </AnimatedMedia>
-            <div className="wdev-process__steps">
-              {processSteps.map((s) => (
-                <div className="wdev-process__step" key={s.step}>
-                  <div className="wdev-process__num" aria-hidden="true">{s.step}</div>
-                  <div>
-                    <div className="wdev-process__title">{s.title}</div>
-                    <p className="wdev-process__text">{s.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProcessCycle steps={processSteps} />
           </div>
         </section>
 
-        {/* ══ DELIVERABLES — unchanged copy ═══════════════════════════════ */}
+        {/* ══ 12. DELIVERABLES ══════════════════════════════════════════════ */}
         <section className="wdev-deliv" aria-labelledby="wdev-deliv-heading">
           <div className="wdev-deliv__inner">
             <div className="wdev-deliv__head">
               <span className="wdev-label">What You Get</span>
-              <h2 className="wdev-h2" id="wdev-deliv-heading">Exactly what's <em>in the box</em></h2>
-              <p className="wdev-sub">No vague scopes — here's what leaves with you at the end of the project.</p>
+              <h2 className="wdev-h2" id="wdev-deliv-heading">What you <em>receive</em></h2>
+              <p className="wdev-sub">Everything below is handed over at the end of the project, and it&rsquo;s yours to keep.</p>
             </div>
             <div className="wdev-deliv__grid">
               {deliverables.map((d) => (
                 <div className="wdev-deliv__card" key={d.title}>
                   <div className="wdev-deliv__icon" aria-hidden="true">{d.icon}</div>
-                  <div className="wdev-deliv__title">{d.title}</div>
+                  <h3 className="wdev-deliv__title">{d.title}</h3>
                   <p className="wdev-deliv__text">{d.text}</p>
                 </div>
               ))}
@@ -1322,137 +1256,179 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
-        {/* ══ BEFORE / AFTER — unchanged copy ═══════════════════════════════ */}
+        {/* ══ 13. BEFORE / AFTER ════════════════════════════════════════════ */}
         <section className="wdev-ba" aria-labelledby="wdev-ba-heading">
           <div className="wdev-ba__inner">
             <div className="wdev-ba__head">
               <span className="wdev-label">The Difference</span>
-              <h2 className="wdev-h2" id="wdev-ba-heading">Before <em>99 Visual</em> — and after</h2>
+              <h2 className="wdev-h2" id="wdev-ba-heading">What changes when a site is <em>rebuilt properly</em></h2>
+              <p className="wdev-sub">Problems we often find in existing sites, and how a new build deals with each one.</p>
             </div>
-            <div className="wdev-ba__grid">
-              <div className="wdev-ba__col wdev-ba__col--before">
-                <span className="wdev-ba__label">Before</span>
-                <ul className="wdev-ba__list">
-                  <li>Site looks dated and loads slowly on mobile</li>
-                  <li>Every update needs a developer and a week's wait</li>
-                  <li>No clear path from visitor to inquiry</li>
-                  <li>SEO an afterthought, rankings stuck</li>
-                  <li>Security treated as someone else's problem</li>
-                </ul>
-              </div>
-              <div className="wdev-ba__col wdev-ba__col--after">
-                <span className="wdev-ba__label">After</span>
-                <ul className="wdev-ba__list">
-                  <li>Fast, mobile-first, and built on a modern stack</li>
-                  <li>A structure your team can actually maintain</li>
-                  <li>Clear calls to action at every stage of the visit</li>
-                  <li>Technical SEO foundation built in from day one</li>
-                  <li>Security and monitoring handled from launch</li>
-                </ul>
-              </div>
+            <div className="wdev-ba__cols" aria-hidden="true">
+              <span />
+              <span>Common before</span>
+              <span />
+              <span>After a proper build</span>
             </div>
+            <ul className="wdev-ba__rows">
+              {beforeAfter.map((r) => (
+                <li className="wdev-ba__row" key={r.topic}>
+                  <span className="wdev-ba__topic">{r.topic}</span>
+                  <span className="wdev-ba__before"><span><span className="wdev-ba__label">Before:</span>{r.before}</span></span>
+                  <span className="wdev-ba__arrow" aria-hidden="true"><FaArrowRight /></span>
+                  <span className="wdev-ba__after"><span><span className="wdev-ba__label">After:</span>{r.after}</span></span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
-        {/* ══ INDUSTRIES — unchanged copy ═══════════════════════════════════ */}
+        {/* ══ 14. INDUSTRIES ════════════════════════════════════════════════ */}
         <section className="wdev-ind" aria-labelledby="wdev-ind-heading">
           <div className="wdev-ind__inner">
             <div className="wdev-ind__head">
               <span className="wdev-label">Who We Work With</span>
-              <h2 className="wdev-h2" id="wdev-ind-heading">Industries we <em>serve</em></h2>
+              <h2 className="wdev-h2" id="wdev-ind-heading">Industries <em>we build for</em></h2>
               <p className="wdev-sub">
-                Real estate clients building a project or listings site often pair this with our{" "}
-                <Link href="/services/visualization">3D architectural visualisation</Link> service for
-                renders and walkthroughs; e-commerce brands typically add our{" "}
-                <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing</Link> work once
-                the site is live.
+                Each industry needs different features. Real estate clients often pair a listings site with
+                our <Link href="/services/visualization">3D architectural visualisation</Link> for renders
+                and walkthroughs, and online stores usually add{" "}
+                <Link href="/services/digital-marketing-seo">SEO &amp; digital marketing</Link> once the
+                site is live.
               </p>
             </div>
             <div className="wdev-ind__grid">
               {industries.map((ind, i) => (
                 <div className="wdev-ind__card" key={ind.name}>
-                  <AnimatedMedia className="wdev-ind__media" delay={i}>
-                  <Image
-                    className="wdev-ind__img"
-                    src={ind.img}
-                    alt={ind.alt}
-                    width={480}
-                    height={360}
-                    sizes="(max-width: 480px) 45vw, (max-width: 900px) 30vw, 170px"
-                  />
+                  <AnimatedMedia className="wdev-ind__media" delay={i % 3}>
+                    <Image className="wdev-ind__img" src={ind.img} alt={ind.alt} width={480} height={360} sizes="120px" />
                   </AnimatedMedia>
-                  <div className="wdev-ind__name">{ind.name}</div>
+                  <div>
+                    <h3 className="wdev-ind__name">{ind.name}</h3>
+                    <p className="wdev-ind__note">{ind.note}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ══ TECH STACK — unchanged copy ════════════════════════════════ */}
+        {/* ══ 15. TECHNOLOGIES (D) ══════════════════════════════════════════ */}
         <section className="wdev-tech" aria-labelledby="wdev-tech-heading">
           <div className="wdev-tech__inner">
             <span className="wdev-label">Under the Hood</span>
-            <h2 className="wdev-h2" id="wdev-tech-heading">Technologies we <em>build with</em></h2>
+            <h2 className="wdev-h2" id="wdev-tech-heading">Technologies <em>we build with</em></h2>
             <p className="wdev-sub">
-              From front-end frameworks to databases, CMS platforms, and cloud infrastructure — the
-              current, production-proven tools behind every build. For more on how we approach specific
-              topics like Next.js and SEO, see our{" "}
-              <Link href="/insights/category/web-development">web development insights</Link>.
+              We choose tools that are widely used, well supported and easy for another developer to pick
+              up later. Here&rsquo;s how they fit together. For deeper write-ups on topics like Next.js and
+              SEO, see our <Link href="/insights/category/web-development">web development insights</Link>.
             </p>
-            <AnimatedMedia className="wdev-media-visual wdev-media-visual--tech">
-              <ArtDirectedVisual
-                className="wdev-visual wdev-visual--tech"
-                wide={{ src: "/images/services/website-development/technology-stack-wide.webp", width: 2000, height: 820 }}
-                tall={{ src: "/images/services/website-development/technology-stack-tall.webp", width: 720, height: 1560 }}
-                alt="How the stack fits together: users reach the front end, which talks to back-end APIs and databases, with a CMS for content, all running on cloud hosting deployed through DevOps pipelines"
-                sizes="(max-width: 640px) 100vw, 1000px"
-              />
-            </AnimatedMedia>
-            <div className="wdev-tech__grid">
-              {techStack.map((t) => (
-                <span className="wdev-tech__badge" key={t.name}>{t.icon} {t.name}</span>
-              ))}
-            </div>
-            <RequestFlow />
+            <TechStackMap layers={stackLayers} />
           </div>
         </section>
 
-        {/* ══ RECENT WORK — case studies for this service, from lib/case-studies.ts.
-            Each card links to the full case study (where every claim cites
-            its evidence) and to the live site. ═══════════════════════════ */}
+        {/* ══ 16. RECENT PROJECTS — from lib/case-studies.ts. Only what each
+            record documents: screenshots, brief, journey, workstreams, stack,
+            and what the case study does not claim. ═══════════════════════ */}
         {webCaseStudies.length > 0 && (
-          <section className="wdev-work" aria-labelledby="wdev-work-heading">
+          <section className="wdev-work" id="work" aria-labelledby="wdev-work-heading">
             <div className="wdev-work__inner">
               <div className="wdev-work__head">
-                <span className="wdev-label">Recent Work</span>
+                <span className="wdev-label">Recent Projects</span>
                 <h2 className="wdev-h2" id="wdev-work-heading">Websites we&rsquo;ve <em>delivered</em></h2>
                 <p className="wdev-sub">
-                  Two recent builds — a full e-commerce store and a photographer&rsquo;s portfolio — with
-                  screenshots from the live sites and a breakdown of what each one does.
+                  An online store and a photographer&rsquo;s portfolio, both live today. Screenshots are taken
+                  from the live sites, and each case study lists what we built and what it doesn&rsquo;t claim.
                 </p>
               </div>
-              <div className="wdev-work__grid">
+              <div className="wdev-work__list">
                 {webCaseStudies.map((c) => {
-                  const shot = c.gallery?.[0] ?? c.image;
+                  const [main, ...rest] = c.gallery?.length ? c.gallery : [{ ...c.image, caption: "" }];
+                  const host = c.liveUrl?.replace(/^https?:\/\//, "").replace(/\/$/, "");
                   return (
-                    <article className="wdev-work__card" key={c.slug} aria-labelledby={`wdev-work-${c.slug}`}>
-                      <Link href={`/work/${c.slug}`} className="wdev-work__shot" aria-hidden="true" tabIndex={-1}>
-                        <Image src={shot.src} alt="" fill sizes="(max-width: 860px) 100vw, 540px" />
-                      </Link>
-                      <div className="wdev-work__body">
-                        <span className="wdev-work__kind">{c.client}</span>
-                        <h3 className="wdev-work__title" id={`wdev-work-${c.slug}`}>
-                          <Link href={`/work/${c.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{c.title}</Link>
+                    <article className="wdev-case" key={c.slug} aria-labelledby={`wdev-case-${c.slug}`}>
+                      <div className="wdev-case__media">
+                        <figure className="wdev-browser" style={{ margin: 0 }}>
+                          <div className="wdev-browser__bar" aria-hidden="true">
+                            <i /><i /><i />
+                            <span className="wdev-browser__url">{host ?? c.client}</span>
+                          </div>
+                          <Image
+                            className="wdev-browser__shot"
+                            src={main.src}
+                            alt={main.alt}
+                            width={main.width}
+                            height={main.height}
+                            sizes="(max-width: 920px) 100vw, 600px"
+                          />
+                        </figure>
+                        {main.caption && <p className="wdev-case__caption">{main.caption}</p>}
+                        {rest.length > 0 && (
+                          <ul className="wdev-case__thumbs" aria-label={`More screenshots of ${c.client}`}>
+                            {rest.slice(0, 3).map((g) => (
+                              <li key={g.src}>
+                                <figure style={{ margin: 0 }}>
+                                  <Image src={g.src} alt={g.alt} width={g.width} height={g.height} sizes="(max-width: 920px) 33vw, 190px" />
+                                  {g.caption && <figcaption>{g.caption}</figcaption>}
+                                </figure>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      <div className="wdev-case__body">
+                        <span className="wdev-case__kind">{c.client}</span>
+                        <h3 className="wdev-case__title" id={`wdev-case-${c.slug}`}>
+                          <Link href={`/work/${c.slug}`}>{c.title}</Link>
                         </h3>
-                        <p className="wdev-work__desc">{c.description}</p>
-                        <ul className="wdev-work__tags" aria-label="What we built">
-                          {c.workstreams.map((w) => <li key={w.name}>{w.name}</li>)}
-                        </ul>
-                        <div className="wdev-work__links">
-                          <Link href={`/work/${c.slug}`}>Read the case study →</Link>
+                        <p className="wdev-case__desc">{c.description}</p>
+
+                        {c.context[0] && (
+                          <div>
+                            <h4 className="wdev-case__h">The brief</h4>
+                            <p className="wdev-case__brief">{c.context[0]}</p>
+                          </div>
+                        )}
+
+                        {c.workflow && (
+                          <div>
+                            <h4 className="wdev-case__h">{c.workflow.heading}</h4>
+                            <ol className="wdev-case__journey">
+                              {c.workflow.steps.map((s) => <li key={s.step}><span>{s.step}</span></li>)}
+                            </ol>
+                          </div>
+                        )}
+
+                        <div>
+                          <h4 className="wdev-case__h">What we built</h4>
+                          <ul className="wdev-case__built">
+                            {c.workstreams.map((w) => (
+                              <li key={w.name}><b>{w.name}</b><span>{w.summary}</span></li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="wdev-case__h">Built with</h4>
+                          <ul className="wdev-case__stack">
+                            {c.stack.map((t) => <li key={t}>{t}</li>)}
+                          </ul>
+                        </div>
+
+                        {c.notClaimed?.length ? (
+                          <p className="wdev-case__honest">
+                            <strong>Not claimed:</strong> {c.notClaimed[0]}
+                          </p>
+                        ) : null}
+
+                        <div className="wdev-case__links">
+                          <Link href={`/work/${c.slug}`} aria-label={`Read the ${c.client} case study`}>
+                            Read the case study <FaArrowRight aria-hidden="true" />
+                          </Link>
                           {c.liveUrl && (
-                            <a href={c.liveUrl} target="_blank" rel="noopener" className="wdev-work__live">
-                              Visit {c.liveUrl.replace(/^https?:\/\/(www\.)?/, '')} ↗
+                            <a href={c.liveUrl} target="_blank" rel="noopener" className="wdev-case__live">
+                              Visit {host?.replace(/^www\./, "")} ↗
                             </a>
                           )}
                         </div>
@@ -1468,19 +1444,8 @@ export default function WebsiteDevelopment() {
           </section>
         )}
 
-        {/* ══ METRICS — removed. The block shipped placeholder figures
-            (50+ projects, 98% on-time, 12+ industries, 6 countries; its own
-            TODO said "replace placeholder figures … before publishing") that
-            also contradicted the 500+ / 200+ project counts used elsewhere.
-            Restore it only with verified numbers; the .wdev-metrics / .wdev-stat
-            styles and the counter script are left in place for that. ═══ */}
-
-        {/* ══ FAQ — same copy as wdevFaqNode. Native <details>/<summary>
-            accordion: no JS needed, so it works on every navigation type
-            (see the ✅ FIX note in the <style> block above for why the old
-            button+script version silently broke). FAQPage structured data
-            is handled separately via JSON-LD (wdevFaqNode) — no microdata
-            attributes needed here. */}
+        {/* ══ 17. FAQ — same copy as wdevFaqNode (FAQPage JSON-LD). Native
+            <details>/<summary>, so it works without JavaScript. ════════════ */}
         <section className="wdev-faq" aria-labelledby="wdev-faq-heading">
           <div className="wdev-faq__inner">
             <div className="wdev-faq__head">
@@ -1502,36 +1467,39 @@ export default function WebsiteDevelopment() {
                 </details>
               ))}
             </div>
+            <p className="wdev-faq__more">
+              Have a question that isn&rsquo;t here? <Link href="/contact">Contact our team</Link>.
+            </p>
           </div>
         </section>
 
-        {/* ══ BENEFITS — unchanged copy ═════════════════════════════════════ */}
+        {/* ══ 18. WHY CHOOSE US ═════════════════════════════════════════════ */}
         <section className="wdev-benefits" aria-labelledby="wdev-benefits-heading">
           <div className="wdev-benefits__inner">
             <div className="wdev-benefits__head">
               <span className="wdev-benefits__label">Why Choose Us?</span>
               <h2 className="wdev-benefits__h2" id="wdev-benefits-heading">
-                Benefits of working with <em>99 Visual</em>
+                Why businesses <em>work with us</em>
               </h2>
               <p className="wdev-benefits__sub">
-                A website is only worth what it does for your business afterward. Here's what that
-                looks like in practice when you work with us.
+                A website is only worth what it does for your business after launch. This is how we work
+                to make sure it pulls its weight.
               </p>
             </div>
             <div className="wdev-benefits__grid">
               {benefits.map((b, i) => (
-                <div className="wdev-benefit-card" key={i}>
+                <div className="wdev-benefit-card" key={b.title}>
                   <AnimatedMedia className="wdev-benefit-card__media" delay={i % 3}>
-                  <Image
-                    className="wdev-benefit-card__img"
-                    src={b.img}
-                    alt={b.alt}
-                    width={960}
-                    height={540}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
-                  />
+                    <Image
+                      className="wdev-benefit-card__img"
+                      src={b.img}
+                      alt={b.alt}
+                      width={960}
+                      height={540}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                    />
                   </AnimatedMedia>
-                  <div className="wdev-benefit-card__title">{b.title}</div>
+                  <h3 className="wdev-benefit-card__title">{b.title}</h3>
                   <p className="wdev-benefit-card__desc">{b.description}</p>
                 </div>
               ))}
@@ -1539,17 +1507,39 @@ export default function WebsiteDevelopment() {
           </div>
         </section>
 
-        {/* ══ CTA STRIP — unchanged copy ════════════════════════════════════ */}
+        {/* ══ LOCATION ══════════════════════════════════════════════════════ */}
+        <section className="wdev-location" aria-labelledby="wdev-location-heading">
+          <div className="wdev-location__inner">
+            <span className="wdev-label">Where We&rsquo;re Based</span>
+            <h2 className="wdev-h2" id="wdev-location-heading">
+              Based in <em>Bengaluru</em>, working across India and abroad
+            </h2>
+            <p className="wdev-location__p">
+              Our design and engineering team works together from Bengaluru (Bangalore), Karnataka, in one
+              time zone. That keeps questions, reviews and fixes moving quickly, whether the client is
+              elsewhere in India or in the US, UK, UAE or Australia. Read more about the team on the{" "}
+              <Link href="/about">About 99 Visual Solutions</Link> page, or see our other{" "}
+              <Link href="/services">services</Link>.
+            </p>
+          </div>
+        </section>
+
+        {/* ══ FINAL CTA ═════════════════════════════════════════════════════ */}
         <section className="wdev-cta" aria-labelledby="wdev-cta-heading">
           <div className="wdev-cta__inner">
             <span className="wdev-cta__eyebrow">Start a Project</span>
             <h2 className="wdev-cta__h2" id="wdev-cta-heading">
-              Ready to build something <em>remarkable</em>?
+              Tell us about <em>your project</em>
             </h2>
             <p className="wdev-cta__sub">
-              Tell us about your project and we'll map out the right approach for your goals,
-              timeline, and budget — no cost for that first conversation.
+              Share a few details and we&rsquo;ll come back with questions, a suggested approach and an
+              itemised estimate. The first conversation is free, with no obligation.
             </p>
+            <ol className="wdev-cta__steps">
+              <li><b>Share your goals</b><span>A short call or email about what you need.</span></li>
+              <li><b>Get a plan</b><span>Scope, timeline and an itemised estimate.</span></li>
+              <li><b>Start building</b><span>We kick off once you&rsquo;re happy with the plan.</span></li>
+            </ol>
             <ConsultationCTA className="wdev-cta__btn" ariaLabel="Get a free web development consultation from 99 Visual Solutions">
               Get a Free Consultation
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -1565,59 +1555,12 @@ export default function WebsiteDevelopment() {
         </div>
       </div>
 
-      {/*
-        Single vanilla-JS block powering every interactive piece on this
-        page (FAQ accordion, animated stat counters). UNCHANGED from the
-        previous revision — same selectors, same behaviour.
-      */}
-      <script
-        id="wdev-interactions"
-        dangerouslySetInnerHTML={{
-          __html: `
-          (function () {
-            // FAQ accordion is now native <details>/<summary> (see the
-            // ✅ FIX note near .wdev-faq__item in the <style> block) and
-            // needs no JS at all, so that logic has been removed from here.
-
-            // Animated stat counters — count up once, on first scroll into view
-            var stats = document.querySelectorAll(".wdev-stat[data-target]");
-            if ("IntersectionObserver" in window && stats.length) {
-              var observer = new IntersectionObserver(
-                function (entries) {
-                  entries.forEach(function (entry) {
-                    if (!entry.isIntersecting) return;
-                    var el = entry.target;
-                    var target = parseInt(el.getAttribute("data-target"), 10) || 0;
-                    var suffix = el.getAttribute("data-suffix") || "";
-                    var numEl = el.querySelector(".wdev-stat__num");
-                    var start = performance.now();
-                    var duration = 1400;
-                    function tick(now) {
-                      var progress = Math.min((now - start) / duration, 1);
-                      var eased = 1 - Math.pow(1 - progress, 3);
-                      if (numEl) numEl.textContent = Math.round(eased * target) + suffix;
-                      if (progress < 1) requestAnimationFrame(tick);
-                    }
-                    requestAnimationFrame(tick);
-                    observer.unobserve(el);
-                  });
-                },
-                { threshold: 0.4 }
-              );
-              stats.forEach(function (el) { observer.observe(el); });
-            }
-          })();
-          `,
-        }}
-      />
-
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/website-development" />
+      <RelatedInsights serviceHref={PAGE_PATH} />
       {/* Drives scroll-in animations for every infographic on this page. */}
       <InViewObserver />
       <Footer />
       <ScrollDown />
-
     </>
   );
 }
