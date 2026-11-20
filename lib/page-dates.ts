@@ -24,7 +24,7 @@ export const PAGE_LAST_MODIFIED = {
   '/press':                           '2026-04-01',
   '/help-center':                     '2026-09-12',
   '/services/website-development':    '2026-11-19',
-  '/services/digital-marketing-seo':  '2026-11-19',
+  '/services/digital-marketing-seo':  '2026-11-20',
   '/services/automation-testing':     '2026-11-19',
   '/services/it-consulting':          '2026-07-28',
   '/services/visualization':          '2026-07-28',

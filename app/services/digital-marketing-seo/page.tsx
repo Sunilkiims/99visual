@@ -37,6 +37,16 @@
 //     rankings") added anywhere. No invented client names, review counts,
 //     awards, or ratings added to visible copy or structured data.
 //
+//   INFOGRAPHICS (follow-up edit): seven reusable, inline-SVG/HTML
+//   infographics from app/components/infographics are placed in the sections
+//   they explain — channel ecosystem (intro), SEO growth path (SEO services),
+//   channel playbooks with PPC/social/content tabs (digital marketing
+//   services), the crawl→index→rank→visibility pipeline (website section),
+//   the delivery cycle (process), a schematic Bengaluru local-search map
+//   (local SEO) and a sample-data reporting dashboard (measurement). No copy,
+//   metadata, schema, FAQ or CTA changed; the dashboard is labelled as
+//   sample data, consistent with the no-invented-results policy above.
+//
 //   Visual system (fonts, corner brackets, ticker mechanics, breakpoints,
 //   card/spotlight/benefits/FAQ/CTA styling) is unchanged from the shared
 //   /services hub template — only page-specific copy, data and the new
@@ -51,6 +61,17 @@ import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import ConsultationCTA from "@/app/components/ConsultationCTA";
+import {
+  InViewObserver,
+  EcosystemDiagram,
+  SeoGrowthPath,
+  SearchPipeline,
+  ChannelPlaybooks,
+  ProcessCycle,
+  LocalSearchMap,
+  AnalyticsDashboard,
+  type CycleStep,
+} from "@/app/components/infographics";
 
 
 import type { Metadata } from "next";
@@ -63,6 +84,7 @@ import {
   FaSitemap, FaShoppingCart,
   FaLaptopCode, FaCogs,
   FaLightbulb, FaHome, FaHospital, FaShoppingBag, FaGraduationCap, FaIndustry,
+  FaCompass, FaClipboardCheck, FaRoute, FaHammer, FaSlidersH,
 } from "react-icons/fa";
 
 import {
@@ -369,6 +391,7 @@ const clusters = [
     intro: "Technical, on-page, local, off-page, enterprise and eCommerce SEO — the structural layer every other channel depends on.",
     list: seoServices,
     cols: 3,
+    visual: <SeoGrowthPath />,
   },
   {
     id: "digital-marketing-services",
@@ -377,6 +400,7 @@ const clusters = [
     intro: "Paid, social, content, email and automation planned as one connected system rather than six separate vendors with six separate reports.",
     list: dmServices,
     cols: 3,
+    visual: <ChannelPlaybooks />,
   },
 ];
 
@@ -402,13 +426,13 @@ const pillars = [
 ];
 
 // ── SEO Process (Section 6) ───────────────────────────────────────────────
-const processSteps = [
-  { step: "01", title: "Discover",           text: "We start with your business goals, target customers and current digital presence — not just a keyword list — so the strategy is built around what actually grows the business." },
-  { step: "02", title: "Audit",              text: "A technical, on-page and off-page audit of your existing website and search presence, using Google Search Console and Google Analytics 4, to find what’s holding rankings and traffic back today." },
-  { step: "03", title: "Strategy",           text: "Keyword research, search-intent mapping and a channel plan — deciding where SEO, PPC, content and social should each carry weight for your market and budget, not a one-size-fits-all package." },
-  { step: "04", title: "Build",              text: "Technical fixes, on-page optimisation, content production and campaign setup get built — often working alongside our website development team when the site itself needs structural changes." },
-  { step: "05", title: "Optimise",           text: "Campaigns and content go live and get refined against real performance data — bid adjustments, content updates, outreach and conversion-path improvements based on what’s actually happening." },
-  { step: "06", title: "Measure & Improve",  text: "Regular reporting against rankings, organic traffic, leads and cost per lead feeds back into the strategy, so the plan evolves as the market, algorithms and your business change." },
+const processSteps: CycleStep[] = [
+  { step: "01", title: "Discover",           icon: <FaCompass />, text: "We start with your business goals, target customers and current digital presence — not just a keyword list — so the strategy is built around what actually grows the business." },
+  { step: "02", title: "Audit",              icon: <FaClipboardCheck />, text: "A technical, on-page and off-page audit of your existing website and search presence, using Google Search Console and Google Analytics 4, to find what’s holding rankings and traffic back today." },
+  { step: "03", title: "Strategy",           icon: <FaRoute />, text: "Keyword research, search-intent mapping and a channel plan — deciding where SEO, PPC, content and social should each carry weight for your market and budget, not a one-size-fits-all package." },
+  { step: "04", title: "Build",              icon: <FaHammer />, text: "Technical fixes, on-page optimisation, content production and campaign setup get built — often working alongside our website development team when the site itself needs structural changes." },
+  { step: "05", title: "Optimise",           icon: <FaSlidersH />, text: "Campaigns and content go live and get refined against real performance data — bid adjustments, content updates, outreach and conversion-path improvements based on what’s actually happening." },
+  { step: "06", title: "Measure & Improve",  icon: <FaChartLine />, text: "Regular reporting against rankings, organic traffic, leads and cost per lead feeds back into the strategy, so the plan evolves as the market, algorithms and your business change." },
 ];
 
 // ── Industries — only sectors already supported elsewhere on this site
@@ -576,7 +600,10 @@ export default function DigitalMarketing() {
 
         /* INTRO / DEFINITION */
         .dm-intro{padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);background:var(--dm-surface);}
-        .dm-intro__inner{max-width:920px;margin:0 auto;}
+        .dm-intro__inner{max-width:1180px;margin:0 auto;}
+        .dm-intro__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:3rem;align-items:center;margin-bottom:2.5rem;}
+        .dm-intro__grid .dm-intro__p:last-child{margin-bottom:0;}
+        @media(max-width:960px){.dm-intro__grid{grid-template-columns:1fr;gap:2.25rem;}.dm-intro__visual{max-width:520px;margin:0 auto;}}
         .dm-intro__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;letter-spacing:.06em;color:var(--dm-blue);margin-bottom:1rem;display:block;}
         .dm-intro__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;line-height:1.2;color:var(--dm-ink);margin:0 0 1.2rem;max-width:640px;}
         .dm-intro__h2 em{font-style:normal;color:var(--dm-blue);}
@@ -661,21 +688,17 @@ export default function DigitalMarketing() {
         .dm-webdev__list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.9rem;}
         .dm-webdev__list li{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.6;color:var(--dm-ink);display:flex;gap:.7rem;background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:12px;padding:.9rem 1.1rem;}
         .dm-webdev__list li b{color:var(--dm-blue);font-weight:600;}
+        .dm-webdev__pipeline{max-width:1180px;margin:3.5rem auto 0;padding-top:2.75rem;border-top:1px solid var(--dm-line);}
+        .dm-webdev__pipe-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;margin:0 0 -1.5rem;}
 
         /* PROCESS */
         .dm-process{background:var(--dm-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
-        .dm-process__inner{max-width:900px;margin:0 auto;}
+        .dm-process__inner{max-width:1180px;margin:0 auto;}
         .dm-process__head{margin-bottom:3rem;max-width:640px;}
         .dm-process__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
         .dm-process__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
         .dm-process__h2 em{font-style:normal;color:var(--dm-blue);}
         .dm-process__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0;}
-        .dm-process__steps{display:flex;flex-direction:column;gap:0;}
-        .dm-process__step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;padding-bottom:2.5rem;position:relative;}
-        .dm-process__step:not(:last-child)::before{content:'';position:absolute;left:27px;top:52px;bottom:-2px;width:1px;background:var(--dm-line);}
-        .dm-process__num{width:56px;height:56px;border-radius:50%;border:1px solid var(--dm-line);background:var(--dm-surface);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:1rem;font-weight:500;color:var(--dm-blue);flex-shrink:0;}
-        .dm-process__title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--dm-ink);margin-bottom:.5rem;}
-        .dm-process__text{font-family:'Inter',sans-serif;font-size:.87rem;font-weight:300;line-height:1.75;color:var(--dm-muted);max-width:560px;}
 
         /* INDUSTRIES */
         .dm-industries{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
@@ -699,6 +722,8 @@ export default function DigitalMarketing() {
         .dm-local{background:var(--dm-paper);}
         .dm-india{background:var(--dm-surface);}
         .dm-local__inner,.dm-india__inner{max-width:820px;margin:0 auto;}
+        .dm-local__inner{max-width:1180px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:3.5rem;align-items:center;}
+        @media(max-width:960px){.dm-local__inner{grid-template-columns:1fr;gap:2.25rem;}}
         .dm-local__label,.dm-india__label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.9rem;}
         .dm-local__h2,.dm-india__h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,2.8vw,2.05rem);font-weight:700;line-height:1.24;color:var(--dm-ink);margin:0 0 1.2rem;}
         .dm-local__h2 em,.dm-india__h2 em{font-style:normal;color:var(--dm-blue);}
@@ -896,6 +921,8 @@ export default function DigitalMarketing() {
         {/* INTRO / DEFINITION (GEO-ready clear answer) */}
         <section className="dm-intro" aria-labelledby="dm-intro-heading">
           <div className="dm-intro__inner">
+            <div className="dm-intro__grid">
+            <div className="dm-intro__copy">
             <span className="dm-intro__label">What we do</span>
             <h2 className="dm-intro__h2" id="dm-intro-heading">
               Full-funnel marketing, <em>run like a product</em>
@@ -912,6 +939,9 @@ export default function DigitalMarketing() {
               management of search and paid campaigns, with{" "}
               <strong>one monthly report</strong> covering every channel we run.
             </p>
+            </div>
+            <EcosystemDiagram className="dm-intro__visual" />
+            </div>
             <div className="dm-stats">
               <div className="dm-stat">
                 <div className="dm-stat__num">5</div>
@@ -970,6 +1000,7 @@ export default function DigitalMarketing() {
                   <h2 className="dm-cluster__h2" id={`dm-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
                   <p className="dm-cluster__intro">{cluster.intro}</p>
                 </div>
+                {cluster.visual}
                 <div className={`dm-cluster__grid dm-cluster__grid--${cluster.cols}`}>
                   {cluster.list.map((svc) => (
                     <article className="dm-card" id={svc.id} key={svc.id} aria-labelledby={`dm-card-h-${svc.id}`}>
@@ -1065,6 +1096,10 @@ export default function DigitalMarketing() {
               <li><b>Tracking —</b> GA4 events and conversions checked before any campaign spend, so results can be measured from the first day.</li>
             </ul>
           </div>
+          <div className="dm-webdev__pipeline">
+            <p className="dm-webdev__pipe-label">How search engines process a page</p>
+            <SearchPipeline />
+          </div>
         </section>
 
         {/* SEO PROCESS */}
@@ -1078,17 +1113,7 @@ export default function DigitalMarketing() {
                 are never really “done.”
               </p>
             </div>
-            <div className="dm-process__steps">
-              {processSteps.map((s) => (
-                <div className="dm-process__step" key={s.step}>
-                  <div className="dm-process__num" aria-hidden="true">{s.step}</div>
-                  <div>
-                    <div className="dm-process__title">{s.title}</div>
-                    <p className="dm-process__text">{s.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProcessCycle steps={processSteps} />
           </div>
         </section>
 
@@ -1123,6 +1148,7 @@ export default function DigitalMarketing() {
         {/* BANGALORE / BENGALURU SEO */}
         <section className="dm-local" aria-labelledby="dm-local-heading">
           <div className="dm-local__inner">
+            <div className="dm-local__copy">
             <span className="dm-local__label">Local SEO</span>
             <h2 className="dm-local__h2" id="dm-local-heading">Built for how <em>Bangalore</em> searches</h2>
             <p className="dm-local__p">
@@ -1144,6 +1170,8 @@ export default function DigitalMarketing() {
               As a Bengaluru-headquartered team, we work with local businesses
               directly and understand the market we’re optimising for.
             </p>
+            </div>
+            <LocalSearchMap className="dm-local__visual" />
           </div>
         </section>
 
@@ -1188,6 +1216,7 @@ export default function DigitalMarketing() {
                 at the end of a quarter.
               </p>
             </div>
+            <AnalyticsDashboard />
             <div className="dm-measure__grid">
               <div className="dm-measure__col">
                 <div className="dm-measure__col-title">What we track</div>
@@ -1371,6 +1400,7 @@ export default function DigitalMarketing() {
 
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
       <RelatedInsights serviceHref="/services/digital-marketing-seo" />
+      <InViewObserver />
       <Footer />
       <ScrollDown />
 
