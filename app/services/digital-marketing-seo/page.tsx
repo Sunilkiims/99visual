@@ -1,61 +1,37 @@
 // app/services/digital-marketing-seo/page.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Digital Marketing & SEO Company in Bangalore, India — 99 Visual Solutions
+// Digital Marketing & SEO — 99 Visual Solutions
 //
-// SEO/CONTENT REVISION (this edit):
-//   Full audit-driven rewrite targeting "digital marketing/SEO company/agency
-//   in Bangalore" + "...in India" and the related secondary cluster, without
-//   keyword-stuffing. Key changes:
-//   - Metadata (title/description/OG/Twitter) rewritten around the primary
-//     keyword cluster. OG/Twitter image now points at the hero banner that
-//     actually exists on disk — the previous `/images/services/
-//     digital-marketing-og.jpg` reference 404s (file was never added).
-//   - Service schema hasOfferCatalog expanded to match the new, more
-//     complete on-page service architecture; areaServed now explicitly
-//     includes Bengaluru/Karnataka/India ahead of the other served
-//     countries (all figures pulled from existing org/local-business
-//     schema — nothing invented).
-//   - New sections: Why 99 Visual (SEO + web dev + digital marketing
-//     positioning), a 6-card SEO Services grid (Technical/On-Page/Local/
-//     Off-Page/Enterprise/eCommerce SEO), a Digital Marketing Services
-//     grid, "Where Website Development Meets SEO", a 6-step process,
-//     Industries, a Bengaluru/Bangalore SEO section, an India SEO section,
-//     Measurement & Reporting, an honest Proof/Approach section (features
-//     the one genuinely SEO-relevant testimonial already published on the
-//     Contact page — nothing fabricated), and a short AI Search/GEO
-//     section. FAQ expanded from 4 to 12 questions, still schema-linked.
-//   - Hero ticker no longer displays invented keyword-ranking jumps
-//     (e.g. "plumbers near me #38 -> #4") — that was presenting fabricated
-//     numbers as if they were real client results. Replaced with a plain
-//     list of the disciplines we actually offer.
-//   - Hero CTAs updated to "Get a Free SEO Consultation" (primary) and
-//     "Request a Digital Marketing Audit" (secondary), each now passed a
-//     distinct postTitle/postUrl for lead-source tracking (previously
-//     ConsultationCTA was called with no props, so every submission from
-//     this page was attributed to the generic "Services Page" default).
-//   - No unsupported superlative claims ("#1", "best", "guaranteed
-//     rankings") added anywhere. No invented client names, review counts,
-//     awards, or ratings added to visible copy or structured data.
+// FULL UPGRADE (Nov 2026): audit-driven rewrite of every section in plain
+// language, plus animated server-rendered infographics (one client
+// InViewObserver drives them):
+//   EcosystemDiagram + ChannelStageMatrix  channels × journey stages (A)
+//   SeoArchitecture                        how SEO layers fit together (B)
+//   AcquisitionFunnel                      awareness → retention (C)
+//   SeoVsPaid                              organic vs paid, no winner (D)
+//   LaunchTimeline                         social media workflow (E)
+//   RequestFlow (content, email)           content workflow (F), email automation
+//   MetricChain + AnalyticsDashboard       analytics & conversion maths (G)
+//   IntentMap                              keyword research & search intent
+//   SearchPipeline, LocalSearchMap, ProcessCycle, TechStackMap (existing)
 //
-//   INFOGRAPHICS (follow-up edit): seven reusable, inline-SVG/HTML
-//   infographics from app/components/infographics are placed in the sections
-//   they explain — channel ecosystem (intro), SEO growth path (SEO services),
-//   channel playbooks with PPC/social/content tabs (digital marketing
-//   services), the crawl→index→rank→visibility pipeline (website section),
-//   the delivery cycle (process), a schematic Bengaluru local-search map
-//   (local SEO) and a sample-data reporting dashboard (measurement). No copy,
-//   metadata, schema, FAQ or CTA changed; the dashboard is labelled as
-//   sample data, consistent with the no-invented-results policy above.
+// Honesty rules kept from earlier revisions and tightened:
+//   - No ranking, traffic, lead or revenue promises anywhere.
+//   - The unverified client quote ("page-one rankings for seventeen
+//     keywords") was removed from this page; it remains on /contact.
+//   - MindTrick section no longer shows filler stats ("10+", "∞").
+//   - Every number in an infographic is labelled illustrative or a worked
+//     example; the dashboard stays labelled as sample data.
+//   - Case study block only shows what lib/case-studies.ts documents.
 //
-//   Visual system (fonts, corner brackets, ticker mechanics, breakpoints,
-//   card/spotlight/benefits/FAQ/CTA styling) is unchanged from the shared
-//   /services hub template — only page-specific copy, data and the new
-//   section styles below it were added.
+// Hero layout, ConsultationCTA lead-source tags (postTitle/postUrl), URL,
+// canonical and JSON-LD plumbing are unchanged.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import RelatedInsights from '@/app/components/RelatedInsights';
 import { preload } from 'react-dom';
 import { PAGE_LAST_MODIFIED } from '@/lib/page-dates';
+import { caseStudies } from '@/lib/case-studies';
 import Link from "next/link";
 import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
@@ -64,28 +40,48 @@ import ConsultationCTA from "@/app/components/ConsultationCTA";
 import {
   InViewObserver,
   EcosystemDiagram,
-  SeoGrowthPath,
   SearchPipeline,
-  ChannelPlaybooks,
   ProcessCycle,
   LocalSearchMap,
   AnalyticsDashboard,
+  ChannelStageMatrix,
+  SeoArchitecture,
+  AcquisitionFunnel,
+  SeoVsPaid,
+  IntentMap,
+  MetricChain,
+  LaunchTimeline,
+  RequestFlow,
+  TechStackMap,
   type CycleStep,
+  type ChannelRow,
+  type FunnelStage,
+  type FlowHop,
+  type LaunchStop,
+  type StackLayer,
 } from "@/app/components/infographics";
 
-
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import {
   FaSearch, FaTools, FaPenNib, FaLink,
   FaAd, FaHashtag, FaShareAlt,
   FaFeatherAlt, FaEnvelope,
   FaMapMarkerAlt,
-  FaBullhorn, FaChartLine, FaChartPie,
+  FaChartLine, FaChartPie,
   FaSitemap, FaShoppingCart,
-  FaLaptopCode, FaCogs,
+  FaCogs, FaLaptopCode,
   FaLightbulb, FaHome, FaHospital, FaShoppingBag, FaGraduationCap, FaIndustry,
   FaCompass, FaClipboardCheck, FaRoute, FaHammer, FaSlidersH,
+  FaEyeSlash, FaMoneyBillWave, FaRandom, FaQuestionCircle, FaMobileAlt, FaHourglassHalf,
+  FaUsers, FaPencilRuler, FaImage, FaCalendarAlt, FaComments, FaFileAlt,
+  FaBullseye, FaUserTag, FaRobot, FaInbox, FaUserCheck, FaArrowRight,
+  FaKey, FaCode, FaGlobe,
 } from "react-icons/fa";
+import {
+  SiGooglesearchconsole, SiGoogleanalytics, SiGoogleads, SiMeta, SiLooker,
+  SiGoogletagmanager, SiNextdotjs, SiReact, SiGooglemaps, SiInstagram,
+} from "react-icons/si";
 
 import {
   BASE,
@@ -100,15 +96,11 @@ import {
   jsonLdString,
 } from "@/lib/schema";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Trailing-slash guard (unchanged).
-// ─────────────────────────────────────────────────────────────────────────────
 const BASE_SAFE = BASE.replace(/\/$/, "");
+const PAGE_PATH = "/services/digital-marketing-seo";
+const PAGE_CANONICAL = `${BASE_SAFE}${PAGE_PATH}`;
 
-const PAGE_CANONICAL = `${BASE_SAFE}/services/digital-marketing-seo`;
-
-// Existing on-disk hero banner — reused as the OG/Twitter image since the
-// previously-referenced `digital-marketing-og.jpg` does not exist in /public.
+// Existing on-disk hero banner, reused as the OG/Twitter image.
 const OG_IMAGE = `${BASE_SAFE}/images/services/digital-marketing-seo-hero-banner.jpg`;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -118,19 +110,15 @@ const OG_IMAGE = `${BASE_SAFE}/images/services/digital-marketing-seo-hero-banner
 // without a redeploy (see RelatedInsights).
 export const revalidate = 3600;
 
+const META_DESCRIPTION =
+  "Digital marketing and SEO services from a Bengaluru team: technical, on-page and local SEO, Google Ads, social, content, email and conversion work, reported honestly.";
+
 export const metadata: Metadata = {
   // Brand suffix is appended by the root layout's title template.
   title: "Digital Marketing & SEO Company, Bangalore",
-
-  description:
-    "99 Visual Solutions is a Bengaluru-based digital marketing and SEO company helping businesses across India turn search and paid media into measurable growth.",
-
+  description: META_DESCRIPTION,
   metadataBase: new URL(BASE_SAFE),
-
-  alternates: {
-    canonical: PAGE_CANONICAL,
-  },
-
+  alternates: { canonical: PAGE_CANONICAL },
   robots: {
     index:  true,
     follow: true,
@@ -142,39 +130,23 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-
   openGraph: {
     title:       "Digital Marketing & SEO Company in Bangalore, India | 99 Visual",
-    description: "Technical, on-page, local & enterprise SEO, Google Ads/PPC, Meta & LinkedIn Ads, content and email marketing — planned as one system by a Bengaluru-based team, for clients across India and worldwide.",
+    description: "SEO, Google Ads, social media, content, email and conversion optimisation planned as one programme by a Bengaluru-based team, for businesses across India and abroad.",
     url:         PAGE_CANONICAL,
     siteName:    "99 Visual Solutions",
-    images: [
-      {
-        url:    OG_IMAGE,
-        width:  1717,
-        height: 916,
-        type:   "image/jpeg",
-        alt:    "Digital Marketing & SEO Company in Bangalore, India — 99 Visual Solutions",
-      },
-    ],
+    images: [{ url: OG_IMAGE, width: 1717, height: 916, type: "image/jpeg", alt: "Digital marketing and SEO services by 99 Visual Solutions, Bengaluru" }],
     locale: "en_US",
     type:   "website",
   },
-
   twitter: {
     card:        "summary_large_image",
     title:       "Digital Marketing & SEO Company in Bangalore, India | 99 Visual",
-    description: "SEO, PPC, Meta & LinkedIn Ads, content, email and marketing automation — run as one connected system by a Bengaluru-based team, for clients across India and internationally.",
+    description: "SEO, Google Ads, social, content, email and conversion work, run as one programme by a Bengaluru-based team.",
     site:        "@99VisualSoluti1",
     creator:     "@99VisualSoluti1",
-    images: [
-      {
-        url: OG_IMAGE,
-        alt: "Digital Marketing & SEO Company in Bangalore, India — 99 Visual Solutions",
-      },
-    ],
+    images: [{ url: OG_IMAGE, alt: "Digital marketing and SEO services by 99 Visual Solutions, Bengaluru" }],
   },
-
   authors:         [{ name: "99 Visual Solutions", url: BASE_SAFE }],
   creator:         "99 Visual Solutions",
   publisher:       "99 Visual Solutions",
@@ -188,14 +160,291 @@ export const metadata: Metadata = {
 // DATES
 // ─────────────────────────────────────────────────────────────────────────────
 const DATE_PUBLISHED = "2023-01-01";
-const DATE_MODIFIED  = PAGE_LAST_MODIFIED['/services/digital-marketing-seo']; // shared with app/sitemap.ts — edit lib/page-dates.ts
+const DATE_MODIFIED  = PAGE_LAST_MODIFIED[PAGE_PATH]; // shared with app/sitemap.ts — edit lib/page-dates.ts
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SCHEMA (all URLs use BASE_SAFE + PAGE_CANONICAL; nothing here is invented —
-// areaServed reuses the same city/country facts already declared in
-// orgSchema/localBusinessSchema elsewhere in this same @graph)
+// PAGE DATA
 // ─────────────────────────────────────────────────────────────────────────────
+type Service = { id: string; icon: ReactNode; title: string; description: string; highlight: string; bullets: string[] };
 
+const seoServices: Service[] = [
+  { id: "technical-seo", icon: <FaTools />, title: "Technical SEO",
+    description: "Search engines have to crawl, render and index a page before it can rank. Technical SEO removes whatever gets in the way: slow templates, broken redirects, duplicate URLs, content that only appears after JavaScript runs.",
+    highlight: "Findings are written as specific fixes your developers can act on, ranked by what blocks indexing first.",
+    bullets: ["Crawlability, indexing, sitemaps and robots rules", "Core Web Vitals, page speed and mobile rendering", "Structured data, canonicals and redirect clean-up"] },
+  { id: "onpage", icon: <FaPenNib />, title: "On-Page SEO",
+    description: "On-page work makes each page clearly about one thing, in the words your customers use. That means titles, headings, copy, images and internal links that match what people are searching for.",
+    highlight: "A well-matched page tends to rank better and convert better, because visitors find what they expected when they clicked.",
+    bullets: ["Keyword and search-intent mapping per page", "Titles, meta descriptions and heading structure", "Internal links, URL structure and image SEO"] },
+  { id: "local-seo", icon: <FaMapMarkerAlt />, title: "Local SEO",
+    description: "For businesses that serve a city or neighbourhood, the map results often matter more than the ten blue links. Local SEO helps you appear when someone nearby searches for what you offer.",
+    highlight: "It works when your Google Business Profile, location pages, citations and reviews all tell the same story, not when a city name is added to every title.",
+    bullets: ["Google Business Profile set-up and upkeep", "Location pages where there's a real reason for one", "Citation consistency and review management"] },
+  { id: "offpage", icon: <FaLink />, title: "Off-Page SEO & Digital PR",
+    description: "Search engines treat links and mentions from other reputable sites as a sign of trust. Off-page SEO earns those signals through content worth citing, PR and genuine relationships.",
+    highlight: "We don't buy links or use link schemes. They can bring short gains and long penalties.",
+    bullets: ["Digital PR and relevant outreach", "Guest articles, citations and brand mentions", "Authority tracked through referral traffic and rankings"] },
+  { id: "enterprise-seo", icon: <FaSitemap />, title: "Enterprise SEO",
+    description: "Sites with thousands of pages, many templates or several regions need rules more than one-off fixes. A single template change can affect every product page at once.",
+    highlight: "We work on templates, internal-linking rules and publishing workflows, then monitor so problems are caught before they spread.",
+    bullets: ["Technical governance across large sites", "Scalable content and internal-linking frameworks", "Multi-region and multi-location monitoring"] },
+  { id: "ecommerce-seo", icon: <FaShoppingCart />, title: "eCommerce SEO",
+    description: "Online stores have their own problems: thin product pages, filters that create thousands of duplicate URLs, and products that come and go.",
+    highlight: "The goal is product and category pages that rank for buying searches and are set up to sell once people land.",
+    bullets: ["Product and category page optimisation", "Faceted navigation and duplicate handling", "Product structured data for rich results"] },
+];
+
+const paidServices: Service[] = [
+  { id: "ppc", icon: <FaAd />, title: "Google Ads / PPC Management",
+    description: "Google Ads puts you in front of people searching right now, which makes it useful for launches, promotions and testing demand while SEO builds. We plan keywords, write ads, match them to landing pages and track every conversion.",
+    highlight: "We manage toward cost per lead or return on ad spend, not clicks. A cheap click that never converts is still wasted budget.",
+    bullets: ["Keyword strategy, bidding and budgets", "Ad copy, landing-page alignment and A/B tests", "Conversion tracking set up before spend starts"] },
+  { id: "meta-linkedin-ads", icon: <FaHashtag />, title: "Meta & LinkedIn Ads",
+    description: "Paid social reaches people by interest, behaviour or job role before they search. Meta (Facebook and Instagram) suits visual products and broad audiences; LinkedIn suits B2B, where job title and company matter.",
+    highlight: "Creative and audiences are tested and adjusted against real results each week, not left running unattended.",
+    bullets: ["Facebook and Instagram campaigns", "LinkedIn Ads for B2B lead generation", "Creative testing, remarketing and reporting"] },
+];
+
+const socialContentServices: Service[] = [
+  { id: "social-media", icon: <FaShareAlt />, title: "Social Media Marketing",
+    description: "Social media works best when each platform gets content made for it, posted consistently, with someone replying to comments and messages. We plan, create and manage that for the platforms your customers use.",
+    highlight: "Social topics come from the same calendar as SEO and email, so one good idea gets used across channels instead of once.",
+    bullets: ["Platform strategy and monthly content calendars", "Graphics, carousels and short-form video", "Community management and monthly reporting"] },
+  { id: "content-marketing", icon: <FaFeatherAlt />, title: "Content Marketing",
+    description: "Useful content answers the questions people ask before they buy: how something works, what it costs, how to choose. Done well, it earns search traffic, gets shared and makes sales conversations easier.",
+    highlight: "Every piece starts from real search demand and a clear purpose, and is written by people, not padded to hit a word count.",
+    bullets: ["Content strategy and topic clusters", "Articles, guides and landing-page copy", "Distribution, internal linking and performance review"] },
+];
+
+const emailCroServices: Service[] = [
+  { id: "email-automation", icon: <FaEnvelope />, title: "Email Marketing & Automation",
+    description: "Most people aren't ready to buy on their first visit. Email keeps you in touch with useful, relevant messages until they are, without anyone sending follow-ups by hand.",
+    highlight: "Lists are segmented by interest and stage, so a new subscriber, a repeat customer and a lapsed lead each get different messages.",
+    bullets: ["Newsletters and campaign emails", "Automated welcome and nurture sequences", "Segmentation, CRM integration and deliverability"] },
+  { id: "cro-analytics", icon: <FaChartPie />, title: "Conversion Rate Optimisation",
+    description: "More traffic isn't always the answer. Often the faster win is getting more of your existing visitors to enquire. CRO finds where people drop off and tests changes to fix it.",
+    highlight: "Changes are tested against real behaviour in GA4 rather than opinion, and only the ones that work are kept.",
+    bullets: ["Landing-page and form improvements", "A/B testing and journey analysis", "GA4 conversion tracking tied to leads"] },
+];
+
+const allServices = [...seoServices, ...paidServices, ...socialContentServices, ...emailCroServices];
+
+// ── Ecosystem matrix (A): stages × channels ───────────────────────────────
+const journeyStages = ["Awareness", "Traffic", "Engagement", "Leads", "Conversion"];
+const channelRows: ChannelRow[] = [
+  { name: "SEO",                icon: <FaSearch />,    roles: [1, 2, 1, 1, 0] },
+  { name: "Paid advertising",   icon: <FaAd />,        roles: [2, 2, 0, 1, 1] },
+  { name: "Social media",       icon: <FaShareAlt />,  roles: [2, 1, 2, 0, 0] },
+  { name: "Content",            icon: <FaFeatherAlt />, roles: [1, 2, 2, 1, 0] },
+  { name: "Email",              icon: <FaEnvelope />,  roles: [0, 1, 2, 1, 2] },
+  { name: "Conversion (CRO)",   icon: <FaBullseye />,  roles: [0, 0, 1, 2, 2] },
+  { name: "Analytics",          icon: <FaChartPie />,  roles: [1, 1, 1, 1, 1] },
+];
+
+// ── Funnel (C) ────────────────────────────────────────────────────────────
+const funnelStages: FunnelStage[] = [
+  { stage: "Awareness",     question: "Do they know you exist?",              channels: ["Social media", "Display & video ads", "Digital PR"] },
+  { stage: "Discovery",     question: "Do you show up when they search?",     channels: ["SEO", "Google Ads", "Google Business Profile"] },
+  { stage: "Consideration", question: "Can they compare and trust you?",      channels: ["Content", "Case studies", "Reviews", "Remarketing"] },
+  { stage: "Conversion",    question: "Is it easy to take the next step?",    channels: ["Landing pages", "Clear forms", "CRO testing"] },
+  { stage: "Retention",     question: "Do they come back and refer others?",  channels: ["Email", "Social community", "Remarketing"] },
+];
+
+// ── Social workflow (E) ───────────────────────────────────────────────────
+const socialStops: LaunchStop[] = [
+  { title: "Audience research", note: "Who they are and where they spend time" },
+  { title: "Content strategy",  note: "Themes, formats and posting rhythm" },
+  { title: "Creative",          note: "Graphics, video and captions" },
+  { title: "Publishing",        note: "Scheduled to a shared calendar" },
+  { title: "Engagement",        note: "Replies, comments and messages" },
+  { title: "Optimisation",      note: "Boost what works, drop what doesn't" },
+  { title: "Reporting",         note: "Monthly results and next steps" },
+];
+
+// ── Content workflow (F) ──────────────────────────────────────────────────
+const contentFlow: FlowHop[] = [
+  { title: "Research",      note: "Search demand, questions, competitors", icon: <FaSearch />,      tone: "orange" },
+  { title: "Planning",      note: "Topics, clusters and a calendar",       icon: <FaCalendarAlt />, tone: "blue" },
+  { title: "Writing",       note: "Original, expert-reviewed copy",        icon: <FaPencilRuler />, tone: "blue" },
+  { title: "Visuals",       note: "Diagrams, images and video",            icon: <FaImage />,       tone: "blue" },
+  { title: "Distribution",  note: "Social, email and outreach",            icon: <FaShareAlt />,    tone: "blue" },
+  { title: "Internal links", note: "Connect it to related pages",          icon: <FaLink />,        tone: "green" },
+  { title: "Analysis",      note: "Rankings, traffic and leads it drives", icon: <FaChartLine />,   tone: "green" },
+];
+
+// ── Email automation flow ─────────────────────────────────────────────────
+const emailFlow: FlowHop[] = [
+  { title: "Sign-up",   note: "Form, download or purchase",        icon: <FaInbox />,     tone: "orange" },
+  { title: "Segment",   note: "Tagged by interest and stage",      icon: <FaUserTag />,   tone: "blue" },
+  { title: "Welcome",   note: "Sent straight away",                icon: <FaEnvelope />,  tone: "blue" },
+  { title: "Nurture",   note: "Useful emails over a few weeks",    icon: <FaRobot />,     tone: "blue" },
+  { title: "Sales-ready", note: "Engaged leads passed to your team", icon: <FaUserCheck />, tone: "green" },
+];
+
+type Cluster = { id: string; eyebrow: string; heading: ReactNode; intro: string; list: Service[]; cols: 2 | 3; visuals: ReactNode[] };
+
+const clusters: Cluster[] = [
+  {
+    id: "seo-services",
+    eyebrow: "SEO Services",
+    heading: <>Search engine optimisation built on <em>solid foundations</em></>,
+    intro: "Technical, on-page, local and off-page SEO, plus enterprise and eCommerce work for larger sites. Each piece supports the others.",
+    list: seoServices,
+    cols: 3,
+    visuals: [<SeoArchitecture key="arch" />],
+  },
+  {
+    id: "paid-advertising",
+    eyebrow: "Paid Advertising",
+    heading: <>Google Ads and paid social that <em>pay for themselves</em>, or get changed</>,
+    intro: "PPC advertising gives you visibility while SEO builds. Here's how the two compare, so you can decide where budget should go.",
+    list: paidServices,
+    cols: 2,
+    visuals: [<SeoVsPaid key="svp" />],
+  },
+  {
+    id: "social-content",
+    eyebrow: "Social Media & Content Marketing",
+    heading: <>Content people <em>want to read</em>, shared where they already are</>,
+    intro: "Content marketing and social media marketing run from one calendar, so research done once feeds articles, posts and emails.",
+    list: socialContentServices,
+    cols: 2,
+    visuals: [
+      <LaunchTimeline key="social" stops={socialStops} badge="Social media workflow" caption="A monthly cycle: research and planning up front, publishing and replies through the month, then a report that shapes next month's plan." />,
+      <RequestFlow key="content" id="ig-content-flow" hops={contentFlow} badge="Content marketing workflow" legend={{ out: "Production", back: "What we learn" }} caption="Each article is linked into related pages and measured after publishing; what performs well shapes the next round of topics." />,
+    ],
+  },
+  {
+    id: "email-cro",
+    eyebrow: "Email Marketing & Conversion Optimisation",
+    heading: <>Turn interest into <em>enquiries</em></>,
+    intro: "Email keeps leads warm until they're ready; conversion work makes sure the page they land on makes the next step easy.",
+    list: emailCroServices,
+    cols: 2,
+    visuals: [
+      <RequestFlow key="email" id="ig-email-flow" hops={emailFlow} badge="An automated email journey" legend={{ out: "Subscriber path", back: "Engagement data" }} caption="Set up once, then refined using open, click and reply data. Subscribers who stop engaging get fewer emails, which protects deliverability." />,
+    ],
+  },
+];
+
+// ── Challenges ────────────────────────────────────────────────────────────
+const challenges = [
+  { icon: <FaEyeSlash />,      title: "Customers can't find you online",   text: "Competitors show up for the searches your customers make, while your site sits on page three or isn't indexed properly." },
+  { icon: <FaMoneyBillWave />, title: "Ad spend without clear returns",    text: "Money goes into Google or Meta every month, but nobody can say which campaigns bring in leads and which just bring clicks." },
+  { icon: <FaRandom />,        title: "Channels that don't talk",          text: "SEO, ads, social and email are handled by different people with different reports, and none of it adds up to a plan." },
+  { icon: <FaMobileAlt />,     title: "Traffic that doesn't convert",      text: "Visitors arrive and leave. Slow pages, unclear offers or long forms lose people who were ready to enquire." },
+  { icon: <FaQuestionCircle />, title: "Reports full of vanity metrics",   text: "Impressions and followers look good in a deck, but they don't tell you whether marketing is paying for itself." },
+  { icon: <FaHourglassHalf />, title: "No time to keep it all running",    text: "Posting, testing, writing and reporting take hours every week, and they're the first things dropped when the team is busy." },
+];
+
+// ── Process ───────────────────────────────────────────────────────────────
+const processSteps: CycleStep[] = [
+  { step: "01", title: "Discover",         icon: <FaCompass />,        text: "We learn your goals, customers, margins and what's been tried before, so the plan fits how your business makes money." },
+  { step: "02", title: "Audit",            icon: <FaClipboardCheck />, text: "A technical, content and campaign audit using Search Console, GA4 and your ad accounts shows what's holding results back today." },
+  { step: "03", title: "Strategy",         icon: <FaRoute />,          text: "Keyword research, intent mapping and a channel plan decide where SEO, ads, content and social should each carry weight, and what to measure." },
+  { step: "04", title: "Build",            icon: <FaHammer />,         text: "Technical fixes, content, landing pages and campaigns are built and tracking is checked before anything goes live." },
+  { step: "05", title: "Optimise",         icon: <FaSlidersH />,       text: "Bids, creative, content and pages are adjusted every week or month based on what the data shows." },
+  { step: "06", title: "Report & improve", icon: <FaChartLine />,      text: "A monthly report covers rankings, traffic, leads and cost per lead, with what we're changing next and why." },
+];
+
+// ── Deliverables ──────────────────────────────────────────────────────────
+const deliverableGroups = [
+  { title: "At the start", items: ["Website SEO audit with prioritised fixes", "Keyword research and search-intent map", "Technical SEO recommendations for your developers", "Analytics and conversion tracking check"] },
+  { title: "Every month", items: ["On-page optimisation and internal-linking updates", "Content plan and published articles", "Social media content calendar", "Campaign set-up, testing and optimisation", "Email campaign planning and sends"] },
+  { title: "Where relevant", items: ["Local SEO and Google Business Profile optimisation", "Link-building and digital PR plan", "Landing-page recommendations and A/B tests", "Monthly performance report with next steps"] },
+];
+
+// ── Industries ────────────────────────────────────────────────────────────
+const industries = [
+  { icon: <FaLightbulb />,     name: "Startups & Technology",      note: "Launch campaigns, product content and B2B lead generation on LinkedIn." },
+  { icon: <FaHome />,          name: "Real Estate & Construction", note: "Local search, project landing pages and lead forms for site visits." },
+  { icon: <FaHospital />,      name: "Healthcare",                 note: "Local SEO for clinics, appointment journeys and trustworthy content." },
+  { icon: <FaShoppingBag />,   name: "E-Commerce & Retail",        note: "Product SEO, shopping campaigns, remarketing and email flows." },
+  { icon: <FaGraduationCap />, name: "Education",                  note: "Course pages, enquiry campaigns around admission seasons." },
+  { icon: <FaIndustry />,      name: "Manufacturing",              note: "Technical content and search visibility for specialist B2B buyers." },
+];
+
+// ── Tools ─────────────────────────────────────────────────────────────────
+const toolLayers: StackLayer[] = [
+  { name: "Search", note: "Visibility, indexing and local presence", tone: "blue",
+    tools: [ { name: "Google Search Console", icon: <SiGooglesearchconsole /> }, { name: "Google Business Profile", icon: <SiGooglemaps /> }, { name: "Structured data", icon: <FaCode /> } ] },
+  { name: "Analytics", note: "What visitors do and what converts", tone: "green",
+    tools: [ { name: "Google Analytics 4", icon: <SiGoogleanalytics /> }, { name: "Google Tag Manager", icon: <SiGoogletagmanager /> }, { name: "Looker Studio", icon: <SiLooker /> } ] },
+  { name: "Advertising", note: "Paid search and paid social", tone: "orange",
+    tools: [ { name: "Google Ads", icon: <SiGoogleads /> }, { name: "Meta Ads", icon: <SiMeta /> }, { name: "LinkedIn Ads", icon: <FaUsers /> } ] },
+  { name: "Content & social", note: "Publishing and community", tone: "blue",
+    tools: [ { name: "Instagram & Facebook", icon: <SiInstagram /> }, { name: "LinkedIn", icon: <FaComments /> }, { name: "Email & CRM", icon: <FaEnvelope /> } ] },
+  { name: "Website", note: "Where every channel sends people", tone: "green",
+    tools: [ { name: "Next.js", icon: <SiNextdotjs /> }, { name: "React", icon: <SiReact /> }, { name: "Landing pages", icon: <FaFileAlt /> } ] },
+];
+
+// ── Why choose ────────────────────────────────────────────────────────────
+const benefits = [
+  { icon: <FaCogs />,       title: "One plan across channels",   description: "SEO, ads, social, content and email are planned together, so each channel supports the others instead of competing for budget." },
+  { icon: <FaLaptopCode />, title: "Developers on the same team", description: "When the website is what's holding results back, our own developers fix it. No waiting on a separate agency." },
+  { icon: <FaChartLine />,  title: "Reporting that ties to leads", description: "Monthly reports follow the chain from visitors to leads and cost per lead, not just impressions and followers." },
+  { icon: <FaKey />,        title: "You own everything",          description: "Ad accounts, analytics, content and data stay in your name. If we part ways, nothing has to be rebuilt." },
+  { icon: <FaGlobe />,      title: "Local and national",          description: "A Bengaluru team that knows the local market, with experience planning SEO for businesses selling across India and abroad." },
+  { icon: <FaPenNib />,     title: "Honest about timelines",      description: "We tell you when SEO is likely to take months, when ads will be faster, and when neither is the right fix." },
+];
+
+// Hero ticker — the disciplines we offer (decorative, aria-hidden).
+const pipeline = [
+  "Technical SEO", "On-Page SEO", "Local SEO · Bangalore", "Google Ads (PPC)",
+  "Meta & LinkedIn Ads", "Content Marketing", "Email Automation", "Conversion Optimisation", "GA4 Reporting",
+];
+
+// ── FAQ (feeds both the visible section and FAQPage JSON-LD) ──────────────
+const dmFaqs = [
+  {
+    question: "What does a digital marketing agency actually do for my business?",
+    answer: `We plan and run the channels that help customers find and choose you online: SEO, Google Ads, social media, content, email and the landing pages they all point to. Because we also build websites, we can fix site problems that hold marketing back instead of working around them. Contact ${CONTACT_EMAIL} for a free consultation.`,
+  },
+  {
+    question: "What SEO services do you provide?",
+    answer: "Technical SEO (indexing, speed, Core Web Vitals, structured data), on-page SEO (keyword research, content and internal links), local SEO (Google Business Profile and location pages), off-page SEO and digital PR, plus enterprise and eCommerce SEO for large or catalogue-driven sites. Every engagement starts with an audit of how your site performs today.",
+  },
+  {
+    question: "How long does SEO take to show results?",
+    answer: "It depends on your site, your competition and how much needs fixing. Technical fixes can show up in Search Console within weeks, but meaningful growth in rankings and organic leads usually takes several months of steady work. We'll give you an honest view for your situation after the audit, and we never promise specific rankings.",
+  },
+  {
+    question: "Should I invest in SEO or Google Ads?",
+    answer: "Often both, in different proportions over time. Google Ads brings visibility within days but stops when you stop paying. SEO takes longer but builds traffic you don't pay for per click. Many businesses start with more ad spend and shift budget toward SEO and content as organic traffic grows.",
+  },
+  {
+    question: "How much do your digital marketing services cost?",
+    answer: "It depends on scope: a one-off technical audit, a local SEO programme and a multi-channel campaign need very different effort and ad budgets. After a free consultation we propose a scope and fee that fits your goals, with ad spend kept separate and paid directly to the platforms.",
+  },
+  {
+    question: "Do you manage Google Ads, Meta and LinkedIn campaigns?",
+    answer: "Yes. We handle strategy, keywords and audiences, ad creative, landing-page alignment, conversion tracking and ongoing optimisation. Ad accounts stay in your name so you keep full access and history.",
+  },
+  {
+    question: "Do you provide local SEO in Bangalore?",
+    answer: "Yes. We help Bangalore businesses appear in local and Maps results through Google Business Profile optimisation, location-relevant content, consistent citations and review management. We also run national SEO for businesses selling across India.",
+  },
+  {
+    question: "How do you measure and report results?",
+    answer: "We use Google Search Console for search visibility, GA4 for engagement and conversions, and the ad platforms for paid results, combined into a monthly report. It covers rankings, traffic, leads, conversion rate and cost per lead, plus what we're changing next.",
+  },
+  {
+    question: "Can the same team handle SEO and website development?",
+    answer: "Yes, and it usually helps. Many SEO problems are really website problems, such as slow templates, missing server-rendered content or messy redirects. Our development team builds in Next.js and React, so fixes can be made directly instead of passed between vendors.",
+  },
+  {
+    question: "What is MindTrick.io?",
+    answer: "MindTrick.io is the brand we use for our digital marketing work. It's where our performance marketing, SEO and content services are coordinated, run by the same team behind 99 Visual Solutions.",
+  },
+  {
+    question: "Will we own our accounts, content and data?",
+    answer: "Yes. Analytics properties, ad accounts, Google Business Profile, content and reports belong to you. We work with access you grant, so nothing is lost if the engagement ends.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEMA
+// ─────────────────────────────────────────────────────────────────────────────
 const dmBreadcrumbNode = breadcrumbFromItems([
   { name: "Home",                    url: `${BASE_SAFE}/` },
   { name: "Services",                url: `${BASE_SAFE}/services` },
@@ -215,8 +464,8 @@ const dmAreaServed = [
 const dmServiceNode = {
   ...serviceSchema({
     name:        "Digital Marketing & SEO Services in Bangalore, India",
-    description: "Technical, on-page, local, off-page, enterprise and eCommerce SEO, PPC/Google Ads, Meta & LinkedIn Ads, social media marketing, content marketing, email marketing, marketing automation, and conversion rate optimisation — delivered by a Bengaluru-based team for clients across India and internationally.",
-    pathname:    "/services/digital-marketing-seo",
+    description: "Technical, on-page, local, off-page, enterprise and eCommerce SEO, Google Ads and paid social, social media marketing, content marketing, email marketing and automation, and conversion rate optimisation, delivered by a Bengaluru-based team for clients across India and internationally.",
+    pathname:    PAGE_PATH,
     image:       OG_IMAGE,
     areaServed:  dmAreaServed,
   }),
@@ -225,91 +474,9 @@ const dmServiceNode = {
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name:    "Digital Marketing & SEO Services",
-    itemListElement: [
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Technical SEO" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "On-Page SEO" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Local SEO" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Off-Page SEO & Digital PR" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Enterprise SEO" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "eCommerce SEO" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pay-Per-Click Advertising (Google Ads)" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Meta & LinkedIn Ads" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Social Media Marketing" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Content Marketing" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Email Marketing & Marketing Automation" } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Conversion Rate Optimisation & Analytics" } },
-    ],
+    itemListElement: allServices.map((s) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: s.title } })),
   },
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FAQ — shared array feeds BOTH schema and the visible section.
-// Expanded from 4 to 12 questions targeting real search intent. Answers are
-// deliberately honest about scope/cost/timelines rather than promising
-// rankings or a fixed price.
-// ─────────────────────────────────────────────────────────────────────────────
-const dmFaqs = [
-  {
-    question: "What does a digital marketing company in Bangalore do?",
-    answer:
-      `A digital marketing company in Bangalore plans and runs the channels that help a business get found and chosen online — SEO, paid search and social advertising, content, email and marketing automation — usually alongside the website those channels send traffic to. At 99 Visual Solutions, we combine SEO and digital marketing with website development, so search visibility, site performance and the conversion journey are engineered together rather than handled by separate, disconnected teams. Contact us at ${CONTACT_EMAIL} for a free consultation.`,
-  },
-  {
-    question: "What SEO services does 99 Visual Solutions provide?",
-    answer:
-      "We provide technical SEO (crawlability, indexing, Core Web Vitals, structured data), on-page SEO (keyword research, content and internal linking), local SEO (Google Business Profile and location-based search for Bangalore and other Indian cities), off-page SEO and digital PR, plus enterprise and eCommerce SEO for larger, catalogue-driven or multi-location websites. Every engagement starts with a technical and content audit, so recommendations are based on how your specific site currently performs rather than a generic checklist.",
-  },
-  {
-    question: "Do you manage Google Ads and Meta Ads campaigns?",
-    answer:
-      "Yes. We manage end-to-end PPC campaigns on Google Ads as well as paid social campaigns on Meta and LinkedIn — strategy, creative, audience targeting and ongoing optimisation. Paid media is planned alongside SEO and content rather than in isolation, so campaigns and organic growth reinforce each other instead of competing for the same budget and attention.",
-  },
-  {
-    question: "What is MindTrick.io?",
-    answer:
-      "MindTrick.io is our dedicated digital marketing hub, bringing together performance marketing, SEO and content strategy under one platform. It’s how we run and coordinate multi-channel campaigns for clients — helping businesses build online visibility and pursue sustainable growth in competitive digital markets like Bangalore and beyond.",
-  },
-  {
-    question: "How much does SEO cost in Bangalore?",
-    answer:
-      "SEO pricing depends on your website’s current state, how competitive your target keywords are, and the scope of work — a technical audit, a full local SEO programme and an enterprise SEO engagement all involve very different levels of effort. Rather than quote a generic package price here, we start with a free consultation to understand your site and goals, then propose a scope and cost that actually matches what your business needs.",
-  },
-  {
-    question: "How long does SEO take to show results?",
-    answer:
-      "Most SEO programmes start showing measurable movement — improved indexing, early keyword gains or more qualified traffic — within roughly three to six months, with results typically compounding over six to twelve months as technical fixes, content and authority-building take effect. SEO is a long-term, sustainable channel rather than an instant switch, and we’re upfront about that timeline in every proposal rather than promising rankings we can’t guarantee.",
-  },
-  {
-    question: "Do you provide local SEO services in Bangalore?",
-    answer:
-      "Yes. We help Bangalore-based businesses improve visibility in location-based search and Google Maps results through Google Business Profile optimisation, location-relevant on-page SEO, citation consistency and review management — so you’re findable to customers searching in your specific neighbourhood or across the wider city.",
-  },
-  {
-    question: "Do you provide SEO services across India?",
-    answer:
-      "Yes. Alongside Bangalore-focused work, we run national SEO strategies for businesses targeting customers across India, including keyword and content strategy for regional and multilingual audiences and, where it genuinely makes sense for the business, dedicated city or region landing pages — rather than large numbers of thin, near-duplicate pages built purely to target keyword variations.",
-  },
-  {
-    question: "Can SEO and website development be handled by the same team?",
-    answer:
-      "Yes, and we’d generally recommend it. SEO performs better, and holds its rankings for longer, when the site’s technical architecture, page speed, Core Web Vitals and conversion UX are built correctly from the start rather than retrofitted afterward. Because 99 Visual Solutions builds websites in Next.js and React as well as running SEO and digital marketing, both can be aligned under one team instead of you coordinating between separate vendors.",
-  },
-  {
-    question: "How do you measure SEO and digital marketing performance?",
-    answer:
-      "We track organic clicks, impressions and keyword positions through Google Search Console, engagement and conversions through Google Analytics 4, and paid performance directly inside Google Ads, alongside business metrics like leads and cost per lead. Reporting is shared on a regular cadence so you can see what’s working, what isn’t, and what we’re changing next.",
-  },
-  {
-    question: "Do you provide technical SEO audits?",
-    answer:
-      "Yes. A technical SEO audit is usually the first step of any engagement — reviewing crawlability, indexation, site speed, Core Web Vitals, mobile usability, structured data and redirect or canonical issues — so any strategy we propose afterward is based on how your site actually behaves today, not assumptions.",
-  },
-  {
-    question: "Can you help with Google Business Profile optimisation?",
-    answer:
-      "Yes. Google Business Profile is usually one of the highest-impact, fastest-to-implement parts of a local SEO programme — accurate business information, categories, photos, posts and review management all influence whether you show up in local search and Maps results, particularly in a competitive market like Bangalore.",
-  },
-];
 
 const dmFaqNode = {
   ...faqSchema(dmFaqs),
@@ -322,7 +489,7 @@ const dmPageNode = {
   "@id":         `${PAGE_CANONICAL}#webpage`,
   url:           PAGE_CANONICAL,
   name:          "Digital Marketing & SEO Company in Bangalore, India | 99 Visual Solutions",
-  description:   "Technical, on-page, local, off-page, enterprise and eCommerce SEO, PPC, Meta & LinkedIn Ads, content and email marketing — planned as one system by a Bengaluru-based team, for clients across India and worldwide.",
+  description:   META_DESCRIPTION,
   inLanguage:    "en",
   datePublished: DATE_PUBLISHED,
   dateModified:  DATE_MODIFIED,
@@ -334,7 +501,7 @@ const dmPageNode = {
     url:       OG_IMAGE,
     width:     1717,
     height:    916,
-    caption:   "Digital Marketing & SEO Company in Bangalore, India — 99 Visual Solutions",
+    caption:   "Digital marketing and SEO services by 99 Visual Solutions, Bengaluru",
   },
   speakable:       { "@type": "SpeakableSpecification", cssSelector: [".dm-hero__h1", ".dm-hero__sub"] },
   breadcrumb:      { "@id": `${PAGE_CANONICAL}#breadcrumb` },
@@ -351,126 +518,8 @@ const dmGraph = buildGraph(
   dmFaqNode,
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE DATA
-// ─────────────────────────────────────────────────────────────────────────────
-const benefits = [
-  { icon: <FaSearch />,    title: "Search Engine Visibility", description: "We optimise websites with proven SEO strategies to boost rankings, drive qualified organic traffic, and increase conversions across all major search engines." },
-  { icon: <FaBullhorn />,  title: "Brand Awareness",          description: "Our campaigns build strong online visibility, ensuring your brand connects with the right audience at the right time across digital channels." },
-  { icon: <FaChartLine />, title: "Data-Driven Growth",       description: "We analyse performance metrics to continuously refine strategies, aiming to improve ROI and deliver measurable, reportable outcomes for every campaign." },
-  { icon: <FaCogs />,      title: "One Connected System",     description: "SEO, paid media, content and the website itself are planned together, so every channel reinforces the others instead of competing for the same budget." },
-  { icon: <FaEnvelope />,  title: "Engaging Campaigns",       description: "We craft content, email, and ad campaigns that aim to inspire action and build lasting customer relationships through relevant, value-driven messaging." },
-  { icon: <FaChartPie />,  title: "Transparent Reporting",    description: "Regular reporting against agreed metrics — not a one-off report at the end of a contract — so you always know what’s working and what’s changing next." },
-];
-
-// ── SEO Services (Section 3) ──────────────────────────────────────────────
-const seoServices = [
-  { id:"technical-seo", icon:<FaTools/>, title:"Technical SEO", description:"A strong SEO strategy starts with a solid technical foundation. Technical SEO focuses on your website’s structure, performance and crawlability, so search engines can efficiently access, understand and rank your content.", highlight:"From fixing indexing issues to improving site speed and implementing structured data, we work through every technical factor that affects visibility and Core Web Vitals.", bullets:["Crawlability, indexation, XML sitemap & robots directives","Core Web Vitals, page speed & mobile/JavaScript SEO","Structured data, canonicals & redirect clean-up"] },
-  { id:"onpage", icon:<FaPenNib/>, title:"On-Page SEO", description:"On-page SEO fine-tunes every element of a page — content, keywords, meta tags and internal linking — to align with both search intent and how search engines read a page.", highlight:"The goal is discoverability and a better user experience together, so pages rank higher, hold visitors’ attention, and convert more of the traffic they already earn.", bullets:["Keyword research, search intent mapping & content structuring","Title tags, meta descriptions & heading architecture","Internal linking, URL structure & image SEO"] },
-  { id:"local-seo", icon:<FaMapMarkerAlt/>, title:"Local SEO", description:"Local SEO helps a business show up in location-based search and Google Maps results — connecting with nearby customers at the exact moment they’re searching.", highlight:"For Bangalore and other Indian cities, that means an accurate Google Business Profile, location-relevant on-page content and consistent citations working together, not just a city name added to a title tag.", bullets:["Google Business Profile setup & ongoing optimisation","Location-based keyword targeting & local landing pages","Citation consistency & review management"] },
-  { id:"offpage", icon:<FaLink/>, title:"Off-Page SEO & Digital PR", description:"Off-page SEO builds a website’s authority and credibility through relevant, high-quality backlinks and genuine brand visibility across the web.", highlight:"We focus on ethical, white-hat outreach and digital PR rather than link schemes — the kind of authority-building that holds up over time instead of risking a penalty.", bullets:["Digital PR & relevant outreach campaigns","Guest content, citations & brand mentions","Authority building measured through referral traffic & rankings"] },
-  { id:"enterprise-seo", icon:<FaSitemap/>, title:"Enterprise SEO", description:"Large websites — hundreds or thousands of pages, multiple templates, sometimes multiple regions — need SEO governance, not just individual page fixes.", highlight:"We work with the templates, internal linking rules and content workflows that scale across a large site, plus ongoing monitoring so issues are caught before they compound.", bullets:["Technical governance across large, multi-template sites","Scalable content & internal linking frameworks","International/multi-location SEO monitoring"] },
-  { id:"ecommerce-seo", icon:<FaShoppingCart/>, title:"eCommerce SEO", description:"eCommerce SEO covers the specific challenges of catalogue-driven sites — product and category pages, faceted navigation, and structured data at scale.", highlight:"The aim is visibility that actually converts: product pages that rank and are set up to sell, not just traffic for its own sake.", bullets:["Product & category page optimisation","Faceted navigation & duplicate-content handling","Product structured data for rich results"] },
-];
-
-// ── Digital Marketing Services (Section 4) ────────────────────────────────
-const dmServices = [
-  { id:"ppc", icon:<FaAd/>, title:"Google Ads / PPC", description:"Pay-per-click advertising puts your business in front of the right audience immediately, across Google’s search and display networks, while SEO builds up in the background.", highlight:"Keyword targeting, ad creative and continuous optimisation are managed toward cost per acquisition — not just impressions or clicks.", bullets:["Keyword research, bid management & campaign strategy","Ad creative, landing-page alignment & A/B testing","Continuous monitoring & conversion tracking"] },
-  { id:"meta-linkedin-ads", icon:<FaHashtag/>, title:"Meta & LinkedIn Ads", description:"Paid social campaigns on Facebook, Instagram and LinkedIn reach audiences by interest, behaviour and — for LinkedIn — professional role, rather than only by search query.", highlight:"Creative, audience targeting and budget are adjusted continuously against real engagement and conversion data, not left to run unattended.", bullets:["Facebook & Instagram campaign management","LinkedIn Ads for B2B targeting & lead generation","Creative testing, audience refinement & reporting"] },
-  { id:"social-media", icon:<FaShareAlt/>, title:"Social Media Marketing", description:"Organic and paid social work together to build brand presence and engagement across the platforms your audience actually spends time on.", highlight:"Content is planned around what each platform’s audience responds to, and tied back to the same content and campaign calendar as SEO and email.", bullets:["Content calendars aligned with campaigns & SEO topics","Platform-specific creative, banners & short-form video","Engagement tracking & community management"] },
-  { id:"content-marketing", icon:<FaFeatherAlt/>, title:"Content Marketing", description:"Content marketing turns a brand into a genuinely useful resource — content that answers real questions your audience is searching for, at every stage of their decision.", highlight:"Content strategy is built from actual search intent and keyword research, so it supports SEO rather than existing separately from it.", bullets:["Content strategy, topic clusters & search-intent mapping","Blog, article & landing-page content creation","Distribution, promotion & performance review"] },
-  { id:"email-automation", icon:<FaEnvelope/>, title:"Email Marketing & Automation", description:"Email and marketing automation nurture leads after the first click — segmented, personalised messaging that moves people from interest to decision without manual follow-up for every contact.", highlight:"Workflows, CRM integration and audience segmentation are set up once and then refined against real open, click and conversion data.", bullets:["Campaign design, segmentation & personalisation","Automated nurture workflows & CRM integration","Deliverability, testing & performance tracking"] },
-  { id:"cro-analytics", icon:<FaChartPie/>, title:"Conversion Rate Optimisation & Analytics", description:"Traffic only matters if it converts. CRO looks at landing pages, forms and the overall journey to find where visitors drop off — then tests changes against real data.", highlight:"Analytics and reporting (Google Analytics 4, Google Search Console, Google Ads) tie every channel back to leads and cost per lead, so decisions are based on outcomes, not opinions.", bullets:["Landing-page & conversion-path optimisation","A/B testing & lead-generation funnel improvements","GA4/GSC reporting tied to leads & cost per lead"] },
-];
-
-const clusters = [
-  {
-    id: "seo-services",
-    eyebrow: "SEO Services",
-    heading: <>Rank on a <em>technical foundation</em>, not luck</>,
-    intro: "Technical, on-page, local, off-page, enterprise and eCommerce SEO — the structural layer every other channel depends on.",
-    list: seoServices,
-    cols: 3,
-    visual: <SeoGrowthPath />,
-  },
-  {
-    id: "digital-marketing-services",
-    eyebrow: "Digital Marketing Services",
-    heading: <>Channels that <em>work together</em>, not in isolation</>,
-    intro: "Paid, social, content, email and automation planned as one connected system rather than six separate vendors with six separate reports.",
-    list: dmServices,
-    cols: 3,
-    visual: <ChannelPlaybooks />,
-  },
-];
-
-// ── Hero ticker — plain list of disciplines we offer. No invented
-//    keyword-ranking numbers; this is decorative and aria-hidden. ─────────
-const pipeline = [
-  "Technical SEO",
-  "On-Page & Content SEO",
-  "Local SEO — Bangalore",
-  "Off-Page SEO & Digital PR",
-  "Google Ads (PPC)",
-  "Meta & LinkedIn Ads",
-  "Core Web Vitals",
-  "GA4 & Search Console Reporting",
-];
-
-// ── Why 99 Visual — SEO + website dev + digital marketing pillars ─────────
-const pillars = [
-  { icon: <FaSearch/>,      title: "SEO Expertise",  description: "Technical, on-page, local, off-page, enterprise and eCommerce SEO — planned around real search intent and measured against actual rankings and traffic." },
-  { icon: <FaLaptopCode/>,  title: "Website Development", description: <>Sites built in Next.js and React with Core Web Vitals, structured data and accessibility considered from day one — see how we build <Link href="/services/website-development">SEO-ready websites</Link>, with our <Link href="/services/it-consulting">IT consulting</Link> team supporting hosting and infrastructure decisions, and <Link href="/services/automation-testing">QA and automation testing</Link> before anything ships.</> },
-  { icon: <FaBullhorn/>,    title: "Full-Funnel Digital Marketing", description: "PPC, social, content and email working as one connected system rather than isolated channels competing for the same budget and attention." },
-  { icon: <FaChartLine/>,   title: "Data-Driven Decisions", description: "Every recommendation is checked against Google Search Console, Google Analytics 4 and campaign data — not assumptions about what should work." },
-];
-
-// ── SEO Process (Section 6) ───────────────────────────────────────────────
-const processSteps: CycleStep[] = [
-  { step: "01", title: "Discover",           icon: <FaCompass />, text: "We start with your business goals, target customers and current digital presence — not just a keyword list — so the strategy is built around what actually grows the business." },
-  { step: "02", title: "Audit",              icon: <FaClipboardCheck />, text: "A technical, on-page and off-page audit of your existing website and search presence, using Google Search Console and Google Analytics 4, to find what’s holding rankings and traffic back today." },
-  { step: "03", title: "Strategy",           icon: <FaRoute />, text: "Keyword research, search-intent mapping and a channel plan — deciding where SEO, PPC, content and social should each carry weight for your market and budget, not a one-size-fits-all package." },
-  { step: "04", title: "Build",              icon: <FaHammer />, text: "Technical fixes, on-page optimisation, content production and campaign setup get built — often working alongside our website development team when the site itself needs structural changes." },
-  { step: "05", title: "Optimise",           icon: <FaSlidersH />, text: "Campaigns and content go live and get refined against real performance data — bid adjustments, content updates, outreach and conversion-path improvements based on what’s actually happening." },
-  { step: "06", title: "Measure & Improve",  icon: <FaChartLine />, text: "Regular reporting against rankings, organic traffic, leads and cost per lead feeds back into the strategy, so the plan evolves as the market, algorithms and your business change." },
-];
-
-// ── Industries — only sectors already supported elsewhere on this site
-//    (About/Home pages) — nothing new claimed here. ────────────────────────
-const industries = [
-  { icon: <FaLightbulb/>,     name: "Startups & Technology" },
-  { icon: <FaHome/>,          name: "Real Estate & Construction" },
-  { icon: <FaHospital/>,      name: "Healthcare" },
-  { icon: <FaShoppingBag/>,   name: "E-Commerce & Retail" },
-  { icon: <FaGraduationCap/>, name: "Education" },
-  { icon: <FaIndustry/>,      name: "Manufacturing" },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FAQ SECTION — visible content stays in exact parity with dmFaqNode schema.
-// ─────────────────────────────────────────────────────────────────────────────
-function FaqSection() {
-  return (
-    <section className="dm-faq" aria-labelledby="dm-faq-heading" id="dm-faq">
-      <div className="dm-faq__inner">
-        <div className="dm-faq__head">
-          <span className="dm-faq__label">FAQ</span>
-          <h2 className="dm-faq__h2" id="dm-faq-heading">
-            Common <em>questions</em>
-          </h2>
-        </div>
-        <div className="dm-faq__list">
-          {dmFaqs.map((f) => (
-            <div className="dm-faq-item" key={f.question}>
-              <h3 className="dm-faq-item__q">{f.question}</h3>
-              <p className="dm-faq-item__a">{f.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+// SEO case study (lib/case-studies.ts) — only what that record documents.
+const seoCase = caseStudies.find((c) => c.slug === "technical-seo-99visual");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE COMPONENT
@@ -483,7 +532,6 @@ export default function DigitalMarketing() {
   return (
     <>
       <style>{`
-
         .dm-page{
           --dm-ink:#12141A; --dm-muted:#5B6172; --dm-paper:#F5F6F8; --dm-surface:#FFFFFF;
           --dm-line:#E4E6EC; --dm-blue:#2E5CFF; --dm-green:#37D67A;
@@ -495,7 +543,7 @@ export default function DigitalMarketing() {
            Save your banner image to:
            /public/images/services/digital-marketing-seo-hero-banner.jpg ── */
         .dm-hero{
-          position:relative;height:100vh;width:100%;
+          position:relative;min-height:100vh;width:100%;
           display:flex;flex-direction:column;
           background:
             linear-gradient(90deg, rgba(8,8,8,.94) 0%, rgba(8,8,8,.78) 38%, rgba(8,8,8,.42) 64%, rgba(8,8,8,.18) 100%),
@@ -504,8 +552,8 @@ export default function DigitalMarketing() {
           background-attachment:scroll;background-color:#080808;background-size:cover;
           overflow:hidden;
         }
-        @supports (height: 100svh) { .dm-hero { height: 100svh; } }
-        @supports (height: 100dvh) { .dm-hero { height: 100dvh; } }
+        @supports (height: 100svh) { .dm-hero { min-height: 100svh; } }
+        @supports (height: 100dvh) { .dm-hero { min-height: 100dvh; } }
         @media(max-width:960px){
           .dm-hero{
             background:
@@ -517,7 +565,7 @@ export default function DigitalMarketing() {
 
         .dm-hero__inner{
           position:relative;z-index:10;flex:1 1 auto;min-height:0;
-          display:flex;align-items:center;overflow:hidden;
+          display:flex;align-items:center;overflow:visible;
           max-width:1280px;margin:0 auto;width:100%;
           padding:9rem 1.5rem 1.5rem;
           padding-top:max(9rem, calc(env(safe-area-inset-top) + 7rem));
@@ -819,6 +867,127 @@ export default function DigitalMarketing() {
         .dm-cta__btn--ghost{color:var(--dm-ink);background:var(--dm-surface);border:1px solid var(--dm-line);}
         .dm-cta__btn--ghost:hover{background:var(--dm-paper);color:var(--dm-ink);}
 
+
+        /* ══ FULL UPGRADE (Nov 2026) ═══════════════════════════════════ */
+        .dm-label{font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:500;color:var(--dm-blue);letter-spacing:.04em;display:block;margin-bottom:.8rem;}
+        .dm-h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;line-height:1.22;color:var(--dm-ink);margin:0 0 .8rem;}
+        .dm-h2 em{font-style:normal;color:var(--dm-blue);}
+        .dm-sub{font-family:'Inter',sans-serif;font-size:.94rem;font-weight:300;line-height:1.8;color:var(--dm-muted);margin:0;}
+        .dm-sub a{color:var(--dm-blue);text-decoration:underline;text-decoration-color:rgba(46,92,255,.35);text-underline-offset:2px;}
+        .dm-head{max-width:700px;margin-bottom:2.5rem;}
+        .dm-benefit-card__title{margin-top:0;}
+        .dm-head--center{margin-left:auto;margin-right:auto;text-align:center;}
+
+        /* Challenges */
+        .dm-pain{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-pain__inner{max-width:1120px;margin:0 auto;}
+        .dm-pain__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+        @media(max-width:960px){.dm-pain__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:560px){.dm-pain__grid{grid-template-columns:1fr;}}
+        .dm-pain__card{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:16px;padding:1.6rem 1.5rem;}
+        .dm-pain__icon{color:var(--dm-blue);font-size:1.15rem;margin-bottom:.9rem;}
+        .dm-pain__title{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--dm-ink);margin:0 0 .45rem;}
+        .dm-pain__text{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.7;color:var(--dm-muted);margin:0;}
+        .dm-pain__cta{text-align:center;margin-top:2.5rem;}
+
+        /* Intro extras */
+        .dm-intro__matrix{margin-top:2.5rem;}
+        .dm-webdev__list li{display:block;}
+        .dm-webdev__list li b{margin-right:.3rem;}
+
+        /* Cluster visuals */
+        .dm-cluster__visual{margin:0 0 2.5rem;}
+        .dm-cluster__visual + .dm-cluster__visual{margin-top:-1rem;}
+
+        /* Keyword intent */
+        .dm-intentsec{background:var(--dm-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-intentsec__inner{max-width:1180px;margin:0 auto;}
+        .dm-intentsec__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;}
+        @media(max-width:860px){.dm-intentsec__grid{grid-template-columns:1fr;}}
+        .dm-intentsec__item{border-top:2px solid var(--dm-blue);padding-top:1rem;}
+        .dm-intentsec__item h3{font-family:'Space Grotesk',sans-serif;font-size:.98rem;font-weight:600;color:var(--dm-ink);margin:0 0 .4rem;}
+        .dm-intentsec__item p{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.7;color:var(--dm-muted);margin:0;}
+
+        /* Funnel section */
+        .dm-funnel{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-funnel__inner{max-width:1100px;margin:0 auto;}
+
+        /* Measurement additions */
+        .dm-measure__chain{margin-bottom:2rem;}
+        .dm-measure__dash{margin-bottom:2rem;}
+
+        /* Tools */
+        .dm-tools{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-tools__inner{max-width:1000px;margin:0 auto;}
+
+        /* Deliverables */
+        .dm-deliv{background:var(--dm-surface);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-deliv__inner{max-width:1120px;margin:0 auto;}
+        .dm-deliv__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+        @media(max-width:900px){.dm-deliv__grid{grid-template-columns:1fr;}}
+        .dm-deliv__col{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:16px;padding:1.6rem 1.6rem 1.7rem;}
+        .dm-deliv__col h3{font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--dm-blue);margin:0 0 1rem;}
+        .dm-deliv__col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem;}
+        .dm-deliv__col li{font-family:'Inter',sans-serif;font-size:.87rem;line-height:1.55;color:var(--dm-ink);display:flex;gap:.6rem;}
+        .dm-deliv__col li::before{content:'✓';color:#1A9E53;font-weight:700;flex-shrink:0;}
+        .dm-deliv__note{font-family:'Inter',sans-serif;font-size:.84rem;font-weight:300;line-height:1.7;color:var(--dm-muted);margin:1.5rem 0 0;text-align:center;}
+
+        /* Industries with notes */
+        .dm-industries__grid{grid-template-columns:repeat(3,1fr);}
+        @media(max-width:900px){.dm-industries__grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:520px){.dm-industries__grid{grid-template-columns:1fr;}}
+        .dm-industries__card{text-align:left;display:grid;grid-template-columns:auto 1fr;column-gap:.9rem;align-items:start;padding:1.3rem 1.3rem;}
+        .dm-industries__icon{grid-row:1 / span 2;margin:0;width:38px;height:38px;border-radius:10px;background:rgba(46,92,255,.08);display:grid;place-items:center;font-size:.95rem;}
+        .dm-industries__name{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;margin:0 0 .25rem;}
+        .dm-industries__desc{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:300;line-height:1.6;color:var(--dm-muted);margin:0;}
+
+        /* India list inside local section */
+        .dm-local__india{max-width:1180px;margin:3rem auto 0;padding-top:2.5rem;border-top:1px solid var(--dm-line);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.5rem;}
+        @media(max-width:860px){.dm-local__india{grid-template-columns:1fr;gap:1rem;}}
+
+        /* Case study */
+        .dm-case{background:var(--dm-paper);padding:5.5rem 1.5rem;border-bottom:1px solid var(--dm-line);}
+        .dm-case__inner{max-width:1120px;margin:0 auto;}
+        .dm-case__card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2.5rem;background:var(--dm-surface);border:1px solid var(--dm-line);border-radius:22px;padding:2rem;}
+        @media(max-width:900px){.dm-case__card{grid-template-columns:1fr;gap:1.6rem;padding:1.4rem;}}
+        .dm-case__kind{font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--dm-blue);}
+        .dm-case__title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.15rem,2vw,1.4rem);font-weight:700;line-height:1.3;color:var(--dm-ink);margin:.5rem 0 .8rem;}
+        .dm-case__title a{color:inherit;text-decoration:none;}
+        .dm-case__title a:hover{color:var(--dm-blue);}
+        .dm-case__p{font-family:'Inter',sans-serif;font-size:.88rem;font-weight:300;line-height:1.75;color:var(--dm-muted);margin:0 0 1rem;}
+        .dm-case__h{font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--dm-ink);margin:1.1rem 0 .55rem;}
+        .dm-case__steps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;}
+        .dm-case__steps li{display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:500;color:var(--dm-ink);}
+        .dm-case__steps li span{background:rgba(46,92,255,.07);border:1px solid rgba(46,92,255,.2);border-radius:100px;padding:.28rem .75rem;}
+        .dm-case__steps li:not(:last-child)::after{content:'→';color:var(--dm-blue);}
+        .dm-case__ws{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;}
+        @media(max-width:520px){.dm-case__ws{grid-template-columns:1fr;}}
+        .dm-case__ws li{background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:12px;padding:.7rem .85rem;}
+        .dm-case__ws b{display:block;font-family:'Space Grotesk',sans-serif;font-size:.84rem;font-weight:600;color:var(--dm-ink);margin-bottom:.15rem;}
+        .dm-case__ws span{font-family:'Inter',sans-serif;font-size:.76rem;font-weight:300;line-height:1.5;color:var(--dm-muted);}
+        .dm-case__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem;}
+        .dm-case__list li{font-family:'Inter',sans-serif;font-size:.84rem;line-height:1.6;color:var(--dm-ink);display:flex;gap:.55rem;}
+        .dm-case__list li::before{content:'✓';color:#1A9E53;font-weight:700;flex-shrink:0;}
+        .dm-case__honest{font-family:'Inter',sans-serif;font-size:.78rem;line-height:1.6;color:var(--dm-muted);border-left:2px solid var(--dm-line);padding-left:.8rem;margin:1rem 0 0;}
+        .dm-case__links{display:flex;flex-wrap:wrap;gap:1.25rem;margin-top:1.3rem;font-family:'Inter',sans-serif;font-size:.88rem;font-weight:600;}
+        .dm-case__links a{color:var(--dm-blue);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;}
+        .dm-case__links a:hover{text-decoration:underline;}
+        .dm-case__more{font-family:'Inter',sans-serif;font-size:.85rem;font-weight:300;line-height:1.7;color:var(--dm-muted);margin:1.5rem 0 0;text-align:center;}
+        .dm-case__more a{color:var(--dm-blue);}
+
+        /* MindTrick (no stats panel any more) */
+        .dm-spotlight__inner--solo{grid-template-columns:1fr;max-width:820px;}
+
+        /* CTA steps */
+        .dm-cta__inner{max-width:880px;}
+        .dm-cta__sub{max-width:600px;margin-left:auto;margin-right:auto;}
+        .dm-cta__steps{list-style:none;margin:0 0 2.4rem;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;counter-reset:dmstep;text-align:left;}
+        @media(max-width:700px){.dm-cta__steps{grid-template-columns:1fr;}}
+        .dm-cta__steps li{counter-increment:dmstep;background:var(--dm-paper);border:1px solid var(--dm-line);border-radius:14px;padding:1.1rem 1.2rem;display:grid;grid-template-columns:auto 1fr;column-gap:.8rem;}
+        .dm-cta__steps li::before{content:counter(dmstep);grid-row:1 / span 2;width:30px;height:30px;border-radius:50%;background:var(--dm-blue);color:#fff;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;}
+        .dm-cta__steps b{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--dm-ink);}
+        .dm-cta__steps span{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:300;line-height:1.55;color:var(--dm-muted);}
+
         @media(prefers-reduced-motion:reduce){
           .dm-page *,.dm-page *::before,.dm-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
         }
@@ -833,7 +1002,7 @@ export default function DigitalMarketing() {
       />
 
       <div className="dm-page">
-        {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+        {/* ══ 1. HERO ═══════════════════════════════════════════════════════ */}
         <section className="dm-hero" aria-labelledby="dm-hero-heading">
           <div aria-hidden="true">
             <div className="dm-hero__grain" />
@@ -845,18 +1014,12 @@ export default function DigitalMarketing() {
 
           <nav className="dm-breadcrumb" aria-label="Breadcrumb">
             <ol>
-              <li>
-                <Link href="/"><span>Home</span></Link>
-              </li>
+              <li><Link href="/"><span>Home</span></Link></li>
+              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
+              <li><Link href="/services"><span>Services</span></Link></li>
               <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
               <li>
-                <Link href="/services"><span>Services</span></Link>
-              </li>
-              <li className="dm-breadcrumb__sep" aria-hidden="true">/</li>
-              <li>
-                <Link href="/services/digital-marketing-seo" aria-current="page">
-                  <span>Digital Marketing &amp; SEO</span>
-                </Link>
+                <Link href={PAGE_PATH} aria-current="page"><span>Digital Marketing &amp; SEO</span></Link>
               </li>
             </ol>
           </nav>
@@ -872,10 +1035,9 @@ export default function DigitalMarketing() {
               </h1>
               <div className="dm-hero__rule" aria-hidden="true" />
               <p className="dm-hero__sub">
-                99 Visual Solutions is a Bengaluru-based digital marketing and SEO
-                company that combines search strategy, paid media, content and
-                conversion-focused web development — turning digital channels into
-                measurable growth for businesses across Bangalore, India and beyond.
+                We help businesses get found on Google, spend ad budgets where they pay back, and
+                turn more visitors into enquiries. SEO, paid ads, social, content and email are
+                planned as one programme by a team that also builds websites.
               </p>
 
               <div className="dm-hero__trust" aria-label="Company facts">
@@ -889,7 +1051,7 @@ export default function DigitalMarketing() {
                   className="dm-hero__cta"
                   ariaLabel="Get a free SEO consultation from 99 Visual Solutions"
                   postTitle="Digital Marketing & SEO — Hero (Primary)"
-                  postUrl="/services/digital-marketing-seo"
+                  postUrl={PAGE_PATH}
                 >
                   Get a Free SEO Consultation
                 </ConsultationCTA>
@@ -897,7 +1059,7 @@ export default function DigitalMarketing() {
                   className="dm-hero__cta dm-hero__cta--ghost"
                   ariaLabel="Request a digital marketing audit from 99 Visual Solutions"
                   postTitle="Digital Marketing & SEO — Hero (Secondary)"
-                  postUrl="/services/digital-marketing-seo"
+                  postUrl={PAGE_PATH}
                 >
                   Request a Digital Marketing Audit
                 </ConsultationCTA>
@@ -909,98 +1071,94 @@ export default function DigitalMarketing() {
             <div className="dm-ticker">
               <div className="dm-ticker__track">
                 {[...pipeline, ...pipeline].map((t, i) => (
-                  <span className="dm-ticker__item" key={i}>
-                    <b>{t}</b>
-                  </span>
+                  <span className="dm-ticker__item" key={i}><b>{t}</b></span>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* INTRO / DEFINITION (GEO-ready clear answer) */}
-        <section className="dm-intro" aria-labelledby="dm-intro-heading">
-          <div className="dm-intro__inner">
-            <div className="dm-intro__grid">
-            <div className="dm-intro__copy">
-            <span className="dm-intro__label">What we do</span>
-            <h2 className="dm-intro__h2" id="dm-intro-heading">
-              Full-funnel marketing, <em>run like a product</em>
-            </h2>
-            <p className="dm-intro__p">
-              99 Visual Solutions is a digital marketing and SEO partner
-              headquartered in Bengaluru that plans, builds, and manages search,
-              paid, social, content, and email programs under a single strategy —
-              so every channel compounds the others instead of competing with
-              them for budget and attention.
-            </p>
-            <p className="dm-intro__p">
-              Engagements range from a one-off technical SEO audit to ongoing
-              management of search and paid campaigns, with{" "}
-              <strong>one monthly report</strong> covering every channel we run.
-            </p>
-            </div>
-            <EcosystemDiagram className="dm-intro__visual" />
-            </div>
-            <div className="dm-stats">
-              <div className="dm-stat">
-                <div className="dm-stat__num">5</div>
-                <div className="dm-stat__label">Channels under one plan: SEO, paid search, social, content &amp; email</div>
-              </div>
-              <div className="dm-stat">
-                <div className="dm-stat__num">1</div>
-                <div className="dm-stat__label">Monthly report covering every channel we manage</div>
-              </div>
-              <div className="dm-stat">
-                <div className="dm-stat__num">GSC + GA4</div>
-                <div className="dm-stat__label">The data every recommendation is checked against</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* WHY 99 VISUAL */}
-        <section className="dm-why" aria-labelledby="dm-why-heading">
-          <div className="dm-why__inner">
-            <div className="dm-why__head">
-              <span className="dm-why__label">Why 99 Visual</span>
-              <h2 className="dm-why__h2" id="dm-why-heading">
-                Search, paid and content, planned as <em>one programme</em>
+        {/* ══ 2. CHALLENGES ═════════════════════════════════════════════════ */}
+        <section className="dm-pain" aria-labelledby="dm-pain-heading">
+          <div className="dm-pain__inner">
+            <div className="dm-head dm-head--center">
+              <span className="dm-label">Sound Familiar?</span>
+              <h2 className="dm-h2" id="dm-pain-heading">
+                Most marketing problems aren&rsquo;t about <em>effort</em>. They&rsquo;re about direction.
               </h2>
+              <p className="dm-sub">These are the situations business owners describe most often in a first call.</p>
             </div>
-            <p className="dm-why__p">
-              Many agencies treat SEO as something bolted onto whatever website
-              already exists. We think that’s backwards: SEO performs better, and
-              holds its rankings for longer, when the underlying site architecture,
-              performance, content and conversion journey are engineered correctly
-              from the start. Because 99 Visual Solutions builds websites as well as
-              running SEO and digital marketing, we can align the technical
-              foundation and the search strategy under one roof — instead of you
-              coordinating between separate vendors who don’t talk to each other.
-            </p>
-            <div className="dm-why__grid">
-              {pillars.map((p) => (
-                <div className="dm-why__card" key={p.title}>
-                  <div className="dm-why__icon" aria-hidden="true">{p.icon}</div>
-                  <div className="dm-why__title">{p.title}</div>
-                  <p className="dm-why__desc">{p.description}</p>
+            <div className="dm-pain__grid">
+              {challenges.map((c) => (
+                <div className="dm-pain__card" key={c.title}>
+                  <div className="dm-pain__icon" aria-hidden="true">{c.icon}</div>
+                  <h3 className="dm-pain__title">{c.title}</h3>
+                  <p className="dm-pain__text">{c.text}</p>
                 </div>
               ))}
             </div>
+            <div className="dm-pain__cta">
+              <ConsultationCTA
+                className="dm-cta__btn dm-cta__btn--ghost"
+                ariaLabel="Request a digital marketing audit from 99 Visual Solutions"
+                postTitle="Digital Marketing & SEO — Challenges"
+                postUrl={PAGE_PATH}
+              >
+                Ask for an honest audit
+              </ConsultationCTA>
+            </div>
           </div>
         </section>
 
-        {/* SERVICE CLUSTERS — SEO Services, then Digital Marketing Services */}
+        {/* ══ 3. PHILOSOPHY + ECOSYSTEM (A) ═════════════════════════════════ */}
+        <section className="dm-intro" aria-labelledby="dm-intro-heading">
+          <div className="dm-intro__inner">
+            <div className="dm-intro__grid">
+              <div className="dm-intro__copy">
+                <span className="dm-intro__label">Our Approach</span>
+                <h2 className="dm-intro__h2" id="dm-intro-heading">
+                  Channels that <em>work together</em>, measured against real leads
+                </h2>
+                <p className="dm-intro__p">
+                  Most businesses don&apos;t need more marketing activity. They need the activity they
+                  already pay for to point in one direction. A blog post should target a search people
+                  make, get shared on social, feed an email, and link to a page that makes it easy to
+                  enquire.
+                </p>
+                <p className="dm-intro__p">
+                  That&apos;s how we run digital marketing at 99 Visual Solutions: one plan across SEO,
+                  paid ads, social, content and email, checked every month against Search Console, GA4
+                  and the leads that actually come in. Engagements range from a one-off technical SEO
+                  audit to ongoing management of every channel, with <strong>one monthly report</strong>{" "}
+                  covering all of it.
+                </p>
+              </div>
+              <EcosystemDiagram
+                className="dm-intro__visual"
+                caption="Six channels, one plan. Each one hands something useful to the next."
+              />
+            </div>
+            <ChannelStageMatrix
+              className="dm-intro__matrix"
+              stages={journeyStages}
+              rows={channelRows}
+              caption="No channel does everything. Social is strong at awareness, SEO and ads at bringing people to the site, email and conversion work at turning interest into enquiries. Analytics measures every stage."
+            />
+          </div>
+        </section>
+
+        {/* ══ 4–10. SERVICE GROUPS: SEO (B) · Paid (D) · Social & content
+            (E, F) · Email & CRO ═══════════════════════════════════════════ */}
         <div id="services">
           {clusters.map((cluster) => (
-            <section key={cluster.id} className="dm-cluster" aria-labelledby={`dm-cluster-h-${cluster.id}`}>
+            <section key={cluster.id} id={cluster.id} className="dm-cluster" aria-labelledby={`dm-cluster-h-${cluster.id}`}>
               <div className="dm-cluster__inner">
                 <div className="dm-cluster__head">
                   <span className="dm-cluster__eyebrow">{cluster.eyebrow}</span>
                   <h2 className="dm-cluster__h2" id={`dm-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
                   <p className="dm-cluster__intro">{cluster.intro}</p>
                 </div>
-                {cluster.visual}
+                {cluster.visuals.map((v, i) => <div className="dm-cluster__visual" key={i}>{v}</div>)}
                 <div className={`dm-cluster__grid dm-cluster__grid--${cluster.cols}`}>
                   {cluster.list.map((svc) => (
                     <article className="dm-card" id={svc.id} key={svc.id} aria-labelledby={`dm-card-h-${svc.id}`}>
@@ -1017,68 +1175,55 @@ export default function DigitalMarketing() {
               </div>
             </section>
           ))}
-
-          {/* MINDTRICK SPOTLIGHT -- structurally distinct, so it gets its own layout */}
-          <section className="dm-spotlight" id="mindtrick" aria-labelledby="dm-spotlight-heading">
-            <div className="dm-spotlight__inner">
-              <div>
-                <span className="dm-spotlight__eyebrow">Our Platform</span>
-                <h2 className="dm-spotlight__h2" id="dm-spotlight-heading">
-                  MindTrick.io – Our Dedicated Digital Marketing Hub
-                </h2>
-                <p className="dm-spotlight__p">
-                  At MindTrick.io, we bring together innovation, creativity, and
-                  data-driven strategies to power digital growth. As our dedicated
-                  digital marketing hub, MindTrick.io delivers result-oriented
-                  solutions that help businesses build strong online visibility and
-                  pursue sustainable growth.
-                </p>
-                <p className="dm-spotlight__highlight">
-                  From performance marketing to brand storytelling, we combine
-                  practical tools with expert judgement to run campaigns aimed at
-                  making a measurable impact on your business’s digital presence.
-                </p>
-                <ul className="dm-spotlight__bullets">
-                  <li>End-to-end digital marketing coordination under one platform</li>
-                  <li>Data-driven campaigns focused on growth &amp; ROI</li>
-                  <li>Strategy, creative execution &amp; continuous optimisation</li>
-                </ul>
-              </div>
-              <div className="dm-spotlight__panel" aria-hidden="true">
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">10+</span>
-                  <span className="dm-spotlight__stat-label">Channels unified</span>
-                </div>
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">1</span>
-                  <span className="dm-spotlight__stat-label">Strategy, cross-channel</span>
-                </div>
-                <div className="dm-spotlight__stat">
-                  <span className="dm-spotlight__stat-num">∞</span>
-                  <span className="dm-spotlight__stat-label">Iteration, always optimising</span>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
 
-        {/* WHERE WEBSITE DEVELOPMENT MEETS SEO */}
+        {/* ══ KEYWORD RESEARCH & SEARCH INTENT ══════════════════════════════ */}
+        <section className="dm-intentsec" aria-labelledby="dm-intent-heading">
+          <div className="dm-intentsec__inner">
+            <div className="dm-head">
+              <span className="dm-label">Keyword Research &amp; Search Intent</span>
+              <h2 className="dm-h2" id="dm-intent-heading">Start with what people <em>actually search</em></h2>
+              <p className="dm-sub">
+                Before writing a page or launching a campaign, we look at the searches your customers
+                make: how often, how competitive, and what they&apos;re hoping to find. That decides which
+                pages to create, which to improve and which keywords are worth paying for.
+              </p>
+            </div>
+            <IntentMap />
+            <div className="dm-intentsec__grid">
+              <div className="dm-intentsec__item">
+                <h3>Demand before volume</h3>
+                <p>A keyword searched 50 times a month by buyers can be worth more than one searched 5,000 times by students. We weigh intent and fit, not just numbers.</p>
+              </div>
+              <div className="dm-intentsec__item">
+                <h3>One page per intent</h3>
+                <p>Two pages chasing the same search compete with each other. Mapping keywords to pages keeps each one focused and avoids that overlap.</p>
+              </div>
+              <div className="dm-intentsec__item">
+                <h3>Shared with paid search</h3>
+                <p>The same research tells Google Ads which terms convert and which to exclude, so organic and paid don&apos;t duplicate effort.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ WEBSITE + SEO ═════════════════════════════════════════════════ */}
         <section className="dm-webdev" aria-labelledby="dm-webdev-heading">
           <div className="dm-webdev__inner">
             <div>
-              <span className="dm-webdev__label">The Differentiator</span>
+              <span className="dm-webdev__label">Where Website Development Meets SEO</span>
               <h2 className="dm-webdev__h2" id="dm-webdev-heading">
                 When the <em>website itself</em> is the ranking problem
               </h2>
               <p className="dm-webdev__p">
-                Content and links can&apos;t rank pages that search engines struggle
-                to crawl, render or trust. So every engagement starts by checking
-                the site itself, and the findings are written as specific tickets
-                your developers can act on. When the honest answer is that the
-                platform needs replacing, the build is handled by our{" "}
-                <Link href="/services/website-development">website development</Link>{" "}
-                team, so the SEO requirements are part of the brief rather than a
-                retrofit.
+                Content and links can&apos;t rank pages that search engines struggle to crawl, render or
+                trust. So every engagement starts by checking the site itself, and findings are written
+                as specific tickets your developers can act on. When the honest answer is that the
+                platform needs replacing, our{" "}
+                <Link href="/services/website-development">website development</Link> team builds it
+                with SEO in the brief from day one, with{" "}
+                <Link href="/services/automation-testing">QA testing</Link> before launch and{" "}
+                <Link href="/services/it-consulting">IT consulting</Link> for hosting decisions.
               </p>
               <Link href="/services/website-development" className="dm-webdev__link">
                 How we build SEO-ready websites
@@ -1088,12 +1233,12 @@ export default function DigitalMarketing() {
               </Link>
             </div>
             <ul className="dm-webdev__list">
-              <li><b>Indexing status —</b> Search Console&apos;s page indexing report read reason by reason, for example &ldquo;Crawled – currently not indexed&rdquo; versus &ldquo;Duplicate, Google chose different canonical&rdquo;, because each has a different fix.</li>
-              <li><b>Rendering —</b> whether the main content and links are in the server-rendered HTML or only appear after JavaScript runs.</li>
-              <li><b>Canonicals, redirects &amp; sitemaps —</b> one indexable URL per page, single-hop redirects, and a sitemap that lists only those URLs.</li>
-              <li><b>Core Web Vitals —</b> field data (LCP, INP, CLS) from real visitors, not just a lab score, with the specific elements that cause each problem.</li>
-              <li><b>Internal links —</b> whether important pages are linked from the body of related pages, not only from menus and footers.</li>
-              <li><b>Tracking —</b> GA4 events and conversions checked before any campaign spend, so results can be measured from the first day.</li>
+              <li><b>Indexing status:</b> Search Console&apos;s page indexing report read reason by reason, because &ldquo;Crawled, currently not indexed&rdquo; and &ldquo;Duplicate, Google chose different canonical&rdquo; need different fixes.</li>
+              <li><b>Rendering:</b> whether main content and links are in the server-rendered HTML or only appear after JavaScript runs.</li>
+              <li><b>Canonicals, redirects &amp; sitemaps:</b> one indexable URL per page, single-hop redirects, and a sitemap listing only those URLs.</li>
+              <li><b>Core Web Vitals:</b> field data from real visitors (LCP, INP, CLS), not just a lab score, with the elements causing each problem.</li>
+              <li><b>Internal links:</b> whether important pages are linked from related content, not only from menus and footers.</li>
+              <li><b>Tracking:</b> GA4 events and conversions checked before any campaign spend, so results can be measured from day one.</li>
             </ul>
           </div>
           <div className="dm-webdev__pipeline">
@@ -1102,244 +1247,302 @@ export default function DigitalMarketing() {
           </div>
         </section>
 
-        {/* SEO PROCESS */}
+        {/* ══ CUSTOMER ACQUISITION FUNNEL (C) ═══════════════════════════════ */}
+        <section className="dm-funnel" aria-labelledby="dm-funnel-heading">
+          <div className="dm-funnel__inner">
+            <div className="dm-head dm-head--center">
+              <span className="dm-label">Online Marketing Strategy</span>
+              <h2 className="dm-h2" id="dm-funnel-heading">A channel for every <em>stage of the decision</em></h2>
+              <p className="dm-sub">
+                People rarely go from never hearing of you to buying in one step. A good online
+                marketing strategy makes sure you&apos;re present at each stage, with the right message.
+              </p>
+            </div>
+            <AcquisitionFunnel
+              stages={funnelStages}
+              caption="Gaps in the funnel show up as wasted spend: ads that bring awareness with nowhere to convert, or great landing pages nobody reaches. We plan for every stage, then shift budget to where the drop-off is."
+            />
+          </div>
+        </section>
+
+        {/* ══ ANALYTICS & REPORTING (G) ═════════════════════════════════════ */}
+        <section className="dm-measure" aria-labelledby="dm-measure-heading">
+          <div className="dm-measure__inner">
+            <div className="dm-measure__head">
+              <span className="dm-measure__label">Analytics &amp; Reporting</span>
+              <h2 className="dm-measure__h2" id="dm-measure-heading">Reported against numbers that <em>matter</em></h2>
+              <p className="dm-measure__p">
+                Every report follows the same chain: how many people arrived, what they did, how many
+                became leads and what each lead cost. That makes it obvious where the next improvement
+                should come from.
+              </p>
+            </div>
+            <MetricChain className="dm-measure__chain" />
+            <div className="dm-measure__dash"><AnalyticsDashboard /></div>
+            <div className="dm-measure__grid">
+              <div className="dm-measure__col">
+                <h3 className="dm-measure__col-title">What we track</h3>
+                <ul className="dm-measure__list">
+                  <li>Website visitors and traffic sources</li>
+                  <li>Search visibility, clicks and keyword positions</li>
+                  <li>Engagement on key pages</li>
+                  <li>Leads, conversion rate and cost per lead</li>
+                  <li>Campaign performance, including ROAS where relevant</li>
+                  <li>Return on marketing spend, using your real deal values</li>
+                </ul>
+              </div>
+              <div className="dm-measure__col">
+                <h3 className="dm-measure__col-title">How reporting works</h3>
+                <ul className="dm-measure__list">
+                  <li>One monthly report covering every channel we run</li>
+                  <li>Plain-language summary first, detail after</li>
+                  <li>What changed, why, and what we&apos;ll do next</li>
+                  <li>Live dashboard access between reports</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══ PROCESS ═══════════════════════════════════════════════════════ */}
         <section className="dm-process" aria-labelledby="dm-process-heading">
           <div className="dm-process__inner">
             <div className="dm-process__head">
-              <span className="dm-process__label">How We Work</span>
-              <h2 className="dm-process__h2" id="dm-process-heading">A process built to <em>remove guesswork</em></h2>
+              <span className="dm-process__label">Marketing Workflow</span>
+              <h2 className="dm-process__h2" id="dm-process-heading">Six steps, <em>repeated</em> every cycle</h2>
               <p className="dm-process__sub">
-                Six steps, repeated on a cycle — because SEO and digital marketing
-                are never really “done.”
+                Search algorithms, competitors and your own offers keep changing, so the plan does too.
+                Each cycle starts from what the last one taught us.
               </p>
             </div>
             <ProcessCycle steps={processSteps} />
           </div>
         </section>
 
-        {/* INDUSTRIES */}
+        {/* ══ DELIVERABLES ══════════════════════════════════════════════════ */}
+        <section className="dm-deliv" aria-labelledby="dm-deliv-heading">
+          <div className="dm-deliv__inner">
+            <div className="dm-head dm-head--center">
+              <span className="dm-label">What You Receive</span>
+              <h2 className="dm-h2" id="dm-deliv-heading">Services are what we do. These are <em>what you get</em>.</h2>
+              <p className="dm-sub">The exact mix depends on the services you choose, and it&apos;s agreed in writing before work starts.</p>
+            </div>
+            <div className="dm-deliv__grid">
+              {deliverableGroups.map((g) => (
+                <div className="dm-deliv__col" key={g.title}>
+                  <h3>{g.title}</h3>
+                  <ul>{g.items.map((it) => <li key={it}>{it}</li>)}</ul>
+                </div>
+              ))}
+            </div>
+            <p className="dm-deliv__note">
+              We don&apos;t promise rankings, leads or revenue. Nobody honestly can. What we commit to is
+              the work above, done well, and clear reporting on what it achieves.
+            </p>
+          </div>
+        </section>
+
+        {/* ══ INDUSTRIES ════════════════════════════════════════════════════ */}
         <section className="dm-industries" aria-labelledby="dm-industries-heading">
           <div className="dm-industries__inner">
             <div className="dm-industries__head">
               <span className="dm-industries__label">Who We Work With</span>
               <h2 className="dm-industries__h2" id="dm-industries-heading">Industries we <em>serve</em></h2>
-              <p className="dm-industries__sub">
-                The same industries we support across our other services —
-                approached here through SEO, content and paid media.
-              </p>
+              <p className="dm-industries__sub">The channels are the same; what changes is the mix and the message.</p>
             </div>
             <div className="dm-industries__grid">
               {industries.map((ind) => (
                 <div className="dm-industries__card" key={ind.name}>
                   <div className="dm-industries__icon" aria-hidden="true">{ind.icon}</div>
-                  <div className="dm-industries__name">{ind.name}</div>
+                  <h3 className="dm-industries__name">{ind.name}</h3>
+                  <p className="dm-industries__desc">{ind.note}</p>
                 </div>
               ))}
             </div>
             <p className="dm-industries__note">
               Working in real estate, architecture or construction? Our{" "}
-              <Link href="/services/cad-gis-photogrammetry">CAD, GIS &amp; photogrammetry</Link>{" "}
-              team can support the visual and mapping side of a project alongside
-              the marketing that promotes it.
+              <Link href="/services/cad-gis-photogrammetry">CAD, GIS &amp; photogrammetry</Link> and{" "}
+              <Link href="/services/visualization">3D visualisation</Link> teams can produce the visuals
+              your campaigns promote.
             </p>
           </div>
         </section>
 
-        {/* BANGALORE / BENGALURU SEO */}
+        {/* ══ LOCAL (BANGALORE) & NATIONAL SEO ══════════════════════════════ */}
         <section className="dm-local" aria-labelledby="dm-local-heading">
           <div className="dm-local__inner">
             <div className="dm-local__copy">
-            <span className="dm-local__label">Local SEO</span>
-            <h2 className="dm-local__h2" id="dm-local-heading">Built for how <em>Bangalore</em> searches</h2>
-            <p className="dm-local__p">
-              Bangalore is one of India’s most competitive digital markets — a
-              dense mix of technology companies, startups, retail, real estate and
-              professional services all competing for attention across
-              neighbourhoods from Koramangala and Indiranagar to Whitefield, HSR
-              Layout, Electronic City and Jayanagar. Winning local search here
-              takes more than adding “Bangalore” to a page title.
-            </p>
-            <p className="dm-local__p">
-              We combine an accurate, well-maintained Google Business Profile with
-              location-relevant on-page content, consistent citations and
-              genuine organic authority — so a business shows up for the specific
-              searches its customers are actually making, whether that’s a broad
-              service search or something highly local.
-            </p>
-            <p className="dm-local__note">
-              As a Bengaluru-headquartered team, we work with local businesses
-              directly and understand the market we’re optimising for.
-            </p>
+              <span className="dm-local__label">Local SEO</span>
+              <h2 className="dm-local__h2" id="dm-local-heading">Built for how <em>Bangalore</em> searches</h2>
+              <p className="dm-local__p">
+                Bangalore is one of India&apos;s most competitive digital markets, with technology
+                companies, startups, retailers, clinics and property developers all competing across
+                neighbourhoods from Koramangala and Indiranagar to Whitefield and Electronic City.
+              </p>
+              <p className="dm-local__p">
+                Showing up locally takes an accurate Google Business Profile, location pages with real
+                substance, consistent citations and a steady flow of genuine reviews, all pointing the
+                same way.
+              </p>
+              <p className="dm-local__note">
+                We&apos;re based in Bengaluru, so we work with local businesses face to face and know the
+                market we&apos;re optimising for.
+              </p>
             </div>
             <LocalSearchMap className="dm-local__visual" />
           </div>
-        </section>
-
-        {/* INDIA SEO */}
-        <section className="dm-india" aria-labelledby="dm-india-heading">
-          <div className="dm-india__inner">
-            <span className="dm-india__label">National SEO</span>
-            <h2 className="dm-india__h2" id="dm-india-heading">SEO strategy that works <em>across India</em></h2>
-            <p className="dm-india__p">
-              India isn’t one search market. Search behaviour, competition and
-              language preferences shift significantly between cities and
-              regions, so a national SEO strategy has to account for where your
-              customers actually are and how competitive the results are in each
-              market you’re targeting.
-            </p>
+          <div className="dm-local__india">
+            <div>
+              <span className="dm-india__label">National SEO</span>
+              <h2 className="dm-india__h2">SEO that works <em>across India</em></h2>
+              <p className="dm-india__p">
+                India isn&apos;t one search market. Competition, behaviour and language change from city to
+                city, so a national strategy has to reflect where your customers are. We&apos;d rather build
+                a few genuinely useful city pages than dozens of near-identical ones that search engines
+                may treat as doorway pages.
+              </p>
+            </div>
             <ul className="dm-india__list">
-              <li>Location-based search &amp; regional search-behaviour differences</li>
-              <li>Multilingual and regional-language considerations where relevant</li>
-              <li>National keyword research &amp; content strategy</li>
-              <li>Dedicated city or region pages only where there’s a genuine business reason for them</li>
-              <li>Market-by-market competitive SERP analysis</li>
+              <li>National keyword research and content strategy</li>
+              <li>Regional search behaviour and competition by market</li>
+              <li>Regional-language considerations where relevant</li>
+              <li>City or region pages only where there&apos;s a real business reason</li>
             </ul>
-            <p className="dm-india__p">
-              We’d rather build a smaller number of genuinely useful pages than
-              dozens of thin, near-identical city pages that dilute a site’s
-              authority and risk being treated as doorway pages by search engines.
-            </p>
           </div>
         </section>
 
-        {/* MEASUREMENT & REPORTING */}
-        <section className="dm-measure" aria-labelledby="dm-measure-heading">
-          <div className="dm-measure__inner">
-            <div className="dm-measure__head">
-              <span className="dm-measure__label">Measurement &amp; Reporting</span>
-              <h2 className="dm-measure__h2" id="dm-measure-heading">Reported against numbers that <em>matter</em></h2>
-              <p className="dm-measure__p">
-                SEO and digital marketing performance is only useful if it’s
-                measured properly. We report on a regular cadence using Google
-                Search Console, Google Analytics 4 and Google Ads’ own reporting,
-                so you always know what’s actually happening — not just a summary
-                at the end of a quarter.
-              </p>
+        {/* ══ TOOLS ═════════════════════════════════════════════════════════ */}
+        <section className="dm-tools" aria-labelledby="dm-tools-heading">
+          <div className="dm-tools__inner">
+            <div className="dm-head dm-head--center">
+              <span className="dm-label">Technology &amp; Tools</span>
+              <h2 className="dm-h2" id="dm-tools-heading">The platforms we <em>work in</em></h2>
+              <p className="dm-sub">Standard, widely used tools, set up in your name so the data stays yours.</p>
             </div>
-            <AnalyticsDashboard />
-            <div className="dm-measure__grid">
-              <div className="dm-measure__col">
-                <div className="dm-measure__col-title">What we track</div>
-                <ul className="dm-measure__list">
-                  <li>Organic clicks &amp; impressions</li>
-                  <li>Search visibility &amp; keyword positions</li>
-                  <li>Organic conversions &amp; leads</li>
-                  <li>Cost per lead &amp; conversion rate</li>
-                  <li>Google Ads performance, including ROAS where applicable</li>
-                  <li>Landing-page &amp; engagement performance</li>
-                </ul>
+            <TechStackMap
+              layers={toolLayers}
+              badge="Marketing stack, layer by layer"
+              caption="Data flows up from the website into analytics, where it's joined with search and ad data for one view of what's working."
+            />
+          </div>
+        </section>
+
+        {/* ══ CASE STUDY + MINDTRICK ════════════════════════════════════════ */}
+        {seoCase && (
+          <section className="dm-case" id="work" aria-labelledby="dm-case-heading">
+            <div className="dm-case__inner">
+              <div className="dm-head dm-head--center">
+                <span className="dm-label">Case Study</span>
+                <h2 className="dm-h2" id="dm-case-heading">How we run technical SEO, <em>shown in full</em></h2>
+                <p className="dm-sub">
+                  We don&apos;t publish client rankings or traffic figures we can&apos;t verify. This case study
+                  documents our own site, where every change can be checked in the source history.
+                </p>
               </div>
-              <div className="dm-measure__col">
-                <div className="dm-measure__col-title">Tools we report from</div>
-                <div className="dm-measure__tools">
-                  <span className="dm-measure__tool">Google Search Console</span>
-                  <span className="dm-measure__tool">Google Analytics 4</span>
-                  <span className="dm-measure__tool">Google Ads</span>
-                  <span className="dm-measure__tool">Reporting dashboards (e.g. Looker Studio)</span>
+              <article className="dm-case__card" aria-labelledby="dm-case-title">
+                <div>
+                  <span className="dm-case__kind">{seoCase.client}</span>
+                  <h3 className="dm-case__title" id="dm-case-title">
+                    <Link href={`/work/${seoCase.slug}`}>{seoCase.title}</Link>
+                  </h3>
+                  <p className="dm-case__p">{seoCase.description}</p>
+                  <h4 className="dm-case__h">Background</h4>
+                  <p className="dm-case__p">{seoCase.context[0]}</p>
+                  {seoCase.workflow && (
+                    <>
+                      <h4 className="dm-case__h">{seoCase.workflow.heading}</h4>
+                      <ol className="dm-case__steps">
+                        {seoCase.workflow.steps.map((st) => <li key={st.step}><span>{st.step}</span></li>)}
+                      </ol>
+                    </>
+                  )}
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROOF / OUR APPROACH */}
-        <section className="dm-proof" aria-labelledby="dm-proof-heading">
-          <div className="dm-proof__inner">
-            <div className="dm-proof__head">
-              <span className="dm-proof__label">Our Approach</span>
-              <h2 className="dm-proof__h2" id="dm-proof-heading">What we <em>measure</em>, and what’s still being built</h2>
-              <p className="dm-proof__p">
-                We won’t invent client results to fill this section. Here’s what
-                we can genuinely show you today: direct feedback from a client we
-                worked with on SEO, and an honest note on what’s still coming.
+                <div>
+                  <h4 className="dm-case__h" style={{ marginTop: 0 }}>What we worked on</h4>
+                  <ul className="dm-case__ws">
+                    {seoCase.workstreams.map((w) => <li key={w.name}><b>{w.name}</b><span>{w.summary}</span></li>)}
+                  </ul>
+                  {seoCase.outcomes?.length ? (
+                    <>
+                      <h4 className="dm-case__h">Verified outcomes</h4>
+                      <ul className="dm-case__list">
+                        {seoCase.outcomes.slice(0, 3).map((o) => <li key={o}>{o}</li>)}
+                      </ul>
+                    </>
+                  ) : null}
+                  {seoCase.notClaimed?.length ? (
+                    <p className="dm-case__honest"><strong>Not claimed:</strong> {seoCase.notClaimed[0]}</p>
+                  ) : null}
+                  <div className="dm-case__links">
+                    <Link href={`/work/${seoCase.slug}`}>Read the full case study <FaArrowRight aria-hidden="true" /></Link>
+                  </div>
+                </div>
+              </article>
+              <p className="dm-case__more">
+                We&apos;re documenting client SEO case studies with real before-and-after data. If you&apos;d
+                like to be featured, <Link href="/contact">get in touch</Link>. Meanwhile, our{" "}
+                <Link href="/insights">Insights articles</Link> explain how we approach search and digital strategy.
               </p>
             </div>
-            <div className="dm-proof__grid">
-              <div className="dm-proof__quote">
-                <p className="dm-proof__quote-text">
-                  “We hired them for SEO and ended up rebuilding our entire
-                  digital presence. Page-one rankings for seventeen target
-                  keywords within four months. Exceptional results, full stop.”
-                </p>
-                <p className="dm-proof__quote-who">
-                  <b>Kavitha R.</b> — VP Digital Strategy, Meridian Finance ·{" "}
-                  <Link href="/contact">more client feedback on our Contact page</Link>
-                </p>
-              </div>
-              <div className="dm-proof__note">
-                <span className="dm-proof__note-title">Case study</span>
-                <p>
-                  See exactly how we work in our{" "}
-                  <Link href="/work/technical-seo-99visual">technical SEO case study</Link>:
-                  the audit-to-monitoring workflow we ran on our own Next.js site,
-                  with every fix traceable to the change that made it. It covers
-                  crawlability, canonicals and redirects, the XML sitemap,
-                  structured data and page speed, and states what it doesn’t claim.
-                </p>
-                <p>
-                  We’re also documenting client SEO case studies with real
-                  before-and-after data. If you’d like to be one of the first
-                  featured, <Link href="/contact">get in touch</Link>.
-                </p>
-                <p>
-                  In the meantime, our <Link href="/insights">Insights blog</Link>{" "}
-                  covers how we think about search and digital strategy, and our{" "}
-                  <Link href="/about">About page</Link> has more on who we are and
-                  how we work.
-                </p>
-              </div>
+          </section>
+        )}
+
+        <section className="dm-spotlight" id="mindtrick" aria-labelledby="dm-spotlight-heading">
+          <div className="dm-spotlight__inner dm-spotlight__inner--solo">
+            <div>
+              <span className="dm-spotlight__eyebrow">Our Marketing Brand</span>
+              <h2 className="dm-spotlight__h2" id="dm-spotlight-heading">MindTrick.io</h2>
+              <p className="dm-spotlight__p">
+                MindTrick.io is the name we use for our digital marketing work. It&apos;s where performance
+                marketing, SEO and content are coordinated, run by the same people behind 99 Visual
+                Solutions, with the same reporting and the same honesty about results.
+              </p>
+              <ul className="dm-spotlight__bullets">
+                <li>Campaign planning and coordination across channels</li>
+                <li>Creative production for ads, social and email</li>
+                <li>Ongoing optimisation against leads and cost per lead</li>
+              </ul>
             </div>
           </div>
         </section>
 
-        {/* AI SEARCH / GEO */}
+        {/* ══ AI SEARCH ═════════════════════════════════════════════════════ */}
         <section className="dm-geo" aria-labelledby="dm-geo-heading">
           <div className="dm-geo__inner">
             <span className="dm-geo__label">AI Search &amp; GEO</span>
             <h2 className="dm-geo__h2" id="dm-geo-heading">Preparing for how <em>AI-powered search</em> is changing</h2>
             <p className="dm-geo__p">
-              Search is no longer just a list of ten blue links. Google’s AI
-              Overviews and other AI-powered systems increasingly summarise
-              answers directly, and tools like ChatGPT, Gemini and Perplexity are
-              becoming discovery surfaces of their own. The common thread across
-              all of them is the same fundamentals good SEO has always relied on:
-              clear, well-structured content; accurate, first-party information
-              about a business; consistent entities and brand mentions; and
-              technical implementation — structured data, clean HTML, crawlable
-              pages — that makes it easy for any system, human or AI, to
-              understand what a business actually does.
+              Google&apos;s AI Overviews and assistants such as ChatGPT, Gemini and Perplexity increasingly
+              answer questions directly. They rely on the same things good SEO always has: clear,
+              well-structured content, accurate information about your business, consistent mentions
+              across the web, and pages that are easy to crawl and understand.
             </p>
             <p className="dm-geo__p">
-              We build with that in mind — clear entity information, structured
-              data and genuinely useful content — as part of standard SEO
-              practice, not a separate service. We won’t claim this guarantees
-              visibility inside any specific AI system; no one can honestly
-              promise that. What we can do is make sure a business is represented
-              accurately and clearly wherever people, or the AI systems
-              increasingly answering on their behalf, go looking.
+              We build those in as standard practice. No one can honestly guarantee visibility inside
+              any particular AI system, but we can make sure your business is described accurately
+              wherever people, or the tools answering for them, go looking.
             </p>
           </div>
         </section>
 
-        {/* BENEFITS */}
+        {/* ══ WHY CHOOSE 99 VISUAL ══════════════════════════════════════════ */}
         <section className="dm-benefits" aria-labelledby="dm-benefits-heading">
           <div className="dm-benefits__inner">
             <div className="dm-benefits__head">
-              <span className="dm-benefits__label">Why Choose Us?</span>
+              <span className="dm-benefits__label">Why Choose 99 Visual</span>
               <h2 className="dm-benefits__h2" id="dm-benefits-heading">
-                Benefits of partnering with <em>99 Visual</em>
+                What working with us <em>looks like</em>
               </h2>
               <p className="dm-benefits__sub">
-                Digital marketing here means more than running ads — it’s about
-                building visibility and connections that compound into long-term
-                growth.
+                No lock-in contracts dressed up as strategy, and no reports designed to look busy. Just a
+                small, experienced team doing the work and showing you what it achieves.
               </p>
             </div>
             <div className="dm-benefits__grid">
-              {benefits.map((b, i) => (
-                <div className="dm-benefit-card" key={i}>
+              {benefits.map((b) => (
+                <div className="dm-benefit-card" key={b.title}>
                   <div className="dm-benefit-card__icon" aria-hidden="true">{b.icon}</div>
-                  <div className="dm-benefit-card__title">{b.title}</div>
+                  <h3 className="dm-benefit-card__title">{b.title}</h3>
                   <p className="dm-benefit-card__desc">{b.description}</p>
                 </div>
               ))}
@@ -1347,27 +1550,47 @@ export default function DigitalMarketing() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <FaqSection />
+        {/* ══ FAQ — same copy as dmFaqNode (FAQPage JSON-LD) ════════════════ */}
+        <section className="dm-faq" aria-labelledby="dm-faq-heading" id="dm-faq">
+          <div className="dm-faq__inner">
+            <div className="dm-faq__head">
+              <span className="dm-faq__label">FAQ</span>
+              <h2 className="dm-faq__h2" id="dm-faq-heading">Common <em>questions</em></h2>
+            </div>
+            <div className="dm-faq__list">
+              {dmFaqs.map((f) => (
+                <div className="dm-faq-item" key={f.question}>
+                  <h3 className="dm-faq-item__q">{f.question}</h3>
+                  <p className="dm-faq-item__a">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        {/* CTA STRIP */}
+        {/* ══ FINAL CTA ═════════════════════════════════════════════════════ */}
         <section className="dm-cta" aria-labelledby="dm-cta-heading">
           <div className="dm-cta__inner">
             <span className="dm-cta__eyebrow">Start a Project</span>
             <h2 className="dm-cta__h2" id="dm-cta-heading">
-              Ready to grow your business <em>online</em>?
+              Let&rsquo;s talk about your <em>marketing</em>
             </h2>
             <p className="dm-cta__sub">
-              Get in touch for a free SEO consultation or digital marketing audit.
-              We’ll map out the right strategy for your goals in Bangalore, across
-              India, or internationally — and how we’ll measure it.
+              Tell us what you&apos;re trying to grow. We&apos;ll look at your site and channels, tell you what
+              we&apos;d change first, and how we&apos;d measure it. The first conversation is free, with no
+              obligation.
             </p>
+            <ol className="dm-cta__steps">
+              <li><b>Free consultation</b><span>A short call about your goals, market and budget.</span></li>
+              <li><b>Audit &amp; plan</b><span>What&apos;s working, what isn&apos;t, and a prioritised plan.</span></li>
+              <li><b>Start &amp; report</b><span>Work begins, with monthly reports tied to leads.</span></li>
+            </ol>
             <div className="dm-cta__actions">
               <ConsultationCTA
                 className="dm-cta__btn"
                 ariaLabel="Get a free SEO consultation from 99 Visual Solutions"
                 postTitle="Digital Marketing & SEO — CTA Strip (Primary)"
-                postUrl="/services/digital-marketing-seo"
+                postUrl={PAGE_PATH}
               >
                 Get a Free SEO Consultation
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -1378,7 +1601,7 @@ export default function DigitalMarketing() {
                 className="dm-cta__btn dm-cta__btn--ghost"
                 ariaLabel="Request a digital marketing audit from 99 Visual Solutions"
                 postTitle="Digital Marketing & SEO — CTA Strip (Secondary)"
-                postUrl="/services/digital-marketing-seo"
+                postUrl={PAGE_PATH}
               >
                 Request a Digital Marketing Audit
               </ConsultationCTA>
@@ -1391,7 +1614,7 @@ export default function DigitalMarketing() {
           <ConsultationCTA
             className="dm-sticky-cta__btn"
             postTitle="Digital Marketing & SEO — Sticky Mobile CTA"
-            postUrl="/services/digital-marketing-seo"
+            postUrl={PAGE_PATH}
           >
             Get a Free SEO Consultation
           </ConsultationCTA>
@@ -1399,11 +1622,11 @@ export default function DigitalMarketing() {
       </div>
 
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
-      <RelatedInsights serviceHref="/services/digital-marketing-seo" />
+      <RelatedInsights serviceHref={PAGE_PATH} />
+      {/* Drives scroll-in animations for every infographic on this page. */}
       <InViewObserver />
       <Footer />
       <ScrollDown />
-
     </>
   );
 }
