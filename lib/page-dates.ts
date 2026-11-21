@@ -28,7 +28,7 @@ export const PAGE_LAST_MODIFIED = {
   '/services/automation-testing':     '2026-11-20',
   '/services/it-consulting':          '2026-07-28',
   '/services/visualization':          '2026-07-28',
-  '/services/cad-gis-photogrammetry': '2026-11-19',
+  '/services/cad-gis-photogrammetry': '2026-11-21',
   '/privacy-policy':                  '2026-11-07',
   '/terms':                           '2026-04-01',
   '/cookie-policy':                   '2026-11-07',

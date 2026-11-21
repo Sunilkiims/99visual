@@ -8,11 +8,13 @@ import s from "./infographics.module.css";
 
 export type StackLayer = { name: string; note: string; tone: "blue" | "green" | "orange"; tools: { name: string; icon: ReactNode }[] };
 
-export default function TechStackMap({ layers, className = "" }: { layers: StackLayer[]; className?: string }) {
+export default function TechStackMap({ layers, className = "", badge = "Our stack, layer by layer", caption }: {
+  layers: StackLayer[]; className?: string; badge?: string; caption?: string;
+}) {
   return (
     <figure className={`${s.ig} ${s.stackMap} ${className}`} data-ig="" aria-labelledby="ig-stackmap-cap">
       <div className={s.stackMapHead}>
-        <span className={s.badge}>Our stack, layer by layer</span>
+        <span className={s.badge}>{badge}</span>
       </div>
       <div className={s.stackMapBody}>
         <span className={s.stackMapRail} aria-hidden="true"><i /></span>
@@ -34,8 +36,7 @@ export default function TechStackMap({ layers, className = "" }: { layers: Stack
         </ol>
       </div>
       <figcaption id="ig-stackmap-cap" className={s.caption}>
-        Each request travels down these layers and back. Every tool here is widely used and well
-        documented, so your site isn&rsquo;t tied to one agency to maintain it.
+        {caption ?? "Each request travels down these layers and back. Every tool here is widely used and well documented, so your site isn\u2019t tied to one agency to maintain it."}
       </figcaption>
     </figure>
   );

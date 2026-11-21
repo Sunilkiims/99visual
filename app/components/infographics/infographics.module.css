@@ -373,14 +373,20 @@
 .cycle:has(.cycleStep[data-step="4"]:hover) .cycleNode[data-step="4"] .cycleNodeBg,
 .cycle:has(.cycleStep[data-step="5"]:hover) .cycleNode[data-step="5"] .cycleNodeBg,
 .cycle:has(.cycleStep[data-step="6"]:hover) .cycleNode[data-step="6"] .cycleNodeBg,
-.cycle:has(.cycleStep[data-step="7"]:hover) .cycleNode[data-step="7"] .cycleNodeBg { fill: var(--blue); stroke: rgba(46, 92, 255, .25); stroke-width: 8; }
+.cycle:has(.cycleStep[data-step="7"]:hover) .cycleNode[data-step="7"] .cycleNodeBg,
+.cycle:has(.cycleStep[data-step="8"]:hover) .cycleNode[data-step="8"] .cycleNodeBg,
+.cycle:has(.cycleStep[data-step="9"]:hover) .cycleNode[data-step="9"] .cycleNodeBg,
+.cycle:has(.cycleStep[data-step="10"]:hover) .cycleNode[data-step="10"] .cycleNodeBg { fill: var(--blue); stroke: rgba(46, 92, 255, .25); stroke-width: 8; }
 .cycle:has(.cycleStep[data-step="1"]:hover) .cycleNode[data-step="1"] .cycleNodeNum,
 .cycle:has(.cycleStep[data-step="2"]:hover) .cycleNode[data-step="2"] .cycleNodeNum,
 .cycle:has(.cycleStep[data-step="3"]:hover) .cycleNode[data-step="3"] .cycleNodeNum,
 .cycle:has(.cycleStep[data-step="4"]:hover) .cycleNode[data-step="4"] .cycleNodeNum,
 .cycle:has(.cycleStep[data-step="5"]:hover) .cycleNode[data-step="5"] .cycleNodeNum,
 .cycle:has(.cycleStep[data-step="6"]:hover) .cycleNode[data-step="6"] .cycleNodeNum,
-.cycle:has(.cycleStep[data-step="7"]:hover) .cycleNode[data-step="7"] .cycleNodeNum { fill: #fff; }
+.cycle:has(.cycleStep[data-step="7"]:hover) .cycleNode[data-step="7"] .cycleNodeNum,
+.cycle:has(.cycleStep[data-step="8"]:hover) .cycleNode[data-step="8"] .cycleNodeNum,
+.cycle:has(.cycleStep[data-step="9"]:hover) .cycleNode[data-step="9"] .cycleNodeNum,
+.cycle:has(.cycleStep[data-step="10"]:hover) .cycleNode[data-step="10"] .cycleNodeNum { fill: #fff; }
 @container (max-width: 860px) {
   .cycle { grid-template-columns: 1fr; gap: 2rem; }
   .cycleRingWrap { position: relative; top: 0; max-width: 320px; }
@@ -1076,4 +1082,114 @@
   .launchStop { display: grid; grid-template-columns: 38px 1fr; column-gap: .9rem; text-align: left; align-items: start; }
   .launchDot { grid-row: 1 / span 2; }
   .launchTitle { margin-top: .45rem; }
+}
+
+/* ═══ 23. POINT CLOUD SECTION ════════════════════════════════════════════ */
+.pc, .dem, .gis, .acc { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 1.6rem; margin: 0; text-align: left; }
+.pcHead, .demHead { display: flex; justify-content: space-between; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.pcLegend, .demLegend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem 1rem; font-size: .76rem; color: var(--ink); }
+.pcLegend li, .demLegend li { display: inline-flex; align-items: center; gap: 6px; }
+.pcLegend li span { font-family: var(--f-mono); font-size: .64rem; color: var(--muted); }
+.pcLegend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--pcc); }
+.pc [data-c="ground"]   { --pcc: #B07A3C; }
+.pc [data-c="veg"]      { --pcc: #1FB862; }
+.pc [data-c="building"] { --pcc: #E8710F; }
+.pc [data-c="water"]    { --pcc: #2E9BFF; }
+.pc [data-c="noise"]    { --pcc: #E5484D; }
+.pcStage { position: relative; border-radius: 14px; background: linear-gradient(180deg, #0B1428, #111C36); padding: .8rem .6rem .2rem; overflow: hidden; }
+.pcSvg { display: block; width: 100%; height: auto; }
+.pcPt { fill: var(--pcc); }
+.pcPt[data-c="noise"] { stroke: rgba(229, 72, 77, .35); stroke-width: 4; }
+.pcScan { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: linear-gradient(180deg, transparent, rgba(120, 170, 255, .9), transparent); box-shadow: 0 0 18px 4px rgba(46, 92, 255, .35); animation: igScanX 5s linear infinite; animation-play-state: paused; opacity: .8; }
+[data-ig-live] .pcScan { animation-play-state: running; }
+@keyframes igScanX { from { left: 0; } to { left: 100%; } }
+.pcStage .wipe { transition-duration: 1.6s; }
+
+/* ═══ 24. DTM / DSM PROFILE ══════════════════════════════════════════════ */
+.demLegend i { width: 22px; height: 0; border-top: 3px solid var(--lc); border-radius: 2px; display: inline-block; }
+.demLegend b { font-weight: 700; margin-right: 2px; }
+.dem [data-l="dsm"] { --lc: #E8710F; }
+.dem [data-l="dtm"] { --lc: #1A9E53; }
+.demSvg { display: block; width: 100%; height: auto; border-radius: 14px; background: linear-gradient(180deg, #EEF3FF 0%, #F7F9FC 70%); }
+.demGround { fill: #E9DCC8; }
+.demWater { fill: rgba(46, 155, 255, .35); }
+.demBuilding { fill: #D7DCE8; stroke: #BCC3D4; stroke-width: 1; }
+.demTree rect { fill: #B9A58A; }
+.demTree ellipse { fill: rgba(31, 184, 98, .28); stroke: rgba(31, 184, 98, .45); }
+.demLine { fill: none; stroke: var(--lc); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 100; transition: stroke-dashoffset 2.2s cubic-bezier(.45, 0, .2, 1) .2s; }
+.demLine[data-l="dtm"] { transition-delay: .9s; }
+.demDim line { stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+
+/* ═══ 25. GIS LAYER STACK ════════════════════════════════════════════════ */
+.gisHead, .accHead { margin-bottom: 1rem; }
+.gisGrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; }
+.gisSvg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; overflow: visible; }
+.gisLayer { transition: translate 1s cubic-bezier(.22, 1, .36, 1); transition-delay: calc(var(--i) * 70ms + .15s); }
+@media (prefers-reduced-motion: no-preference) {
+  [data-ig="pending"] .gisLayer { translate: 0 calc((var(--mid) - var(--i)) * var(--gap)); }
+}
+.gisPlane { stroke-width: .6; }
+.gisPlane[data-t="blue"]   { fill: rgba(46, 92, 255, .1);  stroke: rgba(46, 92, 255, .55); }
+.gisPlane[data-t="green"]  { fill: rgba(31, 184, 98, .12); stroke: rgba(26, 158, 83, .55); }
+.gisPlane[data-t="orange"] { fill: rgba(232, 113, 15, .08); stroke: rgba(232, 113, 15, .55); }
+.gisArt { fill: none; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.gisArt[data-t="blue"]   { stroke: #2E5CFF; }
+.gisArt[data-t="green"]  { stroke: #1A9E53; }
+.gisArt[data-t="orange"] { stroke: #E8710F; }
+.gisArt circle { fill: currentColor; }
+.gisArt[data-t="blue"] circle { fill: #2E5CFF; }
+.gisArt[data-t="orange"] circle { fill: #E8710F; }
+.gisArt[data-fill][data-t="blue"]  rect, .gisArt[data-fill][data-t="blue"] path { fill: rgba(46, 92, 255, .22); }
+.gisArt[data-fill][data-t="green"] path { fill: rgba(31, 184, 98, .14); }
+.gisNum { stroke-width: 2; fill: var(--surface); }
+.gisNum[data-t="blue"]   { stroke: #2E5CFF; }
+.gisNum[data-t="green"]  { stroke: #1A9E53; }
+.gisNum[data-t="orange"] { stroke: #E8710F; }
+.gisNumT { font-family: var(--f-mono); font-size: 15px; font-weight: 700; fill: var(--ink); }
+.gisList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
+.gisList li { display: grid; grid-template-columns: 30px 1fr; gap: .75rem; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
+.gisList li[data-t="blue"]   { --t: #2E5CFF; }
+.gisList li[data-t="green"]  { --t: #1A9E53; }
+.gisList li[data-t="orange"] { --t: #E8710F; }
+.gisListN { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--t); font-family: var(--f-mono); font-size: .78rem; font-weight: 700; color: var(--ink); background: var(--surface); }
+.gisList b { display: block; font-family: var(--f-head); font-size: .9rem; font-weight: 600; color: var(--ink); }
+.gisList li > span:last-child > span { font-size: .76rem; line-height: 1.45; color: var(--muted); }
+@container (max-width: 720px) {
+  .gis, .pc, .dem, .acc { padding: 1.2rem 1rem; }
+  .gisGrid { grid-template-columns: 1fr; }
+  .gisSvg { max-width: 380px; }
+}
+
+/* ═══ 26. CONVERSION MAPPING (extends .split) ════════════════════════════ */
+.convMap { list-style: none; margin: 1.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.convMap li { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: .6rem; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: .65rem .85rem; font-size: .78rem; color: var(--ink); }
+.convMap li span:first-child { font-family: var(--f-mono); font-size: .7rem; color: var(--blue); }
+.convMap li span:last-child { font-weight: 500; }
+.convMap i { font-style: normal; color: var(--muted); }
+.splitApi:has(svg) { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+@container (max-width: 760px) {
+  .convMap { grid-template-columns: 1fr; }
+}
+
+/* ═══ 27. ACCURACY CHECK MAP ═════════════════════════════════════════════ */
+.accGrid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; }
+.accSvg { display: block; width: 100%; height: auto; }
+.accBg { fill: #EEF2EA; }
+.accRoad { fill: none; stroke: #D3D7DF; stroke-width: 22; stroke-linecap: round; }
+.accPlot { fill: rgba(31, 184, 98, .14); stroke: rgba(26, 158, 83, .3); }
+.accPlot[data-b] { fill: #DCE0EA; stroke: #C2C8D6; }
+.accBound { fill: none; stroke: var(--blue); stroke-width: 2; stroke-dasharray: 100; transition: stroke-dashoffset 2s ease .2s; opacity: .6; }
+.accGcp path { fill: #2E5CFF; stroke: #fff; stroke-width: 2.5; }
+.accChk circle:last-child { fill: #E8710F; stroke: #fff; stroke-width: 2.5; }
+.accRipple { fill: none; stroke: #E8710F; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+[data-ig-live] .accRipple { animation: igRipple 2.2s ease-out infinite; }
+.accList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .8rem; }
+.accList li { display: grid; grid-template-columns: 22px 1fr; gap: .7rem; align-items: start; font-size: .8rem; line-height: 1.55; color: var(--muted); }
+.accList b { display: block; font-family: var(--f-head); font-size: .92rem; font-weight: 600; color: var(--ink); margin-bottom: .1rem; }
+.accList i { width: 18px; height: 18px; margin-top: 3px; display: block; }
+.accList li[data-k="gcp"] i { background: #2E5CFF; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.accList li[data-k="chk"] i { background: #E8710F; border-radius: 50%; }
+.accList li[data-k="rep"] i { border: 2px solid var(--ink); border-radius: 4px; }
+@container (max-width: 720px) {
+  .accGrid { grid-template-columns: 1fr; }
 }

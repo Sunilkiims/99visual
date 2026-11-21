@@ -2,6 +2,20 @@
 //
 // CAD, GIS, LiDAR & Photogrammetry (geospatial engineering) service page.
 //
+// INFOGRAPHICS UPGRADE (Nov 2026): animated, server-rendered infographics
+// from app/components/infographics, driven by one client InViewObserver:
+//   RequestFlow       capture → georeference → classify → model → draft → QC
+//   GisLayerStack     aligned GIS layers (CAD & GIS cluster)
+//   PointCloudSection ASPRS-classified cross-section (Aerial & LiDAR cluster)
+//   DtmDsmProfile     DTM vs DSM on the same section (Terrain cluster)
+//   ConversionBridge  CAD ⇄ GIS mapping (Conversion cluster)
+//   TechStackMap      software by layer (Software section)
+//   ProcessCycle      the 10-step workflow
+//   AccuracyCheckMap  GCPs vs independent checkpoints (What to specify)
+// All drawings are illustrative; no project data, accuracy figures or point
+// counts are implied. Copy polished (hero tagline no longer claims
+// "millimetre" precision, which the FAQ itself says can't be promised up front).
+//
 // REBUILD NOTES (this revision):
 //   - The previous "services" array had 5 largely-overlapping, generic
 //     descriptions ("Advanced CAD, GIS & Geospatial Services" vs. "End-to-
@@ -41,12 +55,30 @@ import Header         from "@/app/components/header";
 import Footer         from "@/app/components/footer";
 import ScrollDown     from "@/app/components/scrolldown";
 import ConsultationCTA from "@/app/components/ConsultationCTA";
+import {
+  InViewObserver,
+  RequestFlow,
+  GisLayerStack,
+  PointCloudSection,
+  DtmDsmProfile,
+  ConversionBridge,
+  TechStackMap,
+  ProcessCycle,
+  AccuracyCheckMap,
+  type FlowHop,
+  type StackLayer,
+  type CycleStep,
+} from "@/app/components/infographics";
+import type { ReactNode } from "react";
+import { SiAutocad, SiAutodesk, SiArcgis, SiQgis, SiDji, SiGdal } from "react-icons/si";
 
 import {
   FaDraftingCompass, FaMapMarkedAlt, FaCubes, FaSatellite, FaLayerGroup,
   FaProjectDiagram, FaMountain, FaRoad, FaExchangeAlt, FaRulerCombined,
   FaCity, FaTree, FaHardHat, FaBolt, FaTractor, FaBuilding,
   FaBroadcastTower, FaCheckCircle, FaDatabase, FaFileAlt,
+  FaHelicopter, FaCrosshairs, FaFilter, FaClipboardCheck, FaBoxOpen, FaSyncAlt,
+  FaSearchLocation, FaRoute, FaGlobeAsia, FaCamera, FaCloud,
 } from "react-icons/fa";
 
 import type { Metadata } from "next";
@@ -97,7 +129,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title:       "CAD, GIS, LiDAR & Photogrammetry Services | 99 Visual Solutions",
-    description: "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modeling, and spatial analysis — precision geospatial engineering by 99 Visual Solutions.",
+    description: "CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud processing, terrain modelling and spatial analysis, delivered in the formats and coordinate systems your team already uses.",
     url: PAGE_URL,
     siteName: "99 Visual Solutions",
     images: [
@@ -304,7 +336,7 @@ const services = [
   {
     id: "cad-drafting",
     title: "CAD Drafting & 3D Modeling",
-    description: "2D CAD drafting and 3D CAD modeling for engineering, architecture, and infrastructure projects — including design support, as-built drawings, and drawing conversion between CAD formats and versions.",
+    description: "2D drafting and 3D modelling for engineering, architecture and infrastructure projects, including design support, as-built drawings and conversion between CAD formats and versions.",
     highlight: "Built with AutoCAD, Civil 3D, Revit and SolidWorks, so drawings arrive in the version and layer structure your team already works in.",
     bullets: ["2D drafting & 3D CAD modeling", "Engineering design & as-built drawings", "AutoCAD, Civil 3D, Revit & SolidWorks"],
     icon: <FaDraftingCompass />,
@@ -312,8 +344,8 @@ const services = [
   {
     id: "gis-mapping",
     title: "GIS Mapping & Spatial Analysis",
-    description: "Geospatial data management, spatial analysis, and thematic/urban planning mapping — turning raw geographic data into structured GIS datasets that support planning and resource-management decisions.",
-    highlight: "We build GIS layers and databases with the attribute structure your analysis actually needs, not just a map that looks right at a glance.",
+    description: "Geospatial data management, spatial analysis and thematic or planning maps. We turn raw geographic data into structured GIS datasets that people can query and plan with.",
+    highlight: "We build GIS layers and databases with the attribute structure your analysis needs, not just a map that looks right at a glance.",
     bullets: ["Geospatial data management & structuring", "Spatial analysis & thematic mapping", "ArcGIS Pro & QGIS workflows"],
     icon: <FaMapMarkedAlt />,
   },
@@ -321,15 +353,15 @@ const services = [
     id: "photogrammetry",
     title: "Drone & Aerial Photogrammetry",
     description: "UAV image capture and processing into georeferenced orthomosaics and 3D photogrammetric models, using ground control points (GCPs) for accuracy rather than raw image stitching alone.",
-    highlight: "Accuracy is a function of flight planning and GCP placement, not just software — we plan for the accuracy your project actually needs before flying.",
+    highlight: "Accuracy depends on flight planning and GCP placement as much as on software, so we plan for the accuracy your project needs before anyone flies.",
     bullets: ["Drone image capture & orthomosaic generation", "GCP-based georeferencing", "Pix4D, Agisoft Metashape & DJI Terra"],
     icon: <FaSatellite />,
   },
   {
     id: "lidar-processing",
     title: "LiDAR Point Cloud Processing",
-    description: "Airborne and terrestrial LiDAR point cloud classification (ground, buildings, vegetation), strip alignment, and cleaning — producing usable classified point clouds, not raw unfiltered data.",
-    highlight: "Classified, clean point cloud data is what makes accurate terrain modeling possible downstream — this is the step most raw LiDAR data still needs.",
+    description: "Classification of airborne and terrestrial LiDAR point clouds into ground, buildings and vegetation, plus strip alignment and noise removal, so you receive usable classified data instead of raw returns.",
+    highlight: "Clean, classified points are what make an accurate terrain model possible later, and it is the step most raw LiDAR data still needs.",
     bullets: ["Point cloud classification & cleaning", "Airborne & terrestrial LiDAR", "LAStools, TerraScan & CloudCompare"],
     icon: <FaCubes />,
   },
@@ -337,14 +369,14 @@ const services = [
     id: "terrain-modeling",
     title: "Digital Terrain & Surface Modeling",
     description: "Digital Terrain Model (DTM) and Digital Surface Model (DSM) generation, contour extraction, and hydrological/drainage analysis from LiDAR or photogrammetric elevation data.",
-    highlight: "We confirm whether your project needs a DTM (bare ground) or DSM (surface with structures/vegetation) before processing — using the wrong one is a common, costly mistake.",
+    highlight: "We confirm whether your project needs a DTM (bare ground) or a DSM (surface with buildings and trees) before processing. Using the wrong one is a common and costly mistake.",
     bullets: ["DTM & DSM generation", "Contour extraction & elevation mapping", "Hydrological & drainage analysis"],
     icon: <FaMountain />,
   },
   {
     id: "utility-mapping",
     title: "Utility, Infrastructure & Asset Mapping",
-    description: "Mapping of utility networks, infrastructure assets, and construction sites — including as-built mapping and asset inventories for ongoing management, not just a one-time survey.",
+    description: "Mapping of utility networks, infrastructure assets and construction sites, including as-built mapping and asset inventories that stay useful for ongoing management.",
     highlight: "Asset data structured for GIS from the start, so it's ready for ongoing asset-management use rather than a static map that goes stale.",
     bullets: ["Utility & infrastructure network mapping", "Asset inventories & as-built mapping", "Construction site & progress mapping"],
     icon: <FaRoad />,
@@ -371,38 +403,42 @@ function serviceById(id: string) {
   return services.find((s) => s.id === id)!;
 }
 
-const clusters = [
+const clusters: { id: string; eyebrow: string; heading: ReactNode; intro: string; cols: number; ids: string[]; visual?: ReactNode }[] = [
   {
     id: "cad-gis",
     eyebrow: "CAD Engineering & GIS Analysis",
     heading: <>Engineering precision, <em>spatial context</em></>,
-    intro: "CAD drafting and 3D modeling for engineering deliverables, paired with GIS mapping and spatial analysis for the geographic context around them.",
+    intro: "CAD drafting and 3D modelling for engineering deliverables, paired with GIS mapping and analysis for the geographic context around them.",
     cols: 2,
     ids: ["cad-drafting", "gis-mapping"],
+    visual: <GisLayerStack />,
   },
   {
     id: "aerial-lidar",
     eyebrow: "Aerial & LiDAR Data Capture",
     heading: <>From the air, <em>classified and clean</em></>,
-    intro: "Drone photogrammetry and LiDAR point cloud processing that turns raw captured data into usable, classified geospatial datasets.",
+    intro: "Drone photogrammetry and LiDAR processing that turn raw captured data into clean, classified datasets.",
     cols: 2,
     ids: ["photogrammetry", "lidar-processing"],
+    visual: <PointCloudSection />,
   },
   {
     id: "terrain-assets",
     eyebrow: "Terrain Modeling & Asset Mapping",
     heading: <>Model the ground, <em>map what&apos;s on it</em></>,
-    intro: "DTM/DSM terrain modeling for elevation and drainage analysis, plus utility and infrastructure asset mapping for what sits on that terrain.",
+    intro: "Terrain models for elevation and drainage work, plus mapping of the utilities and assets that sit on that terrain.",
     cols: 2,
     ids: ["terrain-modeling", "utility-mapping"],
+    visual: <DtmDsmProfile />,
   },
   {
     id: "conversion-survey",
     eyebrow: "Data Conversion & Survey Mapping",
     heading: <>Data that moves <em>between your systems</em></>,
-    intro: "CAD-to-GIS conversion that keeps formats interoperable, and survey/topographic mapping that turns field data into planning-ready maps.",
+    intro: "Conversion that lets drawings and GIS data move between teams, and survey mapping that turns field data into maps you can plan against.",
     cols: 2,
     ids: ["cad-gis-conversion", "survey-mapping"],
+    visual: <ConversionBridge />,
   },
 ];
 
@@ -420,47 +456,42 @@ const deliverables = [
   { icon: <FaMapMarkedAlt />, label: "Survey & land maps" },
 ];
 
-// Software/tooling guidance — when each tool applies, not a logo wall.
-const toolStack = [
-  {
-    name: "CAD Software — AutoCAD, Civil 3D, Revit",
-    bestFor:
-      "The right choice when the deliverable is an engineering drawing, as-built, or design-ready CAD file that needs to plug into a civil, architectural or MEP workflow.",
-  },
-  {
-    name: "GIS Platforms — ArcGIS Pro, QGIS",
-    bestFor:
-      "Used when the deliverable is a structured, analyzable geospatial dataset — spatial analysis, thematic mapping, or asset/utility databases rather than a single drawing.",
-  },
-  {
-    name: "LiDAR Processing — LAStools, TerraScan, CloudCompare",
-    bestFor:
-      "Applied to classify and clean raw point cloud data from airborne or terrestrial LiDAR before it's usable for terrain modeling or CAD/GIS integration.",
-  },
-  {
-    name: "Photogrammetry — Pix4D, Agisoft Metashape, DJI Terra",
-    bestFor:
-      "Used to process drone-captured imagery into orthomosaics, point clouds and 3D models — accuracy here depends as much on flight planning and GCPs as on the software.",
-  },
-  {
-    name: "Format & Coordinate Interoperability",
-    bestFor:
-      "DWG/DXF, Shapefile/GDB/GeoJSON, LAS/LAZ, GeoTIFF and KML conversions with coordinate reference system alignment, so deliverables load correctly in whatever system you're standardized on.",
-  },
+// Software by layer: what each part of the stack produces.
+const toolLayers: StackLayer[] = [
+  { name: "CAD", note: "Engineering drawings, as-builts and design-ready files", tone: "blue",
+    tools: [ { name: "AutoCAD", icon: <SiAutocad /> }, { name: "Civil 3D", icon: <SiAutodesk /> }, { name: "Revit", icon: <SiAutodesk /> }, { name: "SolidWorks", icon: <FaDraftingCompass /> } ] },
+  { name: "GIS", note: "Structured datasets for analysis, mapping and asset records", tone: "green",
+    tools: [ { name: "ArcGIS Pro", icon: <SiArcgis /> }, { name: "QGIS", icon: <SiQgis /> }, { name: "GDAL", icon: <SiGdal /> } ] },
+  { name: "LiDAR processing", note: "Classifying and cleaning point clouds before modelling", tone: "orange",
+    tools: [ { name: "LAStools", icon: <FaCubes /> }, { name: "TerraScan", icon: <FaFilter /> }, { name: "CloudCompare", icon: <FaCloud /> } ] },
+  { name: "Photogrammetry", note: "Drone imagery into orthomosaics, point clouds and meshes", tone: "blue",
+    tools: [ { name: "Pix4D", icon: <FaCamera /> }, { name: "Agisoft Metashape", icon: <FaLayerGroup /> }, { name: "DJI Terra", icon: <SiDji /> } ] },
+  { name: "Formats & coordinates", note: "Files that open correctly in the system you already use", tone: "green",
+    tools: [ { name: "DWG / DXF", icon: <FaFileAlt /> }, { name: "SHP / GDB / GeoJSON", icon: <FaDatabase /> }, { name: "LAS / LAZ", icon: <FaCubes /> }, { name: "GeoTIFF", icon: <FaMapMarkedAlt /> }, { name: "KML", icon: <FaGlobeAsia /> } ] },
 ];
 
-// 10-step geospatial project workflow.
-const workflow = [
-  { n: "01", title: "Project Scoping & Requirements",      desc: "We confirm project area, required accuracy, deliverable formats, and coordinate reference system before any data capture is planned." },
-  { n: "02", title: "Data Acquisition Planning",            desc: "Flight plans, LiDAR mission parameters, or ground survey routes are designed around the accuracy and coverage the project needs." },
-  { n: "03", title: "Field Data Capture",                   desc: "Drone flights, LiDAR scanning, or ground survey are carried out, with ground control points placed where survey-grade accuracy is required." },
-  { n: "04", title: "Georeferencing & Ground Control",      desc: "Captured data is aligned to real-world coordinates using GCPs and/or GNSS post-processing (PPK/RTK)." },
-  { n: "05", title: "Point Cloud Processing & Classification", desc: "LiDAR or photogrammetric point clouds are classified (ground, structures, vegetation) and cleaned of noise." },
-  { n: "06", title: "Terrain & Surface Model Generation",   desc: "DTM/DSM rasters, contours, and elevation models are generated from the classified point cloud data." },
-  { n: "07", title: "CAD Drafting / GIS Data Structuring",  desc: "Data is drafted into CAD drawings or structured into GIS datasets, depending on what the deliverable requires." },
-  { n: "08", title: "Quality Control & Accuracy Validation", desc: "Outputs are checked against ground control and project accuracy requirements before delivery." },
-  { n: "09", title: "Deliverable Packaging & Format Export", desc: "Final data is exported in the agreed formats and coordinate system, ready to load into your existing systems." },
-  { n: "10", title: "Ongoing Support & Data Updates",       desc: "For projects with recurring capture needs (construction progress, asset management), we support periodic updates to keep data current." },
+// 10-step geospatial project workflow (ProcessCycle).
+const workflow: CycleStep[] = [
+  { step: "01", title: "Scoping",              icon: <FaSearchLocation />, text: "We confirm the project area, accuracy target, deliverable formats and coordinate system before any capture is planned." },
+  { step: "02", title: "Capture planning",     icon: <FaRoute />,          text: "Flight plans, LiDAR mission settings or survey routes are designed around the accuracy and coverage the project needs." },
+  { step: "03", title: "Field capture",        icon: <FaHelicopter />,     text: "Drone flights, LiDAR scanning or ground survey, with ground control placed wherever survey-grade accuracy is required." },
+  { step: "04", title: "Georeferencing",       icon: <FaCrosshairs />,     text: "Data is tied to real-world coordinates using ground control points and GNSS correction (RTK or PPK)." },
+  { step: "05", title: "Classification",       icon: <FaFilter />,         text: "Point clouds are classified into ground, buildings, vegetation and water, and noise is removed." },
+  { step: "06", title: "Terrain models",       icon: <FaMountain />,       text: "DTM and DSM rasters, contours and elevation products are generated from the classified points." },
+  { step: "07", title: "CAD & GIS",            icon: <FaDraftingCompass />, text: "Data is drafted into CAD drawings or structured into GIS datasets, depending on the deliverable." },
+  { step: "08", title: "Quality control",      icon: <FaClipboardCheck />, text: "Outputs are checked against independent checkpoints and the accuracy target agreed at the start." },
+  { step: "09", title: "Packaging",            icon: <FaBoxOpen />,        text: "Final data is exported in the agreed formats and coordinate system, ready to load into your systems." },
+  { step: "10", title: "Updates",              icon: <FaSyncAlt />,        text: "For recurring needs such as construction progress or asset records, we repeat capture and keep the data current." },
+];
+
+// Capture-to-deliverable pipeline (intro).
+const pipelineFlow: FlowHop[] = [
+  { title: "Capture",       note: "Drone, LiDAR or ground survey",       icon: <FaHelicopter />,      tone: "orange" },
+  { title: "Georeference",  note: "GCPs and RTK / PPK correction",       icon: <FaCrosshairs />,      tone: "blue" },
+  { title: "Classify",      note: "Ground, buildings, vegetation, noise", icon: <FaFilter />,          tone: "blue" },
+  { title: "Model",         note: "DTM, DSM, contours and meshes",       icon: <FaMountain />,        tone: "blue" },
+  { title: "Draft & structure", note: "CAD drawings or GIS datasets",    icon: <FaDraftingCompass />, tone: "green" },
+  { title: "Check & deliver",   note: "Accuracy report, agreed formats", icon: <FaCheckCircle />,     tone: "green" },
 ];
 
 // Industries — framed as mapping scenarios we can support, not client claims.
@@ -755,6 +786,22 @@ export default function CADGISPhotogrammetry() {
         .cg-cta__btn:hover{background:var(--cg-blue);transform:translateY(-2px);}
 
         @media(max-width:600px){.cg-faq__q{padding:1.25rem;}.cg-faq__a{padding:0 1.25rem 1.25rem;}}
+
+        /* ══ INFOGRAPHICS UPGRADE ══════════════════════════════════════ */
+        .cg-intro__wide{max-width:1100px;margin:2.75rem auto 0;}
+        @media(min-width:1101px){.cg-ind__grid{grid-template-columns:repeat(5,1fr);}.cg-ind__card{padding:1.4rem 1.25rem;}}
+        .cg-cluster__visual{margin:0 0 2.5rem;}
+        .cg-flow__inner{max-width:1120px;}
+        .cg-flow__sub{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:300;line-height:1.75;color:var(--cg-muted);margin:0;}
+        .cg-benefits__acc{margin-top:2.5rem;}
+        .cg-cta__inner{max-width:880px;}
+        .cg-cta__sub{max-width:600px;margin-left:auto;margin-right:auto;}
+        .cg-cta__steps{list-style:none;margin:0 0 2.4rem;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;counter-reset:cgstep;text-align:left;}
+        @media(max-width:700px){.cg-cta__steps{grid-template-columns:1fr;}}
+        .cg-cta__steps li{counter-increment:cgstep;background:var(--cg-surface);border:1px solid var(--cg-line);border-radius:14px;padding:1.1rem 1.2rem;display:grid;grid-template-columns:auto 1fr;column-gap:.8rem;}
+        .cg-cta__steps li::before{content:counter(cgstep);grid-row:1 / span 2;width:30px;height:30px;border-radius:50%;background:var(--cg-blue);color:#fff;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;}
+        .cg-cta__steps b{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;color:var(--cg-ink);}
+        .cg-cta__steps span{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:300;line-height:1.55;color:var(--cg-muted);}
         @media(prefers-reduced-motion:reduce){
           .cg-page *,.cg-page *::before,.cg-page *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
         }
@@ -801,13 +848,13 @@ export default function CADGISPhotogrammetry() {
                 CAD, GIS, LiDAR &amp; Photogrammetry Services
               </h1>
               <p className="cg-hero__h1">
-                Precision mapping,<br />measured in <em>millimeters</em>
+                Survey data turned into<br />drawings, maps and <em>models</em>
               </p>
               <div className="cg-hero__rule" aria-hidden="true" />
               <p className="cg-hero__sub">
-                CAD drafting, GIS mapping, drone photogrammetry, LiDAR point cloud
-                processing, and spatial analysis — precision geospatial engineering
-                for infrastructure, engineering, and land development worldwide.
+                CAD drafting, GIS mapping, drone photogrammetry and LiDAR processing
+                for infrastructure, construction and land projects. Every deliverable
+                arrives in the format, coordinate system and accuracy agreed at the start.
               </p>
 
               <div className="cg-hero__actions">
@@ -839,12 +886,11 @@ export default function CADGISPhotogrammetry() {
           <div className="cg-intro__inner">
             <span className="cg-label">Our Approach</span>
             <h2 className="cg-h2" id="cg-intro-heading">
-              Geospatial engineering, not just<br />
-              <em>mapping</em> and drafting
+              One workflow from <em>capture</em><br />to deliverable
             </h2>
             <p className="cg-intro__p">
-              At <strong>99 Visual Solutions</strong>, CAD, GIS, LiDAR and photogrammetry aren&apos;t
-              treated as separate disciplines handed off between teams — they&apos;re one workflow.
+              At <strong>99 Visual Solutions</strong>, CAD, GIS, LiDAR and photogrammetry are one
+              workflow rather than separate jobs handed between teams.
               Data captured from drones, LiDAR sensors, or ground survey is processed, classified,
               and structured into the <strong>CAD drawings and GIS datasets</strong> your project
               actually needs, in formats that load directly into your existing systems.
@@ -858,6 +904,15 @@ export default function CADGISPhotogrammetry() {
               <Link href="/services/website-development">web-based map portal</Link> for people
               who don&apos;t run GIS software.
             </p>
+          </div>
+          <div className="cg-intro__wide">
+            <RequestFlow
+              id="ig-geo-flow"
+              hops={pipelineFlow}
+              badge="From capture to deliverable"
+              legend={{ out: "Data", back: "QC feedback" }}
+              caption="Each stage hands clean data to the next. If a quality check fails, the data goes back a step and is fixed there, rather than being patched in the final drawing."
+            />
           </div>
         </section>
 
@@ -889,6 +944,7 @@ export default function CADGISPhotogrammetry() {
                   <h2 className="cg-cluster__h2" id={`cg-cluster-h-${cluster.id}`}>{cluster.heading}</h2>
                   <p className="cg-cluster__intro">{cluster.intro}</p>
                 </div>
+                {cluster.visual && <div className="cg-cluster__visual">{cluster.visual}</div>}
                 <div className={`cg-cluster__grid cg-cluster__grid--${cluster.cols}`}>
                   {cluster.ids.map((id) => {
                     const svc = serviceById(id);
@@ -920,18 +976,15 @@ export default function CADGISPhotogrammetry() {
               </h2>
             </div>
             <p className="cg-tech__note">
-              Which software matters depends on what you need out the other end — a design-ready
-              drawing, an analyzable dataset, or a classified point cloud each call for a different
-              part of the stack. <strong>Here&apos;s how we think about it.</strong>
+              Which software matters depends on what you need at the end: a design-ready drawing, a
+              dataset you can analyse, or a classified point cloud each use a different part of the
+              stack. <strong>Here&apos;s how the pieces fit.</strong>
             </p>
-            <div className="cg-tech__list">
-              {toolStack.map((t) => (
-                <div className="cg-tech__row" key={t.name}>
-                  <div className="cg-tech__name">{t.name}</div>
-                  <div className="cg-tech__best">{t.bestFor}</div>
-                </div>
-              ))}
-            </div>
+            <TechStackMap
+              layers={toolLayers}
+              badge="Software, layer by layer"
+              caption="Industry-standard tools and open formats, so the data we deliver opens in the software your team or your next consultant already uses."
+            />
           </div>
         </section>
 
@@ -941,20 +994,14 @@ export default function CADGISPhotogrammetry() {
             <div className="cg-flow__head">
               <span className="cg-label">How We Work</span>
               <h2 className="cg-h2" id="cg-flow-heading">
-                The geospatial project <em>workflow</em>
+                Ten steps, each with a <em>checkpoint</em>
               </h2>
+              <p className="cg-flow__sub">
+                The same sequence runs on every project. For recurring work such as construction
+                progress, the cycle repeats from capture.
+              </p>
             </div>
-            <div className="cg-flow__list">
-              {workflow.map((step) => (
-                <div className="cg-flow__step" key={step.n}>
-                  <div className="cg-flow__n">{step.n}</div>
-                  <div>
-                    <h3 className="cg-flow__title">{step.title}</h3>
-                    <p className="cg-flow__desc">{step.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProcessCycle steps={workflow} />
           </div>
         </section>
 
@@ -1006,6 +1053,7 @@ export default function CADGISPhotogrammetry() {
                 </div>
               ))}
             </div>
+            <AccuracyCheckMap className="cg-benefits__acc" />
           </div>
         </section>
 
@@ -1017,7 +1065,7 @@ export default function CADGISPhotogrammetry() {
               <span className="cg-label">Got Questions?</span>
               <h2 className="cg-h2" id="cg-faq-heading">Frequently Asked Questions</h2>
             </div>
-            <dl className="cg-faq__list">
+            <div className="cg-faq__list">
               {FAQ_ITEMS.map(({ question, answer }, i) => (
                 <details key={i} className="cg-faq__item">
                   <summary className="cg-faq__q">
@@ -1033,7 +1081,7 @@ export default function CADGISPhotogrammetry() {
                   </div>
                 </details>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
@@ -1075,8 +1123,13 @@ export default function CADGISPhotogrammetry() {
             <p className="cg-cta__sub">
               Book a short call with a geospatial specialist. We&apos;ll review your project area,
               required accuracy, and deliverable formats, and outline a practical data capture and
-              processing plan for your team — no obligation.
+              processing plan for your team. There&apos;s no obligation.
             </p>
+            <ol className="cg-cta__steps">
+              <li><b>Share the site</b><span>Area of interest, intended use and any data you already have.</span></li>
+              <li><b>Agree the spec</b><span>Formats, coordinate system, datum and accuracy target in writing.</span></li>
+              <li><b>Capture &amp; process</b><span>Delivered with a QC report against independent checkpoints.</span></li>
+            </ol>
             <ConsultationCTA className="cg-cta__btn" ariaLabel="Request a CAD, GIS and photogrammetry consultation from 99 Visual Solutions" postTitle="CAD, GIS & Photogrammetry" postUrl={PAGE_PATH}>
               Request a Project Consultation
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -1094,6 +1147,8 @@ export default function CADGISPhotogrammetry() {
 
       {/* Articles about this service — reverse of the article's "Related Service" link. */}
       <RelatedInsights serviceHref="/services/cad-gis-photogrammetry" />
+      {/* Drives scroll-in animations for every infographic on this page. */}
+      <InViewObserver />
       <Footer />
       <ScrollDown />
 
